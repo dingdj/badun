@@ -1,0 +1,112 @@
+<script>
+    var CLICK_VERIFY = "{:U('public/Passport/clickVerify')}";
+    var CLICK_UNAME = "{:U('public/Passport/clickUname')}";
+    var CLICK_PHONE = "{:U('public/Passport/clickPhone')}";
+    var CLICK_PHONEVER = "{:U('public/Passport/clickPhoneVer')}";
+    var SETUSERFACE = "{:U('public/Passport/setUserFace')}";
+    var GET_PHONEVERIFY = "{:U('public/Passport/getVerify')}";
+
+    //更换验证码
+    function changeverify() {
+        var date = new Date();
+        var ttime = date.getTime();
+        var url = "__ROOT__/public/captcha.php";
+        $('#verifyimg').attr('src', url + '?' + ttime);
+
+    }
+    ;
+
+    /**
+     * 取消注册
+     */
+    function removeReg() {
+        $("#transparent").css("display", "none");
+    }
+</script>
+<div id="transparent" style="display: none;">
+
+    <div id="loging-worap-regsiter"><a class="loging-Cancel" href="javascript:;" onclick="removeReg()">×</a>
+        <!--登录-->
+        <div id="loging-worap">
+            <div class="title">登录</div>
+            <div class="loging" style="padding:0 20px;margin:0;width:auto;border:0">
+                <ul>
+                    <li class="her-login">
+                        <div class="input-box">
+                            <i class="icon-zhanghao"></i>
+                            <input name="log_username" id="log_username" class="regsiter-width" maxlength="30" type="text"
+                                   placeholder="用户名/邮箱/手机">
+                            <em>×</em>
+                        </div>
+                    </li>
+                    <li class="her-login">
+                        <div class="input-box">
+                            <i class="icon-mima"></i>
+                        <input name="log_pwd" id="log_pwd" class="regsiter-width" maxlength="30" type="password"
+                               placeholder="请输入登录密码">
+                            <em>×</em>
+                        </div>
+                    </li>
+                    <li class="her-login">
+                        <input name="" id="logSub" onclick="logSub()" class="loging-xy-submit" type="submit"
+                               value="登录"/>
+                    </li>
+                </ul>
+                <div class="loging-xy">
+                    <div class="loging-bottom">
+                        <php>if(Addons::requireHooks('login_input_footer') ):</php>
+                        <div class="login-ft" style="">
+                            {:Addons::hook('login_input_footer')}
+                        </div>
+                        <php>endif;</php>
+                        <div class="loging-xy-bottom">
+                            <if condition="$this_mhm_id neq ''">
+                                <a class="goto_res" href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">去注册</a>
+                                <else/>
+                                <a class="goto_res" href="{:U('public/Passport/reg')}">注册账号</a>
+                            </if>
+                            <a href="{:U('home/Repwd/index')}" sty>忘记密码？</a></div>
+                        <style>
+                            #transparent a{color: #00BED4;}
+                            .icon-qzone {
+                                background-position: -461px -661px;
+                                background-image:url(__THEME__/icon/icon.png);
+                            }
+                            .icon-weixin {
+                                background-position: -511px -661px;
+                                background-image:url(__THEME__/icon/icon.png);
+                            }
+                            .icon-sina {
+                                background-position: -561px -661px;
+                                background-image:url(__THEME__/icon/icon.png);
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loging-back"></div>
+</div>
+
+<script>
+    $(document).keydown(function (event) {
+        if ($("#transparent").css("display") == "block") {
+            if (event.keyCode == 13) {
+                logSub();
+            }
+        }
+
+    });
+
+    $('.loging li .input-box em').on("click",function(){
+        $(this).siblings(".regsiter-width").val("").focus();
+    });
+
+    $(".loging li .input-box .regsiter-width").blur(function(){
+        $(this).parent(".loging li .input-box").css({"box-shadow":"0px 0px 0 0 rgba(255,255,255,1)","border": "1px solid #eeeeee"})
+    });
+    $(".loging li .input-box .regsiter-width").focus(function(){
+        $(this).parent(".loging li .input-box").css({"box-shadow":"0px 0px 1px 1px rgba(0,190,212,1)","border": "1px solid transparent"})
+    });
+</script>

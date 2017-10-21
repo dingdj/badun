@@ -1,0 +1,15 @@
+<script>
+    var p="{$p}";//定义页码
+</script>
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+    <li>
+        <div class="position-rt">
+            <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" class="img"><img src="{:getCover($vo['cover'] , 222,144)}"> </a> </div>
+        <h2><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{$vo.video_title}</a></h2>
+        <div class="user-imglistbt"><span>{$vo.video_order_count}人购买</span></div>
+    </li>
+</volist>
+<php>}else{</php>
+    <span>暂无购买课程~</span>
+<php>}</php>

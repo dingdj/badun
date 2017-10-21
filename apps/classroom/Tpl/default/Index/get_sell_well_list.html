@@ -1,0 +1,17 @@
+<if condition="$get_sell_well_list['data'] neq ''">
+    <volist name="get_sell_well_list['data']" id ="gswl" offset="0" length="17">
+        <li>
+            <div class="img-3d">
+                <div class="img-back"><a href="{:U('school/School/index',array('id'=>$gswl['id'],'doadmin'=>$gswl['doadmin']))}" >
+                    <img src="{:getCover($gswl['cover'],131,92)}" alt="{$gswl['title']}" width="131" height="92" class="lazyloading">
+                </a></div>
+                <div class="img-front"><a href="{:U('school/School/index',array('id'=>$gswl['id'],'doadmin'=>$gswl['doadmin']))}" >
+                    <img src="{:getCover($gswl['cover'],131,92)}" alt="{$gswl['title']}" width="131" height="92" class="lazyloading">
+                </a></div>
+            </div>
+            <div class="txt"><p>{$gswl['title']}</p><span>点击进入</span></div>
+        </li>
+    </volist>
+    <else/>
+    <li>暂无此类数据~~</li>
+</if>

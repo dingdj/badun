@@ -1,0 +1,45 @@
+<include file="__THEME__/public_header_twolevel"/>
+<div class="body">
+    <div class="teachertop">
+        <img class="bg" src="<php>if($data['cover']){</php>{:cutImg($data['cover'],640,442)}<php>}else{</php>__THEME__/icon/bg.jpg<php>}</php>" alt="" />
+        <div class="photo" style="width: 72px;height: 72px;">
+            <img src="{:cutImg($data['head_id'],72,72)}" alt="{$data.name}" />
+            <i><img src="{$data.teacher_title_cover}" width="19px" height="19px" alt="" /></i>
+        </div>
+        <div class="tit">
+            <h3>{$data.name}</h3>
+            <i class="icon-01"></i>
+            <i class="icon-01"></i>
+        </div>
+        <p>{$data.inro|msubstr=0,25,'utf-8',true}</p>
+        <div class="monsli">
+            <ul>
+                <li>{$data.teacher_age}年<br>教龄</li>
+                <li>{$data.video}个<br>课程</li>
+                <li><php>if($data['video_count']){</php>{$data.video_count}<php>}else{</php>0<php>}</php>个<br>视频</li>
+                <li>{$follow}人<br>关注</li>
+            </ul>
+        </div>
+    </div>
+    <div class="teacherbot">
+        <div class="classitem bgw">
+            <div class="classtit"><a href="{:U('classroom/Teacher/view',array('id'=>$data['id']))}" class="fr">返回讲师详情</a><em></em>文章详情页</div>
+            <!--文章详情-->
+            <div class="classcon">
+                <h2 style="text-align: center;">{$art_title|msubstr=0,20,'utf-8',true}</h2>
+                <dl class="artInfo">
+                    <dt>发布于：{$ctime|date="Y年m月d日 H:i",###}&nbsp;&nbsp;点赞量: {$praise}&nbsp;&nbsp; </dt>
+                </dl>
+                <div class="question-page">
+                    {$article}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+    $(".header").hide();
+})
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

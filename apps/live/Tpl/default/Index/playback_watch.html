@@ -1,0 +1,29 @@
+<include file="__THEME__/public_header" />
+<style type="text/css">
+	#video .common-header{display: none;}
+</style>
+<div class="wrap" style="width:100%;">
+    <iframe name="videoBox" id="video" src="{$playback_url}" width="100%"  height="800" frameborder="0" scrolling="no"></iframe>
+</div>
+<!--footer-->
+<include file="__THEME__/public_footer" />
+<!-- 遮罩层 -->
+<if condition="$header eq 5">
+    <script>
+    $(function(){
+    	var iframe = document.getElementById("video");
+        if (!/*@cc_on!@*/0) {
+		    iframe.onload = function(){
+		        $(".common-header",document.frames("videoBox").document).remove();
+		    };
+		} else {
+		    iframe.onreadystatechange = function(){
+		        if (iframe.readyState == "complete"){
+		            alert("Local iframe is now loaded.");
+		        }
+		    };
+		}
+    })
+
+    </script>
+</if>

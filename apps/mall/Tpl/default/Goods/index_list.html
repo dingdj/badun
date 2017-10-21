@@ -1,0 +1,30 @@
+<php>if(!$ranking_list)</php>
+    <php>if($listData){</php>
+        <ul>
+            <volist name="listData" id="vo">
+                <li>
+                    <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}"><img src="{$vo.cover}" class="lazyloading" alt="{$vo.title}" /></a>
+                    <h3><a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">{$vo.title|msubstr=0,9,'utf-8',true}</a></h3>
+                    <p>{$vo.info|msubstr=0,15,'utf-8',true}</p>
+                    <div class="jfen"><span class="num">{$vo.price}</span>积分&nbsp;&nbsp;&nbsp;&nbsp;运费<span class="num">{$vo.fare}</span>积分</div>
+                    <div class="places">剩余<span>{$vo.stock}</span>名额</div>
+                </li>
+            </volist>
+        </ul>
+    <php>}else{</php>
+        <span>已经没有相关商品啦~</span>
+    <php>}</php>
+<php>}else{</php>
+    <ul>
+        <volist name="ranking_list" id="vo">
+            <li>
+                <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}"><img src="{$vo.cover}" class="lazyloading" alt="{$vo.title}" /></a>
+                <h3><a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">{$vo.title|msubstr=0,9,'utf-8',true}</a></h3>
+                <p>{$vo.info|msubstr=0,15,'utf-8',true}</p>
+                <div class="jfen"><span class="num">{$vo.price}</span>积分&nbsp;&nbsp;&nbsp;&nbsp;运费<span class="num">{$vo.fare}</span>积分</div>
+                <div class="places">剩余<span>{$vo.stock}</span>名额</div>
+            </li>
+        </volist>
+    </ul>
+<php>}</php>
+            

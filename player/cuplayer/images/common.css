@@ -1,0 +1,99 @@
+/* ----------------------------------------
+	* Filename:     common.css
+	* Description:  Global CSS
+	* Website:      www.CuPlayer.com
+	* PageWidth:    980px
+	* CssCreate:    2013-09-07 21:44 
+------------------------------------------ */
+body {margin:0; padding:0;  margin-top:0px;font-size:12px; color:#313131;text-align: left; font-family:Verdana, Arial, Helvetica, sans-serif; background:#ffffff; }
+div,ul,li,ol,dl,dt,dd,form,img,p{margin: 0; padding: 0; border: 0; }
+li{list-style-type:none;}
+h1,h4,h5,h6{margin: 0; padding: 0; font-size:14px;}
+/* __link */
+a {color: #313131; text-decoration:none;}
+a:link {color: #313131;text-decoration:none;}
+a:visited {color: #313131;text-decoration:none;}
+a:hover {color:red; text-decoration:underline;}
+a:active {color: #313131;}
+/* __color */
+.cWhite,a.cWhite:link,a.cWhite:visited{ color:#ffffff;}
+.cBlue,a.cBlue:link,a.cBlue:visited,a.cBlue:active{color:#066bb7; }
+.cBlue2,a.cBlue2:link,a.cBlue2:visited,a.cBlue2:active{color:#035db8;}
+a.cBlue2:hover{color:red; }
+.cBlack,a.cBlack:link,a.cBlack:visited,a.cBlack:active{color:#000000; }
+.cRed,a.cRed:link,a.cRed:visited{ color:#ff0000; }
+.cGold,a.Gold:link,a.Gold:visited{ color:gold; }
+.cOrange,a.cOrange:link,a.cOrange:visited{ color:orangered; }
+.cGray,a.cGray:link,a.cGray:visited{ color:#6D6359; }
+.cGrayover,a.cGrayover:link,a.cGrayover:visited{ color:#cccccc; text-decoration:line-through;}
+.cOrange2,a.cOrange2:link,a.cOrange2:visited{ color:#9b2f07; }
+.cGreen2,a.cGreen2:link,a.cGreen2:visited{ color:#336600; }
+.cYellow,a.cYellow:link,a.cYellow:visited{ color:#FFE0B2; }
+.cRed2,a.cRed2:link,a.cRed2:visited{ color:#ce0400; } a.cRed2:hover{ color:#000000; text-decoration:underline; }
+.cRed3,a.cRed3:link,a.cRed3:visited{ color:#96570e; } a.cRed3:hover{ color:red; text-decoration:underline; }
+.cHe,a.cHe:link,a.cHe:visited{ color:#876e25; } a.He:hover{ color:red; text-decoration:underline; }
+/* __font */
+.f12{ font-size:12px; }
+.f14{ font-size:14px; }
+.f16{ font-size:16px; }
+.f18{ font-size:18px; }
+.f20{ font-size:20px; }
+.h20{ line-height:20px; }
+.h22{ line-height:22px; }
+.h24{ line-height:24px; }
+.h26{ line-height:26px; }
+.h28{ line-height:28px; }
+.h30{ line-height:30px; }
+.fn { font-weight:normal; }
+.h  { font-family:"ºÚÌå"; }
+.b  { font-weight: bold; }
+.en {font-family:Verdana, Arial, Helvetica, sans-serif,"ËÎÌå"; }
+/* __float */
+.left { float: left;}
+.right{ float: right;}
+.clear{ clear: both; margin:0; padding:0; border:0;margin-top:2px;}
+div.side{ width:269px;float:left; background:#e9f2fe; zoom:1;}
+.clearfix:after { content: "."; visibility: hidden; display: block; height: 0; clear: both; }
+/* __width */
+.w { width:1002px;margin:0 auto; padding: 0; border: 0; }
+.w0{ width:980px;margin:0 auto; padding: 0; border: 0; }
+.bgw {background: #FFF;}
+/* __other */
+.input{border: #ffffff 1px solid;color:#C50A32; height: 15px; padding:1px;}
+.textarea{border: #999999 1px solid; font-size: 12px; color:#000000;}
+/* CuPlayer.com ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ */
+div.clearfix { zoom:1;}
+div.clearfix:after {content:".";clear:both;height:0;display:block;visibility:hidden;}
+/* Hide from IE Mac \*/ 
+.clearfix { display:block; } 
+ 
+/*Focus------------------------*/
+div#focusbg { background:#00a0e9; margin-top:0px;}
+#CuFocus { clear:both; width:980px;margin:0 auto; height:460px;}
+#CuFocus div.topcorn { height:0px;}
+#CuFocus div#CuPlayer { background:none;width:600px;float:left;margin-top:20px; }
+#CuFocus div.intro {  width:360px;float:left; }
+
+#CuFocus2 { clear:both; width:980px;margin:0 auto; height:150px;}
+/*Focus------------------------*/
+div#focusbg2 { background:#00a0e9; margin-top:0px;}
+
+div#focusbg2 p.bner {  clear:both; width:980px;margin:0 auto; height:180px; }
+
+/*content-------------------*/
+div#content { width:980px; margin:0 auto; margin-top:0px;}
+div#content div.main {  margin-top:16px;border-left:1px #d8d5d5 solid; border-right:1px #d8d5d5 solid; clear:both; }
+ 
+/* CuPlayer.com ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ */
+div#footer { clear:both; width:100%; margin:0 auto; margin-top:20px; background:url(footbg.gif) left top; color:#717171; font-family:Verdana, Arial, Helvetica, sans-serif,"ËÎÌå"; }
+div#footer div.other{  width:960px; margin:0 auto; padding-top:10px; }
+div#footer div.copyright{  clear:both; width:960px; margin:0 auto; margin-top:10px; text-align:center; height:60px;line-height:40px;}
+ 
+.video { OVERFLOW: hidden; WIDTH: 100%; POSITION: relative}
+.close_light_bg {DISPLAY: none; BACKGROUND: #000; FILTER: alpha(opacity = 95); LEFT: 0px; WIDTH: 100%; POSITION: absolute; TOP: 0px; HEIGHT: 100%; opacity: .95}
+ 
+div.main { width:980px;margin:0 auto;padding:50px;}
+.input{border: #cccccc 1px solid; color:#C50A32; height: 25px; padding:4px; font-size:15px; background:#f1fbd6; width:960px;}
+.input1 {border: #cccccc 1px solid; color:#C50A32; height: 25px; padding:4px; font-size:15px; background:#f1fbd6;}
+
+/* LastUpdate: 2013-09-07 21:44  */

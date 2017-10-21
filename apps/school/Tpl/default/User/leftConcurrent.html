@@ -1,0 +1,28 @@
+<include file="__THEME__/public_header" />
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="../User/_left" />
+        <!--右-->
+        <div class="jgpage_right">
+            <div class="jgpage_right_tit mb50">我的剩余并发</div>
+            <div class="jgpage_right_con">
+                <div class="jgbox">
+                        <div class="jgformitem">
+                            <label>当前总并发:</label><input  id ="tdata" name="tdata"  readonly="readonly"  value = {$tdata}个  style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                        </div>
+                        <div class="jgformitem">
+                            <label>当前剩余并发:</label><input type ="text"  id ="nowleft" name="nowleft"    value = {$nowleft}个    style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                        </div>
+                        <div class="jgformitem">
+                            <label>下一小时总并发:</label> <input type ="text"  class="jg_input"   id = "nextdata" name="nextdata"    value = {$nextdata}个   style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                        </div>
+                    <div class="jgformitem">
+                        <label>下一小时剩余并发:</label> <input type ="text"  class="jg_input"   id = "nextleft" name="nextleft"     value = {$nextleft}个     style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                    </div>
+                </div>
+            </div>
+            <span><a href= "{:U('school/User/buyConcurrent')}" >机构并发不足，点击购买并发</a></span>
+        </div>
+    </div>
+    <include file="__THEME__/public_footer" />

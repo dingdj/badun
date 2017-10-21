@@ -1,0 +1,9 @@
+<volist name="wendaList.data" id="vo">
+    <li>
+        <h3><a href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:mStr($vo['wd_description'],10)}</a></h3>
+        <div class="info">
+            <a class="fr" href="#"><span class="icon-pl"></span>{$vo.wd_comment_count}</a>
+            {$vo.wd_browse_count}人浏览<span>|</span>{$vo.ctime}
+        </div>
+    </li>
+</volist>

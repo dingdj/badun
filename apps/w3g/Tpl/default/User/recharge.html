@@ -1,0 +1,164 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <div class="teacher_type">
+        <ul class="teacher_hd">
+            <li class="on">学币充值</li>
+            <li>会员充值</li>
+        </ul>
+        <form action="{:U('w3g/User/dorecharge')}" method="post" target="_blank">
+          <input type="hidden" value="alipay" name="pay" />
+          <input type="hidden" value="0" name="money" />
+        <div class="teacher_bd db">
+            <dl class="pay_dl">
+                <dt>支付类型</dt>
+                <dd name="group-list">
+                    <label class="selected" onclick="select_pay(this,1);"><img src="__APP__/icon/zfb.jpg"></label>
+                    <label onclick="select_pay(this,2);"><img src="__APP__/icon/zxzf.jpg"></label>
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>充值金额</dt>
+                <dd name="group-list" class="btn_je_box">
+                    <?php $array = explode("\n",getAppConfig('rechange_default'));?>
+                    <?php foreach($array as $i=>$val):?>
+                    <?php if($i>3) break;?>
+                    <?php $val = intval(trim($val));?>
+                    <label><a class="btn_hui_h" href="javascript:;" val="{$val}">{$val}元</a></label>
+                    <?php endforeach;?>
+                </dd>
+                <dd><p>备注：1学币=1元人民币</p></dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>自定义金额</dt>
+                <dd>
+                    <input type="text" placeholder="请输入学币数量……" id="custom_money">学币
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>需要花费：<em id="lan_txt_cost" class="lan_txt ft18 ml15">10 </em>元</dt>
+                <dt class="pay_dt"><label><input type="checkbox" checked>同意<a href="#">《出右虚拟货币服务协议》</a></label></dt>
+            </dl>
+            <a class="pay_btn" href="javascript:;" onclick="rechange(this);">立即充值</a>
+        </div>
+        </form>
+        <form action="{:U('w3g/User/rechargeVip')}" method="post" target="_blank">
+        <div class="teacher_bd">
+            <input type="hidden" value="alipay" name="pay" />
+            <input type="hidden" value="1" name="type" />
+            <dl class="pay_dl">
+                <dt>Eduline帐号:</dt>
+                <dd name="group-list">
+                     <p ><em class="fb ">{$user['uname']}</em> </p>
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>您当前身份:</dt>
+                <dd name="group-list">
+                    <p>
+                      <?php if($learnc['vip_type']==0):?>
+                      非VIP会员
+                      <?php else: echo $learnc['vip_type_txt'];echo $learnc['vip_expire']>0?date('，过期时间：Y-m-d', $learnc['vip_expire']):'';endif;?>
+                    </p>
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>支付类型</dt>
+                <dd name="group-list">
+                    <label class="selected" onclick="select_pay(this,1);"><img src="__APP__/icon/zfb.jpg"></label>
+                    <label onclick="select_pay(this,2);"><img src="__APP__/icon/zxzf.jpg"></label>
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>开通类型</dt>
+                <dd id="vip_type">
+                     <volist name="user_vip" id="vo">
+                        <div style="float:left;margin-left:5px;width:100px;">
+                        <input style="width:auto;float:left;" type="radio" rel="{$vo.vip_year}" <php>if($key == 0){</php>checked="checked"<php>}</php> name="user_vip" value="{$vo.id}"/> {$vo.title}
+                        </div>
+                    </volist>
+                </dd>
+            </dl>
+            <dl class="pay_dl">
+                <dt>需要花费：<em class="red_txt ft18" id="price_show">{$user_vip[0]['vip_year']}</em>元</dt>
+                <dt class="pay_dt"><label><input type="checkbox" checked name="checkbox">同意<a href="#">《出右虚拟货币服务协议》</a></label></dt>
+            </dl>
+            <a class="pay_btn" href="javascript:;" onclick="rechangeVip(this);">立即充值</a>
+        </div>
+        </form>
+    </div>
+    
+</div>
+<script>
+function select_pay(sbt,val){
+    var form  = $(sbt).parents('form');
+    if(val==1){
+        form.find('input:hidden[name="pay"]').val("alipay");
+    }else{
+         form.find('input:hidden[name="pay"]').val("unionpay");
+    }
+}
+$('.btn_je_box a.btn_hui_h').click(function(){
+    $(this).parents('form').find('input:hidden[name="money"]').val($(this).attr('val'));
+    $('#lan_txt_cost').text($(this).attr('val'));
+    $('input#custom_money').val('').blur();
+});
+$('input#custom_money').change(function(e) {
+    $('.btn_je_box').children().removeAttr('selected');
+    $(this).parents('form').find('input:hidden[name="money"]').val($(this).val());
+    $('#lan_txt_cost').text($(this).val());
+});
+//充值学币
+function rechange(sbt){
+    var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+    var form  = $(sbt).parents('form');
+    var pay   = form.find('input:hidden[name="pay"]').val();
+    var money = form.find('input:hidden[name="money"]').val();
+    if(pay!='alipay'&&pay!='unionpay'){
+        alert('支付方式错误');
+        return false;
+    }
+    if(money <= 0){
+        alert('请选择或填写充值金额');
+        return false;
+    }
+    if(rechange_base>0 && money%rechange_base != 0){
+        if(rechange_base == 1){
+            alert('充值金额必须为整数');
+        }else{
+            alert('充值金额必须为'+rechange_base+'的倍数');
+        }
+        return false;
+    }
+    if(!$("input[name='checkbox']").is(':checked')){
+        alert('请同意《Eduline虚拟货币服务协议》');
+        return false;
+    }
+    form.submit();
+}
+//选择充值VIP类型
+$('#vip_type input').click(function(){
+    var _this = this;
+    $('#price_show').text($(_this).attr('rel'));
+});
+//充值VIP
+function rechangeVip(sbt){
+    var form  = $(sbt).parents('form');
+    var pay   = form.find('input:hidden[name="pay"]').val();
+    var type  = form.find('input:hidden[name="type"]').val();
+    if(pay!='alipay' &&pay!='unionpay'){
+        alert('支付方式错误');
+    }
+    if(type != 0 && type !=1){
+        alert('充值类型错误');
+    }
+    
+    if(form.find('#buy-s-1r b').hasClass('Text_error')){
+        alert('请同意《Eduline虚拟货币服务协议》');
+    }
+    form.submit();
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

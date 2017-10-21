@@ -1,0 +1,20 @@
+<volist name="data" id="vo">
+    <dt>{$vo.title}</dt>
+    <php>if($vo['child']){</php>
+        <volist name="vo.child" id="vo1">
+            <dd>
+                <php>if($vo1['is_free'] == 1){</php>
+                    <span class="free" style="display: block;background: #00BED4;">试听</span>
+                <php>}else if($video['is_charge'] == 1){</php>
+                    <span class="free" style="display: block;background: #39b75d;" >免费</span>
+                <php>}</php>
+
+                <a href="{:U('classroom/Video/watch','id='.$vo1['vid'].'&s_id='.$vo1['id'])}">
+                    <i class="icon-01"></i>
+                    <span>{$vo1.title}</span>
+                    <span style="float: right;">{$vo1.duration}</span>
+                </a>
+            </dd>
+        </volist>
+    <php>}</php>
+</volist>

@@ -1,0 +1,24 @@
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+	<li>
+		<a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">
+			<img src="{:cutImg($vo['head_id'],70,70)}" alt="{$vo.name}">
+			<div class="tit">
+				<h3>{$vo.name}</h3>
+				<i class="icon-01"></i>
+				<i class="icon-02"></i>
+				<span>{$vo.school}</span>
+			</div>
+			<div class="dis">{:limitNumber($vo['inro'],35)}</div>
+			<div class="info">综合评分：{$vo.star}分<span>|</span><i class="icon-03"></i>{$vo.Teacher_areas}</div>
+			<div class="label">
+				<span>{$vo.teacher_age}年教龄</span>
+				<php>foreach($vo['label'] as $k=>$v){</php>
+				<php>if($k < 4){</php><span>{$v}</span><php>}</php>
+				<php>}</php>
+				<span>{:limitNumber($vo['teach_evaluation'],15)}</span>
+			</div>
+		</a>
+	</li>
+</volist>
+<php>}</php>

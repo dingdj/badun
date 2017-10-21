@@ -1,0 +1,66 @@
+<include file="../School/public/school_header" />
+
+<style type="text/css">
+    .wrap{
+        width:1170px
+    }
+    .user-imglist li{
+        width:253px;
+    }
+    .user-imglist li .img{
+        width:253px;
+    }
+</style>
+<div class="content">
+    <div class="wrap">
+        <div class="left-all">
+            <div class="center_right">
+                <div class="center_right_tit">
+                    <div class="user-con-title">
+                        <button class="on"><a href="{:U('school/School/course',array('id'=>$mhm_id))}">综合排序</a></button>
+                        <!--<button><a href="{$domain}">最新</a></button>
+                        <button><a href="{$domain}">评分</a></button>
+                        <button><a href="{$domain}">价格</a><span><i class="i01"></i><i class="i02"></i></span></button>-->
+                    </div>
+                </div>
+                <div class="center_right_con Manage_all">
+                    <ul class="user-imglist">
+                        <if condition="$listData">
+                            <volist name="listData" id="val">
+                                <li>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}" class="img"><img src="{:getCover($val['cover'],253,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:msubstr(t($val['video_title']),0,12,'utf-8',true)}</a></h3>
+                                        <p>
+                                            <a href="{$val.domain}">{:msubstr(t($val['school_title']),0,12,'utf-8',true)}</a>
+                                            <a style="float: right;" href="{:U('classroom/Teacher/view',array('id'=>$val['teacher_id']))}">{:msubstr(t($val['tea_name']),0,10,'utf-8',true)}</a>
+                                        </p>
+                                    <span>
+                                        <strong>
+                                            <php>if($val['is_charge'] == 1  || $val['mzprice']['price'] == 0 ){</php>
+                                            <div class="fr green">免费</div>
+                                            <php>}else{</php>
+                                            <div class="fr red">￥{$val['mzprice']['price']}</div>
+                                            <php>}</php>
+                                        </strong>
+                                        <small>{$val.order_count}人在学</small>
+                                    </span>
+                                    </div>
+                                </li>
+                            </volist>
+                            <else/>
+                            <li style="border: none;box-shadow: none;">该机构还没有课程。。</li>
+                        </if>
+                    </ul>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$data.html}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<include file="__THEME__/public_footer" />

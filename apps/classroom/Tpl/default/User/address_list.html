@@ -1,0 +1,20 @@
+<foreach name="data" item="l" key="k">
+    <li  class="li" <php> if($k == 0) echo "style='padding:0 0 20px;'"</php>>
+        <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" ><img width="40" height="40" src="{:getUserFace($l['uid'],'m')}"></a>
+            <div class="detailmeg">
+                  <div class="mynote">
+                  <em>收货人:</em><a>{$l.name}</a><br/>
+                  <em>电话:</em><a>{$l.phone}</a><br/>
+                  <em>详细地址:</em><a>{$l.location}{$l.address}</a>
+                  </div>
+                <div class="fbtime">时间：
+                    <span>{$l.ctime|date="Y/m/d H:i",###}</span>
+                    <a href="{:U('classroom/User/updateAddress',array('id'=>$l['id'],'type'=>2))}" class="fr"><i class="bianji-ico"></i>编辑</a>
+                    <div class="Operation-wd">
+                      <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该收货地址吗？');return false;" callback="delAddress({$l['id']})" ><i></i><span>删除</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</foreach> 

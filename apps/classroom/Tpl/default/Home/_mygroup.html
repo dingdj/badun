@@ -1,0 +1,65 @@
+
+<foreach name="data" item="l">
+    <li>
+        <a <eq name="l.status" value="1">href="{:U('group/Index/view',array('gid'=>$l['id']))}"</eq> class="img">
+            <img src= "{:logo_path_to_url($l['logo'])}"  class="lazyloading">
+        </a>
+        <h3><span class="fr">{$l.cid0}</span><a <eq name="l.status" value="1">href="{:U('group/Index/view',array('gid'=>$l['id']))}"</eq>>{$l.name}</a></h3>
+        <div class="act">
+
+
+            <div class="sc fr"><a href="{:U('group/Index/editgroup',array('id'=>$l['id']))}"><i class="icon-02"></i>编辑</a></div>
+            <div class="sc fr"><a href="javascript:;" onclick="delgroup(this,{$l.id})"><i class="icon-02"></i>删除</a></div>
+        </div>
+    </li>
+</foreach>
+
+
+
+<script>
+
+
+    /**
+     * 删除课程方法
+     * @param id
+     */
+    function delgroup(cate,id){
+
+        if(!confirm("是否要删除该小组"))
+        {
+            return;
+        }
+        var id=id;
+        url="<?php echo U('classroom/Home/delgroup');?>";
+        fdata="id="+id;
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    $(cate).parent().parent().parent().fadeOut();
+                }
+            }
+        });
+    }
+
+    </script>
+
+
+
+
+
+<?php
+
+function logo_path_to_url($save_path,$width=186,$height=186)
+{
+$path = getImageUrl($save_path,$width,$height, true);
+if ( $save_path != 'default.png' )
+return $path;
+else
+return SITE_URL . '/apps/group/_static/images/default.png';
+}
+
+?>

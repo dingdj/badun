@@ -1,0 +1,111 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+
+<div class="content">
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>我的提问</div>
+    </div>
+    <div class="body">
+        <ul class="fqalistnav">
+            <li class="on"><a  href="javascript:;" onclick="navClick(this,'me')" class="onactive">我的提问</a></li>
+            <li><a a href="javascript:;" onclick="navClick(this,'question')">我的回答</a></li>
+        </ul>
+        <div class="centerbox">
+        <ul class="comment_list link_3">
+
+        </ul>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    var type;
+    var p;
+    var url="{:U('classroom/Home/getwentilist')}";
+
+
+
+
+    $(function(){
+        $(".header").hide();
+
+        type="me"
+        //异步加载我购买的课程
+        $.ajax({
+            type:"POST",
+            url:url,
+            data:"p=1&type="+type,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,type);
+            }
+        });
+    });
+
+
+
+
+
+    //请求事件
+    function ajaxBang(url,type,callback){
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p="+p+"&type="+type,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,type);
+                callback && callback();
+            }
+        });
+    }
+    //头部点击事件
+    function navClick(cate,type){
+
+        $(".comment_list").html("");
+        type=type;
+        $("li").removeClass("on");
+        $(cate).parent("li").addClass("on");
+        p=1;
+        ajaxBang(url,type);
+    }
+    //追加html
+    function appendHtml(data,type){
+        $(".more").remove();
+        if(data.data==""){
+            if( type == 'me' ) {
+                var text = '你还没有提问哦~';
+            } else {
+                var text = '你还没有回答哦~';
+            }
+            $(".comment_list").append('<span>'+text+'</span>');
+        }else{
+            $(".comment_list").append(data.data);
+        }
+        if(data.nowPage+1>data.totalPages){
+            return;
+        }else{
+            var html="<div class=\"more\" ><a href=\"javascript:void(0)\" onclick='fallBang(this)' id=\""+type+"\" >查看更多</a></div>"
+            $(".user-con").append(html);
+            p=data.nowPage+1;//下一页
+        }
+    }
+
+    //点击查看更多事件
+    function fallBang(cate){
+        var rtype=$(cate).attr("id");
+        ajaxBang(url,rtype);
+    }
+
+
+
+
+
+
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

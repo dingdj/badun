@@ -1,0 +1,38 @@
+<ul class="con addressStyle">
+    <foreach name="address_list" item="l">
+        <li>
+            {$l.location}&nbsp;&nbsp;{$l.address}
+            <input class="address" name="address" value="{$l.id}" type="radio" />
+        </li>
+    </foreach>
+    <input type="hidden" name="address_id" value="{$id}" id="vid">
+    <input type="hidden" name="status" value="{$status}" id="status">
+    <dd>
+        <input type="button" class="btn_b" onclick="changeAddress()" value="确定" />
+        <input type="button" class="btn_w ml10" onclick="cancel()" value="取消" />
+    </dd>
+    <div class="clear"></div>
+</ul>
+
+<script type="text/javascript">
+    function changeAddress() {
+        var address_id = $("input[type='radio']:checked").val();
+        if(getLength(address_id) < 1){
+            ui.error("请选择地址");
+            return false;
+        }
+        $.post(U('mall/Goods/getAddress'),{address_id:address_id},function(msg){
+            var msg = getResponseData(msg);
+            if(msg.status == 1){
+                $(".address_id").val(msg.data['id']);
+                msg.data = msg.data['location'] + msg.data['address'];
+                $("#old").html(msg.data);
+                ui.box.close();
+            }
+        });
+    };
+    // 关闭弹窗
+    function cancel() {
+        ui.box.close();
+    }
+</script>

@@ -1,0 +1,94 @@
+<link rel="stylesheet" href="__THEME__/js/layui/lay/css/layui.css" />
+
+<dl class="pop-area" style="text-align: left;">
+    <form  onsubmit="return false;" id="user_rule">
+        <ul id="rule_ul"></ul>
+        <!--<ul id="rule_ul1"></ul>-->
+
+        <input name="user_group_id" value="{$id}" type="hidden"/>
+        <dd style="text-align: center;">
+            <input type="button" class="btn_b" onclick="upRuleTreeCategory()" value="确定" />
+            <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
+        </dd>
+        <div class="clear"></div>
+    </form>
+</dl>
+
+<style type="text/css">
+    body{
+        height: 1200px;
+    }
+    #rule_ul{
+        overflow-x: hidden;
+        overflow-y: scroll;
+        height: 340px;
+    }
+    .descripttion{
+        width: 1000px;
+        margin: 50px;
+    }
+    body>ul{
+        display: inline-block;
+        width: 400px;
+        margin: 20px;
+    }
+</style>
+<script src="__THEME__/js/layui/layui.js" charset="utf-8"></script>
+<script>
+    $(
+        function(){
+            $('#tsbox').attr('style','top:40px;');
+//            console.log(arr);
+            console.log({$list_tree});
+        }
+    );
+
+</script>
+<script>
+    layui.use('tree', function() {
+        var tree = layui.tree({
+            elem: '#rule_ul', //指定元素，生成的树放到哪个元素上
+            check: 'checkbox', //勾选风格
+            skin: 'as', //设定皮肤
+            drag: true,//点击每一项时是否生成提示信息
+            checkboxName: 'rule_list[]',//复选框的name属性值
+            checkboxStyle: "margin-top: 7px;",//设置复选框的样式，必须为字符串，css样式怎么写就怎么写
+            click: function(item) { //点击节点回调
+                console.log("item")
+            },
+//            data: {//为元素添加额外数据，即在元素上添加data-xxx="yyy"，可选
+//                hasChild: true
+//            },
+            nodes:{$list_tree}
+        });
+    });
+    /**
+     * 分配权限操作
+     * @return void
+     */
+    var upRuleTreeCategory = function()
+    {
+//        var chk_value =[];
+//        $('input[name="rule_list[]"]:checked').each(function(){
+//            chk_value.push($(this).val());
+//        });
+//        if(chk_value.length == 0) {
+//            ui.error('尚未选择权限');
+//            return false;
+//        }
+
+        // 提交操作
+        $.post(U('admin/UserGroup/saveUserPermNode'), $('#user_rule').serialize(), function(e) {
+            if(e.status == 1) {
+                ui.success(e.info);
+                setTimeout(function() {
+                    location.href = location.href;
+                }, 1500);
+                ui.box.close();
+            } else {
+                ui.error(e.info);
+                return false;
+            }
+        }, 'json');
+    };
+</script>

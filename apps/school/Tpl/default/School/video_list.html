@@ -1,0 +1,101 @@
+<include file="public/school_header" />
+
+<div class="jgitembox jgc" style="margin-top: 80px;">
+    <div class="wrap">
+        <div class="jgtitlle">
+            <div>
+                <h2>课程详情</h2>
+                <p>Class Details</p>
+            </div>
+        </div>
+        <div class="itemcon">
+            <ul class="jglist clearfix">
+                <volist name="listData" id="val">
+                    <li>
+                        <div class="pic">
+                            <if condition="$val['type'] eq 2">
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                <else/>
+                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                            </if>
+                            <img src="{:getCover($val['cover'],218,130)}" alt=""></a>
+                            <div class="txt">{:limitNumber($val['video_title'],10)}</div>
+                        </div>
+                        <h3>
+                            <if condition="$val['type'] eq 2">
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                <else/>
+                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                            </if>
+                            {:limitNumber($val['video_binfo'],30)}</a>
+                        </h3>
+                        <div class="info">
+                            <div class="fl">{$val['tea_name']}</div>
+                            <php>if($val['is_charge'] == 1  || $val['mzprice']['price'] == 0 ){</php>
+                                <div class="fr green">免费</div>
+                            <php>}else{</php>
+                                <div class="fr red">￥{$val['mzprice']['price']}</div>
+                            <php>}</php>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+            <php>if($listData){</php>
+                <div class="page">
+                    <div class="pagebox">
+                        {$data.html}
+                        <div class="pagediv">
+                            <span>共<p id="pageTotal" style="display: inline-block;">{$data.totalPages}</p>页,去第</span>
+                            <input type="text" name="pageNum" id="pageNum" > <span>页</span>
+                            <a class="goto gotoPage" data-type="p"  href="javascript:;">确定</a>
+                        </div>
+                    </div>
+                </div>
+            <php>}</php>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        var domain = '{$school.domain}';
+        var school_id = '{$school.school_id}';
+        var cateId = '{$Think.get.cateId}';
+        if(domain){
+            var url = domain+'/video_list/'+cateId+'.html';
+        }else{
+            var url = "{:U('school/School/video_list')}"+"&cateId="+cateId+"&id="+school_id;
+        }
+        $(".pagebox a").click(function(e){
+            e = e || window.event;
+            if(e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation();
+            }else{
+                e.returnValue = false;
+                e.cancelBubble = true;
+            }
+            var value = $(this).attr('p');
+            if(domain){
+                location.href = url+"?p="+value;
+            }else{
+                location.href = url+"&p="+value;
+            }
+        });
+
+        //同步请求
+        $(".goto").click(function(){
+            var totalPages = "{$data.totalPages}";
+            var value = $("input[name='pageNum']").val();
+            if(parseInt(value) > parseInt(totalPages)){
+                value = totalPages;
+            }
+            if(domain){
+                location.href = url+"?p="+value;
+            }else{
+                location.href = url+"&p="+value;
+            }
+        });
+    });
+</script>
+<include file="__THEME__/public_footer" />

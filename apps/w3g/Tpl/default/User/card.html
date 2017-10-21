@@ -1,0 +1,115 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <?php if($isEditCard):?>
+    <form method="post" action="{:U('w3g/User/card')}">
+    <div class="teacher_type">
+        <div class="item_box">
+            <dl class="management_dl">
+                <dt><span>*</span>开户银行</dt>
+                <dd>
+                    <select class="management_sl" name="accounttype">
+                        <option value="">-选择银行-</option>
+                        <?php foreach($banks as $bank):?>
+                        <option<?php echo $data['accounttype']==$bank?' selected="selected"':''?> value="{$bank}">{$bank}</option>
+                        <?php endforeach;?>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>开户省</dt>
+                <dd>
+                    {:W('Area',array('curPro'=>$data['province'],'curCity'=>$data['city'],'area'=>$data['area'],'city_names'=>$data['location'],'tpl'=>'zyCardArea'))}
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>分行地址</dt>
+                <dd><input class="management_input" type="text" name="bankofdeposit" value="{$data['bankofdeposit']}" id="head_search" placeholder="请输入详细的分行地址 / 开户行"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>银行账号</dt>
+                <dd><input class="management_input" type="text" name="account" value="{$data['account']}" placeholder="请填写与持卡人姓名一致的账号"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>开户姓名</dt>
+                <dd><input class="management_input" type="text" name="accountmaster" value="{$data['accountmaster']}" placeholder="请填写与银行账号一致的持卡人姓名"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>手机号码</dt>
+                <dd><input class="management_input" type="text" name="tel_num" value="{$data['tel_num']}" placeholder="请填写开户预留手机号码"></dd>
+            </dl>
+            <a class="management_btn" href="javascript:;" onclick="saveCard(this)">提交</a>
+        </div>
+    </div>
+    </form>
+    <?php else:?>
+    <div class="cent_r_box pb40 clearfix">                
+        <div class="box_block">
+            <table class="table_ye" cellpadding="0" cellspacing="1" bordercolor="#dddddd"border="1" width="100%">
+                    <thead>
+                        <tr><td width="16%">银行卡</td>
+                        <td width="36%">卡号</td>
+                        <td width="16%">持卡人姓名</td>
+                        <td width="16%">联系方式</td>
+                        <td width="16%">操作</td>
+                    </tr></thead>
+                    <tbody><tr>
+                        <td><?php echo $data['accounttype']?></td>
+                        <td><?php echo $data['account']?></td>
+                        <td><?php echo $data['accountmaster']?></td>
+                        <td><?php echo $data['tel_num']?></td>
+                        <td><a href="{:U('w3g/User/card', array('edit'=>'yes'))}">修改</a></td>
+                    </tr>
+            </tbody></table>
+        </div>
+    </div>
+    <?php endif;?>
+</div>
+<script type="text/javascript">
+function saveCard(o){
+    var form = $(o).parents('form');
+    var val = form.find('select:first').children(':selected').val();
+    if(!$.trim(val)){
+        alert('请选择开户银行');
+        form.find('select:first').focus();
+        return false;
+    }
+    var province = form.find('select#province').children(':selected').val();
+    var city = form.find('select#city').children(':selected').val();
+    if(province<=0||city<=0){
+        alert('请选择开户省市');
+        return false;
+    }
+    var itxts = form.find('input:text');
+    if(!itxts.eq(0).val()){
+        alert('请输入分行地址/开户行');
+        itxts.eq(0).focus(); return false;
+    }
+    if(!/^\d{16,19}$/.test(itxts.eq(1).val())){
+        alert('请正确的银行帐号');
+        itxts.eq(1).focus(); return false;
+    }
+    if(itxts.eq(2).val()==""){
+        alert('请填写开户姓名');
+        itxts.eq(2).focus(); return false;
+    }
+    if(!/^1[3458][0-9]{9}$/.test(itxts.eq(3).val())){
+        alert('请输入正确的手机');
+        itxts.eq(2).focus(); return false;
+    }
+    $.post('{:U("w3g/User/card")}', form.serialize(), function(data){
+        if(data.status){
+            alert('保存成功');
+            setTimeout(function(){
+                window.location = '{:U("w3g/User/card")}';
+            }, 2000);
+        }else{
+            alert('保存失败');
+        }
+    }, 'json');
+}
+
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

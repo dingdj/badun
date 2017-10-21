@@ -1,0 +1,18 @@
+
+    <!--footer start-->
+    <div class="footer">
+        <b>{$site['site_footer']}</b>
+    </div>
+    <!--footer end-->
+
+    <!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+    <div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+    </div>
+    <eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+    </eq>
+
+    <script src="__THEMEW3G__/js/script.js"></script>
+</body>
+</html>

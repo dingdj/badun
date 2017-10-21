@@ -1,0 +1,356 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+<div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('classroom/AdminAlbum/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+
+    <div class="tit_tab">
+        <ul>
+            <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+            <volist name='pageTab' id='t'>
+                <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+            </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    <form method="POST" action="{:U('classroom/AdminAlbum/doAddAlbum')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+        <input type="hidden" name="systemdata_list" value="album_Admin" class="s-txt">
+        <input type="hidden" name="systemdata_key" value="addVideo" class="s-txt">
+        <input type="hidden" name="pageTitle" value="添加套餐" class="s-txt">
+        <input type="hidden" name="id" value="{$id}" />
+        <div class="form2">
+            <dl class="lineD" id="form_v_price">
+                <dt><font color="red"> * </font>套餐名称：</dt>
+                <dd>
+                    <input name="album_title" type="text" value="" class="s-txt">
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt><font color="red"> * </font>套餐分类：</dt>
+                <dd>
+                    <php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
+                    {:W('CategoryLevel',array('table'=>'zy_package_category','id'=>'album_level','default'=>$fullcategorypaths ))}
+                    <!--{:W('VideoLevel',array('type'=>1,'default'=>$fullcategorypaths))}-->
+                </dd>
+            </dl>
+
+            <dl class="lineD" id="dl_album">
+                <dt><font color="red"> * </font>套餐简介：</dt>
+                <dd>
+                    <textarea name="album_intro" id="form_album_intro" rows="10" cols="80">{$album_intro}</textarea>
+                </dd>
+            </dl>
+
+            <dl class="lineD" id="form_v_price">
+                <dt><font color="red"> * </font>价格：</dt>
+                <dd>
+                    <input name="price" type="text" value="{$price}" class="s-txt">
+                </dd>
+            </dl>
+            
+            <dl class="lineD" id="form_v_price">
+                <dt>套餐包含课程：</dt>
+                <dd>
+                    <input type="hidden" name="video_ids" id="albumids" value="{$album_video}" >
+                
+                    <div class="admin-kcidfixed" style="display: table-cell">
+                        <foreach name="data" item="d">
+                            <php>
+                                $name = D('ZyVideo','classroom')->getVideoTitleById($d);
+                                if($name){
+                            </php>
+                            <a href="javascript:;" onclick="removeVideo(this,{$d})">{$name}&nbsp;×</a>
+                            <php>}</php>
+                        </foreach>
+                        <div id="albumlist">
+                
+                        </div>
+                        <input type="text" id="salbum"  placeholder="请输入课程关键字查找"  class="s-txt" style="width:200px; " />
+                        <ul class="admin-kcid" style="display:none">
+                        </ul>
+                    </div>
+                </dd>
+            </dl>
+
+            <dl class="lineD">
+                <dt><font color="red"> * </font>封面上传：</dt>
+                <dd id="image_cover">
+                    {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：520*320
+                    <php>if($cover_path){</php>
+                    <div id="small_cover">
+                        <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$cover_path}" />
+                        <input type="hidden" name="cover_ids" data="cover_ids" value="{$cover}" />
+                    </div>
+                    <php>}</php>
+                </dd>
+            </dl>
+            
+            <dl class="lineD" id="form_v_price">
+                <dt>上架时间：</dt>
+                <dd>
+                    <input name="listingtime" type="text" class="s-txt"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                </dd>
+            </dl>
+            
+            <dl class="lineD" id="form_v_price">
+                <dt>下架时间：</dt>
+                <dd>
+                    <input name="uctime" type="text" class="s-txt"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                </dd>
+            </dl>
+
+            <dl class="lineD" id="dl_vip_pattern" style="display: none;">
+                <dt><font color="red"> * </font>是否精选：</dt>
+                <dd>
+                    <label><input type="checkbox" name="is_best[]" value="1" >设置为精选 </label>
+                    <br>
+                </dd>
+            </dl>
+
+            <div class="page_btm">
+                <input type="submit" class="btn_b" value="保存" id="form_submit">
+            </div>
+        </div>
+
+
+    </form>
+    <script type="text/javascript">
+        function j_validateCallback(form,call,callback) {
+            var $form = $(form);
+            if(typeof call != 'undefined' && call instanceof Function){
+                $i = call($form);
+                if(!$i){
+                    return false;
+                }
+            }
+            var _submitFn = function(){
+                $.ajax({
+                    type: form.method || 'POST',
+                    url:$form.attr("action"),
+                    data:$form.serializeArray(),
+                    dataType:"json",
+                    cache: false,
+                    success: function(xMLHttpRequest, textStatus, errorThrown){
+                        if(typeof callback != 'undefined' && callback instanceof Function){
+                            callback($form,xMLHttpRequest);
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError){
+                        ui.error("未知错误!");
+                    }
+                });
+            }
+            _submitFn();
+            return false;
+        }
+
+        function checkForm(form){
+            var album_title = form.find('input[name="album_title"]').val();
+            if(''==album_title){
+                ui.error("套餐标题不能为空");
+                return false;
+            }
+            var album_intro = form.find('textarea[name="album_intro"]').val();
+            if(''==album_intro){
+                ui.error("套餐简介不能为空");
+                return false;
+            }
+            var v_price = form.find('input[name="price"]').val();
+            if(''==v_price || undefined == v_price || v_price < 0 || v_price > 1000){
+                ui.error("套餐价格不能为空，或者范围有错");
+                return false;
+            }
+
+            var listingtime = form.find('input[name="listingtime"]').val();
+            if(''==listingtime){
+                ui.error("上架架时间不能为空");
+                return false;
+            }
+
+            var uctime = form.find('input[name="uctime"]').val();
+            if(''==uctime){
+                ui.error("下架时间不能为空");
+                return false;
+            }
+
+            var myAdminLevelhidden = form.find('input[name="album_levelhidden"]').val();
+            if('0'==myAdminLevelhidden){
+                ui.error("请选择套餐分类");
+                return false;
+            }
+            var cover = form.find('input[name="cover_ids"]').val();
+            if(''==cover){
+                ui.error("请上传套餐封面");
+                return false;
+            }
+            /*
+             var albumkey=form.find('input[name="albumkey"]').val();
+             if(''==albumkey){
+             ui.error("请上传套餐视频");
+             return false;
+             }
+             */
+            return true;
+
+        }
+        function post_callback(_form,data){
+            if(data.status != undefined){
+                if(data.status == '0'){
+                    ui.error(data.info);
+                } else {
+                    ui.success(data.info);
+                    window.location.href = U('classroom/AdminAlbum/index')+"&tabHash=index";
+                }
+            }
+        }
+        //删除视频
+        function deletealbum(key){
+
+            if(''==key){
+                ui.error("视频不存在！");
+                return ;
+            }
+            $.ajax({
+                type: 'POST',
+                url:"{:U('classroom/AdminAlbum/deletealbum')}",
+                data:{albumkey:key},
+                dataType:"json",
+                cache: false,
+                success: function(data){
+                    if(data.status == '0'){
+                        ui.error(data.info);
+                    } else {
+                        $("#albumkey").val("");//设置albumkey为空
+                        $("#album_upload_d").css("display","block");//显示上传框
+                        $("#form_submit").attr('disabled',"true");//设置上传按钮为禁用
+                        ui.success(data.info);
+
+                    }
+
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    ui.error("未知错误!");
+
+                }
+            });
+
+        }
+
+        function callback(data){
+
+            $("#"+data.input_id+"").remove();
+            $("#image_"+data.input_id).append(
+                    '<div id='+data.input_id+'>'
+                    +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+                    +'</div>'
+            ).find('input:file').val('');
+            $("#"+data.input_id+"_ids").val(data.attach_id);
+        }
+        function filecallback(data){
+            $("#old_coursefile_ids").remove();
+            $("#coursefile_ids").val(data.attach_id);
+        }
+        $(document).ready(function(){
+            $('#detail_form input:file').click(function(){
+                $('input:file').val('');
+            });
+            $('#original_recommend').change(function(){
+                var che = $("#original_recommend").attr("checked");
+                if(che == true){
+                    $("#re_sort").removeAttr("readonly");
+                } else {
+                    $("#re_sort").attr("readonly",'readonly');
+                }
+            });
+            $('#best_recommend').change(function(){
+                var che = $("#best_recommend").attr("checked");
+                if(che == true){
+                    $("#be_sort").removeAttr("readonly");
+                } else {
+                    $("#be_sort").attr("readonly",'readonly');
+                }
+            });
+
+            $('#is_tlimit').change(function(){
+                var che = $("#is_tlimit").attr("checked");
+                if(che == true){
+                    $("#form_limit_discount,#form_starttime,#form_endtime").show();
+                    $("#limit_discount,#starttime,#endtime").removeAttr("readonly");
+                } else {
+                    $("#form_limit_discount,#form_starttime,#form_endtime").hide();
+                    $("#form_limit_discount,#form_starttime,#endtime").attr("readonly","readonly");
+                    $("#limit_discount,#starttime,#endtime").val('');
+                }
+            });
+        });
+
+        $('.member_select').click(function (){
+            if($('.member_select option:selected').val() != 0){
+                $('#dl_vip_pattern').show();
+            }else{
+                $('#dl_vip_pattern').hide();
+            }
+        });
+        var vip_level = '{$vip_level}';
+        if(vip_level != 0){
+            $('#dl_vip_pattern').show();
+        }
+        
+        
+        $("#salbum").keyup(function(){
+            var sval= $.trim($("#salbum").val());
+            var mhm_id = $.trim($("#form_mhm_id").val());
+            alert(mhm_id);
+            return false;
+            if(sval==""){
+                return;
+            }
+            if(mhm_id == ''){
+                ui.error("请先选择机构!");
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url:"{:U('classroom/AdminAlbum/seachVideo')}",
+                data:{key:sval},
+                dataType:"json",
+                cache: false,
+                success: function(data){
+                    $(".admin-kcid").css("display","block");
+                    $(".admin-kcid").html("");
+                    $(".admin-kcid").append(data);
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    ui.error("未知错误!");
+                }
+            });
+        })
+        var albumids="{$album_video}";
+        //选中套餐事件
+        var selectAlbum=function(cate,id){
+            if(albumids.indexOf(id.toString())>=0){
+                ui.error("已选择此课程，请勿重复选择!");
+                return;
+            }
+            albumids=albumids+id.toString()+",";
+            $("#albumids").val(albumids);
+            //追加html
+            $(".admin-kcidfixed").prepend("<a href=\"javascript:;\" onclick=\"removeVideo(this,"+id+")\">"+$(cate).text()+"&nbsp;×</a>");
+            $(".admin-kcid").css("display","none");
+        }
+
+        //删除选中套餐
+        var removeVideo=function(cate,id){
+            var gid = id.toString()+",";
+            albumids= albumids.replace(gid,"");
+            $("#albumids").val(albumids);
+            $(cate).remove();
+
+        }
+    </script>
+    <include file="__THEME__/admin_footer" />

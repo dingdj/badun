@@ -1,0 +1,304 @@
+<include file="__THEME__/public_header" />
+<script src="__THEME__/js/jquery.js"></script>
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_right_con{
+        padding:0 10px;
+    }
+    .infobox{
+    	background-color: #fff;
+    	overflow:hidden;
+    	width: 700px;
+    	margin: auto;
+    }
+    .center_right_tit{
+    	width: 700px;
+    	margin: auto;
+    }
+</style>
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+<div class="wrap">
+   		<div class="center_right_tit">
+	    	<div class="user-con-title">
+	            <h5>申请成为机构</h5>
+	        </div>
+	    </div>
+		<div class="center_right_con">
+			<form id="renzhengform" method="post" action="" class="infobox" onsubmit="return false;">
+				<input type="hidden" name="vtype" value="{$verifyInfo['usergroup_id']}" id="vtype">
+				<dl>
+                    <dt><span>*</span>{$site['site_keyword']}账号:</dt>
+                    <present name="user['login']">
+                    	<dd>{$user['login']}</dd>
+                    <else />
+                    	<dd>没有账号? <a href="javascript:;" onClick="reg_login()" style="color:blue">去注册</a></dd>
+                    </present>
+                </dl>
+               	<dl>
+                    <dt><span>*</span>当前状态：</dt>
+                    <dd>
+                        <switch name= "verifyInfo.status" >
+						<case value= "1" ><i class="ico-ok"></i>已认证 <!--<a href="javascript:void(0);" onclick="delverify()" style="color:#65addd">注销认证</a>--></case>
+						<case value= "0" ><i class="ico-wait"></i>已提交认证，等待审核</case>
+						<case value= "3" >
+							<eq name="Think.get.type" value="edit">
+							<i class="ico-no"></i><b style="color:red;">未通过认证，请修改资料后重新提交</b><php>if($verifyInfo['rejectInfo']){</php><label>驳回理由：{$verifyInfo.rejectInfo}</label><php>}</php>
+							<else />
+							<i class="ico-no"></i><b style="color:red;">未通过认证，请修改资料后重新提交</b><php>if($verifyInfo['rejectInfo']){</php><label>驳回理由：{$verifyInfo.rejectInfo}</label><php>}</php> <a style="color:#65addd" href="{:U('school/User/setInfo',array('type'=>'edit'))}">修改认证资料</a>
+							</eq>
+						</case>
+						<default />未认证
+						</switch>
+                    </dd>
+                </dl>
+                <php>if($verifyInfo['status'] == 3 || $verifyInfo === null){</php>
+	                <dl>
+	                    <dt><span>*</span>机构类型：</dt>
+	                    <dd style="width: 450px;">
+	                        <style>
+		                        select {
+		                            margin-right: 15px !important;
+		                            height: 40px;
+		                            width: 121px;
+		                            border-radius: 4px;
+		                            border: solid 1px #b6c7d6;
+		                            line-height: 34px;
+		                            padding: 0;
+		                        }
+		                    </style>
+	                        <php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
+		                    {:W('CategoryLevel',array('table'=>'school_category','id'=>'school_category','default'=>trim($verifyInfo['fullcategorypath'], ',')))}
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>机构名称：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="title" id="title" <php>if($verifyInfo['status'] == 3){</php>value="{$verifyInfo['title']}"<php>}</php> class="head_search upload_input_a" rel="机构名称">
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt style="width: 125px;"><span>*</span>法人身份证号码：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="idcard" id="idcard" <php>if($verifyInfo['status'] == 3){</php>value="{$verifyInfo['idcard']}"<php>}</php> class="head_search upload_input_a" rel="法人身份证号">
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>联系电话：</dt>
+	                    <dd>
+	                        <php>
+	                            if($verifyInfo['phone']){
+	                                $phone = $verifyInfo['phone'];
+	                            }elseif($user['phone']){
+	                                $phone = $user['phone'];
+	                            }else{
+	                                $phone = null;
+	                            }
+	                        </php>
+	                        <input class="inp01" <?php echo $phone?' value="'.$phone.'"':'';?> type="text" name="phone" id="phone" rel="联系电话" />
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>机构地址：</dt>
+	                    <dd style="width: 450px;">
+	                        <style>
+	                            select{width: 118px !important;}
+	                        </style>
+	                        {:W('Area',array('curPro'=>$verifyInfo['province'],'curCity'=>$verifyInfo['city'],'area'=>$verifyInfo['area'],'city_names'=>$verifyInfo['location'],'tpl'=>'zyCardArea'))}
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt>机构详细地址：</dt>
+	                    <dd>
+	                        <input name="address" class="inp01" id="address" <php>if($verifyInfo['status'] == 3){</php>value="{$verifyInfo['address']}"<php>}</php> class="head_search upload_input_a" rel="机构详细地址"/>
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>认证理由：</dt>
+	                    <dd>
+	                        <textarea id="reason" class="tex01" name="reason"><php>if($verifyInfo['status'] == 3){</php>{$verifyInfo['reason']|format}<php>}</php></textarea>
+	                    </dd>
+	                </dl>
+					<dl>
+						<dt><span>*</span>机构认证附件：</dt>
+						<dd>
+							{:W('Upload',array('inputname'=>'attach','attachIds'=>$verifyInfo['attach_id'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+							<p>申请成为机构需提交以下材料：营业执照、税务登记证、组织机构代码、对公账号相关信息、机构法人身份证复印件 </p>
+						</dd>
+					</dl>
+	                <dl>
+	                    <dt><span>*</span>身份认证附件：</dt>
+	                    <dd>
+	                        {:W('Upload',array('inputname'=>'identity','attachIds'=>$verifyInfo['identity_id'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+	                        <p>认证本人手持身份证照片，证件所有信息清晰可见，手持证件人的五官清晰可见。</p>
+	                    </dd>
+	                </dl>
+	                <dl>
+                        <dd>
+                            <p></p><label class="check"><input type="checkbox" checked >我已阅读并同意<a href="{:U('public/Single/info',array('id'=>26))}" style="color: #188eee;">《{$site['site_keyword']}服务条款》</a> 及 <a href="{:U('public/Single/info',array('id'=>28))}" style="color: #188eee;">《{$site['site_keyword']}机构认证条款》</a></label>
+                        </dd>
+                    </dl>
+	                <dl>
+	                    <dd>
+	                        <a href="javascript:;" class="btn" type="button" onclick="saveVerify();" style="height: 40px;line-height: 40px;">提交申请</a>
+	                    </dd>
+	                </dl>
+				<php>}else{</php>
+					<dl>
+	                  	<dt><span>*</span>机构类型：</dt>
+	                  	<dd>
+	                  		<input type="text" name="fullcategorypath" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['ceta_name']}"  rel="机构类型">
+	                  	</dd>
+	                </dl>
+					<dl>
+	                    <dt><span>*</span>机构名称：</dt>
+	                    <dd>
+	                        <input type="text" name="title" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['title']}"  rel="机构名称">
+	                    </dd>
+	                </dl>
+					<dl>
+						<dt><span>*</span>法人身份证：</dt>
+						<dd>
+							<input type="text" readonly="readonly" class="inp01" name="idcard" value="{$verifyInfo['idcard']}" id="idcard" rel="法人身份证号" />
+						</dd>
+					</dl>
+					<dl>
+	                  	<dt><span>*</span>联系电话：</dt>
+	                  	<dd>
+                            <input type="text" name="phone" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['phone']}"  rel="联系电话：">
+                        </dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>机构地址：</dt>
+	                  	<dd>
+                            <input type="text" name="address" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['location']} {$verifyInfo['address']}"  rel="机构地址：">
+                        </dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>认证理由：</dt>
+	                  	<dd>{$verifyInfo['reason']|default='暂无'}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>身份认证附件：</dt>
+	                  	<dd>
+	                  		<php>if($verifyInfo['certification']){</php>{$verifyInfo['certification']}<php>}else{</php>暂无<php>}</php>
+	                  	</dd>
+	                </dl>
+					<dl>
+						<dt><span>*</span>资格认证附件：</dt>
+						<dd>
+							<php>if($verifyInfo['attachment']){</php>{$verifyInfo['attachment']}<php>}else{</php>暂无<php>}</php>
+						</dd>
+					</dl>
+				<php>}</php>
+			</form>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function saveVerify(){
+	if($("#school_categoryhidden").val()==0){
+	  notes('请选择机构类型', 'failure');
+	  return false;
+	}
+		var title  = $('#title').val();
+		var idcard = $('#idcard').val();
+		var phone  = $('#phone').val();
+		var reason = $('#reason').val();
+		var attach_ids = $('#attach_ids').val();
+		var identity_ids = $('#identity_ids').val();
+		var province = $('select#province option:selected').val();
+		var city     = $('select#city option:selected').val();
+		//var city_ids    = $('input[name=city_ids]').val();
+
+	  if(!title){
+	  	 notes('请输入机构名称', 'failure');
+		 return false;
+	  }
+	  if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(title))){
+		  notes('机构名称格式不正确', 'failure');
+		  return false;
+	  }
+	  if(!idcard){
+	  	 notes('请输入身份号码', 'failure');
+		 return false;
+	  }
+	  if(!/^[\dxX]{18}$/.test(idcard)){
+		  notes('身份证号码格式不正确', 'failure');
+		  return false;
+	  }
+	  if(!phone){
+	  	 notes('请输入联系电话', 'failure');
+		 return false;
+	  }
+	  if(!/^[\d\-]{7,11}$/.test(phone)){
+		  notes('联系电话格式不正确', 'failure');
+		  return false;
+	  }
+	  if(province<=0||city<=0){
+		  notes('请先选择地区', 'failure');
+		  return false;
+	  }
+	  if(!reason){
+		  notes('请输入认证理由', 'failure');
+		  return false;
+	  }
+	  if(!identity_ids){
+          notes('请上传身份认证附件', 'failure');
+          return false;
+      }
+	  if(!attach_ids){
+          notes('请上传机构认证附件', 'failure');
+          return false;
+      }
+	  var other_data_ids = $('#other_data_ids').val();
+
+	  var data = $('#renzhengform').serialize();
+	  $.post(U('school/User/doAuthenticate'),data,function(res){
+	  	try{
+	  		var res = JSON.parse(res);
+		}catch(e){
+			var res = {
+				status:0,
+				message:'未知错误',
+			}
+		}
+	      if(res.status == "1"){
+			  ui.success("申请成功，请等待审核！");
+			  setTimeout(function(){
+				  location.reload();
+			  },'1500');
+
+	      }else{
+			  ui.error("申请失败，请重新申请！");
+			  return false;
+	      }
+
+	  });
+	}
+	function delverify(){
+	    if(confirm('确定要注销认证吗？')){
+	        $.post(U('school/User/delverify'),{},function(txt){
+	            if(txt == 1){
+	                notes('注销成功', 'success');
+	                setTimeout(function(){
+	                    location.reload();
+	                },'1500');
+	            }else{
+	                notes('注销失败', 'failure');
+	            }
+	        });
+	    }
+	};
+
+</script>
+<include file="__THEME__/public_footer" />

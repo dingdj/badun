@@ -1,0 +1,188 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+<div id="container" class="so_main">
+	<div class="tit_tab">
+		<ul>
+			<li><a href="{:U('school/AdminSchool/index',array('tabHash'=>'index'))}" class="on">我的机构</a></li>
+			<li><a href="{:U('school/AdminSchool/teacherVerify',array('tabHash'=>'teacherVerify'))}">待审核讲师列表</a></li>
+		</ul>
+	</div>
+	<form method="POST" action="{:U('school/AdminSchool/editSchool',array('tid'=>$tid))}" name="detail_form" >
+		<input type="hidden" name="systemdata_list" value="classroom_AdminTeacher" class="s-txt">
+		<input type="hidden" name="systemdata_key" value="addStyle" class="s-txt">
+		<div class="form2">
+			<dl class="lineD">
+				<dt><font color="red"> * </font>机构名称：</dt>
+				<dd>
+					<input name="id" type="hidden" value="{$school_id}">
+					<input name="title" id="title" type="text" value="{$title}">
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt><font color="red"> * </font>分类：</dt>
+				<dd>
+					<php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
+		            {:W('CategoryLevel',array('table'=>'school_category','id'=>'school_category','default'=>trim($fullcategorypath, ',') ))}
+				</dd>
+			</dl>
+			<dl class="lineD">
+		      	<dt><font color="red"> * </font>logo：</dt>
+		      	<dd>
+					{:W('Upload',array('inputname'=>'logo','attachIds'=>$logo_id, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+				</dd>
+		    </dl>
+			<!--<dl class="lineD">-->
+		      	<!--<dt><font color="red"> * </font>封面：</dt>-->
+		      	<!--<dd>-->
+		      		<!--{:W('Upload',array('inputname'=>'cover','attachIds'=>$cover_id, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}-->
+		    	<!--</dd>-->
+		    <!--</dl>-->
+			<dl class="lineD">
+		      	<dt>独立域名：</dt>
+		      	<php>if($doadmin){</php>
+				<dd>{$doadmin}.igenwoxue.com</dd>
+				<php>}</php>
+		    </dl>
+			<dl class="lineD">
+				<dt>视频空间：</dt>
+				<dd>{$videoSpace}GB</dd>
+			</dl>
+			<dl class="lineD">
+				<dt>优惠券最低满减：</dt>
+				<dd>{$max_price_sys}</dd>
+			</dl>
+			<dl class="lineD">
+				<dt><font color="red"> * </font>现本机构与挂载机构分成比例：</dt>
+				<dd>
+					<php>if($school_and_oschool){</php>
+						{$school_and_oschool}
+					<php>}else{</php>
+						<input name="school_and_oschool" id="school_and_oschool" type="text" value="">
+					<php>}</php>
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt>修改本机构与挂载机构分成比例：</dt>
+				<dd>
+					<php>if(($school_and_oschool != $school_and_oschool_action) && $school_and_oschool_action>0){</php>
+						{$school_and_oschool_action}
+						<p>已提交分成比例修改，请等待审核</p>
+					<php>}else{</php>
+						<input name="school_and_oschool_action" id="school_and_oschool_action" type="text" value="{$school_and_oschool_action}">
+						<p>请输入要修改的分成比例，请用英文“:”冒号分割，如0.1:0.9，并且两者之和须为1</p>
+					<php>}</php>
+				</dd>
+			</dl>
+			<!--<dl class="lineD">-->
+				<!--<dt><font color="red"> * </font>现本机构与购买机构分成比例：</dt>-->
+				<!--<dd>-->
+					<!--<php>if($school_and_buyschool){</php>-->
+					<!--{$school_and_buyschool}-->
+					<!--<php>}else{</php>-->
+					<!--<input name="school_and_buyschool" id="school_and_buyschool" type="text" value="">-->
+					<!--<php>}</php>-->
+				<!--</dd>-->
+			<!--</dl>-->
+			<!--<dl class="lineD">-->
+				<!--<dt>修改本机构与购买机构分成比例：</dt>-->
+				<!--<dd>-->
+					<!--<php>if(($school_and_buyschool != $school_and_buyschool_action) && $school_and_buyschool_action > 0){</php>-->
+					<!--{$school_and_buyschool_action}-->
+					<!--<p>已提交分成比例修改，请等待审核</p>-->
+					<!--<php>}else{</php>-->
+					<!--<input name="school_and_buyschool_action" id="school_and_buyschool_action" type="text" value="{$school_and_buyschool_action}">-->
+					<!--<p>请输入要修改的分成比例，请用英文“:”冒号分割，如0.1:0.9，并且两者之和须为1</p>-->
+					<!--<php>}</php>-->
+				<!--</dd>-->
+			<!--</dl>-->
+			<!--<dl class="lineD">-->
+				<!--<dt><font color="red"> * </font>现机构与销课者分成比例：</dt>-->
+				<!--<dd>-->
+					<!--<php>if($school_pinclass){</php>-->
+						<!--{$school_pinclass}-->
+					<!--<php>}else{</php>-->
+						<!--<input name="school_pinclass" id="school_pinclass" type="text" value="">-->
+					<!--<php>}</php>-->
+				<!--</dd>-->
+			<!--</dl>-->
+			<!--<dl class="lineD">-->
+				<!--<dt>修改机构与销课者分成比例：</dt>-->
+				<!--<dd>-->
+					<!--<php>if(($school_pinclass != $school_pinclass_action) && $school_pinclass_action>0){</php>-->
+						<!--{$school_pinclass_action}-->
+						<!--<p>已提交分成比例修改，请等待审核</p>-->
+					<!--<php>}else{</php>-->
+						<!--<input name="school_pinclass_action" id="school_pinclass_action" type="text" value="{$school_pinclass_action}">-->
+						<!--<p>请输入要修改的分成比例，请用英文“:”冒号分割，如0.1:0.9，并且两者之和须为1</p>-->
+					<!--<php>}</php>-->
+				<!--</dd>-->
+			<!--</dl>-->
+			<dl class="lineD">
+				<dt>标签：</dt>
+				<dd>
+					<input name="str_tag" id="str_tag" type="text" value="{$str_tag}">
+					<p>相关标签，多个请用英文“,”冒号分割</p>
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt><font color="red"> * </font>机构简介：</dt>
+				<dd>
+					<textarea name="info" rows="10" cols="80">{$info}</textarea>
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt>关于我们：</dt>
+				<dd>
+					{:W('Editor',array('contentName'=>'about_us','value'=>$about_us,'width'=>'99%','height'=>'350'))}
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt>机构qq：</dt>
+				<dd>
+					<input name="school_qq" id="school_qq" type="text" value="{$school_qq}">
+				</dd>
+			</dl>
+			<div class="page_btm">
+				<input type="text" style="display:none">
+				<input type="submit" class="btn_b" value="保存" id="form_submit" >
+			</div>
+		</div>
+	</form>
+</div>
+
+<include file="__THEME__/admin_footer" />
+<script>
+$(function(){
+    $("form[name='detail_form']").submit(function(evt){
+        var e = evt || window.event;
+        window.event?e.returnValue = false:e.preventDefault();
+        window.event?e.cancelBubble=true:e.stopPropagation();
+        $("textarea[name='about_us']").html(E.getData());
+        var detail_form = $("form[name='detail_form']");
+        checkSchool();
+        $.ajax({
+            type: detail_form.attr('method') || 'POST',
+            url:detail_form.attr("action"),
+            data:detail_form.serialize(),
+            dataType:"json",
+            cache: false,
+            success: function(res){
+            if(res.status == 1){
+                ui.success("保存成功!");
+                setTimeout(function(){
+                    location.reload();
+                },'1500');
+            }else{
+                ui.error("保存失败!");
+                return false;
+            }
+            },
+            error: function(xhr, ajaxOptions, thrownError){
+              ui.error("未知错误!");
+            }
+        });
+        return false;
+    });
+});
+
+</script>

@@ -1,0 +1,566 @@
+<include file="__THEME__/public_header"/>
+<link href="__APP__/css/teacher.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="__THEME__/js/swfupload/css/default.css">
+<script type="text/javascript" src="__THEME__/js/swfupload/js/fileprogress.js"></script>
+<script type="text/javascript" src="__THEME__/js/swfupload/js/handlers.js"></script>
+<script type="text/javascript" src="__THEME__/js/swfupload/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="__THEME__/js/swfupload/js/swfupload.queue.js"></script>
+<style type="text/css">
+    .ico_top, .ico_btm {
+        background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;
+        height: 14px;
+        width: 12px;
+    }
+
+    .ico_top, .ico_btm {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ico_top {
+        background-position: -12px 0;
+    }
+
+    .ico_btm {
+        background-position: -24px 0;
+    }
+
+    .ico_top:hover {
+        background-position: 0 0;
+    }
+
+    .ico_btm:hover {
+        background-position: -35px 0;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .position-rt-float{
+        width:248px;
+    }
+    .user-imglist li .img{
+        height: 138px;
+    }
+    .user-imglist .position-rt{
+        width:248px;
+        height: 138px;
+    }
+    .user-imglist li h2{
+        padding: 0 20px;
+    }
+    .user-con-title .on{
+        color:#00BED4;
+    }
+    .user-wenda .user_li{
+        padding: 0 0 20px;
+        margin: 30px 0 40px 30px;
+        border: none;
+        color: #333;
+    }
+    .user-imglist.showPhoto .li{
+        padding:0 0 20px;
+        border: none;
+        font-size: 12px;
+    }
+</style>
+
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting"/>
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="javascript:void(0);" class="<eq name='Think.get.tab' value='0'>on</eq>">我的教师信息</a>
+                    <a href="javascript:void(0);" class="<eq name='Think.get.tab' value='1'>on</eq>">我的文章</a>
+                    <a href="javascript:void(0);" class="<eq name='Think.get.tab' value='2'>on</eq>">我的相册</a>
+                    <a href="javascript:void(0);" class="<eq name='Think.get.tab' value='3'>on</eq>">我的经历</a>
+                </div>
+            </div>
+
+            <!--我的教师信息-->
+            <div class="center_right_con Manage_all" style="display: block">
+                <form method="POST" action="{:U('classroom/User/doteacherDeatil')}" id="detail_form" name="detail_form"
+                      onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+                    <div class="infobox" style="margin-top:30px;">
+                        <dl>
+                            <dt><span>*</span>姓名：</dt>
+                            <dd>
+                                <input type="text" name="name" id="name" class="inp01" value="{$teacher_info.name}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>职称：</dt>
+                            <dd>{$teacher_info.title}</dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>头像：</dt>
+                            <dd>
+                                <php>if($teacher_info['head_id']){</php>
+                                <div id="width_150 sc_img">
+                                    <div id="divup_9999" type="file" rel="9999">
+                                        <input type="file" name="middle_ids" rel="9999" onchange="largeCover(this)" urlquery="attach_type=feed_image&amp;upload_type=image&amp;thumb=1" class="file ck">
+                                    </div>
+                                    <div id="show_cover" class="show_cover_diy">
+                                        <img class="pic-size show_cover_img" src="{:getCover($teacher_info['head_id'],80,80)}" width="80" height="80">
+                                    </div>
+                                    <p>请上传至少 160*160 尺寸的图片</p>
+                                    <input name="large_cover" id="large_cover" type="hidden" value="{$teacher_info['head_id']}" class="s-txt">
+                                </div>
+                                <php>}else{</php>
+                                <div id="width_150 sc_img">
+                                    <div id="divup_9999" type="file" rel="9999">
+                                        <input type="file" name="middle_ids" rel="9999" onchange="largeCover(this)"
+                                               urlquery="attach_type=feed_image&amp;upload_type=image&amp;thumb=1" class="file ck">
+                                    </div>
+                                    <div id="show_cover" class="show_cover_diy"></div>
+                                    <p>请上传至少 160*160 尺寸的图片</p>
+                                    <input name="large_cover" id="large_cover" type="hidden" value="{$teacher_info['head_id']}" class="s-txt">
+                                </div>
+                                <php>}</php>
+                            </dd>
+                        </dl>
+                        <script>
+                            function largeCover(obj) {
+                                if ("undefined" != typeof(core.uploadFile)) {
+                                    core.uploadFile.filehash = new Array();
+                                }
+                                core.plugInit('uploadFile', obj, function (data) {
+                                    $(obj).parents('#divup_9999').siblings('#show_cover').html('<img class="pic-size" width="80" height="80" src="' + data.src + '">');
+                                    $(obj).parents('#divup_9999').siblings('#large_cover').val(data.attach_id);
+                                }, 'image');
+                            }
+                            function largeCover2(obj) {
+                                if ("undefined" != typeof(core.uploadFile)) {
+                                    core.uploadFile.filehash = new Array();
+                                }
+                                core.plugInit('uploadFile', obj, function (data) {
+                                    $(obj).parents('#divup_8888').siblings('#show_cover').html('<img class="pic-size" width="400" height="83" src="' + data.src + '">');
+                                    $(obj).parents('#divup_8888').siblings('#background_cover').val(data.attach_id);
+                                }, 'image');
+                            }
+                        </script>
+                        <dl>
+                            <dt>背景：</dt>
+                            <dd>
+                                <php>if($teacher_info['background_id']){</php>
+                                <div id="width_150 sc_img">
+                                    <div id="divup_8888" type="file" rel="8888">
+                                        <input type="file" name="middle_ids" rel="8888" onchange="largeCover2(this)"
+                                               urlquery="attach_type=feed_image&amp;upload_type=image&amp;thumb=1" class="file ck">
+                                    </div>
+                                    <div id="show_cover" class="show_cover_diy">
+                                        <img class="pic-size show_cover_img" src="{:getCover($teacher_info['background_id'],400,83)}" width="400" height="83">
+                                    </div>
+                                    <p>请上传至少为 1920 * 400 尺寸的图片</p>
+                                    <input name="background" id="background_cover" type="hidden" value="{$teacher_info['background_id']}" class="s-txt">
+                                </div>
+                                <php>}else{</php>
+                                <div id="width_150 sc_img">
+                                    <div id="divup_8888" type="file" rel="8888">
+                                        <input type="file" name="middle_ids" rel="8888" onchange="largeCover2(this)"
+                                               urlquery="attach_type=feed_image&amp;upload_type=image&amp;thumb=1" class="file ck">
+                                    </div>
+                                    <div id="show_cover" class="show_cover_diy"></div>
+                                    <p>请上传至少为 1920 * 400 尺寸的图片</p>
+                                    <input name="background" id="background_cover" type="hidden" value="{$teacher_info['background_id']}" class="s-txt">
+                                </div>
+                                <php>}</php>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>教龄：</dt>
+                            <dd>
+                                <input type="text" name="teacher_age" id="teacher_age" class="inp01"
+                                       value="{$teacher_info.teacher_age}"> <font color="999999">年</font>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>最高学历：</dt>
+                            <dd>
+                                <input type="text" name="high_school" id="high_school" class="inp01"
+                                       value="{$teacher_info.high_school}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>毕业院校：</dt>
+                            <dd>
+                                <input type="text" name="graduate_school" id="graduate_school" class="inp01"
+                                       value="{$teacher_info.graduate_school}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>授课方式：</dt>
+                            <dd style="width: 450px;">
+                                <style>
+                                    select {
+                                        margin-right: 15px !important;
+                                        height: 40px;
+                                        width: 121px !important;
+                                        border-radius: 4px;
+                                        border: solid 1px #b6c7d6;
+                                        line-height: 34px;
+                                        padding: 0;
+                                    }
+                                </style>
+                                <select name="teach_way" id="teach_way">
+                                    <option
+                                    <eq name="teacher_info.teach_way" value="1">selected="selected"</eq>
+                                    value="1">在线授课</option>
+                                    <option
+                                    <eq name="teacher_info.teach_way" value="2">selected="selected"</eq>
+                                    value="2">线下授课</option>
+                                    <option
+                                    <eq name="teacher_info.teach_way" value="3">selected="selected"</eq>
+                                    value="3">线上/线下均可</option>
+                                </select>
+                            </dd>
+                        </dl>
+                        <!--<dl>
+                            <dt>在线试听价格：</dt>
+                            <dd>
+                                <input type="text" name="online_price" id="online_price" class="inp01"
+                                       value="{$teacher_info.online_price}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>线下试听价格：</dt>
+                            <dd>
+                                <input type="text" name="offline_price" id="offline_price" class="inp01"
+                                       value="{$teacher_info.offline_price}">
+                            </dd>
+                        </dl>-->
+                        <dl>
+                            <dt><span>*</span>我的标签：</dt>
+                            <dd>
+                                <input type="text" class="inp01" name="label" id="label" value="{$teacher_info.label}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>授课地区：</dt>
+                            <dd>
+                                <input type="text" class="inp01" name="Teach_areas" id="Teach_areas"
+                                       value="{$teacher_info.Teach_areas}">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>我的简介：</dt>
+                            <dd>
+                                <textarea id="inro" class="tex01" name="inro">{$teacher_info.inro}</textarea>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>更多详情：</dt>
+                            <dd>
+                                {:W('Editor',array('contentName'=>'details','value'=>$teacher_info['details'],'width'=>'99%','height'=>'350'))}
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>教学特点：</dt>
+                            <dd>
+                                <textarea id="teach_evaluation" class="tex01" name="teach_evaluation">{$teacher_info.teach_evaluation}</textarea>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <input type="hidden" name="id" id="teacher_id" value="{$teacher_info.id}">
+                                <input type="hidden" name="teacher_schedule" id="teacher_schedule"
+                                       value="{$teacherschedule}">
+                                <input class="btn" type="submit" style="line-height: 0;" value="保 存">
+                            </dd>
+                        </dl>
+                    </div>
+                </form>
+            </div>
+
+            <!--我的文章-->
+            <div class="Manage_all" style="display: none">
+                <div class="user-wenda" style="font-size: 15px;"><a href="{:U('classroom/User/updateArticle')}"
+                                                                    class="fr"><i class="bianji-ico"></i>添加文章</a></div>
+                <ul class="user-wenda">
+                    <php>if(!$teacher_article){</php>
+                    <li class="user_li" style="padding:0 0 20px;">你还没有文章哦。。</li>
+                    <php>}</php>
+                    <foreach name="teacher_article" item="l" key="k">
+                        <li class="li">
+                            <div class="discusslist"><a class="otherHead"><img width="40" height="40" src="{:getCover($l['cover'],180,180)}"></a>
+                                <div class="detailmeg">
+                                    <div class="mynote">
+                                        <em>标题:</em><a>{$l.art_title}</a><br/>
+                                        <em>内容:</em>
+                                        <p>{:msubstr(t($l['article']),0,75,'utf-8',true)}<a href="{:U('classroom/User/checkDeatil',array('id'=>$l['id']))}">查看更多</a></p>
+                                    </div>
+                                    <div class="fbtime">时间：
+                                        <span>{$l.ctime|date="Y/m/d H:i",###}</span>
+                                        <div class="Operation-wd">
+                                            <a href="javascript:;"
+                                               onclick="delTeacher({$l['id']},'文章','article')"><i></i><span>删除</span></a>
+                                            <a href="{:U('classroom/User/updateArticle',array('id'=>$l['id']))}"
+                                               class="fr"><span class="bianji-ico" style="margin: 8px 10px 0 0;"></span>编辑</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </foreach>
+                </ul>
+            </div>
+            <!--我的相册-->
+            <div class="Manage_all" style="display: none">
+                <div class="user-wenda showPhoto"><a href="{:U('classroom/User/uploadPhoto')}" class="fr"><i
+                        class="bianji-ico"></i>添加相册</a></div>
+                <ul class="user-imglist showPhoto">
+                    <php>if(!$teacher_photos){</php>
+                    <li class="li">你还没有照片或视频哦。。</li>
+                    <php>}</php>
+                    <foreach name="teacher_photos" item="l">
+                        <li>
+                            <div class="position-rt">
+                                <div class="position-rt-float">
+                                    <span class="position-rt-float-b"
+                                          onclick="delTeacher({$l.id},'相册','style')">删除</span>
+                                    <span class="position-rt-float-a"><a
+                                            href="{:U('classroom/User/uploadPhoto',array('id'=>$l['id']))}" class="a1">修改</a></span>
+                                </div>
+                                <a href="{:U('classroom/User/getPhotoList',array('photo_id'=>$l['id']))}"
+                                   data-photo_id="{$l['id']}" class="img"><img src="{$l.cover}" class="lazyloading"
+                                                                               width="266px" height="138px"></a>
+                            </div>
+                            <h2><a>{$l.title}</a></h2>
+                        </li>
+                    </foreach>
+                </ul>
+            </div>
+
+            <!--我的经历-->
+            <div class=" Manage_all" style="display: none">
+                <div class="user-wenda" style="font-size: 15px;">
+                    <a href="{:U('classroom/User/updateDetails')}" class="fr">
+                        <i class="bianji-ico"></i>添加经历
+                    </a>
+                </div>
+                <ul class="user-wenda">
+                    <php>if(!$teacher_details){</php>
+                    <li class="user_li" style="padding:0 0 20px;">你还没有经历哦。。</li>
+                    <php>}</php>
+                    <foreach name="teacher_details" item="l" key="k">
+                        <li class="li">
+                            <div class="discusslist"><a class="otherHead"><img width="40" height="40"
+                                                                               src="{:getCover($l['head_id'],180,180)}"></a>
+                                <div class="detailmeg">
+                                    <div class="mynote">
+                                        <em>开始时间:</em><a>{$l.Time}</a><br/>
+                                        <em>标题:</em><a>{$l.title}</a><br/>
+                                        <em>类型:</em><a>{$l.type}</a><br/>
+                                        <em>内容:</em>
+                                        <p>{:msubstr($l['content'],0,75,'utf-8',true)}
+                                            <php>if(mb_strlen($l['content'],'utf-8') > 75 ){</php>
+                                            <a href="javascript:void(0);" class="showContent">&nbsp;&nbsp;&nbsp;&nbsp;展开全部</a>
+                                            <php>}</php>
+                                        </p>
+                                        <p class="close" style="display: none;">{$l.content}<a
+                                                href="javascript:void(0);" class="hideContent">&nbsp;&nbsp;&nbsp;&nbsp;收起全部</a>
+                                        </p>
+                                    </div>
+                                    <div class="fbtime">时间：
+                                        <span>{$l.ctime|date="Y/m/d H:i",###}</span>
+                                        <div class="Operation-wd">
+                                            <a href="javascript:;"
+                                               onclick="delTeacher({$l['id']},'经历','details')"><i></i><span>删除</span></a>
+                                        </div>
+                                        <a href="{:U('classroom/User/updateDetails',array('id'=>$l['id']))}" class="fr"><i
+                                                class="bianji-ico"></i>编辑</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </foreach>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //导航选择卡
+        var tab = '{$Think.get.tab}';
+        $(".Manage_all").hide().eq(tab).show();
+        $(".user-con-title a").click(function () {
+            $(this).addClass("on").siblings().removeClass();
+            var index = $(this).index();
+            $(".Manage_all").hide().eq(index).show();
+            window.location.href="{:U('classroom/User/teacherDeatil')}"+"?tab="+index;
+        });
+
+        $(".showContent").click(function () {
+            $(this).parent("p").next(".close").show();
+            $(this).parent("p").hide();
+        });
+        $(".hideContent").click(function () {
+            $(this).parent().hide();
+            $(".showContent").parent().show();
+        });
+    });
+
+    function j_validateCallback(form, call, callback) {
+        var $form = $(form);
+        if (typeof call != 'undefined' && call instanceof Function) {
+            $i = call($form);
+            if (!$i) {
+                return false;
+            }
+        }
+        var _submitFn = function () {
+            $.ajax({
+                type: form.method || 'POST',
+                url: $form.attr("action"),
+                data: $form.serializeArray(),
+                dataType: "json",
+                cache: false,
+                success: function (xMLHttpRequest, textStatus, errorThrown) {
+                    if (typeof callback != 'undefined' && callback instanceof Function) {
+                        callback($form, xMLHttpRequest);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    ui.error("未知错误!");
+                }
+            });
+        }
+        _submitFn();
+        return false;
+    }
+    function checkForm(form) {
+//        $("textarea[name='details']").html(E.getData());
+        if ($("#name").val() == "") {
+            ui.error("请输入姓名!");
+            return false;
+        }
+        if ($("#title").val() == "") {
+            ui.error("请选择职称!");
+            return false;
+        }
+        var head = $("#large_cover").val();
+        if (!head) {
+            ui.error("请上传头像!");
+            return false;
+        }
+        if ($("#teacher_age").val() == "") {
+            ui.error("请输入教龄!");
+            return false;
+        }
+        if ($("#high_school").val() == "") {
+            ui.error("请输入最高学历!");
+            return false;
+        }
+        if ($("#graduate_school").val() == "") {
+            ui.error("请输入毕业院校!");
+            return false;
+        }
+        if ($("#teach_way").val() == "") {
+            ui.error("请选择授课方式!");
+            return false;
+        }
+        if ($("#label").val() == "") {
+            ui.error("请输入标签!");
+            return false;
+        }
+        if ($("#inro").val() == "") {
+            ui.error("请输入简介!");
+            return false;
+        }
+        if ($("#teach_evaluation").val() == "") {
+            ui.error("请输入教学特点!");
+            return false;
+        }
+        if ($("#teacher_schedule").val() == "") {
+
+        } else {
+            $("#teacher_schedule").val($("#teacher_schedule").val() + ",");
+        }
+        return true;
+    }
+    function post_callback(_form, data) {
+        if (data.status != undefined) {
+            if (data.status == '0') {
+                ui.error(data.info);
+            } else {
+                ui.success(data.info);
+                window.location.href = U('classroom/User/teacherDeatil');
+            }
+        }
+    }
+    function callback(data) {
+        $("#" + data.input_id + "_cover").remove();
+        $("#image_" + data.input_id).append(
+                '<div id=' + data.input_id + '_cover>'
+                + '<img style="max-width:100px;padding:2px; border:1px solid #ccc" src=' + UPLOAD_URL + '/' + data.src + ' />'
+                + '</div>'
+        ).find('input:file').val('');
+        $("#" + data.input_id + "_ids").val(data.attach_id);
+    }
+    function selectschedule(schedule, schedule_id) {
+        var id = $("#teacher_schedule").val();
+        if ($(schedule).attr("class") == "td") {
+            $(schedule).attr("class", "td-1");
+            if (id) {
+                id = id + "," + schedule_id;
+            } else {
+                id = "," + schedule_id;
+            }
+            $("#teacher_schedule").val(id);
+        } else {
+            if (id.indexOf("," + schedule_id) != -1) {
+                id = id.replace("," + schedule_id, '');
+            } else if (id.indexOf(schedule_id + ",") != -1) {
+                id = id.replace("," + schedule_id, '');
+            } else {
+                id = id.replace(schedule_id, '');
+            }
+            $("#teacher_schedule").val(id);
+            $(schedule).attr("class", "td");
+        }
+    }
+    //删除 讲师文章/相册/经历
+    function delTeacher(id, type, category) {
+        var id = id;
+        if (confirm("确定要删除该" + type + "吗？")) {
+            $.post("{:U('classroom/User/delTeacherInfo')}", {id: id, category: category}, function (res) {
+                var res = getResponseData(res);
+                if (res.status == 1) {
+                    ui.success('删除成功');
+                    location.href = res.url;
+                    $("body").animate({scrollTop: $(".header").height()});
+                } else {
+                    ui.error('对不起，删除失败请重试!');
+                }
+            });
+        }
+    }
+    //删除 讲师文章/相册/经历
+    /*function delTeacherPhoto(id, type) {
+        var id = id;
+        if (confirm("确定要删除该" + type + "吗？")) {
+            $.post("{:U('classroom/User/delTeacherPhoto')}", {id: id}, function (res) {
+                if (res == 200) {
+                    notes('删除成功');
+                    location.reload();
+                    $("body").animate({scrollTop: $(".header").height()});
+                } else {
+                    notes('对不起，删除失败请重试!', 'failure');
+                }
+            });
+        }
+    }*/
+</script>
+<include file="__THEME__/public_footer"/>

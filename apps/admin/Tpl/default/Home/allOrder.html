@@ -1,0 +1,127 @@
+<include file="__THEME__/admin_header" />
+<div id="container" class="so_main">
+	<div class="page_tit">
+		所有订单统计
+	</div>
+
+<div class="form2">
+  <!-- START TAB框 -->
+  
+  <div class="tit_tab">
+    <ul>
+    <li><a href="{:U('admin/Home/allOrder',array('type'=>'today'))}" <eq name='type' value='today'> class = "on"</eq>>{:L('PUBLIC_TODAY')}</a></li>
+    <li><a href="{:U('admin/Home/allOrder',array('type'=>'week'))}" <eq name='type' value='week'> class = "on"</eq>>{:L('PUBLIC_LAST_SEVEN_DAYS')}</a></li>
+    <li><a href="{:U('admin/Home/allOrder',array('type'=>'30d'))}" <eq name='type' value='30d'> class = "on"</eq>>{:L('PUBLIC_LAST_THIRTY_DAYS')}</a></li>
+    <li><a href="{:U('admin/Home/allOrder',array('type'=>'month'))}" <eq name='type' value='month'> class = "on"</eq>>{:L('PUBLIC_THIS_MONTH')}</a></li>
+    <li>
+    <form method ='GET' action="{:U('admin/Home/allOrder')}">
+    <input type="hidden" name='app' value='admin'>
+    <input type="hidden" name='mod' value='Home'>
+    <input type="hidden" name='act' value='allOrder'>
+    <input type="text" style="width:200px;height:12px;line-height:12px" readonly="readonly" onfocus="core.rcalendar(this,'Y-m-d');" value="{$_GET.start_ctime}" id="start_ctime" class="s-txt" name="start_ctime">
+    -
+     <input type="text" style="width:200px;height:12px;line-height:12px" readonly="readonly" onfocus="core.rcalendar(this,'Y-m-d');" value="{$_GET.end_ctime}" id="end_ctime" class="s-txt" name="end_ctime">
+     <input type="submit" value="{:L('PUBLIC_SYSTEM_FIND')}" class="btn_b" style="height:24px">
+    </form>
+    </li>
+    </ul>
+  </div>
+  
+  <!-- END TAB框 -->
+</div>
+	<div  id="order" style="min-height:200px;">
+
+	</div>
+</div>
+<script  type="text/javascript" src="__THEME__/js/echarts/echarts.min.js"></script>
+<script type="text/javascript">
+ $(function(){
+	 var dataCount = getXdata('{$dataCount}',$("#order"));
+	 if(dataCount === false){
+		 $("#order").html = '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td colspan="100" align="center">{:L("SSC_NO_RELATE_DATA")}</td></tr></table>';
+		 return false;
+	 }
+	 // 指定图表的配置项和数据
+	 var option = {
+		 title: {
+			text: '所有订单统计'
+		 },
+		 tooltip : {
+			 trigger: 'axis',
+			 axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+				 type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			 }
+		 },
+		 toolbox: {
+			 feature: {
+				 magicType: {
+					 type: ['line', 'bar']
+				 },
+				 saveAsImage : {show: true}
+			 }
+		 },
+		 legend: {
+			 data:['课程订单','直播课堂订单','套餐订单','约课订单']
+		 },
+		 grid: {
+			 left: '3%',
+			 right: '4%',
+			 bottom: '3%',
+			 containLabel: true
+		 },
+		 xAxis: {
+			 type: 'category',
+			 boundaryGap: true,
+			 data: dataCount.x
+		 },
+		 yAxis: {
+			 type: 'value'
+		 },
+		 series: [
+			 {
+				 name:'课程订单',
+				 type:'bar',
+				 data: (typeof(dataCount.y[0]) != 'undefined') ? dataCount.y[0] : []
+			 },
+			 {
+				 name:'直播课堂订单',
+				 type:'bar',
+				 data: (typeof(dataCount.y[1]) != 'undefined') ? dataCount.y[1] : []
+			 },
+			 {
+				 name:'套餐订单',
+				 type:'bar',
+				 data: (typeof(dataCount.y[2]) != 'undefined') ? dataCount.y[2] : []
+			 },
+			 {
+				 name:'约课订单',
+				 type:'bar',
+				 data: (typeof(dataCount.y[3]) != 'undefined') ? dataCount.y[3] : []
+			 }
+		 ]
+	 };
+	 // 使用刚指定的配置项和数据显示图表
+	 var initEcharts = echarts.init(document.getElementById('order'));
+	 if($.type(option) === 'object'){
+	 	 initEcharts.setOption(option);
+	 }
+	 /**
+	  * @name 解析数据方法--获取X轴数据
+	  * @param array
+	  */
+	 function getXdata(data,obj){
+		 try{
+			 var data = JSON.parse(data);
+			 if(!data || data.x.length <= 0 || data.y.length <= 0){
+				 obj.html('<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td colspan="100" align="center">{:L("SSC_NO_RELATE_DATA")}</td></tr></table>');
+				 return false;
+			 }
+			 return data;
+		 }catch(e){
+			 obj.html('<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td colspan="100" align="center">{:L("SSC_NO_RELATE_DATA")}</td></tr></table>');
+			 return false;
+		 }
+	 }
+ })
+</script>
+<include file="__THEME__/admin_footer" />

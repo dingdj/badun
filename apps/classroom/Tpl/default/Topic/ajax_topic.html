@@ -1,0 +1,8 @@
+<volist name="topic_data.data" id="vo">
+	<li>
+		<img src="{:cutImg($vo['image'],150,90)}" />
+		<h3><a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}">{$vo.title|getShort=###,'21'}</a></h3>
+		<p>{$vo.desc|getShort=###,'85','...'}</p>
+		<div class="info"><span>{$vo.readcount}阅读</span>{$vo.dateline|friendlyDate}</div>
+	</li>
+</volist>

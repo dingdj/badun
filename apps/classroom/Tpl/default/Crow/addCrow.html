@@ -1,0 +1,187 @@
+<include file="__THEME__/public_header" />
+<script src="__THEME__/js/jquery.js"></script>
+<div class="content cbg">
+<div class="wrap"> 
+    <!--右-->
+   		<div class="center_right_tit">
+	    	<div class="user-con-title">
+	            <a href="javascript:void(0);" class="onactive" >申请众筹</a>
+	        </div>
+	    </div>
+		<div class="center_right_con">
+			<form id="crowForm" method="post" action="" class="infobox" onsubmit="return false;">
+                <php>if(!crowInfo || $crowInfo['status'] != 1){</php>
+	                <dl>
+	                    <dt><span>*</span>众筹类型：</dt>
+	                    <dd style="width: 450px;">
+	                        <style>
+		                        select {
+		                            margin-right: 15px !important;
+		                            height: 40px;
+		                            width: 121px;
+		                            border-radius: 4px;
+		                            border: solid 1px #b6c7d6;
+		                            line-height: 34px;
+		                            padding: 0;
+		                        }
+		                    </style>
+	                        <php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
+		                    {:W('CategoryLevel',array('table'=>'zy_currency_category','id'=>'video_level','default'=>$fullcategorypaths ))}
+	                    </dd>
+	                </dl>
+	                <!-- <dl>
+	                    <dt><span>*</span>机构id：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="sid" maxlength="11" id="sid" value="{$crowInfo['sid']}" class="head_search upload_input_a" rel="众筹id">
+	                    </dd>
+	                </dl> -->
+	                <dl>
+	                    <dt><span>*</span>众筹名称：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="title" maxlength="20" id="title" value="{$crowInfo['title']}" class="head_search upload_input_a" rel="众筹名称">
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>众筹价格：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="price" id="price" value="{$crowInfo['price']}" class="head_search upload_input_a" rel="众筹价格">
+	                    </dd>
+	                </dl>
+	                <dl>
+	                    <dt><span>*</span>众筹人数：</dt>
+	                    <dd>
+	                        <input type="text" class="inp01" name="num" id="num" value="{$crowInfo['num']}" class="head_search upload_input_a" rel="众筹人数">
+	                    </dd>
+	                </dl>
+
+
+				<dl>
+					<dt><span>*</span>众筹简介：</dt>
+					<dd>
+						{:W('Editor',array('contentName'=>'info','value'=>$crowInfo['info'],'width'=>'98%','height'=>'350'))}
+					</dd>
+				</dl>
+
+	                <dl>
+	                    <dt><span>*</span>封面图：</dt>
+	                    <dd>
+	                        {:W('Upload',array('inputname'=>'attach','attachIds'=>$crowInfo['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+	                    </dd>
+	                </dl>
+
+	                 <dl>
+	                    <dd>
+	                        <a href="javascript:;" class="btn" type="button" onclick="saveCrow();" style="height: 40px;line-height: 40px;">提交申请</a>
+	                    </dd>
+	                </dl>
+				<php>}else{</php>
+					<dl>
+	                  	<dt><span>*</span>众筹类型：</dt>
+	                  	<dd>{$crowInfo['title']}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>众筹名称：</dt>
+	                  	<dd>{$crowInfo['title']}</dd>
+	                </dl>
+					<dl>
+	                  	<dt><span>*</span>法人身份证</dt>
+	                  	<dd>{$crowInfo['idcard']}</dd>
+	                </dl>
+					<dl>
+	                  	<dt><span>*</span>联系电话：</dt>
+	                  	<dd>{$crowInfo['phone']}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>众筹地址：</dt>
+	                  	<dd>{$crowInfo['address']}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>众筹详细地址：</dt>
+	                  	<dd>{$crowInfo['address']}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>认证理由：</dt>
+	                  	<dd>{$crowInfo['reason']}</dd>
+	                </dl>
+	                <dl>
+	                  	<dt><span>*</span>认证附件：</dt>
+	                  	<dd>
+	                  		<php>if($crowInfo['attachment']){</php>{$crowInfo['attachment']}<php>}else{</php>无<php>}</php>
+	                  	</dd>
+	                </dl>
+				<php>}</php>
+			</form>
+		</div>
+    
+</div>
+</div>
+<script type="text/javascript">
+// 价格限制
+	$("input[name='price']").keyup(function(){    
+	    $(this).val($(this).val().replace(/[^0-9.]/g,''));    
+	}).bind("paste",function(){  //CTR+V事件处理    
+	    $(this).val($(this).val().replace(/[^0-9.]/g,''));     
+	});
+	// 只能数字
+	$("input[name='sid'],input[name='num']").keyup(function(){
+	    $(this).val($(this).val().replace(/[^0-9]/g,''));    
+	}).bind("paste",function(){  //CTR+V事件处理    
+	    $(this).val($(this).val().replace(/[^0-9]/g,''));     
+	});
+
+	function saveCrow(){
+		$("textarea[name='info']").html(E.getData());
+		if($("#zy_currency_category_id").val()==0){
+		  notes('请选择类型', 'failure');
+		  return false;
+		}
+		var title  = $('#title').val();
+		var price = $('#price').val();
+		var num  = $('#num').val();
+		var info = $('#info').val();
+		var attach_ids = $('#attach_ids').val();
+
+	  if(!title){
+	  	 notes('请输入众筹名称', 'failure');
+		 return false;
+	  }
+	  if(!title){
+		  notes('请输入众筹名称', 'failure');
+		  return false;
+	  }
+	  if(!price){
+	  	 notes('请输入价格', 'failure');
+		 return false;
+	  }
+	  if(!num){
+	  	 notes('请输入众筹人数', 'failure');
+		 return false;
+	  }
+	  if(!/^[\d]{1,11}$/.test(num)){
+		  notes('众筹人数格式不正确', 'failure');
+		  return false;
+	  }
+  if(!info)
+  {
+	  notes('请输入简介', 'failure');
+	  return false;
+  }
+
+
+	  var data = $('#crowForm').serialize();
+	  $.post(U('classroom/Crow/doAddCrow'),data,function(msg){
+	      if(msg.status == 1){
+	        notes(msg.info, 'success');
+			setTimeout(function(){
+				window.location = "{:U('classroom/Crow/index')}";
+			},'2000');
+	      }else{
+	        notes(msg.info, 'failure');
+			return false;
+	      }
+		  
+	  },'json');
+	}
+
+</script>
+<include file="__THEME__/public_footer" />

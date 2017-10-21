@@ -1,0 +1,182 @@
+<include file="__THEME__/public_header_w3g" />
+
+<div class="content">
+
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>申请认证</div>
+        <php>if($verifyInfo['verified'] == -1 || !$verifyInfo){</php><a class="save" type="submit" href="javascript:;" onclick="saveVerify(this);">保存</a><php>}</php>
+    </div>
+    <div class="body">
+    <form class="infobox" id="renzhengform" method="post" action="" onsubmit="return false;">
+        <div class="centerbox">
+
+            <dl class="centerdl no">
+                <dt>当前状态</dt>
+                <dd>
+                    <switch name= "verifyInfo.verified" >
+                        <case value= "1" ><i class="ico-ok"></i>已认证 <!--<a href="javascript:void(0);" onclick="delverify()" style="color:#65addd">注销认证</a>--></case>
+                        <case value= "0" ><i class="ico-wait"></i>已提交认证，等待审核</case>
+                        <case value= "-1" ><i class="ico-no"></i>未通过认证，请修改资料后重新提交</case>
+                        <default />未认证
+                    </switch>
+                </dd>
+            </dl>
+            <dl class="centerdl no">
+                <dt>认证类型</dt>
+
+                <dd>
+                    <volist name='auType' id='rs'>
+                        <label class="rad"><input type="radio" value="{$rs.user_group_id}" name="usergroup_id"
+                              onclick='changeText({$rs.user_group_id})' id="renzhenglx_{$rs.user_group_id}"    class="usergroup_id"
+                            <php>if($rs['user_group_id'] == $verifyInfo['usergroup_id']){</php>checked="checked"<php>}</php> >
+                            {$rs.user_group_name}</label>
+                    </volist>
+                </dd>
+            </dl>
+
+            <dl class="centerdl">
+                <dt>真实姓名</dt>
+                <dd>
+                    <input type="text" class="inp01" name="realname" id="realname" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['realname']}"<php>}</php> class="head_search upload_input_a" rel="真实姓名">
+                </dd>
+
+            </dl>
+            <dl class="centerdl">
+                <dt>身份证号</dt>
+                <dd>
+                    <input type="text" class="inp01" name="idcard" id="idcard" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['idcard']}"<php>}</php> class="head_search upload_input_a" rel="身份证号">
+                </dd>
+            </dl>
+            <dl class="centerdl">
+                <dt>联系电话</dt>
+                <dd>
+                    <php>
+                        if($verifyInfo['phone']){
+                        $phone = $verifyInfo['phone'];
+                        }elseif($user['phone']){
+                        $phone = $user['phone'];
+                        }else{
+                        $phone = null;
+                        }
+                    </php>
+                    <input class="inp01" <?php echo $phone?' value="'.$phone.'"':'';?> type="text" name="phone" id="phone" rel="联系电话" />
+                </dd>
+            </dl>
+
+            <dl  class="centerdl">
+                <dt>个人地址</dt>
+                <dd>
+                    <input name="address" class="inp01" id="address" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['address']}"<php>}</php> class="head_search upload_input_a" rel="个人地址"/>
+                </dd>
+            </dl>
+
+
+            <dl class="centerdl" style="height:auto;">
+                <dt>认证理由</dt>
+                <dd>
+                    <textarea id="reason" class="tex01" name="reason" style="height:auto;"><php>if($verifyInfo['verified'] !== ""){</php>{$verifyInfo['reason']|format}<php>}</php></textarea>
+                </dd>
+            </dl>
+
+            <dl class="centerdl no" style="height:auto;">
+                <dt>身份附件</dt>
+                <dd>
+                    {:W('Upload',array('inputname'=>'identity', 'attachIds'=>$verifyInfo['identityIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+                    <p>认证本人手持身份证照片，证件所有信息清晰可见，手持证件人的五官清晰可见。</p>
+                </dd>
+            </dl>
+            <dl class="centerdl no" style="height:auto;">
+                <dt>资格附件</dt>
+                <dd>
+                    {:W('Upload',array('inputname'=>'attach', 'attachIds'=>$verifyInfo['attachIds'], 'uploadType'=>'file', 'urlquery'=>'attach_type=feed_file&upload_type=file&thumb=1'))}
+                    <p>教师认证必须上传教师资格证等其相关证明 </p>
+                </dd>
+            </dl>
+        </div>
+    </form>
+</div>
+
+
+</body>
+
+
+
+
+<script>
+
+    $('#renzhengform input:file').click(function(){
+        $('#renzhengform input:file').val('');
+    });
+
+
+    var saveVerify = function(a){
+        var vtype = $('input.usergroup_id:checked').val();
+        if(!vtype){
+            alert('请选择认证类型');
+            return false;
+        }
+        var company = $('#company').val();
+        var realname = $('#realname').val();
+        var idcard = $('#idcard').val();
+        var phone = $('#phone').val();
+        var reason = $('#reason').val();
+        var verifiedCategory = $('#verifiedCategory').val();;
+        var attach_ids = $('#attach_ids').val();
+        var identity_ids = $('#identity_ids').val();
+
+        if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(realname))){
+            alert('请输入正确的真实姓名');
+            return false;
+        }
+        if(!/^[\dxX]{15,18}$/.test(idcard)){
+            alert('请输入正确的身份号码');
+            return false;
+        }
+        if(!/^[\d\-]{7,11}$/.test(phone)){
+            alert('请输入联系电话');
+            return false;
+        }
+        if(!reason){
+            alert('请输入认证理由');
+            return false;
+        }
+        if(identity_ids =""){
+            alert('请上传身份认证附件');
+            return false;
+        }
+
+        if(attach_ids = ""){
+            alert('请上传资格认证附件');
+            return false;
+        }
+        var other_data_ids = $('#other_data_ids').val();
+
+        var data = $('#renzhengform').serialize();
+        $.post(U('public/Account/doAuthenticate'),data,function(msg){
+            var msg = getResponseData(msg);
+            if(msg.status == 1){
+                alert('申请成功，请等待审核');
+                setTimeout(function(){
+                    location.reload();
+                },'2000');
+            }else{
+                alert('申请失败，请重新申请！');
+                return false;
+            }
+
+        });
+    }
+
+    var changeText = function(value){
+        $.post(U('classroom/User/getVerifyCategory'),{value:value},function(data){
+            $('#user_verified_category_id').html(data);
+        });
+    };
+
+
+
+</script>
+
+
+<include file="__THEME__/public_footer_w3g" />

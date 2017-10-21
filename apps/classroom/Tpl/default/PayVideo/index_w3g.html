@@ -1,0 +1,618 @@
+<include file="__THEME__/public_header_twolevel" />
+
+<style>
+    .class_order_card .entity_Card p {font-size: 16px;color: #999; margin-bottom: 12px;}
+    .class_order_card .entity_Card input.number {height: 35px;line-height: 35px;width: 80%;border: 1px solid #e9e9e9;padding-left: 7px;}
+</style>
+
+<div class="body">
+    <div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li><a href="/">首页</a>
+                    <if condition="($pay_video_type eq 'zy_video') or ($pay_video_type eq 'zy_live')">
+                        <span>&gt;</span>
+                        <a href="{:U('classroom/Video/index')}">全部课程</a>
+                        <volist name="cate_info" id="cate">
+                            <span>&gt;</span>
+                            <a href="{:U('classroom/Video/index',array('cateId'=>$cate['cate_id']))}">{$cate['cate_title']}</a>
+                        </volist>
+                        <span>&gt;</span>{$video_title}
+                        <elseif condition="$pay_video_type eq 'zy_album'"/>
+                        <span>&gt;</span>
+                        <a href="{:U('classroom/Video/index')}">全部套餐</a>
+                        <volist name="cate_info" id="cate">
+                            <span>&gt;</span>
+                            <a href="{:U('classroom/Video/index',array('cateId'=>$cate['cate_id']))}">{$cate['cate_title']}</a>
+                        </volist>
+                        <span>&gt;</span>{$video_title}
+                        <elseif condition="$pay_video_type eq 'zy_teacher'"/>
+                        <span>&gt;</span><a href="{:U('classroom/LineClass/index')}">线下课</a>
+                        <span>&gt;</span>{$course_name}
+                    </if>
+                </li>
+            </ul>
+        </div>
+        <div class="class-order">
+            <div class="class_order_tit">核对订单信息</div>
+            <div class="class_order_box">
+                <div class="tit">商品详情</div>
+                <div class="info">
+                    <if condition="$pay_video_type eq 'zy_video'">
+                        <a href="{:U('classroom/Video/view',['id'=>$id])}">
+                    <elseif condition="$pay_video_type eq 'zy_live'" />
+                        <a href="{:U('live/Index/view',['id'=>$id])}">
+                    <elseif condition="$pay_video_type eq 'zy_album'" />
+                        <a href="{:U('classroom/Album/view',['id'=>$id])}">
+                    </if>
+                    <img src="{:getCover($cover,220,130)}" width="220" height="130" alt="{$video_title}">
+                    <h3>{$video_title}</h3>
+                    </a>
+                    <div class="price"><span class="fr">¥{$moner_data['price']}</span>原价：¥{$moner_data['oriPrice']}</div>
+                    <div class="item"><span>总课时   {$video_section_num|default="0"} 课时</span><if condition="$type eq 1"><span>有效期    {$term_num} 天</span></if></div>
+                    <div class="item">服务机构   <a href="{:U('school/School/index',array('id'=>$mhm_id,'doadmin'=>$mhm_info['doadmin']))}">{$mhm_info['title']}</a></div>
+                </div>
+
+                <if condition="($pay_video_type eq 'zy_video') or ($pay_video_type eq 'zy_live') or ($pay_video_type eq 'zy_album') and ($pay_video_type neq 'zy_teacher')">
+                <ul class="class_order_card">
+                    <dt class="open"><span>使用优惠码/打折卡<i class="icon-jr fanzhuan"></i></span></dt>
+                    <dd>
+                        <php>if(!$coupon){</php>
+                            <ul class="class_order_hd">
+                                <li class="on" val="1">优惠券</li>
+                                <li val="2">打折卡</li>
+                                <li val="3">实体卡</li>
+                            </ul>
+                            <div class="class_order_bd">
+                                <div class="center_con">
+                                    <ul class="center_ul divactive couponlist1">
+                                        <p style="font-size: 16px;">选择优惠券</p>
+                                        <if condition="$videoCoupon">
+                                            <volist name="videoCoupon" id="vcn">
+                                                <li class="cou_grenn carlist">
+                                                    <div class="txt">
+                                                        <h3><em>¥</em>{$vcn['price']}<span>满{$vcn['maxprice']}元可用</span></h3>
+                                                        <p>卡券编号&nbsp;:&nbsp;{$vcn['code']}</p>
+                                                        <p>仅限&nbsp;<span style="color: red;">{:limitNumber($vcn['school_title'],7)}</span>&nbsp;下的课程使用</p>
+                                                        <p>有效期&nbsp;:&nbsp;{$vcn['stime']} - {$vcn['etime']}</p>
+                                                    </div>
+                                                    <a class="a-1" href="javascript:;" onclick="buyvCoupon({$vcn['cid']},{$vcn['coupon_id']},1)">确<br>定<br>使<br>用</a>
+                                                </li>
+                                            </volist>
+                                            <else/>
+                                            <p style="color: #555;font-size: 12px;">您暂未获得相关优惠券。。</p>
+                                        </if>
+                                    </ul>
+                                    <ul class="center_ul tdiv couponlist1">
+                                        <p style="font-size: 16px;">选择打折卡</p>
+                                        <if condition="$discount">
+                                            <volist name="discount" id="dct">
+                                                <li class="cou_red1"><a class="a-0"><span class="price">{$dct.discount}折</span><p>有效期&nbsp;:&nbsp;{:date("Y.m.d",$dct['stime'])} - {:date("Y.m.d",$dct['etime'])}</p></a>
+                                                    <div class="txt">
+                                                        <span class="item">券编号&nbsp;:&nbsp;<br>{$dct.code}</span>
+                                                        <span class="item">发卡单位&nbsp;:&nbsp;{$dct.school_title}</span>
+                                                        <a href="javascript:;" onclick="buyvCoupon({$dct['cid']},{$dct['coupon_id']},2)">确认使用</a>
+                                                    </div>
+                                                </li>
+                                            </volist>
+                                            <else/>
+                                            <p style="color: #555;font-size: 12px;">您暂未获得相关打折卡。。</p>
+                                        </if>
+                                    </ul>
+                                    <ul class="center_ul tdiv entity_Card">
+                                        <p>卡券编号：</p>
+                                        <li>
+                                            <input name="card" type="text" class="number" placeholder="请输入卡券编号" data-id="{$mhm_id}" data-price="{$moner_data['price']}" value="">
+                                            <!--<a onclick="draw({$mhm_id},{$moner_data['price']})" class="use draw" href="javascript:;">使用</a>
+                                            <a onclick="removeUse()" class="use removeUse" style="display: none;" href="javascript:;">取消使用</a>-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        <php>}else{</php>
+                            <ul class="class_order_hd">
+                                <li <eq name="coupon.type" value="1">class="on" style="display: block;"</eq>style="display: none;">优惠券</li>
+                                <li <eq name="coupon.type" value="2">class="on" style="display: block;"</eq>style="display: none;">打折卡</li>
+                            </ul>
+                            <div class="class_order_bd">
+                                <div class="center_con">
+                                    <ul class="center_ul couponlist1 divactive">
+                                        <if condition="$coupon['type'] eq 1">
+                                            <li class="cou_grenn carlist">
+                                                <div class="txt">
+                                                    <h3><em>¥</em>{:intval($coupon['price'])}<span>满{:intval($coupon['maxprice'])}元可用</span></h3>
+                                                    <p style="font-size: 12px;">仅限&nbsp;<span style="color: red;">{$coupon['school_title']}</span>&nbsp;下的课程使用</p>
+                                                    <p style="font-size: 12px;">券编号&nbsp;:&nbsp;{$coupon['code']}</p>
+                                                    <p style="font-size: 12px;">有效期&nbsp;:&nbsp;{:date("Y.m.d",$coupon['stime'])} - {:date("Y.m.d",$coupon['etime'])}</p>
+                                                </div>
+                                                <a href="javascript:;" class="a-1" >已<br>使<br>用</a>
+                                            </li>
+                                            <else/>
+                                            <li class="cou_red1">
+                                                <a class="a-0">
+                                                    <span class="price">{$coupon.discount}折</span>
+                                                    <p>有效期&nbsp;:&nbsp;{:date("Y.m.d",$coupon['stime'])} - {:date("Y.m.d",$coupon['etime'])}</p>
+                                                </a>
+                                                <div class="txt">
+                                                    <span class="item">券编号&nbsp;:&nbsp;<br>{$coupon.code}</span>
+                                                    <span class="item">发卡单位&nbsp;:&nbsp;{$coupon.school_title}</span>
+                                                    <a href="javascript:;" >已使用</a>
+                                                </div>
+                                            </li>
+                                        </if>
+                                    </ul>
+                                </div>
+                            </div>
+                        <php>}</php>
+                        <div class="class_order_pr">优惠金额：<span id="cod_money1">￥0.00</span></div>
+                    </dd>
+                </dl>
+                </if>
+
+                <dl class="class_order_pay">
+                    <dt>支付方式</dt>
+                    <dd>
+                        <span class="selected" val="alipay">支付宝支付</span>
+                        <span val="wxpay">微信支付</span>
+                        <!--<span val="unionpay">银联支付</span>-->
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="class_order_bot">
+                <div class="info">
+                    <!--<span>1</span> 门课程，-->
+                    <div class="item">商品总金额：<div class="fr">￥{$moner_data['price']}</div></div>
+                    <if condition="($pay_video_type eq 'zy_video') or ($pay_video_type eq 'zy_live')">
+                        <div class="item">优惠抵扣：<div class="fr" id="cod_money2">￥0.00</div></div>
+                    </if>
+                    <div class="item">服务费：<div class="fr">￥0.00</div></div>
+                    <div class="item">退换无忧：<div class="fr">￥0.00</div></div>
+                </div>
+                <div class="price">
+                    <div class="item">应付总金额：<div class="fr" id="pay_money">￥{$moner_data['price']}</div></div>
+                </div>
+                <div class="class_input">
+                    <input type="checkbox" id="check_xy" checked="">
+                    <div class="item">我已阅读并同意
+                        <div id="check_xy_a">
+                            <a href="{:U('public/Single/info',array('id'=>28))}">《{$site['site_keyword']}购买条款》</a>
+                        </div>
+                    </div>
+                </div>
+                <form action="{:U('classroom/PayVideo/payLibrary')}" method="POST" id="pay_video_form">
+                    <input type="hidden" value="{$id}" name="vid" />
+                    <input type="hidden" value="1" name="discount_type" />
+                    <input type="hidden" value="0" name="coupon_id" id="coupon_id" />
+                    <input type="hidden" value="{$pay_video_mount_school}" name="pay_video_mount_school" id="pay_video_mount_school" />
+                    <input type="hidden" value="{$pay_gspay}" name="pay_gspay" id="pay_gspay" />
+                    <if condition="$pay_video_type eq 'zy_video'">
+                        <input type="hidden" value="zy_video" name="check_type" />
+                        <input type="hidden" value="课程：{$video_title}" name="title" />
+                        <elseif condition="$pay_video_type eq 'zy_album'"/>
+                        <input type="hidden" value="zy_album" name="check_type" />
+                        <input type="hidden" value="套餐：{$video_title}" name="title" />
+                        <elseif condition="$pay_video_type eq 'zy_live'"/>
+                        <input type="hidden" value="zy_live" name="check_type" />
+                        <input type="hidden" value="直播课程：{$video_title}" name="title" />
+                        <elseif condition="$pay_video_type eq 'zy_teacher'"/>
+                        <input type="hidden" value="zy_teacher" name="check_type" />
+                        <input type="hidden" value="线下课程：{$video_title}" name="title" />
+                    </if>
+                    <input type="hidden" id="pay_money_val" value="{$moner_data['price']}" name="money" />
+                    <input type="hidden" value="alipay" name="pay" />
+                    <div class="btn"><a href="javascript:;" onclick="buyOperat(this,{$id},'video');" type="submit">立即支付</a></div>
+                    <input type="hidden" value="{$_GET['vst']}" name="vst" />
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<if condition="$is_wx eq null">
+    <style>
+        #_ts_box_h5{width:290px;height:180px;text-align: center;color: #535353;border-radius: 5px;position: fixed;background: #fff;-webkit-box-shadow: 0 2px 5px #dddddd;-moz-box-shadow: 0 2px 5px #dddddd;-khtml-box-shadow: 0 2px 5px #dddddd;-ms-box-shadow: 0 0 15px #888888;box-shadow: 0 0 15px #888888;z-index: 997;left: 5%;top: 35%;margin: 0 auto;background: #fff;}
+        ._hide_box_h5{z-index:996;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;}
+        #_ts_box_h5 ._box_hd{padding: 20px 0px;color: black;font-size: 16px;border-bottom: 1px solid rgba(0, 0, 0, 0.16);}
+        #_layer-content{padding: 15px 0px;color: rgba(255, 35, 0, 0.69);font-size: 16px;border-bottom: 1px solid rgba(0, 0, 0, 0.1);}
+        ._layer-wt{padding: 15px 0px;color: #908d8d;font-size: 16px;}
+    </style>
+    <div class="_hide_box_h5" style="display: none;"></div>
+    <div id="_ts_box_h5" style="display: none;">
+        <div class="_box_hd" >请确认微信支付是否完成</div>
+        <div id="_layer-content">已完成支付</div>
+        <div class="_layer-wt"><a href="{:U('classroom/PayVideo/index',['vst'=>$_GET['vst']])}">支付遇到问题，联系客服</a></div>
+    </div>
+</if>
+<script>
+    '<if condition="$is_wx eq null">'
+    $(function(){
+        var wpay = "{$_GET['wpay']}";
+        var ppn = "{$_GET['ppn']}";
+        if(wpay != ''){
+            $('._hide_box_h5,#_ts_box_h5').show();
+            $('#_layer-content').click(function(){
+                $('._hide_box_h5,#_ts_box_h5').hide();
+                s = setInterval(function(){
+                    $.ajax({
+                        url: "{:U('classroom/PayVideo/getPayStatus')}",
+                        data:{pay_pass_num:ppn},
+                        type:'post',
+                        success: function(res){
+                            try{
+                                res = JSON.parse(res);
+                                if(res.status == 1){
+                                    clearInterval(s);
+                                    alert('购买成功');
+                                    setTimeout(function(){
+                                        window.location.href = res.data;
+                                    },2000);
+                                }
+                            }catch(e){
+                                return;
+                            }
+                        }
+                    });
+                },1800);
+            });
+        }
+    });
+    '</if>'
+
+    $(function(){
+        var id = '{$coupon.id}';
+        var price = '{$moner_data.price}';
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/PayVideo/getCouponInfo')}",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                if(data){
+                    buyvCoupon(data.coupon_id,data.cuid,data.type,price);
+                }else{
+                    return false;
+                }
+            }
+        });
+
+        $(".class_order_hd li").click(function(){
+            var n=$(this).index();
+            $(this).addClass("on").siblings().removeClass("on");
+            $('.center_con>ul').eq(n).addClass("divactive").removeClass('tdiv');
+            $('.center_con>ul').eq(n).siblings().removeClass("divactive").addClass('tdiv');
+        });
+
+        $(".class_order_hd li").click(function(){
+            $(this).addClass("on").siblings().removeClass("on");
+        });
+
+        $(".class_order_pay dd span").click(function(){
+            $('#pay_video_form').find('input:hidden[name="pay"]').val($(this).attr('val'));
+            $(this).addClass("selected").siblings().removeClass("selected");
+        });
+
+        $(".open span").click(function(){
+            $(".class_order_card dd").animate({
+                height:'toggle'
+            });
+        });
+
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+
+        $('.number').keydown(function(event){
+            var code = $("input[name='card']").val();
+            var sid = $(this).data('id');
+            var price = $(this).data('price');
+            var vid = '{$id}',
+                type = '{$type}',
+                vtype = '',
+                url = '',
+                coupon_id = '';
+            if (event.keyCode == 13) {
+                $.ajax({
+                    type:"POST",
+                    url:"{:U('classroom/PayVideo/getExchangeCard')}",
+                    data:{code:code,mhm_id:sid,vid:vid},
+                    dataType:"json",
+                    success:function(data){
+                        if(data.status != 0){
+                            coupon_id = data.id;
+                            if(type == 1){
+                                vtype = 'zy_video';
+                                url = "{:U('classroom/Video/view',array('id'=>$id))}";
+                            }else if(type == 2){
+                                vtype = 'zy_live';
+                                url = "{:U('live/Index/view',array('id'=>$id))}";
+                            }
+                            $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype,coupon_id:coupon_id},function(data){
+                                if(data.status == 1){
+                                    alert('购买成功');
+                                    window.location.href = url;
+                                } else {
+                                    removeUse(sid);
+                                    alert('购买失败');
+                                    return false;
+                                }
+                            },'json');
+                        }else{
+                            alert(data.info);
+                            return false;
+                        }
+                    }
+                });
+            }
+
+        });
+    });
+    function dashangToggle(){
+        $('.mask').hide();
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+    }
+
+    var uid = "{$uid}";
+    function buyvCoupon(cid,coupon_id,discount_type) {
+        if(uid<=0){
+            $(".buyOperating").hide();
+            $(".mask").hide();
+            alert("请先登录");
+            return false;
+        }
+        if(!cid || !coupon_id || !discount_type){
+            alert('参数错误');
+            return false;
+        }
+        var price = $('#pay_money_val').val();
+        if(!price){
+            alert('该课程不需要您购买');
+            return false;
+        }
+        $('#coupon_id').val(coupon_id);
+        $.post(U("classroom/PayVideo/checkCoupon"),{cid:cid,coupon_id:coupon_id,discount_type:discount_type,price:price},function(e){
+            if(e.status == 1){
+                $('#cod_money1').text("￥"+e.data.minus_price);
+                $('#cod_money2').text("￥"+e.data.minus_price);
+                $('#pay_money').text("￥"+e.data.after_price);
+                $('#pay_money_val').val(e.data.after_price);
+                alert(e.info);
+            }else{
+                alert(e.info);
+            }
+        },'json');
+    }
+
+
+    /**
+     * 删除字符串str的首尾空格
+     * @name trim
+     * @grammar UM.utils.trim(str) => String
+     */
+  var  trim  =function (str) {
+        return str.replace(/(^[ \t\n\r]+)|([ \t\n\r]+$)/g, '');
+    }
+
+
+    //购买操作
+    var buyOperat = function(sbt,vid,type){
+        if(uid<=0){
+            $(".buyOperating").hide();
+            $(".mask").hide();
+            alert("请先登录");
+            return false;
+        }
+        if(!vid || !type){
+            alert('参数错误');
+            return false;
+        }
+        var checkbox = document.getElementById('check_xy');//
+        if(!checkbox.checked){
+            alert("购买必须同意《{$site['site_keyword']}购买条款》");
+            return false;
+        }
+        var rechange_base = parseFloat('1');
+        var form  = $(sbt).parents('form');
+        var pay   = form.find('input:hidden[name="pay"]').val();
+        var pay_gspay = form.find('input:hidden[name="pay_gspay"]').val();
+        var money = form.find('input:hidden[name="money"]').val();
+        if(pay!='alipay'&&pay!='unionpay'&&pay!='wxpay'){
+            alert('支付方式错误');
+            return false;
+        }
+        if(money <= 0){
+            alert('该课程不需要您购买');
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                alert('购买金额必须为整数');
+            }else{
+                alert('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPayOperat"),$('#pay_video_form').serialize(),function(data){
+            if(data.status == 1){
+                if(pay == 'wxpay'){
+                    $.ajax({
+                        url: "{:U('classroom/PayVideo/payLibrary')}",
+                        data:form.serialize(),
+                        async:false,
+                        type:'post',
+                        success: function(data){
+                            if(typeof data != 'object'){
+                                var data = eval('('+data+')');
+                            }
+                            if(data.status == 1){
+                                var pay_pass_num = data.data.pay_pass_num;
+                                '<if condition="$is_wx">'
+                                    WeixinJSBridge.invoke(
+                                            'getBrandWCPayRequest',JSON.parse(data.data.html),
+                                        function(res){
+                                            if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                                                s = setInterval(function(){
+                                                    $.ajax({
+                                                        url: "{:U('classroom/PayVideo/getPayStatus')}",
+                                                        data:{pay_pass_num:pay_pass_num},
+                                                        type:'post',
+                                                        success: function(res){
+                                                            try{
+                                                                res = JSON.parse(res);
+                                                                if(res.status == 1){
+                                                                    clearInterval(s);
+                                                                    alert('购买成功');
+                                                                    setTimeout(function(){
+                                                                        window.location.href = res.data;
+                                                                    },1500);
+                                                                }
+                                                            }catch(e){
+                                                                return;
+                                                            }
+                                                        }
+                                                    });
+                                                },1800);
+                                            }
+                                        }
+                                    );
+                                '<else/>'
+                                    var a = document.createElement('a');
+                                    a.href = data.data.html;
+                                    a.click();
+                                    return false;
+                                '</if>'
+                            }else{
+                                alert(data.data);
+                                setTimeout(function(){
+                                    window.location.href = res.data;
+                                },1500);
+                            }
+                        },
+                        error: function(){
+                            return false
+                        }
+
+                    });
+                } else {
+                    $(".buyOperating").hide();
+                    $(".mask").hide();
+                    $("#charge").attr('id', '');
+                    setTimeout("", 3000);
+                    form.submit();
+                }
+            } else if(data.status == 9){
+                alert(data.info);
+                window.location.reload();
+            }else {
+                alert(data.info);
+                return false;
+            }
+        },'json');
+    }
+</script>
+
+<style>
+    .class_order_box .info .item a {color: #06f;}
+    .content-place {  font-size: 14px;  color: #6d6d6d;  height: 50px;  line-height: 50px;  background: #fff;  margin-top: 2px;     margin-left: 17px; }
+    li a{  color: #999;  outline: medium none;  text-decoration: none;  }
+    .content-place li {  float: left;  position: relative;  }
+    .class_order_tit {  margin-bottom: 15px;  font-size: 16px;  color: #000;     margin-left: 17px; }
+    .class_order_box {  padding: 19px;  margin-bottom: 20px;border: solid 1px #ededed;  }
+    .class_order_box .tit {  margin-bottom: 30px;  font-size: 16px;  color: #424344;  }
+    .class_order_box .info {  overflow: hidden;  padding: 20px;  margin-bottom: 20px;  background-color: #f6f9fc;  }
+    .class_order_box .info img {  float: left;    height: 130px;  margin-right: 20px;  }
+    .class_order_box .info h3 {  margin-bottom: 20px;  font-size: 24px;  }
+    .class_order_box .info .price {  margin-bottom: 5px;  font-size: 16px;  color: #666;  }
+    .class_order_box .info .price span {  color: #fc6238;  font-weight: bold;  }
+    .class_order_box .info .item {  font-size: 14px;  color: #b2b2b2;  line-height: 28px;  }
+    .class_order_box .info .item {  font-size: 14px;  color: #b2b2b2;  line-height: 28px;  }
+    .class_order_box .info .item span {  margin-right: 30px;  }
+    .class_order_box .info .item {  font-size: 14px;  color: #b2b2b2;  line-height: 28px;  }
+    .class_order_card {  padding: 20px 0;  border-top: solid 1px #ededed;  border-bottom: solid 1px #ededed;  }
+    .class_order_card dt {   font-size: 14px; }
+    .class_order_card dt span {  cursor: pointer;  }
+    .class_order_card dt.open span i {  background-position: -469px -172px;  }
+    .class_order_card dt span i {  width: 12px;  height: 8px;  margin: 0 0 0 5px;  background-position: -419px -172px;  }
+    .class_order_card dd {  margin-top: 20px;  border: solid 1px #ededed;  }
+    .class_order_hd {  height: 36px;  line-height: 36px;  background-color: #f6f9fc;  }
+    .class_order_hd li.on {  color: #0066ff;  background-color: #fff;  }
+    .class_order_hd li {  float: left;  width: 30%;  font-size: 14px;  color: #424344;  text-align: center;  cursor: pointer;  }
+    .class_order_bd {  padding: 20px; padding-top: 0; }
+    .class_order_bd .con {  display: none;  }
+    .couponlist1>p{ font-size: 16px;  color: #999; margin-bottom: 12px; }
+
+    .carlist {  overflow: hidden;  margin: 0 -20px 0 0;  }
+    .carlist li {  float: left;  width: 100%;  height: 149px;  margin: 0 20px 30px 0;  }
+    .class_order_pr {  height: 36px;  padding: 0 20px;  font-size: 16px;  line-height: 36px;  color: #000;  background-color: #f6f9fc;  }
+    .body a{display: inline-block}
+    .wrap{background: white;}
+    .class_order_pr span {  color: #fc6f4d;  }
+    .class_order_pay dt {  padding: 10px 0;  font-size: 18px;  line-height: 36px;  color: #424344;  }
+    .class_order_pay dd {    text-align: center;    display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-flow: row nowrap;
+        justify-content: space-around;}
+    .class_order_pay dd span {   height: 34px;  line-height: 24px;  font-size: 14px;  color: #333;
+        border: solid 1px #ededed;  display: inline-block;  text-align: center;  cursor: pointer;padding: 4px; width: 30%; }
+    .class_order_bot {  text-align: center;  }
+    .class_order_bot .info {  line-height: 32px;  text-align: right;}
+    .class_order_bot .item {  font-size: 14px;  color: #999;margin-right: 20px;  }
+    .class_order_bot .item .fc {  width: 120px;  color: #000;  }
+    .fc { display: inline-block;  }
+    .class_order_bot .price {  height: 50px;  margin: 15px 0 25px;  line-height: 50px;  background-color: #f6f9fc;text-align: right }
+    input[type="checkbox"] {  width: 13px;  height: 15px;  }
+    .check>a{color: #188eee;}
+    input, select, textarea, button {  vertical-align: middle;  outline: none;  }
+    .class_order_bot .btn {  padding-bottom: 20px;  }
+    .btn { /* background: #2B92F9; */    margin-top: 55px;text-align: center;  color: #fff;  height: auto;  line-height: 10px;  padding: 6px;  cursor: pointer;  margin-right: 15px;  }
+    .class_order_bot .btn a {  width: 140px;  height: 45px;  line-height: 45px;  color: #fff;  font-size: 20px;  background-color: #f63;  text-align: center;  display: inline-block;  border-radius: 5px;  }
+    .class_order_pay dt{display: -webkit-box;  display: -moz-box;  display: -ms-flexbox;
+        display: -webkit-flex;  display: flex;  -webkit-flex-flow: row nowrap;  justify-content: space-around;}
+    .class_order_bot {
+        text-align: right;
+    }
+    .class_order_pay dd .selected{border-color: #06f;background: url(__THEMEW3G__/icon/slected.png) right bottom no-repeat;}
+    .class_input{float: right; position: relative }
+    .class_input input{float: left;position: absolute;  top: 3px;  left: -15px;}
+    .class_input div{float: right}
+    #check_xy_a a{color: #188eee}
+    .ul_box{list-style:none;display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;display:flex;-webkit-flex-flow:row nowrap;justify-content:space-around}
+    .center_ul{width: 100%;height: auto;display: inline-block}
+    .center_ul  li{width: 100%; /* height: 50px; */  /*float: left;  margin-right: 25px;/* margin-top: 20px; */  display: block;  margin-bottom: 20px !important;}
+    .a-0{color: #fff;  font-size: 11px;  display: inline-block;  line-height: 1.1;  padding: 10px 7px 8px;
+        width: 100%;  height: 77px;  margin-right: 10px;  cursor: pointer;}
+    .a-0 p{color: #bc3838 !important;line-height: 18px;}
+    .a-0 span{font-size: 20px;margin-top: 10px;  display: inline-block;}
+    .center_ul  li p{color: #fff;  text-align: center;  font-size: 9px;  margin-top: 4px;}
+    .tdiv{display: none;}
+    .divactive{display: block;    overflow: hidden;  margin-top: 20px;}
+    /*优惠卷*/
+    .icon-jr{background-image: url(__THEMEW3G__/icon/icon6.png);  display: inline-block;  vertical-align: middle;}
+    .couponlist1 .quan {  background-position: 0 0;  }
+    .couponlist1 .cou_red1 {  position: relative;  text-align: center;  background: url(__THEMEW3G__/icon/cou_red.png) 0 0 no-repeat;  background-size: 100% 80px;  }
+    .couponlist1 .txt {  padding: 9px;  border: solid 1px #eee;  border-top: 0;  overflow: hidden;  }
+    .couponlist1 .prcie {  padding-top: 35px;  font-size: 25px;  color: #fff;  }
+    .class_order_bd1 p {  font-size: 16px;  color: #999;  }
+    .couponlist1 p {  font-size: 12px;  }
+    .couponlist1 .item {  color: #666;  font-size: 12px;  display: block;  }
+    .couponlist1 .txt a {  color: #e56d5d;  border-color: #e56d5d;  }
+    .couponlist1 .txt a {  margin: 10px auto;  line-height: 32px;  border: solid 1px #ccc;  display: block;  text-align: center;  border-radius: 16px;  font-size: 12px;  cursor: pointer;  width: 50%;  }
+    .carlist .txt {  position: relative;  float: left; /*width: 194px;*/  width: 78%;  height: 127px;  padding: 10px 0 10px 14px;  border: solid 1px #eee;  border-right: 0;  }
+    .carlist .a-1 {  float: left;  width:22%;  height: 127px;  padding-top: 22px;  font-size: 14px;
+        color: #fff;  text-align: center;  background: url(__THEMEW3G__/icon/cou_grenn.png)no-repeat;    background-size: 100px 129px;  }
+    .carlist .txt h3 {  color: #98d9fa !important;  }
+    .carlist .txt h3 { /* margin-bottom: 15px;*/  font-size: 30px;  color: #666;  }
+    .carlist .txt h3 span {  font-size: 12px;  color: #666;  }
+    .carlist .txt p {  color: #999;  line-height: 18px;  font-size: 12px;  text-align: left;  }
+    .cou_red1 .txt span{text-align: left}
+    .cou_red1 {width: 77% !important;display: table;margin: 0 auto}
+    .class_order_bot .item .fr{width: 60px;color: #000;}
+    .relCard .number {padding: 0 10px;color: #424344;height: 25px;border: 1px solid #e9e9e9;}
+</style>
+
+<include file="__THEME__/public_footer_twolevel" />

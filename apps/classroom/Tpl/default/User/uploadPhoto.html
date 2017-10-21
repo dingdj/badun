@@ -1,0 +1,132 @@
+<include file="__THEME__/public_header"/>
+<link href="__APP__/css/teacher.css" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+    .ico_top, .ico_btm {
+        background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;
+        height: 14px;
+        width: 12px;
+    }
+
+    .ico_top, .ico_btm {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ico_top {
+        background-position: -12px 0;
+    }
+
+    .ico_btm {
+        background-position: -24px 0;
+    }
+
+    .ico_top:hover {
+        background-position: 0 0;
+    }
+
+    .ico_btm:hover {
+        background-position: -35px 0;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .position-rt-float{
+        width:248px;
+    }
+    .user-imglist li .img{
+        height: 138px;
+    }
+    .user-imglist .position-rt{
+        width:248px;
+        height: 138px;
+    }
+    .user-imglist li h2{
+        padding: 0 20px;
+    }
+    .user-con-title .on{
+        color:#00BED4;
+    }
+</style>
+
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting"/>
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>2))}">我的相册</a>
+                    <php>if(!$photo){</php>
+                    <a class="on" onclick="navClick(this,'uploadPhoto')" href="javascript:;">添加相册</a>
+                    <php> }else{ </php>
+                    <a class="on" onclick="navClick(this,'uploadPhoto')" href="javascript:;">修改相册</a>
+                    <php> }</php>
+                </div>
+            </div>
+        </div>
+
+        <div class="Manage_all" style="float: right;width: 870px;background-color: #fff;">
+            <form method="POST" action="{:U('classroom/User/uploadPhoto')}" id="detail_form" name="detail_form">
+                <div class="infobox" style="margin-top:30px;">
+                    <dl>
+                        <dt><span>*</span>相册名称：</dt>
+                        <dd>
+                            <input type="hidden" name="id" id="id"  value="{$photo.id}">
+                            <input type="text" class="inp01" name="title" id="title"  value="{$photo.title}">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <input  class="btn"  type="submit"  style="line-height: 0;" value="保 存">
+                        </dd>
+                    </dl>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("form[name='detail_form']").submit(function(evt){
+        var e = evt || window.event;
+        window.event?e.returnValue = false:e.preventDefault();
+        window.event?e.cancelBubble=true:e.stopPropagation();
+        if($("#title").val()==""){
+            ui.error("请输入相册名称!");
+            return false;
+        }
+        var detail_form = $("form[name='detail_form']");
+        $.ajax({
+            type: detail_form.attr('method') || 'POST',
+            url:detail_form.attr("action"),
+            data:detail_form.serialize(),
+            dataType:"json",
+            cache: false,
+            success: function(res){
+                if(res.status == 1){
+                    ui.success(res.info);
+                    setTimeout(function(){
+                        location.href = res.url;
+                    },'1500');
+                }else{
+                    ui.error(res.info);
+                    return false;
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError){
+                ui.error("未知错误!");
+            }
+        });
+        return false;
+    });
+</script>
+<include file="__THEME__/public_footer" />

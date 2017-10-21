@@ -1,0 +1,35 @@
+@charset "utf-8";
+@media screen and (max-width:700px){*{padding:0;margin:0;font-family:'Microsoft YaHei';background-repeat:no-repeat}
+#linsde,.advertisement-box,.content-place,.page{display:none}
+.group-box{width:100%}
+.gu-pos{width:100%;float:left}
+.group{width:100%;height:100%}
+.square{width:50%;height:100%;float:left}
+.square ul{width:200%;background-color:#fff;margin:0;position:absolute;padding:0 0 10px 0;display:none;border-color:#fff;top:37px}
+.masking{width:100%;height:100%;background-color:#000;opacity:.4;display:none;position:fixed;z-index:200}
+.square li{height:22px;padding:0 10px 0 10px;border:1px solid #cef0f5;border-radius:5px;list-style:none;float:left;color:#00bdd6;font-size:14px;margin:10px 2% 0 2%;line-height:22px}
+.group-class{width:100%;top:10px;left:0}
+.group-class .group_searchdiv{height:35px;line-height:35px;font-size:12px;color:#999;text-align:center;background:#e3e8ed}
+.group-name{width:200%;background-color:#F2F2F2;border:1px solid #F2F2F2;position:absolute;top:21px;left:-100%;display:none;border-color:#fff}
+.group-name button{width:100%;height:40px;float:left;color:#656565;text-align:left;font-size:13px;line-height:20px;cursor:pointer;border:none;border-bottom:1px solid #eee;background-color:#fff;outline:0;padding:0 0 0 5%}
+.group-name button i{display:block;width:15px;height:10px;float:right;margin:5px 5% 0 0;line-height:10px}
+.com-btns,.square{width:50%;height:37px;background-color:#F7F7F7;color:#656565;font-size:15px;line-height:37px;position:absolute;z-index:300}
+.square em{float:left;margin-left:27%;font-style:normal}
+.com-btns{left:50%}
+.com-btns span{float:left;margin-left:27%;display:block}
+.group-btns h5{float:left}
+.btns-icon{width:12px;height:12px;background:url(../icon/icon_h5.png);background-position:265px 200px;float:right;margin-top:13px;margin-right:27%}
+.order{color:#656565;font-size:15px;text-align:center;line-height:37px;margin-top:37px;float:left}
+.group-content{width:100%;float:left;background-color:#fff}
+.group-content a{border-bottom:solid 1px #efefef;padding-bottom:9px;float:left;display:block;width:96%;height:96px;margin:10px 2% 0 2%}
+.group-content a:hover{transform: translate(0,0);box-shadow:0 0 0 0 rgba(255,255,255,1)}
+.group-content-img{width:23%;height:69px;float:left}
+.group-content a img{width:100%;height:100%}
+.group-content a span{width:100%;height:23px;background:#00BDD4;color:#fff;font-size:12px;line-height:23px}
+.group-content-per{width:75%;height:96px}
+.group-content-per h3{line-height:13px;font-size:13px}
+.group-content-per p{font-size:12px;color:#656565;text-align:left;line-height:21px;height:42px;overflow:hidden}
+.ibor{margin-top:0;line-height:30px}
+.group-content-per i{color:#888;font-size:12px}
+#foot,.pabor{display:none}
+}

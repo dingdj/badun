@@ -1,0 +1,52 @@
+<div class="center_left">
+    <div class="dl_tit">管理中心</div>
+    <dl>
+        <dt class="on"><a href="javascript:;" onclick="magbtn(this)">内容管理</a></dt>
+        <dd>
+            <ul>
+                <li <php>if(ACTION_NAME=="video"){echo "class='on'";}</php>><a href="{:U('classroom/Home/video')}">课程</a></li>
+                <li <php>if(ACTION_NAME=="live"){echo "class='on'";}</php>><a href="{:U('classroom/Home/live')}">直播</a></li>
+                <li <php>if(ACTION_NAME=="album"){echo "class='on'";}</php>><a href="{:U('classroom/Home/album')}">套餐</a></li>
+                <li　id="orderlist" <php>if(ACTION_NAME=="order"){echo "class='on'";}</php>><a href="{:U('classroom/Home/order')}">订单;;</a></li>
+                <li <php>if(ACTION_NAME=="share"){echo "class='on'";}</php>><a href="{:U('classroom/Home/share')}">分享</a></li>
+                <li <php>if(ACTION_NAME=="course"){echo "class='on'";}</php>><a href="{:U('classroom/Home/course')}">约课</a></li>
+
+                <li　id="wendalist" <php>if(ACTION_NAME=="wenda"){echo "class='on'";}</php>><a href="{:U('classroom/Home/wenda')}">问答</a></li>
+                <li <php>if(ACTION_NAME =="wenti"){echo "class='on'";}</php>><a href="{:U('classroom/Home/wenti')}">提问</a></li>
+                <li <php>if(ACTION_NAME=="review"){echo "class='on'";}</php>><a href="{:U('classroom/Home/review')}">点评</a></li>
+                <li <php>if(ACTION_NAME=="note"){echo "class='on'";}</php>><a href="{:U('classroom/Home/note')}">笔记</a></li>
+                <li <php>if(ACTION_NAME=="follow"){echo "class='on'";}</php>><a href="{:U('classroom/Home/follow')}">关注</a></li>
+                <li <php>if(ACTION_NAME=="learn"){echo "class='on'";}</php>><a href="{:U('classroom/Home/learn')}">学习记录</a></li>
+
+                <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+                <li <php>if(ACTION_NAME=="teacher_course"){echo "class='on'";}</php> ><a href="{:U('classroom/Home/teacher_course')}">约课管理</a></li>
+                <li   <php>if(ACTION_NAME=="teacherVideo"){echo "class='on'";}</php> ><a href="{:U('classroom/User/teacherVideo')}">上传课程</a></li>
+                <php>}</php>
+            </ul>
+        </dd>
+    </dl>
+
+    <dl>
+        <dt class="on"><a href="javascript:;" onclick="magbtn(this)">财富管理</a></dt>
+        <dd>
+            <ul>
+                <li <php>if(ACTION_NAME=="recharge"){echo "class='on'";}</php> ><a href="{:U('classroom/User/recharge')}">充值</a></li>
+                <li <php>if(ACTION_NAME=="account"){echo "class='on'";}</php> ><a href="{:U('classroom/User/account')}">余额</a></li>
+                <li <php>if(ACTION_NAME=="card"){echo "class='on'";}</php> ><a href="{:U('classroom/User/card')}">绑定银行卡</a></li>
+            </ul>
+        </dd>
+    </dl>
+
+    <dl>
+        <dt class="on"><a href="javascript:;" onclick="magbtn(this)">账户管理</a></dt>
+        <dd>
+            <ul>
+                <li <php>if(ACTION_NAME=="setInfo"){echo "class='hover'";}</php> ><a href="{:U('classroom/User/setInfo')}">账户设置</a></li>
+                <li <php>if(ACTION_NAME=="address"){echo "class='hover'";}</php> ><a href="{:U('classroom/User/address')}">收货地址设置</a></li>
+                <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+                <li <php>if(ACTION_NAME=="teacherDeatil"){echo "class='on'";}</php> ><a href="{:U('classroom/User/teacherDeatil')}">教师信息设置</a></li>
+                <php>}</php>
+            </ul>
+        </dd>
+    </dl>
+</div>

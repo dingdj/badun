@@ -1,0 +1,15 @@
+<php>if($data['data']){</php>
+<volist name="data.data" id="l">
+	<li>
+		<i class="<switch name='l.attach_info.extension'><case value='ppt|pptx|pptm|ppsx|potm|ppam|ppsm'>icon-01</case><case value='word|doc|docx|docm|dotx'>icon-02</case>
+                        <case value='pdf'>icon-03</case><case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-04</case><case value='txt'>icon-05</case><default/></switch>"></i>
+		<h3>{$l.title}</h3>
+		<p>更新时间：{:date("Y-m-d H:i",$l['ctime'])}</p>
+		<p>文件大小：{$l['attach_info']['size']}</p>
+		<p>文件类型：{$l['attach_info']['extension']}</p>
+		<p>下载次数：{$l.down_nums}</p>
+		<p>所需积分：<span class="free"><eq name="l.price" value="0">免费<else/>{$l.price}</eq></span></p>
+		<a class="down" href="{:U('classroom/Library/down',array('source_id'=>$l['doc_id']))}">下载</a>
+	</li>
+</volist>
+<php>}</php>

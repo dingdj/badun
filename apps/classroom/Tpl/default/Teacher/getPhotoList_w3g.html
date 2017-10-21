@@ -1,0 +1,136 @@
+<include file="__THEME__/public_header_twolevel"/>
+<style>
+    .teachertop h3 {top: calc(33% + 33px);}
+    .monsli {top: calc(51% + 60px);}
+    .monsli ul {width: 164px;color: #fff;margin: auto;}
+</style>
+<!--ckplayer  -->
+<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
+
+<div class="body">
+    <div class="teachertop">
+        <img class="bg" src="<php>if($data['background_id']){</php>{:cutImg($data['background_id'],640,441)}<php>}else{</php>__THEME__/icon/bg.jpg<php>}</php>" alt="{data.name}" />
+        <div class="photo" style="width: 72px;height: 72px;">
+            <img src="{:cutImg($data['head_id'],72,72)}" alt="{$data.name}" />
+            <php>if($data['teacher_title_cover']){</php>
+                <i><img src="{$data.teacher_title_cover}" alt="" /></i>
+            <php>}</php>
+        </div>
+        <div class="tit">
+            <h3>{$data.name}</h3>
+            <i class="icon-01"></i>
+            <i class="icon-01"></i>
+        </div>
+        <p>{$data.inro|msubstr=0,25,'utf-8',true}</p>
+        <div class="monsli">
+            <ul>
+                <li>{$data.teacher_age}年<br>教龄</li>
+                <li>{$data.video}个<br>课程</li>
+                <li><php>if($data['video_count']){</php>{$data.video_count}<php>}else{</php>0<php>}</php>个<br>视频</li>
+                <li>{$follow}人<br>关注</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="teacherbot">
+      <!--相册列表  -->
+        <div class="classitem bgw ">
+            <div class="classtit"><a href="{:U('classroom/Teacher/view',array('id'=>$_GET['id']))}" class="fr">返回讲师详情</a><em></em><a href="{:U('classroom/Teacher/getPhotoList',array('id'=>$_GET['id'],'photo_id'=>$_GET['photo_id']))}">相册首页</a></div>
+            <div class="classcon hideWatch">
+                <ul class="teacher-classlist">
+                    <foreach name="photos_deatil" item="l">
+                        <php>if($l['type'] == 1){</php>
+                        <li>
+                            <a href="javascript:void(0);" title="{$l.title}">
+                                <img src="{:cutImg($l['resource'], 188,188)}" alt="{$l.title}" class="lazyloading">
+                                <h3>{$l.title}</h3>
+                            </a>
+                        </li>
+                        <php>}else if($l['type'] == 2){ </php>
+                        <li>
+                            <a href="javascript:void(0);" data-id="{$l['pic_id']}" title="{$l.title}" class="opeanVideo">
+                                <img src="{:cutImg($l['cover'], 188,188)}" alt="{$l.title}" class="lazyloading"><i></i>
+                                <h3>{$l.title}</h3>
+                            </a>
+                        </li>
+                        <php>}</php>
+                    </foreach>
+                </ul>
+            </div>
+            <div class="g-mn2c m-courselb showWatch" style="display: none;">
+                <div id="video_play1" class="m-courselearn">
+                    <!-- zhangr - start - video -->
+                    <div class="learn-box" id="video_stop"></div>
+                    <div id="vplayer" class="learn-box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+  $(".opeanVideo").click(function(){
+      $(".showWatch").show();
+      watch($(this));
+      $(".hideWatch").hide();
+  });
+  $(".closeVideo").click(function(){
+      $(".hideWatch").show();
+      $(".showWatch").hide();
+      CKobject.getObjectById('ckvideo').videoClear();
+      //$(".showWatch").html('');
+  });
+})
+
+//加载视频
+function watch(_this){
+    var id = _this.data('id');
+    if(!id) return false;
+    $.post("{:U('classroom/Teacher/getVideoAddress')}",{pic_id:id}, function(data){
+        var data = jQuery.parseJSON(data);
+        if(data.status == '1'){
+            loadCkVideo(data.data);
+         }else{
+            notes(data.message);
+         }
+    });
+    function loadCkVideo(video_address){
+        var flashvars={
+            f:video_address,
+            c:0,
+            p:1,
+            loaded:'loadedHandler'
+        };
+
+        function loadedHandler(){
+            if(CKobject.getObjectById('ckvideo').getType()){
+                //说明使用html5播放器
+                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
+            }else{
+                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+            }
+
+        }
+        var ispause=false;
+        var test_time=60;
+        function timeHandler(t){
+            if (!ispause && t>test_time){
+                ispause=true;
+                CKobject.getObjectById('ckvideo').videoPause();
+                $("#vplayer").remove();
+
+                $(".vedioPlay-msg").css("display","block");
+            }
+        }
+        var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:"transparent"};
+        var video=[video_address];
+        CKobject.embed('__ROOT__/player/ckplayer/ckplayer.swf','vplayer','ckvideo','100%','210',false,flashvars,video,params);
+    }
+}
+
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>
+
+

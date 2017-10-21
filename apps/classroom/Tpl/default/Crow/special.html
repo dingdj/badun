@@ -1,0 +1,118 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<div class="fullSlide">
+    <div class="bd">
+        <ul>
+        <volist name="ad_list" id="vo">
+            <li style="background:url({:getAttachUrlByAttachId($vo['banner'])}) #194982 center 0 no-repeat;">
+            <a target="_blank" href="{$vo.bannerurl}"></a>
+            </li>
+        </volist>
+        </ul>
+    </div>
+    <div class="hd"><ul></ul></div>
+</div>
+<!--banner end-->
+<!--itembox end-->
+<div class="itembox">
+	<div class="wrap">
+    	<div class="itemtit"><h2 class="indextit03"><em></em>热门众筹</h2></div>
+        <div class="itemcon">
+            <div class="raise-hot">
+                <div class="hd">
+                    <a class="next"></a>
+                    <a class="prev"></a>
+                    <ul>
+                    	<li></li>
+                        <li></li>
+                    </ul>
+                </div>
+                <div class="bd">
+                    <ul>
+                    <volist name="hot" id="vo">
+                        <li><a title="{$vo['title']}" href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'],220,160)}" alt="{$vo['title']}" /></a></li>
+                    </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+<!--itembox end-->
+<div class="itembox">
+	<div class="wrap">
+	<volist name="cate" id="vo">
+    	<div class="itemtit"><a class="fr" href="#">更多</a><h2 class="indextit03"><em></em>{$vo['title']}</h2></div>
+        <div class="itemcon">
+            <ul class="raise-ind-list">
+            	<volist name="vo.list" id="val">
+            	<li>
+                	<a href="{:U('classroom/Crow/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],600,300)}" /></a>
+                    <div class="info">
+                    	<div class="top">
+                            <h3><a href="{:U('classroom/Crow/view',array('id'=>$val['id']))}">{$val['title']}</a></h3>
+                            <div class="originator">发起人：{:getUserName($val['uid'])}</div>
+                            <a class="sign_btn" href="#">我要报名</a>
+                    	</div>
+                        <div class="bot">
+                        	<div class="item time"><i class="icon-tim"></i>{$val['stime']|date="Y.m.d"} ~ {$val['etime']|date="Y.m.d"}</div>
+                            <div class="item address"><i class="icon-add"></i>{$val['address']}</div>
+                            <div class="item price"><i class="icon-pri"></i>¥{$val['price']}</div>
+                            <div class="item num">报名人数：{$val['num']}</div>
+                            <div class="act">
+                            	<div class="fx fr"><a class="had" href="javascript:;"><i class="icon-02"></i>分享</a></div>
+								<div class="sc fr">
+								<php>if($val['isCollect']){</php>
+									<a class="had" href="javascript:;" data-type="0" onclick="collectCrow(this,{$val['id']})">
+									<i class="icon-01"></i>取消收藏
+									</a>
+								<php>}else{</php>
+									<a href="javascript:;" data-type="1" onclick="collectCrow(this,{$val['id']})">
+									<i class="icon-01"></i>收藏
+									</a>
+								<php>}</php>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        </volist>
+    </div>
+</div>
+<script type="text/javascript">
+var uid = '{$uid}';
+//收藏众筹
+function collectCrow(obj,id){
+    if(uid<=0){
+      ui.error("请先登录");
+      return;
+    }
+    var type = $(obj).attr('data-type');
+    $.ajax({
+      type: 'POST',
+      url:"{:U('classroom/Public/collect')}",
+      data:{type:type,sctype:6,source_id:id},
+      dataType:"json",
+      cache: false,
+      success: function(data){
+          if(data.status == '0'){
+              notes(data.info,'failure');
+          } else {
+              notes(data.info,'');
+              //$(cate).removeClass().addClass("wenda-gz-Toggle");
+              if(type == 1){ //收藏
+                  $(obj).addClass('had').html('<i class="icon-01"></i>取消收藏');
+                  $(obj).attr('data-type',0);
+              }else{
+                  $(obj).removeClass('had').html('<i class="icon-01"></i>收藏');
+                  $(obj).attr('data-type',1);
+              }
+
+          }
+      },
+    });
+}
+</script>
+<include file="__THEME__/public_footer" />

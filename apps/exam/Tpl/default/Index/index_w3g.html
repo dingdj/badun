@@ -1,0 +1,114 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <style>
+        .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
+        .btn {float: right;margin-top: -55px;}
+    </style>
+    <div class="min-height-wrap">
+        <div class="maskbox"></div>
+        <div class="body">
+            <ul class="selectul">
+                <li class="r03" name="list_dl" style="width: 100%;">
+                    <div class="hd">全部分类<i></i></div>
+                    <div class="bd">
+                        <dl>
+                            <dt>考试分类</dt>
+                            <dd name="group-list">
+                                <a href="{:U('exam/Index/index')}" >全部考试</a>
+                                <volist name="selCate" id="vo">
+                                        <a href="{:U('exam/Index/index',array('cateId'=>$vo['id']))}" <eq name="cateId" value="$vo['id']">style="color: #00BED4;background-color: #fff;border-color: #00BED4;"</eq>>{:msubstr($vo['title'],0,5,"utf-8",true)}</a>
+                                </volist>
+                            </dd>
+                        </dl>
+                    </div>
+                </li>
+            </ul>
+            <php>if($cateId){</php>
+                <div class="searchdiv">在“<span>{$title}</span>”分类下，找到{$list.count}门考试</div>
+            <php>}</php>
+            <ul class="testlist">
+                <volist name="listData" id="vo" lenth='5'>
+                    <li>
+                        <a href="javascript:;" onclick="selectexam({$vo.exam_id})">
+                            <i class="icon-01"></i>
+                            <h3>{$vo.exam_name|getShort=###,'12',''}</h3>
+                            <div class="info">考试时间：{$vo.exam_begin_time} ~ {$vo.exam_end_time}&nbsp;&nbsp;考试时长：{$vo.exam_total_time}</div>
+                        </a>
+                        <a class="btn" href="{:U('exam/UserExam/exam_info' , 'exam_id='.$vo['exam_id'].'&paper_id='.$vo['paper_id'])}">查看解析</a>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+
+        <php>if($list){</php>
+        <div class="loadding">
+            <if condition="$list['nowPage'] eq $list['totalPages']">
+                <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+            </if>
+        </div>
+        <a class="backtop"></a>
+        <php>}</php>
+    </div>
+<script>
+    $(function(){
+        $(".hd").click(function(){
+            if($(".maskbox").css("display")=="none") {
+                $(".maskbox").css({"display": "block"});
+            }else{
+                $(".maskbox").css({"display": "none"});
+            }
+        });
+
+        var p = 1;
+        $(window).scroll(function(){
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if(!p || p >= "{$list['totalPages']}"){
+                    $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                }else{
+                    p = p + 1;
+                    ajaxBang();
+                }
+            }
+        });
+        //请求事件
+        function ajaxBang(){
+            $.ajax({
+                type: "GET",
+                url:"{:U('exam/Index/getList')}",
+                data:"p="+p+"&cateId={$_GET['cateId']}",
+                dataType:"json",
+                success:function(data){
+                    appendHtml(data);
+                }
+            });
+        }
+        //追加html
+        function appendHtml(data){
+            $(".testlist").append(data.data);
+            if(!p || p >= data.totalPages){
+                $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                return false;
+            }
+        }
+    });
+    //请求事件
+    function selectexam(id){
+        var uid = '{$uid}';
+        if(uid<=0){
+            alert("请先登录");
+            window.location.href = U('public/Passport/login_g');
+            return false;
+        }else{
+            window.location.href = U('exam/Index/exam')+"&id="+id;
+        }
+    }
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

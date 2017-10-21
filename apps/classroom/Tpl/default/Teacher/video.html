@@ -1,0 +1,400 @@
+<!--header-->
+<include file="__THEME__/public_header" />
+<!--header end-->
+
+<!--top-->
+<include file="./top" />
+<!--top end-->
+
+<!--content-->
+<div class="content adjust">
+	<div class="wrap">
+    <!--left-->
+    <include file="./left" />
+    <!--left end-->
+
+        <div class="teacher-content">
+            <div class="teacher-course-border">
+                <div class="teacher-comment">
+                    <div class="tab-nav-info">
+                        <div class="top-nav teacher-course-nav">
+                            <div class="dropdown sort-select" name="slt-list">
+                                <div class="btn-default"><span class="txt">最近发布</span><i class="icon-sj"></i></div>
+                                <ul class="dropdown-menu">
+                                    <li data-value="最近发布" class="active" onclick =order("rentime")>最近发布</li>
+                                    <li data-value="最受欢迎" onclick =order("hot")>最受欢迎</li>
+                                </ul>
+                            </div>
+                            <b class="item nav-active" data-type="1"  vtype = '1'><span>在线直播</span></b>
+                            <b class="item" data-type="2"  vtype = '2'><span>线下班课</span></b>
+                            <b class="item" data-type="3"  vtype = '3'><span>视频课程</span></b>
+                            <b class="item" data-type="4"  vtype = '4'><span>1对1课程</span></b>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video_all">
+                    <ul class="online-course">
+                    <php>if($live['data']){</php>
+                        <foreach name="live.data" item="l" key="k">
+                            <li class="item">
+                                <a href="{:U('classroom/Live/view',array('id'=>$l['id']))}"><img src="{:getCover($l['cover'],180,180)}" alt="{$l.video_title}"></a>
+                                <div class="info">
+                                    <div class="new-title"><a class="title" href="{:U('classroom/Live/view',array('id'=>$l['id']))}">{$l.video_title}</a></div>
+                                    <ul class="course-info">
+                                    <li>课时长度：{$l.section_num}课时</li>
+                                    <li>班级人数：{$l.video_order_count}人</li>
+                                    <li>课程安排：<span>{:date("Y-m-d H:i",$l['listingtime'])}开课</span></li>
+                                    <li>上课方式：在线授课（支持手机观看）</li>
+                                    </ul>
+                                    <div class="button-box">
+                                        <div class="price">课程总价：  <php>  if( $l['t_price']  == 0 ||  $l['is_charge'] == 1)  {</php>  <span   style = "color : #56b02a;"> 免费</span>   <php>  } else {</php>  <span>￥ {$l['t_price']}</span> <php>}</php> </div>
+                                        <div > <span   style = "color : #f63;"    id ="charge_video"  onclick = "buycoursevideo({$l['id']},{$l['t_price']},2)"> 立即购买 </span>   </div>
+                                        <!-- <a href="javascript:void(0);" class="btn-default"><php>if($l['invalidDate'] || $l['invalidDate'] >= time()){</php>直播中<php>}else{</php>已完成<php>}</php></a> -->
+                                    </div>
+                                </div>
+                            </li>
+                        </foreach>
+                    </ul>
+
+
+
+
+                    <div class="page">
+                        <div class="pagebox live" data-type="2">
+                            {$live.html}
+                        </div>
+                    </div>
+                    <php>}else{</php>
+                    <ul class="online-course" >
+                    <li class="item" style="height: 148px;">暂无课程</li>
+                    </ul>
+                    <php>}</php>
+                </div>
+
+                <div class="video_all"  style="display: none;">
+                    <ul class="meet-course">
+                        <php>if($meetcourse['data']){</php>
+                        <foreach name="meetcourse.data" item="l" key="k">
+                            <li class="item">
+                                <a href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}">
+                                    <img src="{:getCover($l['cover'],180,180)}"  alt="">
+                                </a>
+                                <div class="info">
+                                    <div class="new-title"><a class="title" href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}">{:msubstr(t($l['course_name']),0,20,'utf-8',true)}</a></div>
+                                    <ul class="course-info">
+                                        <li>已报名：{$l.course_order_count}人</li>
+                                        <li>开课时间：<span>{:date('Y-m-d',$l['listingtime'])}～{:date('Y-m-d',$l['uctime'])}</span></li>
+                                        <li>上课地点：{$l['teach_areas'] | default='无限制'}</li>
+                                        <li>上课方式：线下授课</li>
+                                    </ul>
+                                    <div class="button-box" style="right: 0px;">
+                                        <div class="price">课程总价：<if condition="$l['price']  eq 0 OR $l['is_charge'] eq 1"><span style = "color : #56b02a;"> 免费</span><else/><span>￥ {$l['price']}</span></if></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </foreach>
+                    </ul>
+
+                    <div class="page">
+                        <div class="pagebox " data-type="2">
+                            {$meetcourse.html}
+                        </div>
+                    </div>
+                    <php>}else{</php>
+                    <ul class="meet-course" >
+                        <li class="item" style="height: 148px;">暂无课程</li>
+                    </ul>
+                    <php>}</php>
+                </div>
+
+
+                <div class="video_all" style="display: none;">
+                    <ul class="online-course">
+                    <php>if($course['data']){</php>
+                        <foreach name="course.data" item="l" key="k">
+                            <li class="item">
+                                <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}"><img src="{:getCover($l['cover'],180,180)}" alt="{$l.video_title}"></a>
+                                <div class="info">
+                                    <div class="new-title"><a class="title" href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></div>
+                                    <ul class="course-info">
+                                    <li>课时长度：{$l.section_num}课时</li>
+                                    <li>班级人数：{$l.video_order_count}人</li>
+                                    <li>上架时间：<span>{:date("Y-m-d H:i",$l['listingtime'])}</span></li>
+                                    <li>上课方式：在线授课（支持手机观看）</li>
+                                    </ul>
+                                    <div class="button-box">
+                                        <div class="price">课程总价：<php>  if( $l['price']  == 0 ||  $l['is_charge'] == 1)  {</php>  <span   style = "color : #56b02a;"> 免费</span>   <php>  } else {</php>  <span>￥ {$l['price']}</span> <php>}</php> </div>
+                                        <div > <span   style = "color : #f63;"    id ="charge_video"  onclick = "buycoursevideo({$l['id']},{$l['price']})"> 立即购买 </span>   </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </foreach>
+					</ul>
+                    <div class="page">
+                        <div class="pagebox course" data-type="1">
+                            {$course.html}
+                        </div>
+                    </div>
+                    <php>}else{</php>
+                    <ul class="online-course" >
+                    <li class="item" style="height: 148px;">暂无课程</li>
+                    </ul>
+                    <php>}</php>
+                </div>
+
+                <div class="video_all"  style="display: none;">
+                    <ul class="meet-course">
+                        <php>if($meetone['data']){</php>
+                        <foreach name="meetone.data" item="l" key="k">
+
+                            <li class="item">
+                                <div class="info">
+                                    <ul class="course-info">
+                                        <li>预约方式：{$l.type}课时</li>
+                                        <li>预约时间：<span>{:date("Y-m-d H:i",$l['ctime'])}</span></li>
+                                        <li>预约留言：{$l.words}</li>
+                                    </ul>
+                                    <div class="button-box">
+                                        <div class="price">预约价格：<span>￥{$l.price}</span></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </foreach>
+                    </ul>
+
+                    <div class="page">
+                        <div class="pagebox " data-type="2">
+                            {$meetone.html}
+                        </div>
+                    </div>
+                    <php>}else{</php>
+                    <ul class="meet-course" >
+                        <li class="item" style="height: 148px;">暂无课程</li>
+                    </ul>
+                    <php>}</php>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="message_add_order_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>加入我的看单</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">该课程需要加入我的看单后方可学习，确定加入？</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn shou_mount add_order_video" style="color: #fff;background: rgb(101, 173, 221);">确　定</a>
+        <a class="quer_btn close_btn">取　消</a>
+    </div>
+</div>
+
+<input type = "hidden"  id = "vidvalue">
+<input type = "hidden"  id = "playtype"  value="zy_video">
+<input type = 'hidden'  name = "acttype"  id ='acttype'  value = "1">
+<!--content end-->
+<script src="__THEME__/js/jquery.SuperSlide.2.1.1.js"></script>
+<script type="text/javascript">
+$(function(){
+	$(".teacher-course-nav .item").click(function(){
+          $('#acttype').val($(this).attr("vtype"));
+		$(this).addClass("nav-active").siblings().removeClass("nav-active");
+		var index = $(this).index();
+		$(".teacher-course-border .video_all").hide().eq(index-1).show();
+
+	});
+	setPageBoxClick();
+});
+var p = 1;
+var tid = '{$Think.get.id}';
+var orderby ="";
+//追加html
+function getNowPage(url,name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = url.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+//加载分页
+function setPageBoxClick(totalPages){
+    $(".pagebox>a").die('click').live('click',function(e){
+        p = getNowPage($(this).attr('href'),'p');
+
+        var e = event || window.event
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        } else{
+            e.cancelBubble = true;
+        };
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+        ajaxBang($(this));
+    });
+    $(".gotoPage").die("click").click(function(){
+        p = $(this).parent().find("input[name='pageNum']").val();
+        ajaxBang($(this).parent(".pagediv"));
+    });
+}
+
+var id = '{$mid}';
+
+//购买操作
+function buycoursevideo(vid,money,playtype) {
+
+    if(id<=0){
+        reg_login();
+        return false;
+    }
+    var form  = $('#pay_form');
+    var vid = vid;
+    $('#vidvalue').val(vid);
+
+    if(!vid ){
+        ui.error('参数错误');
+        return false;
+    }
+
+    if(playtype == 2)
+    {
+        $('#playtype').val('zy_live');
+    }
+
+    var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+    var money = money;
+    var check_type ='zy_video';
+    if(money <= 0){
+        $('.message_add_order_box').show();
+        $('.mask').show();
+        return false;
+    }
+    if(rechange_base>0 && money%rechange_base != 0){
+        if(rechange_base == 1){
+            ui.error('购买金额必须为整数');
+        }else{
+            ui.error('购买金额必须为'+rechange_base+'的倍数');
+        }
+        return false;
+    }
+
+    var mount_url = "{$_GET['mid']}";
+    $.post(U("classroom/PayVideo/checkPay"),{check_type:check_type,vid:vid,money:money},function(data){
+
+        if(data.status == 1){
+
+            if(mount_url){
+                window.location.href = '/pay/'+vid+"%2C"+check_type+"%2C"+mount_url+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+            }else{
+                window.location.href = '/pay/'+vid+"%2C"+check_type+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+            }
+        } else if(data.status == 9){
+            ui.error(data.info);
+            window.location.reload();
+        } else {
+            ui.error(data.info);
+            return false;
+        }
+    },'json');
+}
+
+
+
+$('.message_add_order_box .w-close a,.close_btn').click(function () {
+    $('.message_add_order_box').hide();
+    $('.mask').hide();
+});
+
+$('.add_order_video').click(function () {
+
+    var form  = $('#pay_form');
+    var vid = $('#vidvalue').val();
+    var vtype = $('#playtype').val();
+
+    $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+        if(data.status == 1){
+            $('.message_add_order_box').hide();
+            ui.success(data.info);
+            window.location.reload();
+        } else {
+            ui.error(data.info);
+            return false;
+        }
+    },'json');
+});
+
+
+
+
+
+//追加html
+function appendHtml(data,_this){
+    _this.parents(".page").prev("ul").html("");
+    if(data.data!=""){
+        if(data.totalPages == null)
+        {
+            data.totalPages = 0;
+        }
+
+        _this.parents(".page").prev("ul").append(data.data);
+//        data.html+='<div class="pagediv">';
+//        data.html+='  <span>共<p id="pageTotal" style="display: inline-block;">'+data.totalPages+'</p>页,去第</span>';
+//        data.html+='<input type="text" name="pageNum"  id ="pageNum">';
+//        data.html+=' <span>页</span>';
+//        data.html+=' <a class="goto gotoPage" href="javascript:;">确定</a>';
+//        data.html+='  </div>';
+        if(_this.parent(".pagebox")[0]){
+            _this.parent(".pagebox").html(data.html);
+        }else{
+            _this.html(data.html);
+        }
+        setPageBoxClick(data.totalPages);
+    }else{
+        _this.parents(".page").prev("ul").append("<script>对不起,暂无课程<\/script>");
+    }
+}
+//最受欢迎
+function order(orderBy){
+	//var orderby = $(this).data('type');
+    $(".pagebox").html("");
+    orderby = orderBy;
+    tid =tid;
+    var i = $("b.nav-active").index();
+    var obj = $(".video_all").eq(i-1).find('.pagebox');
+
+
+
+        ajaxBang(obj,i);
+}
+
+//排序请求事件 TODO
+function ajaxBang(_this,inputType){
+	var type = $('#acttype').val();
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getCourseList')}",
+        data:"p="+p+"&type="+type+"&tid="+tid+"&orderby="+orderby,
+        dataType:"json",
+        success:function(data){
+			try{
+				var data = JSON.param(data);
+			}catch(e){}
+            appendHtml(data,_this);
+        }
+    });
+}
+
+
+
+</script>
+
+
+<!--footer-->
+<include file="__THEME__/public_footer" />

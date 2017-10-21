@@ -1,0 +1,368 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/css/style3.0.css">
+<style>
+    .icon-area1,.icon-xuexiao,.icon-riqi{background: transparent;}
+    .date-choice{width: 45%;}
+    .date-choice .region{width:80px;}
+    .date-choice .region input{width:80px;color: #666;border: none;}
+    .date-choice .ensure{width: 30px;background-color: #00BED4;}
+    .date-choice .ensure a{color: #fff;}
+</style>
+<div class="mask"></div>
+    <!-- 面包屑导航 start -->
+    <div class="grid-total">
+        <div class="screen-outer">
+            <ul class="position-label-find">
+                <li>
+                    <a href="/">首页></a>
+                    <a href="{:U('classroom/LineClass/index')}">线下课</a>
+                </li>
+                <!--<li>
+                    <div class="cuorse-label">成都<i class="icon icon-weibiaoti101"></i></div>
+                    <div class="cuorse-label">心理学<i class="icon icon-weibiaoti101"></i></div>
+                </li>-->
+                <!--<li>
+                    <div class="course-find">
+                        <input type="text" id="search_course_input" placeholder="当前条件下的搜索">
+                        <i class="icon icon-search" id="btn_search"></i>
+                    </div>
+                </li>-->
+            </ul>
+
+            <div class="all-find">
+                <!--<dl class="school-choice fi-look-date">
+                    <dt><h5><i class="icon icon-area1"></i>选择地区</h5></dt>
+                    <dd>
+                        <div class="region">
+                            <span><p attr="0">全部</p><i class="icon icon-xia"></i></span>
+                            <ul>
+                                <li><a href="javascript:void(0)" attr="1">成都</a></li>
+                                <li><a href="javascript:void(0)" attr="2">深圳</a></li>
+                                <li><a href="javascript:void(0)" attr="3">北京</a></li>
+                                <li><a href="javascript:void(0)" attr="4">上海</a></li>
+                                <li><a href="javascript:void(0)" attr="5">天津</a></li>
+                                <li><a href="javascript:void(0)" attr="6">哈尔滨</a></li>
+                                <li><a href="javascript:void(0)" attr="7">广州</a></li>
+                                <li><a href="javascript:void(0)" attr="8">江苏</a></li>
+                                <li><a href="javascript:void(0)" attr="9">杭州</a></li>
+                                <li><a href="javascript:void(0)" attr="10">武汉</a></li>
+                            </ul>
+                        </div>
+                    </dd>
+                </dl>-->
+                <dl class="school-choice fi-look-date">
+                    <dt><h5><i class="icon icon-xuexiao"></i>选择机构</h5></dt>
+                    <dd>
+                        <div class="region">
+                            <span><p attr="{$mhm_id|default='0'}">{$mhm_title|default="全部"}</p><i class="icon icon-xia"></i></span>
+                            <ul>
+                                <li><a href="javascript:void(0)" attr="0" class="screen" data-type="mhm_id" data-value="0">全部</a></li>
+                                <foreach name="school" item="mhm" key="k">
+                                    <li><a href="javascript:void(0)" attr="{$k}" class="screen" data-type="mhm_id" data-value="{$k}">{$mhm}</a></li>
+                                </foreach>
+                            </ul>
+                        </div>
+                    </dd>
+                </dl>
+                <dl class="school-choice date-choice">
+                    <dt><h5><i class="icon icon-riqi"></i>开班时间</h5></dt>
+                    <dd>
+                        <div class="region">
+                           <span>
+                               <input name="listingtime" type="text" value="{:date("Y-m-d H:i:s",$listingtime)}" class="s-txt" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                               <!--<p attr="8">{:date("Y-m-d", time())}</p>-->
+                               <!--<i class="icon icon-xia"></i>-->
+                           </span>
+                        </div>
+                    </dd>
+                    <em>至</em>
+                    <dd>
+                        <div class="region">
+                            <span>
+                                <input name="uctime" type="text" value="{:date("Y-m-d H:i:s",$uctime)}" class="s-txt" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                                <!--<p attr="8">{:date("Y-m-d", time()+86400)}</p><i class="icon icon-xia"></i>-->
+                            </span>
+                        </div>
+                    </dd>
+                    <dd>
+                        <div class="region ensure"><a class="timeSearch" href="javascript:;">确定</a></div>
+                    </dd>
+                </dl>
+            </div>
+
+            <!-- 三级菜单 -->
+            <div class="line-course-menu">
+                <div class="one-line-course-menu">
+                    <!-- 一级 -->
+                    <h5>分类：
+                        <ul class="one-menu">
+                            <li class="<eq name='cateId' value=''>active-on01</eq>"><a href="{:U('classroom/LineClass/index')}"  id="cate0">全部</a></li>
+                            <volist name="selCate" id="vo">
+                                <li class="<eq name='vo.zy_currency_category_id' value='$cateId'>active-on01</eq>" >
+                                    <a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                                </li>
+                            </volist>
+                        </ul>
+                    </h5>
+                </div>
+                <!-- 二级 -->
+                <div class="two-menu-box" <php>if(!$cate){</php>style="display: none"<php>}</php>>
+                    <ul class="two-menu">
+                        <li class="<eq name='cate_id' value=''>active-on02</eq>"><a href='javascript:;' class="screen" id='cate1' data-type="cateId" data-value="{$cateId}">全部</a></li>
+                        <volist name="cate" id="vo">
+                            <li class="<eq name='vo.zy_currency_category_id' value='$cate_id'>active-on02</eq>" >
+                                <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+                <!-- 三级 -->
+                <div class="three-menu-box" <php>if(!$childCate){</php>style="display: none"<php>}</php>>
+                    <ul class="three-menu">
+                        <li class="<eq name='cate_ids' value=''>active-on02</eq>"><a href='javascript:;' class="screen" id='cate2' data-type="cateId" data-value="{$cateId}%2C{$cate_id}">全部</a></li>
+                        <volist name="childCate" id="vo">
+                            <li class="<eq name='vo.zy_currency_category_id' value='$cate_ids'>active-on02</eq>" >
+                                <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 面包屑导航 end -->
+
+    <!-- 课程列表 start -->
+    <div class="crumbs-clearfix">
+        <div class="screen-outer">
+            <div class="group-name">
+                <ul>
+                    <li <if condition="!$orderBy OR $orderBy eq 'default'">class="name-on"</if>><a href="{:U('classroom/LineClass/index')}" >综合排序</a></li>
+                    <li <eq name="orderBy" value="new">class="name-on"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="new">最新</a></li>
+                    <li <eq name="orderBy" value="hot">class="name-on"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="hot">最热</a></li>
+                    <li <if condition="$orderBy eq 't_price' OR $orderBy eq 't_price_down'">class="name-on"</if>>价格
+                        <div>
+                            <a href="javascript:;" class="screen price-on" data-type="orderBy" data-value="t_price">价格从低到高</a>
+                            <a href="javascript:;" class="screen" data-type="orderBy" data-value="t_price_down">价格从高到低</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 课程列表 -->
+        <div class="screen-outer course-all-tab">
+            <php>if($data['data']){</php>
+                <volist name="data.data" id="vo">
+                    <dl>
+                        <dd>
+                            <a href="{:U('classroom/LineClass/view',array('id'=>$vo['course_id']))}">
+                                <img src="{:getCover($vo['cover'],330,200)}" style="max-height: 200px;">
+                            </a>
+                        </dd>
+                        <dd>
+                            <h5><a href="{:U('classroom/LineClass/view',array('id'=>$vo['course_id']))}">{:msubstr(t($vo['course_name']),0,10,'utf-8',true)}</a></h5>
+                            <b><if condition="$vo['course_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$vo['course_price']}</if></b>
+                            <small>开课时间：{:date('Y-m-d',$vo['listingtime'])}～{:date('Y-m-d',$vo['uctime'])}</small>
+                            <small>上课地点：{$vo['teach_areas'] | default='无限制'}</small>
+                            <p>{:msubstr(t($vo['course_binfo']),0,60,'utf-8',true)}</p>
+                        </dd>
+                        <dd class="las-uvlo">
+                            <a href="javascript:ui.sendmessage({$vo['teacher_uid']}, 0)">在线咨询</a>
+                            <if condition="$vo['is_buy'] eq 3"><a href="javascript:;" >已购买</a><else/><a href="javascript:;" onclick="meetingteacher(this,{$vo['course_id']},{$vo['teacher_uid']},{$vo['course_price']})">立即购买</a></if>
+                        </dd>
+                    </dl>
+                </volist>
+            <php>}else{</php>
+                <dl>暂无课程信息。。</dl>
+            <php>}</php>
+
+            <!-- 分页 -->
+            <php>if($data['data']){</php>
+            <div class="page">
+                <div class="pagebox">
+                    {$data.html}
+                </div>
+            </div>
+            <php>}</php>
+        </div>
+    </div>
+
+    <!--加入看单-->
+    <div class="message_add_order_box">
+        <input type="hidden" value="" name="vid" />
+        <div class="w-close"><a class="mr15 mt5">×</a></div>
+        <div class="w-notice">
+            <h4>加入我的看单</h4>
+        </div>
+        <div class="agreement blue">
+            <span class="tips_info">该课程需要加入我的看单后方可学习，确定加入？</span>
+        </div><br>
+        <div class="buy-btn">
+            <a class="quer_btn shou_mount add_order_video" style="color: #fff;background: rgb(101, 173, 221);">确　定</a>
+            <a class="quer_btn close_btn">取　消</a>
+        </div>
+    </div>
+<script>
+    $(function(){
+        //搜索线下课
+        $('#btn_search').click(function(){
+            search();
+        });
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                search();
+            }
+        });
+        function search(){
+            var search_course_input = $('#search_course_input').val();
+            if(search_course_input != ''){
+                var type = 'search',
+                    value = search_course_input,
+                    replace = {p:1},
+                    baseUrl = "{:U('classroom/LineClass/index')}";
+                window.location.href = getRequestUrl(type,value,baseUrl,replace);
+            }
+        }
+        //分页处理
+        $(".pagebox a").click(function(e){
+            e = e || window.event;
+            if(e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation();
+            }else{
+                e.returnValue = false;
+                e.cancelBubble = true;
+            }
+            var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/LineClass/index')}";
+            window.location.href = getRequestUrl(type,value,baseUrl,replace);
+        });
+        //同步请求
+        $(".screen").click(function(){
+            var _this = this;
+            var totalPages = "{$data.totalPages}";
+            var type = $(_this).data("type"),
+                    value = $(_this).data("value"),
+                    baseUrl = "{:U('classroom/LineClass/index')}",
+                    replace = {p:1};
+            if(type == 'lower'){
+                if(!value){
+                    var up = $("input[name='lower']").val();
+                    var down = $("input[name='toper']").val();
+                    if(up.match(/^\d+$/) && down.match(/^\d+$/)){
+                        value = up+','+down;
+                    }else{
+                        ui.error("请输入数字");
+                        return false;
+                    }
+                }
+            }
+            if(type == 'p'){
+                value = $("input[name='pageNum']").val();
+                if(parseInt(value) > parseInt(totalPages)){
+                    value = totalPages;
+                }
+                replace = {p:value};
+            }
+            window.location.href = getRequestUrl(type,value,baseUrl,replace);
+        });
+
+        //时间搜索
+        $(".timeSearch").click(function(){
+            var listingtime = $("input[name='listingtime']").val();
+            var listingtime2 = Date.parse(new Date(listingtime));
+            listingtime2 = listingtime2 / 1000;
+            var uctime = $("input[name='uctime']").val();
+            var uctime2 = Date.parse(new Date(uctime));
+            uctime2 = uctime2 / 1000;
+            var nowTime = Date.parse(new Date());
+            nowTime = nowTime / 1000;
+            if(listingtime2 >= uctime2){
+                ui.error("开始时间必须小于结束时间");
+                return false;
+            }
+            /*if(listingtime2 >= nowTime){
+                ui.error("开课时间必须小于当前时间");
+                return false;
+            }
+            if(uctime2 <= nowTime){
+                ui.error("结束时间必须大于当前时间");
+                return false;
+            }*/
+            var type = 'time',
+                value = listingtime2+','+uctime2,
+                baseUrl = "{:U('classroom/LineClass/index')}",
+                replace = {p:1};
+            window.location.href = getRequestUrl(type,value,baseUrl,replace);
+        });
+    });
+
+    //约课
+    function meetingteacher(sbt,vid,tuid,price){
+        var vtype = "zy_teacher";
+
+        if(MID<=0){
+            reg_login();
+            return false;
+        }
+        if(tuid  == MID)
+        {
+            ui.error("该课程不需要您购买！");
+            return ;
+        }
+        if(price <= 0){
+            $('.message_add_order_box').show();
+            $('.mask').show();
+            $('.message_add_order_box input').val(vid);
+            return false;
+        }
+        $.post(U("classroom/PayVideo/checkPay"),{vid:vid,money:price},function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //取消加入看单
+    $('.message_add_order_box .w-close a,.close_btn').click(function () {
+        $('.message_add_order_box').hide();
+        $('.mask').hide();
+    });
+
+    //加入看单
+    $('.add_order_video').click(function () {
+        var vid = $('input:hidden[name="vid"]').val();
+        var vtype = "zy_teacher";
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+            if(data.status == 1){
+                $('.message_add_order_box').hide();
+                ui.success(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+</script>
+
+<script src="__THEME__/../_static_new/js/course.js"></script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

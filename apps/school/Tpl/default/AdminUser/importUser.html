@@ -1,0 +1,35 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+  <div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('admin/User/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+
+    <div class="tit_tab">
+        <ul>
+        <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+        <volist name='pageTab' id='t'>
+            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+        </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    <form method="POST" action="{:U('school/AdminUser/doImportUser')}" id="detail_form" name="detail_form" enctype="multipart/form-data">
+      <div class="form2">
+        <dl class="lineD" id="dl_video_title">
+            <dt><font color="red"> * </font>请上传文件：</dt>
+            <dd>
+              <input name="file" type="file">
+          </dd>
+        </dl>
+
+        <div class="page_btm">
+          <input type="submit" class="btn_b" value="保存" id="form_submit">
+        </div>
+      </div>
+    </form>
+<include file="__THEME__/admin_footer" />

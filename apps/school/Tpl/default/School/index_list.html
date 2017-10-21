@@ -1,0 +1,27 @@
+<script>
+    var p="{$p}";//定义页码
+    var mhm_id="{$subject_category}";
+    var cate_id="{$reservation}";
+</script>
+<php>if($listData){</php>
+<volist name="vo.data" id="val">
+    <li>
+        <div class="pic">
+            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],218,130)}" alt=""></a>
+            <div class="txt">{:limitNumber($val['video_title'],10)}</div>
+        </div>
+        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_intro'],30)}</a></h3>
+        <div class="info">
+            <div class="fl">{$val['tea_name']}</div>
+            <php>if($val['is_free']){</php>
+            <div class="fr green">免费</div>
+            <php>}else{</php>
+            <div class="fr red">{$val['v_price']}</div>
+            <php>}</php>
+        </div>
+    </li>
+</volist>
+
+<php>}else{</php>
+<span>已经没有相关机构啦~</span>
+<php>}</php>

@@ -1,0 +1,101 @@
+<include file="__THEME__/public_header_twolevel"/>
+<style>
+    .comment_list .text {
+        text-align: left !important;
+    }
+    .lf {float: left;}
+    .info {height: 20px;}
+</style>
+<div class="content">
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>我的点评</div>
+        <div class="body">
+            <ul class="fqalistnav"></ul>
+            <div class="commentbox">
+                <ul class="comment_list" style="padding-top:20px;">
+                    <if condition="$reviewdata['data']">
+                        <foreach name="reviewdata.data" item="l" key='k'>
+                            <li>
+                                <div class="pic"><a href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img
+                                        class="lazyloading" src="{:getUserFace($l['uid'],'m')}"></a></div>
+                                <div class="name">
+                                    <div class="star">
+                                        评分：
+                                        <php>for($i=0;$i<$l['star'];$i++){</php>
+                                        <span></span>
+                                        <php>}</php>
+                                        <php>for($i=5;$i>$l['star'];$i--){</php>
+                                        <span class="no"></span>
+                                        <php>}</php>
+                                    </div>
+                                    <php>if($l['type']==1){</php>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" class="lf">源自：{:limitNumber($l['title'],8)}</a>
+                                    <php>}else{</php>
+                                    <a href="{:U('classroom/Album/view',array('id'=>$l['oid']))}" class="lf">源自：{:limitNumber($l['title'],8)}</a>
+                                    <php>}</php>
+                                </div>
+                                <div class="text">{$l.review_description}</div>
+                                <div class="info"><a href="javascript:;"><span class="icon-zan"></span>{$l.yong}</a><a
+                                        href="javascript:;"><span class="icon-pl"></span>{$l.review_comment_count}</a>
+                                    <p class="lf">时间：{$l.ctime|date="Y/m/dH:i",###}</p>
+                                </div>
+                            </li>
+                        </foreach>
+                        <else/>
+                        您暂未进行评论。。
+                    </if>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<php>if($reviewdata['data']){</php>
+<div class="loadding">
+    <if condition="$reviewdata['nowPage'] eq $reviewdata['totalPages']">
+        <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+    </if></div>
+<a class="backtop"></a>
+<php>}</php>
+
+<script>
+    var p = 1;
+    $(window).scroll(function(){
+        var scrollTop = $(this).scrollTop();
+        var scrollHeight = $(document).height();
+        var windowHeight = $(this).height();
+        if(scrollTop + windowHeight == scrollHeight){
+            console.log("{$reviewdata['totalPages']}");
+            console.log(p);
+            if(!p || p >= "{$reviewdata['totalPages']}"){
+                return false;
+            }else{
+                p = p+1;
+                ajaxBang();
+            }
+        }
+    });
+    //请求事件
+    function ajaxBang(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Home/getreviewlist')}",
+            data:"p="+p+"&type=me",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".comment_list").append(data.data);
+        if(!p || p >= data.totalPages){
+            $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+            return false;
+        }else{
+            p = data.nowPage;//下一页
+        }
+    }
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

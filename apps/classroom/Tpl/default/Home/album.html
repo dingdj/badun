@@ -1,0 +1,182 @@
+<include file="__THEME__/public_header" />
+<include file="../User/public/_top" />
+<!--centerbox end-->
+
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <ul>
+                    <ul>
+                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/album')}">购买的套餐</a></li>
+                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/album',['tab'=>1])}">收藏的套餐</a></li>
+                    </ul>
+                </ul>
+                <input type ="hidden"   id ="type"   value="getbuyalbumslist" >
+            </div>
+
+            <if condition="$_GET['tab'] eq null">
+            <div class="content-card">
+                <ul class="user-imglist">
+                    <if condition="$buy_album_data['data']">
+                        <foreach name="buy_album_data['data']" item="l">
+                            <li>
+                                <a href="{:U('classroom/Album/view',array('id'=>$l['id']))}" class="img">
+                                    <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                </a>
+                                <div class="user-title">
+                                    <h3>
+                                        <a href="{:U('classroom/Album/view',array('id'=>$l['id']))}">{$l.album_title}</a>
+                                    </h3>
+                                    <!--<p>-->
+                                        <!--<a href="#">跟我学商学院</a>-->
+                                        <!--<a href="#">韩老师</a>-->
+                                    <!--</p>-->
+                                    <span><strong>¥{$l.price}</strong><small>{$l.album_order_count}人在学</small></span>
+                                    <div class="act">
+                                        <div class="fx fl">
+                                            <!--<a  href="javascript:void(0);"><i class="icon-01"></i>分享</a>-->
+                                            <!--<div class="_share_my_firends">-->
+                                                <!--<div class="_share_all_channel">-->
+                                                    <!--<i class="side-ills-fell"></i>-->
+                                                    <!--<p>分享到：</p>-->
+                                                    <!--<div class="bdsharebuttonbox">-->
+                                                        <!--&lt;!&ndash; <a data-cmd="more" class="bds_more " href="#"></a> &ndash;&gt;-->
+                                                        <!--<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>-->
+                                                        <!--<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>-->
+                                                        <!--<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>-->
+                                                        <!--<a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>-->
+
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        </div>
+                                        <div class="sc fr"><a href="javascript:;" onclick="delalbum(this,'{$l.oid}','buy')"><i class="icon-02"></i>删除</a></div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </foreach>
+                        <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+                        <else/>
+                        <li style="border: none;box-shadow: none;">您还没有相关套餐。。</li>
+                    </if>
+                </ul>
+                <div class="page">
+                    <div class="pagebox">
+                        {$buy_album_data['html']}
+                    </div>
+                </div>
+            </div>
+            <else/>
+            <div class="content-card">
+                <ul class="user-imglist">
+                    <if condition="$col_album_data['data']">
+                        <foreach name="col_album_data['data']" item="l">
+                            <li>
+                                <a href="{:U('classroom/Album/view',array('id'=>$l['id']))}" class="img">
+                                    <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                </a>
+                                <div class="user-title">
+                                    <h3>
+                                        <a href="{:U('classroom/Album/view',array('id'=>$l['id']))}">{$l.album_title}</a>
+                                    </h3>
+                                    <!--<p>-->
+                                        <!--<a href="#">跟我学商学院</a>-->
+                                        <!--<a href="#">韩老师</a>-->
+                                    <!--</p>-->
+                                    <span><strong>¥{$l.price}</strong><small>{$l.album_order_count}人在学</small></span>
+                                    <div class="act">
+                                        <div class="fx fl">
+                                            <!--<a  href="javascript:void(0);"><i class="icon-01"></i>分享</a>-->
+                                            <!--<div class="_share_my_firends">-->
+                                                <!--<div class="_share_all_channel">-->
+                                                    <!--<i class="side-ills-fell"></i>-->
+                                                    <!--<p>分享到：</p>-->
+                                                    <!--<div class="bdsharebuttonbox">-->
+                                                        <!--&lt;!&ndash; <a data-cmd="more" class="bds_more " href="#"></a> &ndash;&gt;-->
+                                                        <!--<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>-->
+                                                        <!--<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>-->
+                                                        <!--<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>-->
+                                                        <!--<a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>-->
+                                                    <!--</div>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        </div>
+                                        <div class="sc fr"><a href="javascript:;" onclick="delalbum(this,'{$l.cid}','col')"><i class="icon-02"></i>删除</a></div>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </foreach>
+                        <else/>
+                        <li style="border: none;box-shadow: none;">您还没收藏套餐。。</li>
+                    </if>
+                </ul>
+                <div class="page">
+                    <div class="pagebox">
+                        {$col_album_data['html']}
+                    </div>
+                </div>
+            </div>
+            </if>
+        </div>
+
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/album')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+//    $(".content-card:first").show();
+//    $(".center_right_tit li").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".content-card").hide();
+//        $(".content-card").eq(tit_li).show();
+//    });
+
+    /**
+     * 删除套餐法
+     * @param id
+     */
+    function delalbum(cate,id,btnclick){
+        var id=id;
+        url="{:U('classroom/Album/delalbum')}";
+        //删除我购买的套餐
+        if(btnclick=="buy"){
+            fdata="type=2&rtype=1&id="+id;
+        }else if(btnclick=="col"){
+            fdata="type=2&rtype=2&id="+id;
+        }
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    $(cate).parent().parent().parent().parent().fadeOut();
+                }
+            }
+        });
+    }
+</script>
+
+<include file="__THEME__/public_footer" />

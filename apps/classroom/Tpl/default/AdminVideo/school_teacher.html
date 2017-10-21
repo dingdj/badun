@@ -1,0 +1,9 @@
+<dt><font color="red"> * </font>讲师选择：</dt>
+<dd>
+    <select name="trid">
+        <option value="0">请选择</option>
+        <foreach name="trlist" item="tl">
+            <option value="{$tl.id}" <php>if($teacher_id == $tl['id']){</php>selected="selected"<php>}</php> >{$tl.name}</option>
+        </foreach>
+    </select>
+</dd>

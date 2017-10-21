@@ -1,0 +1,33 @@
+<php>if($coupon){</php>
+        <li>
+            <div class="quan">
+                <php>if($coupon['type'] == 1){</php>
+                    <div class="price"><span>¥</span>{$coupon.price}<span style="font-size:12px;">满{$coupon.maxprice}元可用</span></div>
+                    <p>仅限&nbsp;:&nbsp;<span style="color: red;">{:msubstr($coupon['school_title'],0,13)}</span>&nbsp;下的课程使用</p>
+                    <p>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                <php>}else if($coupon['type'] == 2){</php>
+                    <div class="price">{$coupon.discount}折</div>
+                    <p>打折卡<br>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                <php>}else if($coupon['type'] == 3){</php>
+                    <div class="price">{$coupon.vip_grade}</div>
+                    <h3>会员时限&nbsp;:&nbsp;{$coupon.vip_date}天</h3>
+                    <p>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                <php>}else if($coupon['type'] == 4){</php>
+                    <div class="price"><span>¥</span>{$coupon.recharge_price}</div>
+                    <p>充值卡<br>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                <php>}</php>
+            </div>
+            <div class="txt">
+                <div class="item">卡券编号&nbsp;:&nbsp;{$coupon.code}</div>
+                <div class="item">发卡单位&nbsp;:&nbsp;{$coupon.school_title}</div>
+                <switch name="coupon.status">
+                    <case value="1"><a href="javascript:;" onclick="convert({$coupon.code})">立即领取</a></case>
+                    <case value="2"><a class="used" href="javascript:;">已被领取</a></case>
+                    <case value="0"><a class="used" href="javascript:;">已过期</a></case>
+                    <default/>
+                </switch>
+            </div>
+        </li>
+<php>}else{</php>
+    <p>暂时没有符合要求的卡券</p>
+<php>}</php>

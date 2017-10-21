@@ -1,0 +1,43 @@
+<include file="../Public/_header" />
+<include file="_nav" />
+<!--container-->
+<div class="nav-s">
+    <div class="nav_tit">限时免费</div>
+</div>
+<!--container-->
+<div class="container"> 
+    <div class="item_box">
+        <ul class="album-list">
+            <volist name="data" id="vo">
+                <li>
+                    <div class="pic">
+                        <a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}">
+                        <img src="{:getCover($vo['cover'],266,170)}" class="lazyloading" />
+                        <div class="bg">{$vo.video_title}</div>
+                        </a>
+                     </div>
+                     <div class="info">
+                         <div class="tit"><a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}">{:limitNumber($vo['video_intro'],54)}</a></div>
+                         <div class="con">
+                             <div class="price"><php>if($vo['mzprice']['price'] > 0){</php>{$vo['mzprice']['price']}学币<php>}else{echo '免费';}</php></div>
+                             <div class="star">评分：
+                             <if condition="$vo['video_score'] GT 0 "> <span></span>
+                             <else /><span class="no"></span></if>
+                             <if condition="$vo['video_score'] GT 1 "> <span></span>
+                             <else /><span class="no"></span></if>
+                             <if condition="$vo['video_score'] GT 2 "> <span></span>
+                             <else /><span class="no"></span></if>
+                             <if condition="$vo['video_score'] GT 3 "> <span></span>
+                             <else /><span class="no"></span></if>
+                             <if condition="$vo['video_score'] GT 4 "> <span></span>
+                             <else /><span class="no"></span></if>
+                             </div>
+                         </div>
+                     </div>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<!--footer-->
+<include file="../Public/_footer" />

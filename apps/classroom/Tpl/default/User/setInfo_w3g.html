@@ -1,0 +1,285 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <div class="body">
+        <form>
+        <div class="header2">
+            <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+            <div>修改个人资料</div>
+
+            <a href="javascript:;" class="save"  type="submit"   onclick="setUserInfo(this)">保存</a>
+        </div>
+        <div class="jgzlbox">
+
+        	<dl>
+            	<dt>昵称</dt>
+                <dd><input type="text"  name="uname" value="{:strpos($user['uname'],'@')?'':$user['uname']}"></dd>
+            </dl>
+            <dl>
+            	<dt>联系电话</dt>
+                <dd>
+                    <php>;$phone = $user['phone']?substr($user['phone'],0,3).'****'.substr( $user['phone'] , 7):'未设置'</php>
+                    <a id="modify_phone" href="javascript:;" style="margin-right:10px;" class="fr">{$user['phone']?'修改':'设置'}</a>
+                    {$phone}
+                </dd>
+            </dl>
+
+            <php>if($user['phone']):</php>
+            <dl class="modify_phone" style="display:none">
+                <dt><span>*</span>原手机号：</dt>
+                <dd>
+                    <php>$phone = substr($user['phone'],0,3).'****'.substr( $user['phone'] , 7);</php>
+                    <strong>{$phone}</strong><a href="javascript:;" type="code" step="1" class="fr" style="margin-right:10px;">获取验证码</a>
+                </dd>
+            </dl>
+            <dl class="modify_phone" style="display:none">
+                <dt><span>*</span>验证码：</dt>
+                <dd>
+                    <input type="text" value="" class="inp01" style="width: 200px;" />
+                    <a href="javascript:;" class="fr" type="submit" step="1" style="margin:-50px 10px 0 0;">提交</a>
+                </dd>
+            </dl>
+            <php>endif;</php>
+
+            <!-- 新号码 -->
+            <dl class="modify_phone" style="display:none">
+                <dt><span>*</span>新手机号：</dt>
+                <dd>
+                    <input type="text" value="" class="inp01" style="width: 200px;" />
+                    <a href="javascript:;" type="code" step="2" class="fr" style="margin:-50px 10px 0 0;">获取验证码</a>
+                </dd>
+            </dl>
+            <dl class="modify_phone" style="display:none">
+                <dt><span>*</span>验证码：</dt>
+                <dd>
+                    <input type="text" value="" class="inp01" style="width: 200px;" />
+                    <a href="javascript:;" class="fr" type="submit" step="2" style="margin:-50px 10px 0 0;">提交</a>
+                </dd>
+            </dl>
+
+            <dl class="modify_email">
+            	<dt>常用邮箱</dt>
+                <dd>
+                    <div id="modify_pe_show">
+                        <a class="fr" href="javascript:;" type="edit" style="margin-right: 10px;">修改</a>
+                        <span class="user_email">{$user.email}</span>
+                        <php>if($user['email']):</php>
+                          <a style="color:#188eee; float: right;margin-right: 20px;" href="javascript:;" {$user['mail_activate']?'':'type="activate"'}>{$user['mail_activate']?'已验证':'验证邮箱'}</a>
+                        <php>endif;</php>
+                    </div>
+                    <div id="modify_pe_edit" style="display:none">
+                        <input type="text" value="{$user.email}" old="{$user.email}" class="inp01" style="width: 200px;" />
+                        <a href="javascript:;" class="fr" type="save" style="margin:-50px 10px 0 0;">保存</a>
+                    </div>
+                </dd>
+            </dl>
+            <dl>
+            	<dt>性别</dt>
+                <dd>
+                    <style>
+                        .jgzlbox dd label {margin-right: 20px;display: initial;}
+                        .jgzlbox dd label input {width: auto;height: 15px;display: initial;}
+                    </style>
+                    <label><input type="radio" name="sex" value="1" value="男" {$user['sex']==1?'checked':''} id="RadioGroup1_0">男</label>
+                    <label><input type="radio" name="sex" value="2" value="女" {$user['sex']==2?'checked':''} id="RadioGroup1_1">女</label>
+                </dd>
+            </dl>
+            <!--<dl class="sj">-->
+            	<!--<dt>所在地区</dt>-->
+                <!--<dd>{$user.location}</dd>-->
+            <!--</dl>-->
+            <dl>
+                <dt>地区</dt>
+                <style>
+                    select {
+                        max-width: 75px;
+                        border-radius: 4px;
+                        border: solid 1px #b6c7d6;
+                        line-height: 40px;
+                        padding: 0 5px;
+                        height: 40px;
+                    }
+                </style>
+                {:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}
+            </dl>
+            <dl>
+            	<dt>个人简介</dt>
+                <dd><textarea  name ="intro">{$user.intro}</textarea></dd>
+            </dl>
+
+        </div>
+        </form>
+    </div>
+
+<script>
+    $(function(){
+        $(".header").hide();
+
+        $('#modify_phone').click(function(){
+            $(this).parents('.jgzlbox').children().hide();
+            $('.modify_phone').hide().slice(0,2).show();
+        });
+        $('.modify_phone a').click(function(){
+            var _this = $(this);
+            if(_this.data('locked')) return;
+            _this.data('locked', true);
+
+            var type  = _this.attr('type');
+            var step  = _this.attr('step');
+            var span  = _this.next();
+            var input = _this.prev();
+            input.val($.trim(input.val()));
+            if(type == 'code'){
+                _this.text('正在发送');
+                if(_this.attr('step') == 2){
+                    if(!input.val()){
+                        span.removeClass().addClass('err').text('请先输入手机号');
+                        input.focus(); _this.data('locked', false); return ;
+                    }
+                    var post = {phone:input.val()}
+                }else{
+                    post = {}
+                }
+                $.post(U('classroom/User/sendCode'),post, function(data){
+                    if(data == 'ok'){
+                        span.removeClass().addClass('ok').text('短信验证码已发送至您的手机，请输入后继续');
+                        var time = 90;
+                        var _codesetInterval = setInterval(function(){
+                            if(time <= 0){
+                                _this.text('获取验证码').data('locked', false);
+                                clearInterval(_codesetInterval);
+                            }else{
+                                _this.text('重新获取( '+time+' )');
+                                time--;
+                            }
+                        }, 1000);
+                    }else{
+                        span.removeClass().addClass('err').text(data);
+                        alert(data);
+                        _this.text('获取验证码').data('locked', false);
+                    }
+                });
+            }else if(type == 'submit'){
+                span.removeClass().text('')
+                if(!input.val()){
+                    alert('请输入验证码');
+                    input.focus();_this.data('locked', false);return;
+                }
+                var post = {code:input.val()};
+                if(_this.attr('step') == 2){
+                    var input0 = _this.parents('.modify_phone').prev().find('input:first');
+                    if(!input0.val()){
+                        input0.next().next().removeClass()
+                                .addClass('err').text('请先输入手机号');
+                        _this.data('locked', false);
+                        input0.focus(); return ;
+                    }
+                    post.phone = input0.val();
+                }
+                $.post(U('classroom/User/checkCode'),post,function(data){
+                    if(data == 'ok'){
+                        if(typeof post.phone == 'undefined'){
+                            var box = $('.modify_phone').hide();
+                            box.slice(0,2).hide(); box.slice(2,4).show();
+                        }else{
+                            span.addClass('ok').text('手机号已经成功更改');
+                            setTimeout('window.location.reload()', 2000);
+                        }
+                    }else{
+                        span.addClass('err').text(data);
+                        alert(data);
+                        _this.data('locked', false);
+                    }
+                });
+            }
+        });
+        $('.modify_email a').click(function(){
+            var _this = $(this);
+            var type  = _this.attr('type');
+            if(type  == 'edit'){
+                $('#modify_pe_show').hide();
+                $('#modify_pe_edit').show();
+//            _this.hide();
+                _this.siblings('p').find('span').text('用于密码找回和重要信息接收');
+            }else if(type == 'save'){
+                var input = _this.prev();
+                input.val($.trim(input.val()));
+                if(!input.val()||input.val().toLowerCase()
+                        ==input.attr('old').toLowerCase()){
+                    $('#modify_pe_show').show();
+                    _this.parent().hide().prev().show();
+                    input.val(input.attr('old'));
+                }else if(!/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/.test(input.val())){
+                    alert('请输入正确的电子邮箱地址！');return ;
+                }else{
+                    $.post(U('classroom/User/setEmail'),{email:input.val()},function(data){
+                        if(data == 'ok'){
+                            alert('Email已经成功更改');
+                            $('.user_email').html(input.val());
+                            input.val(input.val()).attr('old', input.val());
+                            _this.parent().hide().prev().show();
+                            $('#modify_pe_show').show();
+//                        $('#modify_pe_show').find('a').text('验证邮箱').attr('type', 'activate').data('locked', false);
+                            $('#modify_pe_show span').text(input.val());
+                            $('#set_user_login').text(input.val());
+                            _this.parent().siblings('p').find('span').text('用于密码找回和重要信息接收');
+                            setTimeout('window.location.reload()', 1500);
+                        }else{
+                            alert(data);
+                        }
+                    });
+                }
+            }else if(type == 'activate'){
+                var _this = $(this);
+                if(_this.data('locked')){
+                    return ;
+                }
+                _this.text('正在发送').data('locked', true);
+                $.post(U('classroom/User/sendEmailActivate'),function(data){
+                    var span = _this.parent().siblings('p').find('span');
+                    if(data == 'ok'){
+                        alert('邮件已经发送成功！');
+                        _this.text('发送成功');
+                        span.removeClass().addClass('ok').text('激活邮件已发送，请登录邮箱点击链接进行验证');
+                    }else{
+                        alert(data);
+                        _this.text('重新发送').data('locked', false);
+                        span.removeClass().addClass('err').text(data);
+                    }
+                });
+            }
+        });
+    });
+
+    function setUserInfo(a){
+        var form = $(a).parents('form');
+        var province = form.find('select#province option:selected').val();
+        var city     = form.find('select#city option:selected').val();
+        var uname    = form.find('input[name=uname]');
+        var intro    = form.find('input[name=intro]');
+        if(!$.trim(uname.val())){
+           alert('昵称必须要填写');
+            uname.focus(); return false;
+        }
+        if(!/^[\u4E00-\u9FA5\w]{1,}$/.test(uname.val())){
+            alert('昵称仅支持中英文、数字、下划线');
+            uname.focus(); return false;
+        }
+        if(province<=0||city<=0){
+            alert('请先选择地区');
+            return false;
+        }
+        $.post(U('classroom/User/saveUser'), form.serialize(), function(data){
+            if(data.status){
+                alert('基本信息更改成功');
+                setTimeout('window.location.reload();', 2000);
+            }else{
+                alert(data.info);
+            }
+        }, 'json');
+    }
+
+
+
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

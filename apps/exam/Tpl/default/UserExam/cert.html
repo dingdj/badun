@@ -1,0 +1,109 @@
+<div class="fengeleft">
+    <volist name="data" id="vo">
+        <div><a href="javascript:;" class="showCert" data-cert_id="{$vo.cert_id}">{$vo.cert_name}</a></div>
+    </volist>
+</div>
+<div class="fengeright">
+    <volist name="data" id="vo">
+    <div class="cert_{$vo.cert_id}" style="<gt name='i' value='1'>display:none;</gt>">
+    <span>档案编号：DABH{$cid.create_time}{$cid.cert_id}</span>
+    <div class="clearfix">
+        <div class="jiben">
+            <img src="__APP__/images/01.png" style="position: absolute">
+            <span>基本信息</span>
+        </div>
+
+        <div class="xing">
+            <div class="ming"><img src="{:getCover($vo['user_photo'],90,130)}" /></div>
+            <ul class="clearfix">
+                <li>姓名：{$vo.user_name}</li>
+                <li>性别：
+                    <switch name="vo.user_sex">
+                        <case value="1">男</case>
+                        <case value="1">女</case>
+                        <default />未知
+                    </switch>
+                </li>
+                <li>出生年月:{$vo.user_datebirth}</li>
+                <li>籍贯：{$vo.user_native_place}</li>
+                <li>职业（工种）：{$vo.user_occupation}</li>
+                <li>文化程度：{$vo.user_education}</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="clearfix">
+        <div class="jiben">
+            <img src="__APP__/images/02.png" style="position: absolute ;top:1px;">
+            <span>证件信息</span>
+        </div>
+        <span style="color: #7e7e7e;font-size: 14px;margin-top: 25px;">身份证号：{$vo.user_id_card}</span>
+    </div>
+    
+    <div class="clearfix">
+        <div class="jiben">
+            <img src="__APP__/images/03.png" style="position: absolute ;top:1px;">
+            <span>联系方式</span>
+        </div>
+        <span style="color: #7e7e7e;font-size: 14px;margin-top: 25px;">联系电话：{$vo.user_phone}</span>
+    </div>
+    
+    <div class="clearfix">
+        <div class="jiben">
+            <img src="__APP__/images/04.png" style="position: absolute ;top:1px;">
+            <span>证件信息</span>
+        </div>
+        <ul class="zhengshu">
+			<li>证书名称：{$vo.cert_name}</li>
+            <li>证书编号：{$vo.cert_code}</li>
+            <li>证书类型：{$vo.cert_type}</li>
+            <li>审核单位：{$vo.cert_verify_unit}</li>
+            <li>审核日期：{$vo.exam_knowledge_time}</li>
+            <li>发证单位：{$vo.cert_unit}</li>
+            <li>发证日期：{$vo.exam_knowledge_time}</li>
+            <li>证书生效日期：{$vo.exam_knowledge_time}</li>
+            <li>证书失效日期：{$vo.exam_knowledge_time}</li>
+            <li style="width: 500px;">证书使用说明：{$vo.cert_desc}</li>
+        </ul>
+        <ul class="zhengshu1">
+                <li>年检（复核）状态:{$vo.cert_review}</li>
+                <li>年检（复核）日期：{$vo.exam_knowledge_time}</li>
+                <li>下次年检（复核）日期：{$vo.exam_knowledge_time}</li>
+                <li>证书是否吊销：<eq name="vo.cert_is_revocation" value="1">是<else />否</eq></li>
+                <eq name="vo.cert_is_revocation" value="1">
+                    <li>证书吊销日期：{$vo.exam_knowledge_time}</li>
+                    <li>证书吊销原因：{$vo.cert_revocation_reason}</li>
+                </eq>
+        </ul>
+    </div>
+    
+    <div class="clearfix">
+        <div class="jiben">
+            <img src="__APP__/images/02.png" style="position: absolute ;top:1px;">
+            <span>考试记录</span>
+        </div>
+        <ul class="kaoshi">
+            <li>理论知识考试类型：{$vo.exam_knowledge_type}</li>
+            <li>理论知识考试日期：{$vo.exam_knowledge_time}</li>
+            <li>理论知识考试分数：{$vo.exam_knowledge_score}</li>
+            <li>理论知识考试场地：{$vo.exam_knowledge_place}</li>
+            <li>操作技能考试类型：{$vo.exam_skill_type}</li>
+            <li>操作技能考试日期：{$vo.exam_knowledge_time}</li>
+            <li>操作技能考试分数：{$vo.exam_skill_score}</li>
+            <li>操作技能考试场地：{$vo.exam_skill_place}</li>
+            <li>操作技能考试场地编号：{$vo.exam_skill_place_code}</li>
+        </ul>
+    </div>
+    <span>评定结果：{$vo.evaluation_result}</span><br>
+    <span style="margin-top: 14px;">评定结果说明：{$vo.evaluation_result_desc}</span>
+    </div>
+    </volist>
+</div>
+<script>
+$(function(){
+    $(".showCert").click(function(){
+        var i = $(this).data('cert_id');
+        $(".cert_"+i).show().siblings("div").hide();
+    })
+})
+</script>

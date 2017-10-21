@@ -1,0 +1,206 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+<form method="POST" action="{:U('w3g/User/doteacherDeatil')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+    <div class="teacher_type">
+    	<div class="item_box">
+			<dl class="management_dl">
+                <dt><span>*</span>姓名</dt>
+                <dd><input class="management_input" type="text" name="name" id="name" value="{$teacher_info.name}"></dd>
+			</dl>
+			<dl class="management_dl">
+                <dt><span>*</span>职称</dt>
+                <dd><input class="management_input" type="text" name="title" id="title" value="{$teacher_info.title}"></dd>
+            </dl>
+			<dl class="management_dl">
+                <dt><span>*</span>教龄</dt>
+                <dd><input class="management_input" type="text" name="teacher_age" id="teacher_age" value="{$teacher_info.teacher_age}"></dd>
+            </dl>
+			<dl class="management_dl">
+                <dt><span>*</span>最高学历</dt>
+                <dd><input class="management_input" type="text" name="high_school" id="high_school" value="{$teacher_info.high_school}"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>毕业院校</dt>
+                <dd><input class="management_input" type="text" name="graduate_school" id="graduate_school" value="{$teacher_info.graduate_school}"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>授课方式</dt>
+                <dd>
+                	<select name="teach_way" id="teach_way">
+                      <if condition="$teacher_info.label eq 1">
+                        <option value="1">在线授课</option>
+                        <option value="2">线下授课</option>
+                        <option value="3">线上/线下均可</option>
+                      <elseif condition="$teacher_info.label eq 2"/>
+                        <option value="2">线下授课</option>
+                        <option value="1">在线授课</option>9/
+                        <option value="3">线上/线下均可</option>
+                      <elseif condition="$teacher_info.label eq 3"/>
+                        <option value="3">线上/线下均可</option>
+                        <option value="1">在线授课</option>
+                        <option value="2">线下授课</option>
+                      <else/>
+                        <option value="1">在线授课</option>
+                        <option value="2">线下授课</option>
+                        <option value="3">线上/线下均可</option>
+                      </if>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>我的标签</dt>
+                <dd><input class="management_input" type="text" name="label" id="label" value="{$teacher_info.label}"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>授课地区</dt>
+                <dd><input class="management_input" type="text" name="label" id="label" value="{$teacher_info.label}"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>我的简介</dt>
+                <dd><textarea name="inro">{$teacher_info.inro}</textarea></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>教学特点</dt>
+                <dd><textarea name="teach_evaluation">{$teacher_info.teach_evaluation}</textarea></dd>
+            </dl>
+            <dl class="management_time">
+            	<dt>一周授课时间</dt>
+                <dd>
+                    <foreach name="teacher_schedule" item="ld">
+                        <label>{$ld.title}</label>
+                    </foreach>
+                </dd>
+                <foreach name="teacher_level" item="ld">
+                    <dd name="multi-select">
+                      <foreach name="ld" item="val">
+                          <label 
+                          <?php 
+                            if(in_array($val["id"],$teacher_info["teacher_schedule"])){
+                               echo "class='td-1 selected'";
+                            }else{
+                              echo "class='td'";
+                            }
+                          ?>
+                          style='font-size:14px;' onclick="selectschedule(this,{$val.id});">{$val.title}
+                          </label>
+                        </foreach>
+                    </dd>
+                </foreach>
+            </dl>
+            <input type="hidden" name="id" id="teacher_id" value="{$teacher_info.id}">
+            <input type="hidden" name="teacher_schedule" id="teacher_schedule" value="{$teacherschedule}">
+			<input style="width:100%;height:50px;padding:auto;color:#fff;background:#2b92f9;" type="submit"  value="保 存">
+        </div>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+  function j_validateCallback(form,call,callback) {
+    var $form = $(form);
+    if(typeof call != 'undefined' && call instanceof Function){    
+      $i = call($form);
+      if(!$i){
+        return false;
+      }
+    }
+    var _submitFn = function(){
+      $.ajax({
+        type: form.method || 'POST',
+        url:$form.attr("action"),
+        data:$form.serializeArray(),
+        dataType:"json",
+        cache: false,
+        success: function(xMLHttpRequest, textStatus, errorThrown){
+          if(typeof callback != 'undefined' && callback instanceof Function){   
+            callback($form,xMLHttpRequest);
+          }  
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+      });
+    }
+    _submitFn();
+    return false;
+  }
+  function checkForm(form){
+    if($("#name").val()==""){
+      alert("请输入名称!");
+      return false;
+    }
+    if($("#title").val()==""){
+      alert("请输入职称!");
+      return false;
+    }
+    if($("#teacher_age").val()==""){
+      alert("请输入教龄!");
+      return false;
+    }
+    if($("#high_school").val()==""){
+      alert("请输入最高学历!");
+      return false;
+    }
+    if($("#graduate_school").val()==""){
+      alert("请输入毕业院校!");
+      return false;
+    }
+    if($("#label").val()==""){
+      alert("请输入标签!");
+      return false;
+    }
+    if($("#inro").val()==""){
+      alert("请输入简介!");
+      return false;
+    }
+    if($("#teach_evaluation").val()==""){
+      alert("请输入教学特点!");
+      return false;
+    }
+    return true;
+  }
+  function post_callback(_form,data){
+    if(data.status != undefined){
+      if(data.status == '0'){
+        alert(data.info);
+      } else {
+        alert(data.info);
+        window.location.href = window.location.href;
+      }
+    }
+  }
+  function callback(data){
+    $("#"+data.input_id+"_cover").remove();
+    $("#image_"+data.input_id).append(
+      '<div id='+data.input_id+'_cover>'
+      +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+      +'</div>'
+    ).find('input:file').val('');
+    $("#"+data.input_id+"_ids").val(data.attach_id);
+  }
+  function selectschedule(schedule,schedule_id){
+    var id=$("#teacher_schedule").val();
+    if($(schedule).attr("class")=="td"){
+      $(schedule).attr("class","td-1");
+      if(id){
+        id=id+","+schedule_id;
+      }else{
+        id=schedule_id;
+      }
+      $("#teacher_schedule").val(id);
+    }else{
+      if(id.indexOf(","+schedule_id)!=-1){
+        id=id.replace(","+schedule_id,'');
+      }else if(id.indexOf(schedule_id+",")!=-1){
+        id=id.replace(schedule_id+",",'');
+      }else{
+        id=id.replace(schedule_id,'');
+      }
+      $("#teacher_schedule").val(id);
+      $(schedule).attr("class","td");
+    }
+  }
+  </script>
+<!--footer-->
+<include file="../Public/_footer" />

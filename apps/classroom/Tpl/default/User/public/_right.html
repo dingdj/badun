@@ -1,0 +1,48 @@
+<style type="text/css">
+    .bot{
+        width:290px;
+        background-color: #fff;
+    }
+    .main-sidebar-title{
+        padding: 0 20px;
+        margin:0
+    }
+    .center_left li:first-child{
+        border:0;
+    }
+    .center_left li{
+        width:250px;
+        margin-left:20px;
+    }
+    .center_left{
+        margin-bottom:30px;
+    }
+</style>
+
+    <div class="center_left">
+        {:W('CheckIn', array('tpl'=>'zy'))}
+        <!--学习记录-->
+        <div class="study-record">
+            <div class="main-sidebar-title">
+                <div class="tit">
+                    <h5>学习记录</h5>
+                    <a class="fr" href="{:U('classroom/Home/learn')}">更多></a>
+                </div>
+            </div>
+            <ul class="study-recor-pers">
+                <!-- 显示四个li -->
+                <if condition="$learn">
+                    <volist name="learn" id="vo" offset="0" length='4'>
+                        <li>
+                            <small>{$vo['ctime']}</small>
+                            <p>学习课程：<em><a href="{:U('classroom/Video/view',array('id'=>$vo['vid']))}">{$vo['video_title']}</a></em></p>
+                            <p>学习时长：<em>{$vo['time']}</em></p>
+                        </li>
+                    </volist>
+                    <else/>
+                    <li>您还没有学习记录。。</li>
+                </if>
+            </ul>
+        </div>
+    </div>
+</div>

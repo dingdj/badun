@@ -1,0 +1,125 @@
+<include file="__THEME__/admin_header" />
+<div class="so_main">
+  <div class="page_tit">设置积分</div>
+  <div class="tit_tab">
+    <ul>
+    <li><a href="{:U('mall/AdminGlobal/index')}">积分列表</a></li>
+    <li><a href="{:U('mall/AdminGlobal/creditUser')}" class="on">设置用户积分</a></li>
+    </ul>
+  </div>
+
+  <div class="form2">
+  	<form method="post" action="{:U('mall/AdminGlobal/doCreditUser')}">
+
+    <dl class="lineD">
+      <dt>用户ID：</dt>
+      <dd>
+          <php>if($crrdit_user['uid'] == "") { </php>
+       		<input size="30" name="uId" class="txt" value="" />
+            <p>根据用户ID,多个用户用英文逗号“,”隔开,若不限制ID则留空。</p>
+          <php>} else {</php>
+            <input size="30" name="uId" class="txt" value="{$crrdit_user.uid}" readonly="readonly" />
+          <php>}</php>
+      </dd>
+    </dl>
+    <php>if($crrdit_user){</php>
+        <dl class="lineD">
+            <dt>用户名称：</dt>
+            <dd>
+                {$crrdit_user.uname}
+            </dd>
+        </dl>
+    <php>}</php>
+    <dl class="lineD">
+      <dt>用户所在组：</dt>
+      <dd>
+       		<select name="gId">
+            	<option value="all" selected="selected">全部</option>
+            	<!-- <option value="0" >普通用户</option> -->
+				<volist id="vo" name="grounlist">
+					 <option value="{$vo.user_group_id}">{$vo.user_group_name}</option>
+				</volist>
+            </select>
+			<p>根据用户所在组添加</p>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>用户状态：</dt>
+      <dd>
+       		<select name="active">
+                <option value="all">全部</option>
+              	<option value="0" <php>if($crrdit_user['is_active'] == 0){</php>selected="selected"<php>}</php>>待激活</option>
+            	<option value="1" <php>if($crrdit_user['is_active'] == 1){</php>selected="selected"<php>}</php>>已激活</option>
+            </select>
+			<p>根据用户状态</p>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>VIP类型：</dt>
+      <dd>
+          <select name="vip_type">
+              <option value="0" <eq name="crrdit_user.vip_type" value="0"> selected="selected"</eq>>普通用户</option>
+              <volist name="vip_title" id="l">
+                <option value="{$l.id}" <eq name="crrdit_user.vip_type" value="$l['id']"> selected="selected"</eq>>{$l.title}</option>
+              </volist>
+          </select>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>VIP时间：</dt>
+      <dd>
+          <input name="vip_expire" type="text" value="<php>if($crrdit_user['vip_expire']){</php>{:date("Y-m-d H:i:s", $crrdit_user['vip_expire'])}<php>}</php>" class="s-txt"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
+          <p>设置VIP到期时间</p>
+      </dd>
+    </dl>
+    <dl class="lineD">
+      <dt>操作：</dt>
+      <dd>
+       		<input class="radio" type="radio" name="action" value="add" checked />增减
+            <input class="radio" type="radio" name="action" value="set"  />设定
+			<p>增减积分，或者直接设定积分值</p>
+			<p>一般情况下请勿随意改动积分，直接改动没有流水记录</p>
+      </dd>
+    </dl>
+      <volist name ="creditType" id="vo">
+        <dl class="lineD">
+          <dt>{$vo.alias}：</dt>
+          <dd>
+                <input name="{$vo.name}" value="{$crrdit_user[$vo['name']]}" class="s-txt"/>
+                <p>正为加，负为减</p>
+          </dd>
+        </dl>
+      </volist>
+    <!--<dl class="lineD">
+      <dt>操作理由：</dt>
+      <dd>
+       		<input name="info" class="txt" value="{action}{sign}了{score}分{typecn}"/><br />
+			<p>操作积分的理由</p>
+      </dd>
+    </dl>-->
+	
+    <div class="page_btm">
+      <input type="submit" class="btn_b" value="确定" onclick="return check();" />
+    </div>
+    </form>
+  </div>
+
+</div>
+<script>
+	function check(){
+        var radioes = document.getElementsByName('action');
+        for(var i=0;i<radioes.length;i++)
+        {
+            if(radioes[i].checked){
+              var action = radioes[i].value;
+              action = action=='set'?'设定':'增减';
+              if( confirm('确定进行 ' + action + ' 操作？') ){
+                return true;
+              }
+              return false;
+            }
+        }
+	}
+</script>
+<include file="__THEME__/admin_footer" />
+

@@ -1,0 +1,46 @@
+<dl class="comment_list" model-node="comment_list">        
+<dt><a href="{$userInfo.space_url}"><img width="30" height="30" src="{$userInfo.avatar_tiny}"></a></dt>
+<dd>
+<p class="cont">
+	{$userInfo.space_link}
+	<volist name="userInfo['groupData'][$userInfo['uid']]" id="v2">
+            <img style="width:auto;height:auto;display:inline;cursor:pointer" src="{$v2['user_group_icon_url']}" title="{$v2['user_group_name']}" />&nbsp;
+        </volist>
+	：<em>{$content}<span class="time"></span></em>
+</p>
+<p class="info right">
+	<span>
+		 <div class="info">
+             <if condition="$_SESSION['mid'] neq ''">
+                 <php>if($iscommentdel){</php>
+                 <!--<a href="javascript:void(0);" style="margin-left: 0px;" event-node="comment_del" event-args="comment_id={$comment_id}">{:L('PUBLIC_STREAM_DELETE')}</a>-->
+                 <!--<i class="vline">|</i>-->
+                 <php>}</php>
+             </if>
+			 <a href="javascript:;" id= "{$vo.comment_id}"  onclick="tonghelp(this)">
+				 <span class="icon-zan "></span>
+				 <span class="t_num">0</span>
+			 </a>
+			 <a href="javascript:void(0)"
+				event-args='row_id={$vo.row_id}&app_uid={$vo.app_uid}&to_comment_id={$vo.comment_id}&to_uid={$vo.uid}&to_comment_uname={$vo.user_info.uname}&app_name={$app_name}&table={$table}'
+				event-node="reply_comment">
+				 <span class="icon-pl"></span>0
+			 </a>({:L('PUBLIC_JUST')})
+		 </div>
+	</span>
+</p>
+</dd>
+<span id="floor_{$comment_id}" class="floor">{$storey}楼</span>
+</dl>
+
+<script type="text/javascript">
+$(function () {
+	var row_id = "{$row_id}";
+	var comment_id = "{$comment_id}";
+	var len = parseInt($('#commentlist_' + row_id).find('dl.comment_list').eq(1).find('span.floor').html()) + 1;
+	if (isNaN(len)) {
+		len = 1;
+	}
+	$('#floor_'+comment_id).html(len+'楼');
+});
+</script>

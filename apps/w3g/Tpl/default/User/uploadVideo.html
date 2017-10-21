@@ -1,0 +1,58 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <div class="teacher_type">
+        <ul class="teacher_hd">
+            <li class="on">我上传的课程</li>
+            <li>上传新课程</li>
+        </ul>
+        <div class="teacher_bd db">
+            <ul class="album-list">
+            </ul>
+        </div>
+        <div class="teacher_bd">
+            此功能暂不开放，请访问pc版！ 
+            <!-- <ul class="album-list">
+                <li>
+                    <a href="#"><img src="__APP__/images/p5.jpg"></a>
+                    <div class="info">
+                        <h2><a href="#">《深入浅出的JavaScript》</a></h2>
+                        <p><span><em>58</em>人购买</span><span><em>10</em>人收藏</span></p>
+                        <div class="operation">
+                            <a class="fl" href="#"><i class="icon-bj"></i>编辑</a>
+                            <a class="fr" href="#"><i class="icon-sc"></i>删除</a>
+                        </div>
+                    </div>
+                </li>
+            </ul> -->
+        </div>
+    </div>
+    
+</div>
+<script>
+    $(function(){
+        var url="{:U('w3g/User/getTeacherVideo')}";
+        //异步加载我的课程
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    });
+    //追加html
+    function appendHtml(data){
+        $(".album-list").append(data.data);
+        if(data.nowPage+1>data.totalPages){
+            return;
+        }else{
+            p=data.nowPage+1;//下一页
+        }
+    }
+ </script>
+<!--footer-->
+<include file="../Public/_footer" />

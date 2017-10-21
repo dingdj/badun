@@ -1,0 +1,145 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+</style>
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting" />
+        <div class="center_right">
+            <div class="center_right_tit">
+                <h5>收货地址</h5>
+            </div>
+            <div class="center_right_con">
+                <!-- <h3 class="addresstit">新增收货地址</h3> -->
+                <if condition="($data['usedCounts'] lt 10) OR ($_GET['id'] gt 0)">
+                    <form class="addressbox" id="addressbox" method="POST" action="" onsubmit="return false;">
+                        <dl>
+                            <dt><span>*</span>所在地区：</dt>
+                            <dd style="width: 450px;">
+                                <style>
+                                    select{width: 118px;}
+                                </style>
+                                {:W('Area',array('curPro'=>$address['province'],'curCity'=>$address['city'],'area'=>$address['area'],'city_names'=>$address['location'],'tpl'=>'zyCardArea'))}
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>详细地址：</dt>
+                            <dd>
+                                <textarea class="tex01" name="address"  id="address" rows="10" cols="80">{$address['address']}</textarea>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>收货人姓名：</dt>
+                            <dd>
+                                <input class="inp01" name="name" id="name" type="text" value="{$address['name']}" >
+                                <input class="inp01" name="id"  id="address_id" type="hidden" value="{$address['id']}" >
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>手机号码：</dt>
+                            <dd>
+                                <input class="inp01" name="phone" id="phone" type="text" value="{$address['phone']}" >
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <label><input <eq name="address.is_default" value="1">checked</eq> type="checkbox" class="default" >默认收货地址</label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd><a href="javascript:;" onclick="saveAddress()" class="btn">保存</a>
+                        </dl>
+                    </form>
+                </if>
+
+                <table class="adrtable" width="100%" border="0">
+                <caption>已保存了{$data.usedCounts}条地址，还能保存{$data['usableCounts']}条地址</caption>
+                
+                  <tr>
+                    <th scope="col">收货人</th>
+                    <th scope="col">所在地区</th>
+                    <th scope="col">详细地址</th>
+                    <th scope="col">联系电话</th>
+                    <th scope="col">操作</th>
+                  </tr>
+                  <volist name="data['data']" id="vo">
+                  <tr>
+                    <td>{$vo.name}</td>
+                    <td>{$vo.location}</td>
+                    <td>{$vo.address}</td>
+                    <td>{$vo.phone}</td>
+                    <td><a class="cc" href="{:U('classroom/User/address',array('id'=>$vo['id']))}" >修改</a><span>|</span><a class="cc" href="javascript:;" onclick="ui.confirm(this,'确定要删除此收货地址吗？');return false;" callback="delAddress(this,{$vo['id']})">删除</a></td>
+                  </tr>
+                  </volist>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function saveAddress(){
+    var address = $('#address').val();
+    var name = $('#name').val();
+    var phone = $('#phone').val();
+    var province = $('select#province option:selected').val();
+    var city = $('select#city option:selected').val();
+
+    if(province<=0||city<=0){
+        ui.error('请先选择地区');
+        return false;
+    }
+    if(!address){ui.error('请输入详细地址');return false;}
+
+    if(!name){ui.error('请输入收货人姓名');return false;}
+    /*if(!/^[\u4E00-\u9FA5·]{2,5}$/.test($.trim(name))){
+            ui.error('请输入正确的收货人姓名');
+            return false;
+    }*/
+    if(!phone){ui.error('请输入联系电话');return false;}
+    if(!/^[\d\-]{7,11}$/.test(phone)){
+        ui.error('请输入正确的联系电话');
+        return false;
+    }
+    
+    var data = $('#addressbox').serialize();
+    var is_default = $(".default").is(':checked') ? 1:0;
+    var id = $('#address_id').val();
+    $.post(U('classroom/User/updateAddress'), data+"&is_default="+is_default+"&id="+id , function(data){
+        if(data.status){
+            ui.success(data.info);
+            setTimeout("location.href=U('classroom/User/address')", 1500);
+        }else{
+            ui.error(data.info);
+        }
+    }, 'json');
+}
+function delAddress(obj,id) {
+    $.ajax({
+        type: "POST",
+        url:"{:U('classroom/User/delAddress')}",
+        data:"id="+id,
+        dataType:"json",
+        success:function(e){
+            if(e.status == 1){
+                ui.success(e.info);
+                window.location.reload();
+            }else{
+                ui.error(e.info);
+            }
+        }
+    });
+}
+</script>
+
+<include file="__THEME__/public_footer" />

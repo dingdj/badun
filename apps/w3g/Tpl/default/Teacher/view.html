@@ -1,0 +1,368 @@
+<include file="../Public/_header" />
+<link href="__THEME__/css/css.php?t=css&f=index.css" rel="stylesheet" type="text/css" />
+<!--container-->
+<div class="mask"></div>
+<div class="container"> 
+    <div class="teacher-box">
+        <div class="teacher-top item_box">
+            <div class="pic"><img src="{:getCover($data['head_id'],120,120)}"></div>
+            <div class="info">
+                <h3><span>{$data.name}</span><if condition="$data['sex'] eq 1">男<else/>女</if></h3>
+                <div class="star">
+                    <span class= <if condition="$data.star GT 0">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 1">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 2">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 3">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 4">""<else />"no"</if>></span>
+                </div>
+                <p>{$data.teach_evaluation}</p>
+                <ul>
+                    <li>
+                        <div class="name">教龄</div>
+                        <div class="num"><span>{$data.teacher_age}</span>年</div>
+                    </li>
+                    <li>
+                        <div class="name">课程</div>
+                        <div class="num"><span>{$data.course_count}</span>个</div>
+                    </li>
+                    <li>
+                        <div class="name">视频</div>
+                        <div class="num"><span>{$data.video_count}</span>个</div>
+                    </li>
+                    <li>
+                        <div class="name">预约</div>
+                        <div class="num"><span>{$data.reservation_count}</span>人</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="teacher-bot item_box">
+            <ul>
+                <li>
+                    <span class="sm"></span>
+                    <p>实名认证</p>
+                </li>
+                <li>
+                    <span class="zz"></span>
+                    <p>资格认证</p>
+                </li>
+            </ul>
+            <form class="form-box">
+                <p>价格：<span><if condition="$teacher_course[0]['course_price']">{$teacher_course[0]['course_price']}<else/>0</if></span>元 / 小时</p>
+                <div class="form-item">
+                    <select name="course" id="course" onchange="selectCourse();">
+                        <if condition="$teacher_course eq null">
+                            <option value="0,0">暂无授课内容</option>
+                        </if>
+                        <foreach name="teacher_course" item="ld">
+                            <option value="{$ld.course_price},{$ld.course_id}">{$ld.course_name}</option>
+                        </foreach>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <select id="teach_way">
+                      <option value="0">请选择授课方式</option>
+                        <option value="1">在线授课</option>
+                        <option value="2">线下授课</option>
+                        <option value="3">线上/线下均可</option>
+                    </select>
+                </div>
+                <div class="form-item"><a class="btn" href="javascript:;" onclick="charge();">我要约课</a></div>
+            </form>
+        </div>
+    </div>
+    <div class="teacher-time">
+        一周授课时间：周一 周二<!-- <if condition="$data['teacher_schedule']">{$data.teacher_schedule}<else/>暂无授课时间</if> -->
+    </div>
+    <div class="teacher_type">
+        <ul class="teacher_hd">
+            <li class="on">基本资料</li>
+            <li>点评教师</li>
+        </ul>
+        <div class="teacher_bd db">
+            <dl class="teacher-info">
+                <dt><span class="icon-zl"></span>基本资料</dt>
+                <dd>
+                    <ul>
+                        <li>教师职称：   {$data.title}</li>
+                        <li>最高学历：   {$data.high_school}</li>
+                        <li>毕业院校：   {$data.graduate_school}</li>
+                        <li>授课方式：   
+                            <if condition="$teach_way eq 1">在线授课
+                            <elseif condition="$teach_way eq 2"/>线下授课
+                            <else/>线上/线下均可
+                            </if>
+                        </li>
+                        <li>授课地区：   {$data.Teach_areas}</li>
+                        <li>教师标签：  
+                            <?php 
+                                if($data["label"]){
+                                    $label_list=explode(",", $data["label"]);
+                                    foreach ($label_list as $key => $value) {
+                                        echo "<label style='margin-right:8px;'>".$value."</label>";
+                                    }
+                                }
+                            ?>
+                        </li>
+                        <li>基本简介：   {$data.inro}</li>
+                        <li>教学特点：   {$data.teach_evaluation}</li>
+                    </ul>
+                </dd>
+            </dl>
+            <dl class="teacher-info">
+                <dt><span class="icon-nr"></span>授课内容</dt>
+                <if condition="$teacher_course eq null">
+                    <div style=\"margin-top:20px;\">还没有相应的授课内容</div>
+                <else />
+                    <dd>
+                        <foreach name="teacher_course" item="ld">
+                            <h3>{$ld.course_name}(价格:{$ld.course_price}/小时)</h3>{$ld.course_inro}
+                        </foreach>
+                    </dd>
+                </if>
+            </dl>
+        </div>
+        <div class="teacher_bd">
+            <div class="big">
+                <div style="width:auto;float:left;">综合评分</div>
+                <div class="star" style="width:auto;float:left;">
+                    <span class= <if condition="$data.star GT 0">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 1">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 2">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 3">""<else />"no"</if>></span>
+                    <span class= <if condition="$data.star GT 4">""<else />"no"</if>></span>
+                </div>
+                <div>（{$data.review_count}人）</div>
+            </div>
+            <div id="page-conent-data"></div>
+            <div style="width:auto;float:left;">
+                <select name="course" id="course_id">
+                    <option value="0">请选择课程</option>
+                    <foreach name="teacher_course" item="ld">
+                        <option value="{$ld.course_id}">{$ld.course_name}</option>
+                    </foreach>
+                </select>
+            </div>
+            <label style="float:left;">评分：</label>
+            <div class="star" style="width:auto;float:left;">
+                <span class="no" style="cursor:pointer;" onclick="selectstar(this,1);"></span>
+                <span class="no" style="cursor:pointer;" onclick="selectstar(this,2);"></span>
+                <span class="no" style="cursor:pointer;" onclick="selectstar(this,3);"></span>
+                <span class="no" class="no" style="cursor:pointer;" onclick="selectstar(this,4);"></span>
+                <span class="no" style="cursor:pointer;" onclick="selectstar(this,5);"></span>
+                <input type="hidden" id="star">
+            </div>
+            <label style="float:left;">&nbsp;&nbsp;授课技巧：
+                <select name="skill" id="skill" style="margin-left:10px;">
+                    <option value="0">请选择</option>
+                    <option value="1">优</option>
+                    <option value="2">良</option>
+                    <option value="3">好</option>
+                </select>
+            </label>
+            <label style="float:left;">专业知识：
+                <select name="Professional" id="Professional" style="margin-left:10px;">
+                    <option value="0">请选择</option>
+                    <option value="1">优</option>
+                    <option value="2">良</option>
+                    <option value="3">好</option>
+                </select>
+            </label>
+            <label style="float:left;">教学态度：
+                <select name="attitude" id="attitude" style="margin-left:10px;">
+                    <option value="0">请选择</option>
+                    <option value="1">优</option>
+                    <option value="2">良</option>
+                    <option value="3">好</option>
+                </select>
+            </label>
+            <br/>
+            <textarea name="description" id="description" style="width:100%;height:150px;border:1px solid #bbbcbc;margin-top:5px;padding:5px;"></textarea>
+            <div style="width:85%;height:35px; margin-top:10px;margin-bottom:30px;">
+                <input type="button" style="background:#2b92f9;width:50px;height:30px;color:#fff;float:right;margin-right:5px;" onclick="return addreview();" value="发表" />
+            </div>
+        </div>
+    </div>
+    <div class="teacher_recommended">
+        <div class="teacher_recommended-tit">课程推荐</div>
+        <ul class="teacher_list">
+            <volist name="recClass" id="vo">
+                <li>
+                    <a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}">
+                        <img src="{:getCover($vo['cover'] ,112,70)}">
+                        <h3>{$vo.video_title}</h3>
+                    </a>
+                </li>
+            </volist>
+        </ul>
+    </div>
+    <div class="teacher_recommended">
+        <div class="teacher_recommended-tit">名师推荐</div>
+        <ul class="teacher_list02">
+            <volist name="recTeacher" id="vo">
+                <li>
+                    <a href="{:U('w3g/Teacher/view',array('id'=>$vo['id']))}">
+                        <img src="{:getCover($vo['head_id'],90,90)}">
+                        <h3>{$vo.name}</h3>
+                        <p>{$vo.inro}</p>
+                    </a>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<!-- 购买确认弹出框 -->
+<div class="buyOperating" style="display: none; width:300px;left:75%;">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>提示：该课程需要支付<em class="coin_num_l" id="price"></em>学币，您当前账户余额为<em class="coin_num_l">{$data['balance']['balance']}</em>学币。是否继续？</h4>
+    </div>
+    <div class="agreement" style="margin-top:-15px;margin-bottom: -15px;">
+        <span id="protocol" class="agree" style="margin-top:-130px;margin-left:-65px;"></span><a style="width:auto;float:left;margin-left:20px;">我已经阅读并同意</a>
+        <a>《收费课程服务协议》</a>
+    </div>
+    <div class="buy-btn" style="margin-left:15px;">
+        <a class="btn" style="width:80px;height:25px;color:#fff;padding:6px;float:left;" onclick="buyOperat();">确认支付</a>
+        <a class="btn" style="width:50px;height:25px;color:#fff;float:left;" href="{:U('w3g/User/recharge')}">充值</a>
+        <a class="btn cancel" style="width:100px;height:25px;color:#fff;float:left;">暂不支付</a>
+    </div>
+</div>
+<style>
+    .btn{padding:0;}
+</style>
+<script>
+    function addreview(){
+        var teacher_id="<?php echo $data['id'] ?>";
+        var uid = '{$uid}';
+        if(uid<=0){
+             window.location.href="{:U('w3g/Passport/login')}";
+            return false;
+        }else{
+            id=$("#course_id").val();
+            description=$("#description").val();
+            skill=$("#skill").val();
+            Professional=$("#Professional").val();
+            attitude=$("#attitude").val();
+            star=$("#star").val();
+            if(id==0){
+                alert("请选择课程!");
+                return false;
+            }
+            if(description==""){
+                alert("请填写评论!");
+                return false;
+            }
+            if(skill==0){
+                alert("请选择授课技巧!");
+                return false;
+            }
+            if(Professional==0){
+                alert("请选择专业知识!");
+                return false;
+            }
+            if(attitude==0){
+                alert("请选择教学态度!");
+                return false;
+            }
+            $.post(U('classroom/Teacher/addreview'),{id:id,teacher_id:teacher_id,description:description,skill:skill,Professional:Professional,attitude:attitude,star:star},function(txt){
+                if(txt.status == 0){
+                    alert(txt.info);
+                } else {
+                    alert(txt.info);
+                    $(".mina-list-zj").html("");
+                    $(function(){
+                        var id="{$data.id}";
+                        $.ajax({
+                            type: "GET",
+                            url:"{:U('classroom/Teacher/getTeachNote')}",
+                            data:"p=1"+"&id="+id,
+                            dataType:"json",
+                            success:function(data){
+                                appendHtml(data);
+                            }
+                        });
+                    });
+                }
+            },'json');
+        }
+    }  
+    var id="{$data.id}";
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getTeachNote')}",
+        data:"p=1"+"&id="+id,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+    //追加html
+    function appendHtml(data){
+        $(".more").remove();
+        $("#page-conent-data").html('');
+        $("#page-conent-data").append(data.data);
+        if(data.nowPage+1>data.totalPages){
+            return;
+        }else{
+            var html="<div class=\"more\" style=\"margin:0 auto 20px auto;\" ><a href=\"javascript:void(0)\" id=\"getList\">查看更多</a></div>"
+            $("#page-conent-data").append(html);
+            p=data.nowPage+1;//下一页
+        }
+    }
+    function selectstar(cate,star){
+        if(star<2){
+            $(cate).parent().children().attr("class","no");
+            $(cate).attr("class","");
+        }else{
+            $(cate).parent().children().attr("class","no");
+            $(cate).prevAll().attr("class","");
+            $(cate).attr("class","");
+        }
+        $("#star").val(star);
+    } 
+    //暂不支付
+    $('.w-close a,.buy-btn .cancel').click(function(){
+        $('.buyOperating,.mask').hide();
+    });
+    function selectCourse(){
+        var course =$("#course").val();
+        var arrayList = course.split(",",2);
+        $("#course-price").html(arrayList[0]);
+    }
+    function charge(){
+        course=$("#course").val();
+        arrayList = course.split(",",2);
+        teach_way=$("#teach_way").val();
+        if(teach_way==0){
+            alert("请选择授课方式");
+            return false;
+        }
+         //点击购买
+        if(MID<=0){
+            window.location.href="{:U('w3g/Passport/login')}";
+        }
+        $("#price").html(arrayList[0]);
+        $('.buyOperating').show();
+        var mask_height = $(document).height();
+        $('.mask').height(mask_height).show();
+    }
+    function buyOperat(){
+        var course =$("#course").val();
+        var arrayList = course.split(",",2);
+        var teach_way=$("#teach_way").val();
+        var teacher_id="<?php echo $data['id'] ?>";
+        var course_price=arrayList[0];
+        var course_id=arrayList[1];
+        $.post(U('w3g/Teacher/buyCourse'),{teacher_id:teacher_id,teach_way:teach_way,course_price:course_price,course_id:course_id},function(txt){
+            if(txt.status== '0'){
+                $('.buyOperating,.mask').hide();
+                alert(txt.info);
+            } else {
+                $('.buyOperating,.mask').hide();
+                window.location.href = window.location.href;
+            }
+        },'json');
+    }
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

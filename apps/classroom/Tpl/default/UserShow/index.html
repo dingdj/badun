@@ -1,0 +1,152 @@
+<include file="__THEME__/public_header" />
+
+<include file="public/_top" />
+
+
+        <div class="left-all">
+            <div class="center_right">
+                <div class="center_right_tit">
+                    <div class="center_right_tit">
+                        <div class="user-con-title">
+                            <h5>课程</h5>
+                            <a href="{:U('classroom/UserShow/course',array('uid'=>$userid))}">更多></a>
+                            <!--<a href="javascript:void(0);">个人资料</a>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="center_right_con Manage_all">
+                    <ul class="user-imglist">
+                        <if condition="$data['data'] eq null">
+                            <li style="border: none;box-shadow: none;">TA还没有相关课程。。</li>
+                            <else/>
+                            <foreach name="data['data']" item="l">
+                                <li>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+                                        <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                    </a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                        <p><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['school_title']}</a><a href="#">{$l['teacher_neme']}</a></p>
+                                        <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                </div>
+
+                <!--<div class="center_right_con Manage_all" style="display: none">
+                    <form class="infobox">
+                        <if condition="$user['uname']">
+                            <dl>
+                                <dt><span></span>昵称：</dt>
+                                <dd>
+                                    {$user['uname']}
+                                </dd>
+                            </dl>
+                        </if>
+                        <if condition="$user['phone']">
+                            <dl>
+                                <dt><span></span>手机号码：</dt>
+                                <dd>
+                                    <php>$phone = substr($user['phone'],0,3).'****'.substr( $user['phone'] , 7);</php>
+                                    <php>echo $phone; </php>
+                                </dd>
+                            </dl>
+                        </if>
+                        <if condition="$user['sex']">
+                            <dl>
+                                <dt><span></span>性别：</dt>
+                                <dd>
+                                    {$user['sex'] ==1 ? 男 : 女}
+                                </dd>
+                            </dl>
+                        </if>
+                        <if condition="$user['location']">
+                            <dl>
+                                <dt><span></span>地区：</dt>
+                                <dd>
+                                    {$user['location']}
+                                </dd>
+                            </dl>
+                        </if>
+                        <if condition="$user['profession']">
+                            <dl>
+                                <dt><span></span>职业：</dt>
+                                <dd>
+                                    {$user['profession']}
+                                </dd>
+                            </dl>
+                        </if>
+                        <dl>
+                            <dt><span></span>个人简介：</dt>
+                            <dd>
+                                <if condition="$user['intro']">
+                                    {$user.intro}
+                                    <else/>
+                                    TA很懒，什么都没留下~~
+                                </if>
+                            </dd>
+                        </dl>
+                    </form>
+                </div>-->
+            </div>
+
+            <!--留言板-->
+            <div class="his-message" style="display: none;">
+                <div class="user-con-title">
+                    <h5>留言</h5>
+                    <a href="#">更多></a>
+                </div>
+                <div class="his-message-text">
+                    <textarea placeholder="写下你想对他说的..."></textarea>
+                    <div class="spare-parts">
+                        <span><img src="__THEME__/image/usergroup/v_05.png"><em>添加表情</em></span>
+                        <button>留言</button>
+                    </div>
+                    <ul>
+                        <h5>全部留言（2）</h5>
+                        <li>
+                            <a href="#" class="his-head-portrait" title="一指禅韩大湿"><img src="http://link.51el3.com/data/upload/avatar/1f/f1/de/original_100_100.jpg?v1482288778"></a>
+                <span>
+                    <h6><a href="#">一指禅韩大湿</a><small>2天前</small></h6>
+                    <p>好巧啊！楼上是我媳妇儿，嘿嘿！</p>
+                    <i class="icon-comment"></i>
+                    <i class="icon-delete"></i>
+                </span>
+                        </li>
+                        <li>
+                            <a href="#" class="his-head-portrait" title="一指禅韩大湿"><img src="http://link.51el3.com/data/upload/avatar/1f/f1/de/original_100_100.jpg?v1482288778"></a>
+                <span>
+                    <h6><a href="#">二指禅韩大湿</a><small>2天前</small></h6>
+                    <p>好巧啊！楼上是我媳妇儿，嘿嘿！</p>
+                    <i class="icon-comment"></i>
+                    <i class="icon-delete"></i>
+                </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <script>
+                $(".his-message-text ul li:last").css("border","0");
+
+                $(".his-message-text ul span .icon-comment").on("click",function(){
+                    var plVal = $(this).siblings().children("a").text();
+                    $(".his-message-text textarea").prop("placeholder","@ "+ plVal +" /");
+                });
+            </script>
+
+        </div>
+        <include file="public/_right" />
+
+
+<script>
+    $(".user-con-title a").click(function(){
+        $(this).addClass("on").siblings().removeClass();
+        var index = $(this).index();
+        $(".Manage_all").hide().eq(index).show();
+    });
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

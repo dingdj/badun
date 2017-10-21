@@ -1,0 +1,192 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+
+
+
+<div class="content">
+
+
+
+  <form name="addform" action="{:U('group/Index/doAdd')}"     method="post" >
+
+      <div class="header2">
+          <a href="{:U('group/Index/index',array('gid'=>$_GET['gid']))}" class="icon-back"></a>
+          <div>申请小组</div>
+
+          <a href="javascript:;" class="save"  type="submit"   onclick="dosubgroup(this)">保存</a>
+      </div>
+
+
+
+
+
+      <div class="jgzlbox" style="padding:0 10px 0 0">
+
+
+
+     <dl>
+        <dt>小组名称：</dt>
+         <dd>  <input name="name"   id ="gruopname"   type="text" placeholder=""></dd>
+    </dl>
+
+
+
+
+
+            <dl>
+        <dt>分类：</dt>
+
+                <style>
+                    dl select {
+                        width: 100%;
+                        text-indent: 10px;
+                        min-width: 70px;
+                        border-radius: 4px;
+                        border: solid 1px #b6c7d6;
+                        line-height: 34px;
+                    }
+                </style>
+
+
+                <select name="cid0"   id ="cid0">
+       		<option value="">请选择</option>
+       		<volist name="categrory" id="vo">
+       			<option value="{$vo.a}" <php>if($_GET['fid'] == $vo['a']){</php>selected<php>}</php> >{:msubstr(t($vo['t']),0,10,'utf-8',true)}</option>
+       		</volist>
+       		</select>
+      </dl>
+
+
+
+
+	   <dl>
+           <dt>简介：</dt>
+	       <textarea id="intro" class="user-textarea"  id ="intro"   name="intro" style="width:220px;margin-top: 15px"></textarea>
+      </dl>
+
+
+	    <dl>
+            <dt>公告：</dt>
+	       <textarea id="announce" class="user-textarea" name="announce" style="width:220px;margin-top: 15px"></textarea>
+      </dl>
+
+          <!--<dl>-->
+              <!--<dt>请输入验证码：</dt>-->
+              <!--<input id="verify" name ="verify" placeholder="请输入验证码" style="margin-top: 15px;margin-left:10px;">-->
+          <!--</dl>-->
+
+          <!--<dl>-->
+              <!--<dt>验证码：</dt>-->
+              <!--<img class="verifyimg" src="{:U('group/Index/verify')}" title ="点击刷新验证" style="height: 40px;  margin-top: 10px ; height: 32px;" />-->
+          <!--</dl>-->
+
+
+
+      </div>
+</form>
+
+
+</div>
+
+
+
+
+<script>
+    window.URL = window.URL || window.webkitURL;
+    var fileElem = $("#logoxz");
+    function handleFiles(obj) {
+        var files = obj.files,
+                img = new Image();
+        if(window.URL){
+            $('#logo_src').attr('src',window.URL.createObjectURL(files[0]))
+        }else if(window.FileReader){
+            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+            var reader = new FileReader();
+
+            $('#logo_src').attr('src',this.result)
+
+        }else{
+            //ie
+            obj.select();
+            obj.blur();
+            var nfile = document.selection.createRange().text;
+            document.selection.empty();
+            img.src = nfile;
+            $('#logo_src').attr('src',nfile)
+
+            //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+        }
+    }
+
+    $('.verifyimg').click(function (){
+        var url = "{:U('wenda/Index/verify')}";
+        $('.verifyimg').removeAttr('src');
+        $('.verifyimg').attr('src',url);
+    });
+
+
+    function  dosubgroup(o)
+    {
+
+        var v_form = $.trim($('#form').val());
+        var gruopname = $.trim($('#gruopname').val());
+        var cid0 = $.trim($('#cid0').val());
+        var intro = $.trim($('#intro').val());
+        var announce = $.trim($('#announce').val());
+        var verify = $.trim($('#verify').val());
+
+        if($("#gruopname").val().length == 0) {
+            alert("群组名称不能为空","failure");
+            return;
+        }
+        if( $("#gruopname").val().length > 30) {
+            alert("群组名称不能超过30个字","failure");
+            return;
+        }
+        if($("#cid0").val() <= 0) {
+            alert("请选择群组分类","failure");
+            return;
+        }
+        if($("#intro").val().length == 0) {
+            alert("群组简介不能为空","failure");
+            return;
+        }
+        if($("#announce").val().length == 0) {
+            alert("群组公示不能为空","failure");
+            return;
+        }
+        if($("#announce").val().length > 200) {
+            alert("群组公示不能超过200个字","failure");
+            return;
+        }
+
+        if($("#announce").val().length > 200) {
+            alert("群组公示不能超过200个字","failure");
+            return;
+        }
+
+//        if($("#verify").val() == '') {
+//            alert('请输入验证码',"failure");
+//            return;
+//        }
+
+        $.ajax({
+            type: "POST",
+            url:"{:U('group/Index/doAdd')}",
+            data:"gruopname="+gruopname+"&cid0="+cid0+"intro"+intro+"&announce="+announce+"&verify="+verify,
+            dataType:"text",
+            success:function(data){
+                if(isNaN(data)){
+                    alert(data,"failure");
+                }else{
+                    alert("恭喜申请成功，请等待管理员审核！","success");
+                    var iddata = data;
+                    location.href = U('group/Index/index');
+                }
+            }
+        });
+
+    }
+
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

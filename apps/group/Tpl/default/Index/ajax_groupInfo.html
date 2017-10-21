@@ -1,0 +1,13 @@
+<volist name = "listData" id ="vo">
+    <li>
+        <h3><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">{$vo.title}</a></h3>
+        <div class="pic"><a href="#">
+            {$vo.intro}
+        </a></div>
+        <div class="info">
+            <!--<a href="#"><span class="icon-pl"></span>10</a>-->
+            <a href="#"><span class="icon-zan"></span>{$vo.replycount}</a>
+            {$vo.uname} {$vo.addtime}
+        </div>
+    </li>
+</volist>

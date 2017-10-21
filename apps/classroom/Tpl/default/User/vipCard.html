@@ -1,0 +1,114 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_right_con{
+        padding:0 10px;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+	<div class="wrap">
+    	<include file="../User/public/_left" />
+        <div class="center_right">
+        	<div class="center_right_tit">
+            	<ul>
+                    <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
+                    <li><a href="{:U('classroom/User/discount')}">打折卡</a></li>
+                    <li  class="on"><a href="{:U('classroom/User/vipCard')}">会员卡</a></li>
+                    <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+                    <li><a href="{:U('classroom/User/exchangeCard')}">使用卡券</a></li>
+                </ul>
+            </div>
+            <div class="center_right_con">
+            	<div class="tr_btn sort-select">
+                    <a id="showBox">全部<i class="icon-sj"></i></a>
+                    <ul class="hideBox" style="display: none;background:#fff;z-index: 1;">
+                        <li data-value="0" onclick =order("0")>全部<i class="icon-sj"></i></li>
+                        <li data-value="1" onclick =order("1")>未使用<i class="icon-sj"></i></li>
+                        <li data-value="2" onclick =order("2")>已使用<i class="icon-sj"></i></li>
+                        <li data-value="3" onclick =order("3")>已过期<i class="icon-sj"></i></li>
+                    </ul>
+                </div>
+            	<ul class="carlist red">
+                    <if condition="$data">
+                        <volist name="data" id="vo">
+                            <li <switch name="vo.status"><case value= "1|2" >class="used"</case><case value= "-1" >class="over"</case><default /></switch>>
+                                <div class="txt">
+                                    <i class="icon-tb"></i>
+                                    <h3 <php>if($vo['status'] != 0){</php>style="color: #dddddd;"<php>}</php>>{$vo.vip_date}天<span class="vip">{$vo.vip_grade}</span></h3>
+                                    <p>卡券编号&nbsp;:&nbsp;{$vo.code}</p>
+                                    <p>发卡单位&nbsp;:&nbsp;{:msubstr(t($vo['school_title']),0,9,'utf-8',true)}</p>
+                                    <p>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                                </div>
+                                <switch name="vo.status">
+                                    <case value="1|2"><a href="javascript:;" style="background-position: -280px -300px;">已<br>使<br>用</a></case>
+                                    <case value="-1"><a href="javascript:;" style="background-position: -280px -300px;color:#666;">已<br>过<br>期</a></case>
+                                    <default/>
+                                    <a href="{:U('classroom/User/exchangeCard',array('id'=>$vo['coupon_id']))}">立<br>即<br>使<br>用</a>
+                                </switch>
+                            </li>
+                        </volist>
+                        <else/>
+                        <li style="height: 149px;">您暂未获得会员卡~~</li>
+                    </if>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        $("#showBox").click(function(){
+            if($(".hideBox").css("display")=="none"){
+                $(".hideBox").show();
+            }else{
+                $(".hideBox").hide();
+            }
+        });
+        $(".hideBox li").click(function(){
+            $("#showBox").html($(this).html());
+            $(".hideBox").hide();
+        });
+    });
+    //筛选
+    function order(orderby){
+        var type = 3;
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/User/choiceCard')}",
+            data:{type:type,orderby:orderby},
+            dataType:"json",
+            success:function(data){
+                try{
+                    var data = JSON.param(data);
+                }catch(e){}
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".carlist").html("");
+        if(data.data!=""){
+            $(".carlist").append(data.data);
+        }
+        return true;
+    }
+</script>
+<include file="__THEME__/public_footer" />

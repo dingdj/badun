@@ -1,0 +1,126 @@
+<dl class="pop-area">
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">菜单名称：</div><div class="r"><input type="text" placeholder="菜单名称" id="rulename" value="{$category['rulename']}" class="s-txt" style="width:245px;"></div></dt>
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">应用名称：</div><div class="r"><input type="text" placeholder="菜单所属应用英文名" id="appname" value="{$category['appname']}" class="s-txt" style="width:245px;"></div></dt>
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">权限规则：</div><div class="r"><input type="text" placeholder="模块/控制器/方法" id="rule" value="{$category['rule']}" class="s-txt" style="width:245px;"></div></dt>
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">备注：</div><div class="r"><textarea type="text" id="note" value="{$category['note']}" class="s-txt" style="width:245px;height: 100px">{$category['note']}</textarea></div></dt>
+
+    <div class="l">是否独立：</div>
+    <div class="r">
+          <input type="radio" <php>if($category['is_autocephaly'] == 0){</php>checked="checked" <php>}</php> name="is_autocephaly" value="0">否
+          <input type="radio" <php>if($category['is_autocephaly'] == 1){</php>checked="checked" <php>}</php> name="is_autocephaly" value="1">是
+          <p style="color: #7d7d7d;line-height: 20px;margin: 0;padding: 0;">用于没有子级的,如登录后台、发送私信等权限</p>
+    </div>
+    <dd>
+        <php>if(isset($category)):</php>
+        <input type="button" class="btn_b" onclick="upTreeCategory()" value="确定" />
+        <php>else:</php>
+        <input type="button" class="btn_b" onclick="addTreeCategory()" value="确定" />
+        <php>endif;</php>
+        <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
+    </dd>
+    <div class="clear"></div>
+</dl>
+
+<script type="text/javascript">
+/**
+ * 添加菜单操作
+ * @return void
+ */
+var addTreeCategory = function()
+{
+    var appname        = $.trim($('#appname').val());
+    var rulename       = $.trim($('#rulename').val());
+    var rule           = $.trim($('#rule').val());
+    var note           = $.trim($('#note').val());
+    var is_autocephaly = $("input[name='is_autocephaly']:checked").val();;
+    var pid            = "{$pid}";
+    var limit          = "{$limit}";
+
+    if(rulename == '') {
+        ui.error('请输入菜单名称');
+        return false;
+    }
+    if(appname == '') {
+      ui.error('请输入应用名称');
+      return false;
+    }
+    if(rule == '') {
+      ui.error('请输入权限规则');
+      return false;
+    }
+    if(limit>0 && getLength(rulename)>limit){
+      ui.error('菜单名称不能超过'+limit+'个字');
+      return false;
+    }
+
+    var data = {appname:appname,rulename:rulename,rule:rule,note:note,is_autocephaly:is_autocephaly,pid:pid,};
+
+    // 提交添加
+    $.post(U('admin/Apps/savePermNode'), data, function(e) {
+        if(e.status == 1) {
+            ui.success(e.info);
+            setTimeout(function() {
+                location.href = location.href;
+            }, 1500);
+            ui.box.close();
+        } else {
+            ui.error(e.info);
+            return false;
+        }
+    }, 'json');
+};
+/**
+ * 编辑菜单操作
+ * @return void
+ */
+var upTreeCategory = function()
+{
+    var appname        = $.trim($('#appname').val());
+    var rulename       = $.trim($('#rulename').val());
+    var rule           = $.trim($('#rule').val());
+    var note           = $.trim($('#note').val());
+    var is_autocephaly = $("input[name='is_autocephaly']:checked").val();;
+    var id            = "{$category['id']}";
+    var limit          = "{$limit}";
+
+    if(rulename == '') {
+        ui.error('请输入菜单名称');
+        return false;
+    }
+    if(appname == '') {
+        ui.error('请输入应用名称');
+        return false;
+    }
+    if(rule == '') {
+        ui.error('请输入权限规则');
+        return false;
+    }
+    if(limit>0 && getLength(rulename)>limit){
+        ui.error('菜单名称不能超过'+limit+'个字');
+        return false;
+    }
+
+    var data = {id:id,appname:appname,rulename:rulename,rule:rule,note:note,is_autocephaly:is_autocephaly};
+
+    // 判断菜单名称是否有变化
+    /*  if(title == "{$category['title']}") {
+        ui.error('菜单名称无变化，未提交修改');
+        ui.box.close();
+        return false;
+      }*/
+
+  // 提交添加
+    $.post(U('admin/Apps/savePermNode'), data, function(e) {
+        if(e.status == 1) {
+            ui.success(e.info);
+            setTimeout(function() {
+                location.href = location.href;
+            }, 1500);
+            ui.box.close();
+        } else {
+            ui.error(e.info);
+            return false;
+        }
+    }, 'json');
+};
+</script>

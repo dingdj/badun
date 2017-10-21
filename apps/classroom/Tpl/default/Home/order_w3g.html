@@ -1,0 +1,376 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <style>
+        .orderlist .mid .info{width: 50px;}
+        .fqalistnav li{width: 33.33%;}
+    </style>
+    <div class="header2">
+    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<div>我的订单</div>
+    </div>
+    <div class="body">
+        <ul class="fqalistnav">
+            <li   <php> if(!$_GET['ordertype'] || $_GET['ordertype'] == 'course') {</php> echo class="on" ;  <php>}</php>  ><a href="{:U('classroom/Home/order',array('ordertype'=>'course'))}" >课程订单</a></li>
+            <li   <php> if($_GET['ordertype'] == 'live') {</php> echo class="on" ;  <php>}</php>   ><a href="{:U('classroom/Home/order',array('ordertype'=>'live'))}" >直播订单</a></li>
+            <li   <php> if($_GET['ordertype'] == 'teacher') {</php> echo class="on" ;  <php>}</php>   ><a href="{:U('classroom/Home/order',array('ordertype'=>'teacher'))}" >线下课订单</a></li>
+        </ul>
+
+        <!--<input type ="hidden"   id= "ordertype"   <php>if(!$_GET['ordertype'] || $_GET['ordertype'] == 'course') {</php> echo value="course" ; <php>} else if($_GET['ordertype'] == 'live') {</php>  echo value="live" ; <php>} else if($_GET['ordertype'] == 'teacher') {</php>  echo value="teacher" ; <php>}</php>/>-->
+        <input type ="hidden"   id= "ordertype"   <if condition="$_GET['ordertype'] neq ''">value="{$_GET['ordertype']}"<else/>value="course"</if>/>
+
+        <input type ="hidden"   id= "orderby"  value ="0" />
+        <ul class="orderlistnav">
+            <li class="choose <eq name='orderby' value=''>on</eq>"><a href="{:U('classroom/Home/order')}" >全部</a></li>
+            <li class="choose <eq name='orderby' value='1'>on</eq>"><a href="{:U('classroom/Home/order',array('orderby'=>1,'ordertype' => $_GET['ordertype']))}" >未支付</a></li>
+            <li class="choose <eq name='orderby' value='2'>on</eq>"><a href="{:U('classroom/Home/order',array('orderby'=>2,'ordertype' => $_GET['ordertype']))}" >已取消</a></li>
+            <li class="choose <eq name='orderby' value='3'>on</eq>"><a href="{:U('classroom/Home/order',array('orderby'=>3,'ordertype' => $_GET['ordertype']))}" >已支付</a></li>
+            <li class="choose <eq name='orderby' value='5'>on</eq>"><a href="{:U('classroom/Home/order',array('orderby'=>5,'ordertype' => $_GET['ordertype']))}" >已退款</a></li>
+            <!--<li><a href="#">已发货</a></li>-->
+        </ul>
+        <ul class="orderlist">
+            <if condition="$data['data'] neq ''">
+            <volist name="data.data" id="l">
+                <li>
+                    <div class="top">
+                        <span>
+                            <switch name="l.pay_status">
+                                <case value="2">已取消</case>
+                                <case value="3">已支付</case>
+                                <case value="5">已退款</case>
+                                <default/>未支付
+                            </switch>
+                        </span>
+                        <a .chref="#">{$l.ctime|date="Y-m-d",###}</a>
+                    </div>
+                    <div class="mid">    <php>if($ordertype == 'course') { </php> <a href="{:U('classroom/Video/view',array('id'=>$l['video_id']))}"> <php> } else {</php>     <a href="{:U('live/index/view',array('id'=>$l['live_id']))}">  <php>}</php>
+                        <div class="pic"><img src="{:cutImg($l['cover'],151,80)}" style="max-width:151px" alt="{:limitNumber($l['video_name'],12)}" /></div>
+                        <h3>{:limitNumber($l['video_name'],15)}</h3>
+                        <p style="font-size: 13px;margin-top: 5px;">{:limitNumber($l['video_binfo'],30)}</p>
+                        <div class="info">
+                            <php>if($l['mzprice']['price']) {</php> <div class="price">¥{$l.price}</div><php>}</php>
+                            <div class="del">¥{$l['old_price']}</div>
+                            <div class="num">x1</div>
+                        </div>
+                    </a></div>
+                    <div class="bot">
+                        <div class="txt">共1门课程  合计：<span>{$l['price']}</span></div>
+
+                        <div class="btn">
+                            <if condition="($check_type eq 'zy_video') OR ($check_type eq 'zy_album') OR ($check_type eq 'zy_live') OR ($check_type eq 'zy_teacher')">
+                                <if condition="$l['pay_status'] eq 1">
+                                    <form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
+                                    <a href="javascript:;" id="charge_video" data-id="{$l.coupon_id}">继续支付</a>
+
+                                        <if condition="$check_type eq 'zy_video'">
+                                            <input type="hidden" value="{$l.video_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_album'"/>
+                                            <input type="hidden" value="{$l.album_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_live'"/>
+                                            <input type="hidden" value="{$l.live_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_teacher'"/>
+                                            <input type="hidden" value="{$l.video_id}" name="vid" />
+                                        </if>
+                                        <input type="hidden" value="{$check_type}" name="check_type" />
+                                        <input type="hidden" value="ConPay" name="type" />
+                                        <if condition="$check_type eq 'zy_video'">
+                                            <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_album'"/>
+                                            <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_live'"/>
+                                            <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_teacher'"/>
+                                            <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                        </if>
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="delCancel(this.id)">取消订单</a><br><br>
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                                        <!--<a href="javascropt:;">评价课程</a>-->
+                                    </form>
+                                </if>
+
+                                <if condition="$l['pay_status'] eq 2">
+                                    <form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a><br><br>
+                                        <if condition="$check_type eq 'zy_video'">
+                                            <input type="hidden" value="{$l.video_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_album'"/>
+                                            <input type="hidden" value="{$l.album_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_live'"/>
+                                            <input type="hidden" value="{$l.live_id}" name="vid" />
+                                            <elseif condition="$check_type eq 'zy_teacher'"/>
+                                            <input type="hidden" value="{$l.video_id}" name="vid" />
+                                        </if>
+                                        <input type="hidden" value="{$check_type}" name="check_type" />
+                                        <if condition="$check_type eq 'zy_video'">
+                                            <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_album'"/>
+                                            <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_live'"/>
+                                            <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                            <elseif condition="$check_type eq 'zy_teacher'"/>
+                                            <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                        </if>
+
+                                        <a href="javascript:;" id="charge_video2">重新购买</a>
+                                    </form>
+                                </if>
+
+                                <if condition="$l['pay_status'] eq 3">
+                                    <if condition="($l['price'] gt 0 ) and ($check_type neq 'zy_teacher')">
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="applyForRefund(this.id)">申请退款</a>
+                                    </if>
+                                    <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                                </if>
+                                <if condition="$l['pay_status'] eq 4">
+                                    <a href="javascript:;">退款审核中。。</a>
+                                    <a href="javascript:;" id ="{$l.id}" onclick ="withdraw(this.id)">取消申请</a>
+                                </if>
+                                <if condition="$l['pay_status'] eq 5">
+                                    <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                                    <a href="javascript:;" id ="{$l.id}" style="color: green;">退款成功</a>
+                                </if>
+                                <if condition="$l['pay_status'] eq 6">
+                                    <a href="javascript:;" id ="{$l.id}" onclick = checkResigInfo(this.id,"{$check_type}")>查看驳回原因</a><br><br>
+                                    <a href="javascript:;" id ="{$l.id}" onclick ="applyForRefund(this.id)">重新申请退款</a>
+                                </if>
+                            </if>
+                        </div>
+                    </div>
+                </li>
+            </volist>
+                <else/>
+                <div style="font-size: 15px;padding: 20px;margin-top: 8px;">您还没有此类订单。。</div>
+            </if>
+        </ul>
+    </div>
+    <if condition="$data['data']">
+    <div class="loadding">
+        <if condition="$data['nowPage'] eq $data['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+        </if>
+    </div>
+    </if>
+<script>
+    var type;
+    var p = 1;
+
+    $(function() {
+        $(".header").hide();
+        $(window).scroll(function () {
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if(!p || p >= "{$data['totalPages']}"){
+                    $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                }else{
+                    p = p + 1;
+                    ajaxBang();
+                }
+            }
+        });
+    });
+
+    //请求事件
+    function ajaxBang(url,type,orderby){
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Home/getOrderlist')}",
+            data:"p="+p+"&type="+type+"&orderby="+orderby,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,type);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".orderlist").append(data.data);
+
+        if(!p || p >= data.totalPages){
+            $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+            return false;
+        }
+    }
+
+    function  delorder(ids) {
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+        if (confirm("你确定要删除这个订单？")) {
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/Home/delorder')}",
+                data: "ids=" + ids + "&type=" + type + "&orderby=" + orderby,
+                dataType: "json",
+                success: function (data) {
+                    location.reload();
+                }
+            });
+        }
+    }
+
+    function checkResigInfo(id,type) {
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+
+        if(!id){
+            ui.error("参数错误");
+            return false;
+        }
+        $.post("{:U('classroom/Home/getrejectinfo')}", {id:id,type:type}, function (e) {
+            if(e.status == 1){
+                alert("驳回原因："+e.info);
+            }else{
+                alert(e.info);
+            }
+        }, 'json');
+    }
+
+    function  withdraw(ids) {
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+
+        if (confirm("你确定要取消申请退款？")) {
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/Home/withdraw')}",
+                data: "ids=" + ids + "&type=" + type + "&orderby=" + orderby,
+                dataType: "json",
+                success: function (data) {
+                    if(data.status == 1){
+                        alert(data.info);
+                        location.reload();
+                    }else{
+                        alert(data.info);
+                    }
+                }
+            });
+        }
+    }
+
+    function  applyForRefund(ids) {
+        type = $('#ordertype').val();
+        $.post(U('classroom/Home/doApplyFR'),
+                {id: ids, order_type: type, status: 1}, function (res) {
+            res = JSON.parse(res);
+            if (res.status == 1) {
+                $.get(U('classroom/Home/applyForRefundBox'),{id: ids, type: type,from:'h5'},function(e){
+                    e = JSON.parse(e);
+//                    $(".hide_box_h5").fadeToggle();
+//                    $(".ts_box_h5").fadeToggle();
+                    $('body').append(e.info);
+                });
+                return false;
+            } else {
+                alert(res.info);
+                return false;
+            }
+        });
+    }
+
+    $(function(){
+        $(".hide_box_h5").fadeToggle();
+        $(".ts_box_h5").fadeToggle();
+    });
+
+ var uid = '{$uid}';
+    //购买操作
+    $('#charge_video,#charge_video2').click(function () {
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+        var form = $(this).parents('form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+        var cid = $(this).data("id");
+
+
+        if(!vid || !vtype){
+            alert('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+
+        if(money <= 0){
+            alert('此课程不需要您购买');
+//            $('.message_add_order_box').show();
+//            $('.mask').show();
+            return false;
+        }
+
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                alert('购买金额必须为整数');
+            }else{
+                alert('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
+            var mount_url = "{$_GET['mid']}";
+            if(data.status == 1){
+                if(mount_url){
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2)+"%2C"+cid+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+                }else{
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C%2C"+randomString(2)+"%2C"+cid+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                }
+            } else if(data.status == 9){
+                alert(data.info);
+                window.location.reload();
+            } else {
+                alert(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+
+
+
+    //头部点击事件
+    function navClick(cate,type){
+
+        $(".comment_list").html("");
+        type=type;
+        $('#ordertype').val(type);
+        $("li").removeClass("on");
+        $(cate).parent("li").addClass("on");
+        p=1;
+        ajaxBang('',type);
+    }
+
+
+
+
+
+
+
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

@@ -1,0 +1,157 @@
+
+<include file="__THEME__/admin_header" />
+<div class="so_main">
+	<div class="page_tit">直播课堂信息</div>
+	<div class="tit_tab">
+		<ul>
+			<li><a href="{:U('live/Admin/index')}">实时直播课堂列表</a></li>
+			<li><a href="{:U('live/Admin/end')}">已结束直播课堂列表</a></li>
+			<li><a href="{:U('live/Admin/create')}">创建直播间</a></li>
+		</ul>
+	</div>
+	<div class="form2">
+		<php>if(!empty($liveInfo)){</php>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 课堂名称：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.subject}
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 演讲人：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.speaker}
+				</dd>
+			</dl>
+			<dl style="height: 400px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 封面照：</dt>
+				<dd style="height: 400px;color: #535353;">
+					<div>
+						<div id="show_cover">
+							<img src="{:getImageUrlByAttachId($liveInfo['cover'],824,403)}" />
+						</div>
+					</div>
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 开始时间：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.startDate}
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 失效时间：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.invalidDate}
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 教师/助教加入URL：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					<a href="{$liveInfo.teacherJoinUrl}" target="_blank">{$liveInfo.teacherJoinUrl}</a>&nbsp;
+					<div style="position:relative;display:inline-block;*display:inline;*zoom:1;vertical-align:middle;">
+						<button class="clip_button" style="cursor:pointer;z-index:1999;">复制链接</button>
+					</div>
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 学生加入URL：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					<a href="{$liveInfo.studentJoinUrl}" target="_blank">{$liveInfo.studentJoinUrl}</a>&nbsp;
+					<div style="position:relative;display:inline-block;*display:inline;*zoom:1;vertical-align:middle;">
+						<button class="clip_button" style="cursor:pointer;z-index:1999;">复制链接</button>
+					</div>
+				</dd>
+			</dl>
+		<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+			<dt style="height: 20px;line-height: 20px;"> 学生客户端是否开启：</dt>
+			<dd style="height: 20px;line-height: 20px;color: #535353;">
+				<php>if($liveInfo['clientJoin'] == 1){</php>开启<php>}else{</php><span style="color: red;">关闭</span><php>}</php>
+			</dd>
+		</dl>
+		<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+			<dt style="height: 20px;line-height: 20px;"> 学生WEB是否开启：</dt>
+			<dd style="height: 20px;line-height: 20px;color: #535353;">
+				<php>if($liveInfo['webJoin'] == 1){</php>开启<php>}else{</php><span style="color: red;">关闭</span><php>}</php>
+			</dd>
+		</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 老师口令：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.teacherToken}
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 助教口令：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.assistantToken}
+				</dd>
+			</dl>
+			<php>if($liveInfo['clientJoin'] == 1){</php>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 学生客户端口令：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.studentClientToken}
+				</dd>
+			</dl>
+			<php>}</php>
+			<php>if($liveInfo['webJoin'] == 1){</php>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 学生WEB端口令：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.studentToken}
+				</dd>
+			</dl>
+			<php>}</php>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 是否开启：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					<php>if($liveInfo['is_del'] == 0){</php>开启<php>}else{</php>关闭<php>}</php>
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 是否审核：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					<php>if($liveInfo['is_active'] == 1){</php>已审核<php>}else{</php><span style="color: red;">未审核</span><php>}</php>
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> 价格：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					<span style="color:red; ">￥{$liveInfo.price}学币</span>
+				</dd>
+			</dl>
+			<dl style="height: 35px; border-bottom: 1px dashed #e2e2e2;">
+				<dt style="height: 20px;line-height: 20px;"> SDK  ID：</dt>
+				<dd style="height: 20px;line-height: 20px;color: #535353;">
+					{$liveInfo.SDK_ID}
+				</dd>
+			</dl>
+			<dl style="border-bottom: 1px dashed #e2e2e2;">
+				<dt>演讲人信息：</dt>
+				<dd style="color: #535353;">
+					<textarea rows="10" cols="80" readonly="readonly" style="outline: none;border: none;padding-top: 8px;">{$liveInfo.speakerInfo}</textarea>
+				</dd>
+			</dl>
+			<dl style="border-bottom: 1px dashed #e2e2e2;">
+				<dt>课程安排信息：</dt>
+				<dd style="color: #535353;">
+					<textarea rows="10" cols="80" readonly="readonly" style="outline: none;border: none;padding-top: 8px;">{$liveInfo.scheduleInfo}</textarea>
+				</dd>
+			</dl>
+			<dl style="border-bottom: 1px solid #9cb8cc;">
+				<dt>课程信息简介：</dt>
+				<dd style="color: #535353;">
+					<textarea rows="10" cols="80" readonly="readonly" style="outline: none;border: none;padding-top: 8px;">{$liveInfo.description}</textarea>
+				</dd>
+			</dl>
+			<div style="text-align: center;height: 50px;padding: 10px 0;">
+				<input type="button" value="返回" class="btn_b" onclick="window.location='{:U('live/Admin/index')}';">
+			</div>
+		<php>}else{</php>
+			<dt> 服务器出错! </dt>
+		<php>}</php>
+  </div>
+</div>
+<include file="__THEME__/admin_footer" />
+

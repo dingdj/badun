@@ -1,0 +1,62 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+@media (max-width: 1200px) {
+   
+}
+
+@media (max-width: 750px) {
+	 
+}
+
+@media (max-width: 600px) {
+    
+}
+
+@media (max-width: 600px) {
+    
+}
+
+
+[class^="icon-"], [class*=" icon-"] {
+	background:url(../icon/icon.png) 0 0 no-repeat;
+}
+.icon-logo{background-position:0 -5px;}
+.icon-foot_logo{background-position:-130px -29px;}
+.icon-btn{background-position:-335px -5px;}
+.icon-member{background-position:-255px -5px;}
+.icon-search_btn{background-position:-420px -20px;}
+.icon-promote01{background-position:0 -80px;}
+.icon-promote02{background-position:-80px -80px;}
+.icon-promote03{background-position:-160px -80px;}
+.icon-sj{background-position:-480px 0;}
+.icon-zan{background-position: -80px -160px;}
+.icon-pl{background-position: -105px -160px;}
+.icon-time{background-position: -205px -160px;}
+.icon-man01{background-position: 0 -260px;}
+.icon-man02{background-position: -50px -260px;}
+.icon-man03{background-position: -100px -260px;}
+.icon-man04{background-position: -150px -260px;}
+.icon-man05{background-position: -200px -260px;}
+.icon-man06{background-position: -250px -260px;}
+.icon-bj{background-position: -280px -160px;}
+.icon-sc{background-position: -304px -160px;}
+
+
+
+.class-list i,.star span,.class-list .fr em,.teacher-bot li span,.teacher-info dt span,.test-list li i,.select_an label span,.directory-list li span{
+	background-image:url(../icon/icon.png);
+}
+
+
+
+
+
+
+
+
+
+
+
+

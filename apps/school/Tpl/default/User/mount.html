@@ -1,0 +1,72 @@
+<include file="__THEME__/public_header" />
+<style>
+	.user-con-title a{width: inherit;border-radius: inherit;height: inherit;}
+	.user-imglist h3{float: left;}
+</style>
+<div class="content cf2">
+	<div class="wrap position-rt">
+		<!--左-->
+		<include file="../User/_left" />
+		<!--中 -->
+
+		<div class="jgpage_right">
+			<div class="user-con-title">
+				<a href="javascript:;" class="onactive" onclick="navClick(this,'getTeacherVideo')">我已挂载课程</a>
+			</div>
+
+			<!--机构已挂载课程列表-->
+			<ul class="user-imglist" id="getTeacherVideo" style="width: 865px;">
+				<php>if(!$mount_data['data']){</php>
+				<p style="padding: 12px; font-size: 14px;">暂无课程</p>
+				<php>}else{</php>
+				<volist name="mount_data['data']" id="l">
+					<li>
+						<a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a>
+						<h3><span class="fr">¥{$l.t_price}</span><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></h3>
+						<div class="act">
+							<div class="sc fr"><a href="javascript:;" onclick="delMountVideo(this,{$l.id})"><i class="icon-02"></i>删除</a></div>
+						</div>
+					</li>
+				</volist>
+				<php>}</php>
+			</ul>
+			<php>if($mount_data['totalPages'] > 1){</php>
+			<div class="page">
+				<div class="pagebox">
+					{$mount_data.html}
+					<div class="pagediv">
+						<span>共<p id="pageTotal" style="display: inline-block;">{$mount_data.totalPages}</p>页,去第</span>
+						<input type="text" name="pageNum" id="pageNum" > <span>页</span>
+						<a class="goto gotoPage screen" data-type="p" href="javascript:;">确定</a>
+					</div>
+				</div>
+			</div>
+			<php>}</php>
+		</div>
+	</div>
+</div>
+<script>
+	function delMountVideo(cate,id){
+		var id=id;
+		url="{:U('school/User/delMountVideo')}";
+		fdata="id="+id;
+		if(confirm("你确定要删除这个课程？")){
+			$.ajax({
+				type: "POST",
+				url:url,
+				data:fdata,
+				dataType:"json",
+				success:function(data){
+					if(data.status==1){
+						ui.success("删除成功!");
+						setTimeout(function(){
+							window.location.reload();
+						},'1500');
+					}
+				}
+			});
+		}
+	}
+
+</script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,51 @@
+<include file="__THEME__/public_header" />
+<include file="public/_top" />
+<!--centerbox end-->
+
+<div class="left-all">
+    <div class="center_right">
+        <div class="center_right_tit">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <h5>课程</h5>
+                    <!--<a href="{:U('classroom/Video/index')}">更多></a>-->
+                    <!--<a href="javascript:void(0);">个人资料</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="center_right_con Manage_all">
+            <ul class="user-imglist">
+                <!--显示9条li-->
+                <if condition="$data['data'] eq null">
+                    <li style="border: none;box-shadow: none;">TA还没有相关课程。。</li>
+                    <else/>
+                    <foreach name="data['data']" item="l">
+                        <li>
+                            <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+                                <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                            </a>
+                            <div class="user-title">
+                                <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                <!--<div class="act">
+                                    <div class="fx fl"><a  href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank"><i class="icon-01"></i>分享</a></div>
+                                </div>-->
+                                <p><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['school_title']}</a><a href="#">{$l['teacher_neme']}</a></p>
+                                <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                            </div>
+                        </li>
+                    </foreach>
+                </if>
+            </ul>
+        </div>
+        <div class="page">
+            <div class="pagebox">
+                {$data['html']}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<include file="public/_right" />
+
+<include file="__THEME__/public_footer" />

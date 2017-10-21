@@ -1,0 +1,22 @@
+<script>
+    var p="{$p}";//定义页码
+    var category="{$category}";
+    var sort_type="{$sort_type}";
+</script>
+
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+        <li>
+            <i class="icon-01"></i>
+            <h3><a href="#">{$vo.title}</a></h3>
+            <div class="info"><span>更新时间：{:date("Y-m-d H:i",$vo['ctime'])}</span><span>来自：阳光教育学院</span><span>文件大小：2.3M</span><span>文件类型：pdf</span></div>
+            <div class="num"><span>所需积分：<em class="price">{$vo.price}</em></span><span>下载次数：{$vo.down_nums}</span></div>
+            <a class="scbtn had" href="javascript:;"><em class="icon-sc"></em>200收藏</a>
+            <a class="downbtn" href="javascript:;">下载</a>
+        </li>
+</volist>
+
+<php>}else{</php>
+<span>已经没有相关文档啦~</span>
+<php>}</php>
+        

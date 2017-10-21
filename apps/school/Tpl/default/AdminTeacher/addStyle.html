@@ -1,0 +1,176 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+<div id="container" class="so_main">
+	<div class="page_tit">
+    上传讲师风采--{$name}
+	</div>
+	<div class="tit_tab">
+		<ul>
+			<li><a href="{:U('school/AdminTeacher/index',array('tabHash'=>'index'))}">讲师列表</a></li>
+			<li><a href="{:U('school/AdminTeacher/article',array('tabHash'=>'article'))}">讲师文章</a></li>
+            <li><a href="{:U('school/AdminTeacher/details',array('tabHash'=>'details'))}">讲师经历</a></li>
+            <li><a href="{:U('school/AdminTeacher/style',array('tabHash'=>'style'))}">讲师风采</a></li>
+			<li><a href="{:U('school/AdminTeacher/addTeacher',array('tabHash'=>'addTeacher'))}">添加讲师</a></li>
+			<li><a href="{:U('school/AdminTeacher/disable',array('tabHash'=>'disable'))}">讲师文章禁用列表</a></li>
+            <li><a href="{:U('school/AdminTeacher/teacherTitle',array('tabHash'=>'teacherTitle'))}">讲师头衔配置</a></li>
+		</ul>
+	</div>
+	<form method="POST" action="{:U('school/AdminTeacher/doAddStyle',array('tid'=>$tid))}" name="detail_form" >
+		<input type="hidden" name="systemdata_list" value="school_AdminTeacher" class="s-txt">
+		<input type="hidden" name="systemdata_key" value="addStyle" class="s-txt">
+		<div class="form2">
+			<dl class="lineD" id="dl_id">
+				<dt><font color="red"> * </font>讲师ID：</dt>
+				<dd>{$tid}</dd>
+			</dl>
+			<dl class="lineD" id="dl_name">
+				<dt><font color="red"> * </font>讲师名称：</dt>
+				<dd>{$name}</dd>
+			</dl>
+			<dl class="lineD" id="dl_photo">
+		      	<dt><font color="red"> * </font>选择相册：</dt>
+		      	<dd><select id="photo_id" name="photo_id">
+					<option value="0" >默认相册</option>
+		      		<volist name="photos" id="vo">
+			      		<option value="{$vo.id}" >{$vo.title}</option>
+		      		</volist>
+		    	</select></dd>
+		    </dl>
+			<dl class="lineD" id="dl_title">
+		      	<dt><font color="red"> * </font>风采名称：</dt>
+		      	<dd>
+		      		<input name="title" id="title" type="text" value="{$title}">
+		    	</dd>
+		    </dl>
+			<dl class="lineD" id="dl_type">
+				<dt><font color="red"> * </font>类型：</dt>
+				<dd>
+					<label><input class="type" type="radio" name="type" value="1" checked="checked">图片 </label>
+      	        	<label><input class="type" type="radio" name="type" value="2" >视频 </label>
+				</dd>
+			</dl>
+			
+			<dl class="lineD" id="dl_photo_id" >
+				<dt><font color="red"> * </font>风采上传：</dt>
+				<dd>
+					<!--  上传插件 -->
+					<div id="divup_1" type="file" rel="1">
+						{:W('UploadAttach',array('inputname'=>'attach','limit'=>10,'type'=>'file','tpl'=>'uploadAttach'))}
+					</div>
+					<p>建议尺寸：180*180</p>
+				</dd>
+			</dl>
+			<div id="photo_video" style="display:none;">
+				<dl class="lineD" id="dl_style">
+					<dt><font color="red"> * </font>封面上传：</dt>
+					<dd>
+						<!--  上传插件 -->
+						<div class="user-tex">
+						{:W('Upload',array('inputname'=>'cover','attachIds'=>$data['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))} 
+						</div>
+						<p>建议尺寸：180*180</p>
+					</dd>
+				</dl>
+				 <dl id="dl_style">
+					<dt><font color="red"> * </font>上传视频：</dt>
+					<dd>
+						 <php>if($upload_room == 0){</php>
+							 {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp4,flv,f4v'))}
+						 <php>}else{</php>
+							 <div id="content">
+								<div class="swfupload-box">
+									<p>点击“浏览”按钮，选择您要上传的文件后，系统将自动上传并在完成后提示您。</p>
+									<p>一次只能上传一个视频文件！</p>
+									<p>支持流行视频格式flv，f4v，mp4</p>
+									<form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+										<div class="fieldset flash" id="fsUploadProgress"></div>
+										<div style="margin-top:15px;">
+											<div style="width:auto;float:left;"><span id="spanButtonPlaceHolder" ></span></div>
+											<input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px;" />
+										</div>
+									</form>
+								</div>
+							</div>
+						<php>}</php>
+					</dd>
+				</dl>
+				<input id="videokey" name="videokey" type="hidden" value="{$videokey}">
+		    	<input name="video_address" type="hidden" value="{$video_path}">
+			</div>
+           	
+			<div class="page_btm">
+				<input type="text" style="display:none">
+				<input type="submit" class="btn_b" value="保存" id="form_submit" >
+			</div>
+		</div>
+	</form>
+<include file="__THEME__/admin_footer" />
+<script>
+$(function(){
+$(".lineD .type").click(function(){
+    var val=$('input:radio[name="type"]:checked').val();
+	if(val == 1){
+		$("#dl_photo_id").show();
+		$("#photo_video").hide();
+	}else if(val == 2){
+		$("#dl_photo_id").hide();
+		$("#photo_video").show();
+	}
+});
+
+$("form[name='detail_form']").submit(function(evt){
+	var e = evt || window.event; 
+	window.event?e.returnValue = false:e.preventDefault(); 
+	window.event?e.cancelBubble=true:e.stopPropagation(); 
+	var type = $("input[name='type']:checked").val();
+	if($("#photo_id").val()==""){
+      ui.error("请选择相册!");
+      return false;
+    }
+	if($("#title").val()==""){
+      ui.error("请输入风采名称!");
+      return false;
+    }
+    if(!$("input[type='radio']:checked").val()){
+      ui.error("请选择类型!");
+      return false;
+    }
+	if(type == 1){
+		if(!$("input[name='attach[]']").val()){
+		  ui.error("请上传图片!");
+		  return false;
+		}
+	}else if(type == 2){
+		if(!$("input[name='cover']").val()){
+		  ui.error("请上传封面!");
+		  return false;
+		}
+	}
+	var detail_form = $("form[name='detail_form']");
+    $.ajax({
+        type: detail_form.attr('method') || 'POST',
+        url:detail_form.attr("action"),
+        data:detail_form.serialize(),
+        dataType:"json",
+        cache: false,
+        success: function(res){
+        if(res.status == 1){
+			ui.success("上传成功!");
+			setTimeout(function(){
+			location.href = U('school/AdminTeacher/style')+'&tabHash=style';
+			},'1000');
+		}else{
+			ui.error("上传失败!");
+			return false;
+		}
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+    });
+	return false;
+});
+
+});
+
+</script>

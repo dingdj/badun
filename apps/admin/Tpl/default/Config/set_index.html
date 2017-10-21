@@ -1,0 +1,96 @@
+<include file="__THEME__/admin_header" />
+<style>
+#sortable tr td .checkbox{
+    vertical-align: middle;
+}
+</style>
+<script src="http://apps.bdimg.com/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="__APP__/js/jquery-ui.min.js"></script>
+<div id="container" class="so_main">
+    <div class="page_tit">{:L('PUBLIC_MAILTITLE_ADMIN')} - 首页配置</div>
+
+    <div class="list">
+        
+      <form action="{:U('admin/Config/saveConfigData')}" method='POST'>
+        <input type="hidden" class="s-txt" value="admin_Config" name="systemdata_list">
+        <input type="hidden" class="s-txt" value="index_item" name="systemdata_key">
+        <input type="hidden" class="s-txt" value="首页配置" name="pageTitle">
+        <div class="form2">
+            <dl class="lineD">
+                <dt>首页模板：</dt>
+                <dd>
+                    <label><input type="radio" name="tpl" value="index" <eq name="config.tpl" value="index">checked="checked"</eq> />旧版 </label>
+                    <label><input type="radio" name="tpl" value="index_new" <eq name="config.tpl" value="index_new">checked="checked"</eq>/>新版 </label>
+                </dd>
+            </dl>
+            <!--<dl class="lineD">-->
+                <!--<dt>引用旧版头部/尾部：</dt>-->
+                <!--<dd>-->
+                    <!--<label><input type="radio" name="use_old_header" value="1" <eq name="config.use_old_header" value="1">checked="checked"</eq> />是 </label>-->
+                    <!--<label><input type="radio" name="use_old_header" value="0" <eq name="config.use_old_header" value="0">checked="checked"</eq>/>否 </label>-->
+                <!--</dd>-->
+            <!--</dl>-->
+            <dl class="lineD sort" <eq name="config.tpl" value="index">style="display:none;"</eq>>
+                <dt>首页模块定义(拖动可排序)：</dt>
+                <dd>
+                    <table width="100%" cellspacing="0" cellpadding="0" border="0" id='sortable' >
+                    <volist name="config.sort" id="item">
+                        <eq name="item" value="live">
+                          <tr>
+                            <td>
+                                <input type="checkbox" <php>if(in_array('live',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="live" />
+                                <input type="hidden" name="sort[]" value="live" />
+                                <span>直播预告</span>
+                            </td>
+                          </tr>
+                        </eq>
+                        <eq name="item" value="bestCourse">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('bestCourse',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="bestCourse" />
+                                    <input type="hidden" name="sort[]" value="bestCourse" />
+                                    <span>精选课程</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="newCourse">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('newCourse',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="newCourse" />
+                                    <input type="hidden" name="sort[]" value="newCourse" />
+                                    <span>最新课程</span>
+                                </td>
+                            </tr>
+                        </eq>
+                    </volist>
+                    </table>
+                </dd>
+            </dl>
+        </div>
+        <div class="page_btm">
+          <input class="btn_b" value="{:L('PUBLIC_SAVE')}" type="submit" />
+        </div>
+      </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    var tpl = '';
+    $("input:radio[name='tpl']").click(function(){
+        tpl = $(this).val();
+        if(tpl == 'index'){
+            $(".sort").hide();
+        }else{
+            $(".sort").show();
+        }
+    });
+    $("#sortable").sortable({
+        cursor: "move",
+        items: "tr", //只是tr可以拖动
+        opacity: 0.6, //拖动时，透明度为0.6
+        revert: true, //释放时，增加动画
+    }).disableSelection();
+});
+</script>
+<include file="__THEME__/admin_footer" />

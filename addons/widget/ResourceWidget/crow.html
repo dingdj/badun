@@ -1,0 +1,180 @@
+<div class="title back comment"><a href="javascript:;" class="fr comment" style="padding-right:20px;">我要评论</a></div>
+<!--提问-->
+<div class="video-wdcon margin-bt back">
+    <!--我的提问 默认隐藏-->
+    <div id="album-comments" class="clearfix" style="display:none;padding: 10px 0 0 0; height:auto;position: relative;">
+        <div class="qa-ci-wrap" style="width:777px;">
+            <input class="fid_com" type="hidden" name="fid" value="{$fid}">
+            <input class="to_comment_id_com" type="hidden" name="to_comment_id" value="0">
+            <textarea style="width:777px;" id="text_com" placeholder="可以评论你想要表达的想法..." class="qa-ci-iarea js-reply-ipt-default" name="content"></textarea>
+            <div class="qa-reply-footright fr"> <span class="qa-tips"></span>
+                <button class="btn-mc-light js-ipt-cancel">取消</button>
+                <button class="btn-mc btn-mini btn-mc-green" onClick="doComment(this,'com');">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="comment_list"></ul>
+
+<script type="text/javascript">
+var ispage = '{$ispage}';  //是否分页
+var uid = '{$mid}';
+var fid = '{$fid}';
+var limit = 10;             // 查询条数
+var page = 0;              //页数
+    $(function(){
+        getComment(page);
+      //分页操作
+        $('.Page a').live('click',function(){
+            var p = $(this).attr('p');
+            if(typeof(p) == 'undefined'){
+                return false;
+            }
+            getComment(p);
+            return false;
+        });
+      
+      $('div.comment a.comment').live('click',function(){
+          $('div#album-comments').show();
+          $(this).hide();
+      });
+      $('div.qa-reply-footright button.js-ipt-cancel').live('click',function(){
+          $('div#album-comments').hide();
+          $('div.comment a.comment').show();
+      });
+      $('a.showComment').live('click',function(){
+          $(this).removeClass('showComment').addClass('hideComment');
+          $(this).parent('div.info').siblings('ul.children').show();
+      });
+      $('a.hideComment').live('click',function(){
+          $(this).removeClass('hideComment').addClass('showComment');
+          $(this).parent('div.info').siblings('ul.children').hide();
+      });
+      /*点赞*/
+      $('a.js-zan').live('click',function(){
+          if(uid <=0){
+              reg_login();
+              return false;
+          }
+          var id = $(this).attr('data-id');
+          var doType = $(this).attr('data-type');
+          var _this = $(this);
+          var zan_num = _this.find('.zan-num').html();
+          
+          $.post("{:U('classroom/Public/doreviewvote')}",{kztype:1,type:doType,kzid:id},function(rtn){
+              if(rtn.status == 1){
+                  
+                  if(doType == 1){
+                      _this.attr('data-type',0);
+                      _this.find('.zan-num').html(Number(zan_num)-1);
+                      _this.attr('title','点赞');
+                  }else{
+                      _this.attr('data-type',1);
+                      _this.find('.zan-num').html(Number(zan_num)+1);
+                      _this.attr('title','取消点赞');
+                  }
+                  notes(rtn.info,'success');
+              }else{
+                  notes(rtn.info,'failure');
+              }
+          },'json');
+      });
+      
+    });
+    
+   function comment(obj,pid,comment_to_uid){
+        if(uid <=0){
+           reg_login();
+           return false;
+        }
+        var cmtext = $(obj).attr('data-con')+'：';
+        $("#text_"+pid).val(cmtext);
+        $('.fid_'+pid).val(comment_to_uid);
+        $("#text_"+pid).focus();
+    }
+
+    
+    function doComment(obj,id){
+        if(uid <=0){
+            reg_login();
+            return false;
+         }
+        var to_uid = $('.fid_'+id).val();
+        var app_uid = fid;
+        var app_table = 'crowdfunding';
+        var to_comment_id = $('.to_comment_id_'+id).val();
+        var content = $('#text_'+id).val();
+        content = content.replace(/&nbsp;/ig, "");
+        content = content.replace(/[ ]/g,"");//去除空格
+        content = content.replace(/<[^>].*?>/g,"");//去html标签
+        if(content == ""){
+            //ui.error('请输入评论补充!')
+            notes('请输入详细评论描述!','failure');
+            return false;
+        }
+        for(var i=0; i<arr.length; i++) {
+            if(content.indexOf(arr[i])>-1) {
+                notes('详细评论描述不得包含敏感词!','failure');
+                return false;
+            }
+        }
+        ajaxComment(content,to_uid,app_uid,app_table,to_comment_id);
+    }
+
+    function ajaxComment (content,to_uid,app_uid,app_table,to_comment_id){
+        $.ajax({
+            type: "POST",
+            url:U('classroom/Crow/addComment'),
+            data: 'content='+content+'&to_uid='+to_uid+'&app_id='+app_id+'&app_uid='+app_uid+'&app_table='+app_table+'&to_comment_id='+to_comment_id,
+            async:false,
+            dataType:"JSON",
+            success: function(xMLHttpRequest, textStatus, errorThrown){
+                //xMLHttpRequest = eval("("+xMLHttpRequest+")");
+                if(xMLHttpRequest.status == 1){
+                    if($(".comment_list li").size() > 0){
+                        $(".comment_list li").remove();
+                    }
+                    notes('评论成功！','success');
+                    $('div#album-comments #text_com').val('');
+                    $('div#album-comments').hide();
+                    getComment(page);//重新加载
+                }else{
+                    notes(xMLHttpRequest.info,'failure');
+                }
+                return false;
+            },
+            error:function(xhr, ajaxOptions, thrownError){
+                notes(xhr.info,'failure');
+                return false;
+            }
+        });
+        
+    }
+    //获取评论
+    function getComment(page){
+        var url = "{:U('widget/Resource/ajaxComment')}";
+        var html = '';
+        var app_table = 'crowdfunding';
+        var app_id = "{$kzid}";
+        
+        $.post(url,{app_table:app_table,app_id:app_id,type:4,fid:fid,p:page},function(data){
+            if(data.data==""){
+                html+='<span id="questionullms">对不起，暂时没有提问，快来坐沙发！</span>';
+            }else{
+                html = data.data;
+            }
+
+          //分页   
+            if(data.totalPages > 1) html += '<div class="qstPage sabrosus">'+data.html+'</div>';
+            if($(".video-wdcon .con").size()<= 0 ){
+                $(".comment_list").html(html);
+            }else{
+                //提交评论之后删除除了表单外的其他元素
+                $(".video-wdcon").children().not("#qst-comments").remove();
+                $(".comment_list").html(html);
+                $("#qst-comments").hide();
+            }
+        },'json'); //post
+    }
+
+</script>

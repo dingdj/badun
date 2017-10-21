@@ -1,0 +1,141 @@
+<include file="__THEME__/public_header" />
+<link href="__APP__/css/cert/css.css" rel="stylesheet" type="text/css" />
+<link href="__APP__/css/cert/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<style>
+.cont {
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #2B92F9;
+    padding: 0 100px;
+}
+.cont div.input_item{
+    width: 418px;
+    margin: 0 auto;
+    margin-top: 16px;
+}
+.cont div.input_item span{
+    text-align: right;
+    display: block;
+    float: left;
+    width: 70px;
+    line-height: 38px;
+}
+.color{
+    float: right;
+}
+.title {
+    margin-top: 25px;
+    text-align: center;
+    padding-bottom: 25px;
+    border-bottom: solid 1px #2B92F9;
+    font: normal 22px/35px "Microsoft Yahei";
+}
+.sou{
+    float:none;
+    margin: 0 auto;
+}
+.notice{
+    text-align: center;
+    margin: 16px 0;
+}
+.fengeright>div{
+    overflow: hidden;
+}
+.error{
+    color:#F00;
+    border:none;
+}
+</style>
+
+<!--input-->
+<div class="input2">
+    
+    <div class="cont">
+        <div class="title">证书信息查询系统</div>
+        <div class="clearfix input_item">
+            <span>姓　　名：</span>
+            <div class="color">
+                
+                <input type="search" name="user_name" placeholder="">
+            </div>
+        </div>
+        <div class="clearfix input_item">
+            <span>证书编号：</span>
+            <div class="color">
+                
+                <input type="search" name="cert_code" placeholder="">
+            </div>
+        </div>
+        <div class="clearfix input_item">
+            <span>身份证号：</span>
+            <div class="color">
+                
+                <input type="search" name="user_id_card" placeholder="">
+            </div>
+        </div>
+        
+        <div class="clearfix input_item">
+            <span>图形验证：</span>
+            <div class="color" style="border:none;">
+                <input class="inp" type="text" id="erverify" placeholder="请输入右侧验证码" style="width: 230px;border: 1px solid #2B92F9;left: 0;padding-left: 11px;" />
+                <img class="yzm" src="__ROOT__/public/captcha.php" title="点击刷新" onclick="changeverify()" id="verifyimg" style="border-radius:0;float: right;height: 38px;width: 108px;" />
+            </div>
+        </div>
+        <p class="notice">注：以上姓名必填,其他两项任选一项即可查询</p>
+        <div class="sou"><a href="javascript:;" id="do_search_cert" style="color: white">查询</a></div>
+        
+        <div class="tou" style="display: none;">
+            <span>查询结果</span>
+        </div>
+        
+        <div class="fenge">
+            
+        </div>
+    </div>
+    
+</div>
+<include file="__THEME__/public_footer" />
+
+<script>
+//更换验证码
+function changeverify(){
+	var date = new Date();
+    var ttime = date.getTime();
+    var url = "__ROOT__/public/captcha.php";
+    $('#verifyimg').attr('src',url+'?'+ttime);
+
+};
+$(function(){
+   $("#do_search_cert").click(function(){
+        var post_data = {
+                cert_code:$("input[name='cert_code']").val(),
+                user_id_card:$("input[name='user_id_card']").val(),
+                user_name:$("input[name='user_name']").val(),
+                yzcode:$("#erverify").val()
+            };
+        if(!post_data.user_name){
+            ui.error('请填写姓名');
+            return false;
+        }
+        
+        if(!post_data.cert_code && !post_data.user_id_card){
+            ui.error('证书编号或身份证号必填一项');
+            return false;
+        }
+        
+        if(!post_data.yzcode){
+            ui.error('请填写验证码');
+            return false;
+        }
+        $.post(U('exam/UserExam/getCert'),post_data,function(res){
+           var res = getResponseData(res);
+           if(res.status == 1){
+                $(".fenge").html(res.data);
+           }else{
+                $(".fenge").html('<div class="error">'+res.message+'</div>');
+           }
+           $(".tou").show();
+        });
+   });
+});
+</script>

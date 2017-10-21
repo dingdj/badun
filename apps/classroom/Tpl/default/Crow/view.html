@@ -1,0 +1,322 @@
+<include file="__THEME__/public_header" />
+
+<!--header end-->
+<div class="topbox">
+    <div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="{:U('classroom/Crow/index')}">众筹</a>
+                    <span>&gt;</span>
+                    <a href="javascript:;">{$data.title}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="raisetopbox">
+            <h3>{$data.title}</h3>
+            <div class="raisetopinfo">
+                <div class="raisetopleft">
+                    <p>众筹信息</p>
+                    <dl>
+                        <dd><i class="icon-01"></i>时间：{$data['stime']|date="Y.m.d",###} - {$data['etime']|date="Y.m.d",###} </dd>
+                        <dd><i class="icon-02"></i>众筹价格：{$data.averagePrice}元/人</dd>
+                        <dd><i class="icon-03"></i>发起人：{:getUserName($data['uid'])}</dd>
+                        <dd><i class="icon-04"></i>参与人数：{$data.num}人</dd>
+                    </dl>
+                    <div class="btn">
+                    <switch name="data.status">
+                        <case value="0"><a href="javascript:;">待审核</a></case>
+                        <case value="1"><a href="javascript:;">申请失败</a></case>
+                        <case value="2"><a id="charge" href="javascript:;"><i class="icon-bm"></i>我要报名</a></case>
+                        <case value="3"><a href="javascript:;">众筹成功</a></case>
+                        <case value="4"><a href="javascript:;">众筹失败</a></case>
+                        <case value="5"><a href="javascript: notes('你已购买，请等待其他学员众筹', 'failure');">等待众筹</a></case>
+                        <case value="6"><a href="javascript: notes('众筹已过期', 'failure');">众筹失败（过期）</a></case>
+                    </switch>
+                    </div>
+                    
+                </div>
+                <div class="raisetopright">
+                    <div class="focusBox3">
+                        <ul class="pic">
+                                <li><a><img src="{:getCover($data['cover'],436,272)}"/></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--header end-->
+<php>if($data['status'] > 1){</php>
+<div class="content bgf7 pt20">
+    <div class="wrap">
+        <div class="classmain">
+            <div class="classmain-hd">
+                <ul>
+                    <li class="on"><a href="javascript:;">众筹详情</a></li>
+                    <li><a href="javascript:;">讨论</a></li>
+                </ul>
+            </div>
+            <div class="classmain-bd">
+                <div class="classmain_con">
+                    <div class="raisebox">{$data['info']}</div>
+                </div>
+                <div class="classmain_con" style="display:none;">
+                    {:W('Resource',array('fid'=>$data['uid'],'type'=>4,'ispage'=>true,'kztype'=>3,'kzid'=>$data['id'],'template'=>'crow'))}
+                </div>
+            </div>
+        </div>
+        <div class="classside">
+            <div class="classsideitem">
+                <h3 class="classsidetit">众筹发起人</h3>
+                <div class="classsidecon">
+                    <dl class="raise_peoplel">
+                        <dt><a href="javascript:;"><img src="{$initator['avatar_small']}" alt=""></a></dt>
+                        <dd>
+                            <h3><a href="javascript:;">{$initator['uname']}</a></h3>
+                            <div class="info"><i class="icon-fs"></i>粉丝：<span  id ="fansnb">{$initator['follower']}</span>人</div>
+                        </dd>
+                        <dd>
+                        <php>if(!$isfollow){</php>
+                            <a class="btn J_follow" href="javascript:;" data-type="follow" data-id="{$initator['uid']}">关注ta</a>
+                        <php>}else{</php>
+                            <a class="btn J_follow" href="javascript:;" data-type="off" data-id="{$initator['uid']}">已关注</a>
+                        <php>}</php>
+                            <a class="btn J_msg" href="javascript:;" data-id="{$initator['uid']}">私信</a>
+                        </dd>
+                    </dl>
+                </div>
+                <php>if(!empty($user)){</php>
+                <h3 class="classsidetit">最近参与</h3>
+                <div class="classsidecon">
+                <volist name="user" id="vo">
+                    <dl class="raise_peoplel">
+                        <dt><a href="javascript:;"><img src="{$vo['uinfo']['avatar_small']}" alt=""></a></dt>
+                        <dd>
+                            <h3><a href="javascript:;">{$vo['uinfo']['uname']}</a></h3>
+                            <div class="info"><i class="icon-fs"></i>粉丝：<span>{$vo['follower']}</span>人</div>
+                        </dd>
+                    </dl>
+                </volist>
+                </div>
+                <php>}</php>
+            </div>
+        </div>
+    </div>
+</div>
+<php>}</php>
+
+<!-- 购买确认弹出框 -->
+<div class="buyOperating" style="height: 350px;display: none;">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>提示：该众筹需要支付<em class="coin_num_l">{$data.averagePrice}</em>人民币。是否继续？</h4>
+    </div>
+    <form action="{:U('classroom/Crow/payLibrary')}" method="POST" target="_blank" id="pay_form">
+        <input type="hidden" value="{$data['id']}" name="vid" />
+        <input type="hidden" value="crowdfunding" name="check_type" />
+        <input type="hidden" value="众筹：{$data['title']}" name="title" />
+        <input type="hidden" id="money" value="100" name="money" />
+        <div class="agreement">
+            <div class="clearfix zfb_zxzf h55" style="padding-left: 10px;">
+                <a class="zfb mr15" href="javascript:;" val="alipay">支付宝<em class="ch_z"></em></a>
+                <input type="hidden" value="alipay" name="pay" />
+                <a class="zxzf mr15" href="javascript:;" val="unionpay">在线支付<em></em></a>
+                <a class="wxzf mr15" href="javascript:;" val="wxpay">微信支付<em></em></a>
+            </div>
+            <a><span id="protocol" class="agree"></span>我已经阅读并同意</a>
+            <a>《收费众筹服务协议》</a>
+        </div>
+        <div class="buy-btn">
+            <a class="option_btn" onclick="buyOperat(this,{$data['id']},'crow');">立即支付</a>
+            <a class="option_btn cancel">暂不支付</a>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+var uid = '{$uid}';
+var app_id = "{$data['id']}";
+var arr = ['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
+//购买操作
+var buyOperat = function(sbt,vid,type) {
+    if ('{$mid}' <= 0) {
+        $(".buyOperating").hide();
+        $(".mask").hide();
+        reg_login();
+        return false;
+    }
+    if (!vid || !type) {
+        notes('参数错误', 'failure');
+        return false;
+    }
+    var form = $(sbt).parents('form');
+    var pay = form.find('input:hidden[name="pay"]').val();
+    var money = form.find('input:hidden[name="money"]').val();
+    if (pay != 'alipay' && pay != 'unionpay' && pay != 'wxpay') {
+        notes('支付方式错误', 'failure');
+        return false;
+    }
+    // TODO:银联支付暂时未开发
+    /*if(pay == 'unionpay'){
+        notes('敬请期待！', 'failure');
+        return false;
+    }*/
+    if (money <= 0) {
+        notes('该套餐不需要您购买', 'failure');
+        return false;
+    }
+    if ($(".agree").size() < 1) {
+        notes("支付必须同意《众筹课程服务协议》", 'failure');
+        return false;
+    }
+
+    $.post(U("classroom/Crow/checkPayOperat"), $('#pay_form').serialize(), function (data) {
+
+        if (data.status == 1) {
+            var s = 0 ;
+            if (pay == 'wxpay') {
+                $.ajax({
+                    url: "{:U('classroom/Crow/payLibrary')}",
+                    data: form.serialize(),
+                    async: false,
+                    type: 'post',
+                    success: function (data) {
+                        if (typeof data != 'object') {
+                            var data = eval('(' + data + ')');
+                        }
+
+                        clearInterval(s);
+                        if (data.status == 1) {
+                            s = setInterval(function () {
+                                $.ajax({
+                                    url: "{:U('classroom/Crow/getPayStatus')}",
+                                    data: {order: data.data.trade_no},
+                                    type: 'post',
+                                    success: function (res) {
+                                        try {
+                                            res = JSON.parse(res);
+                                            if (res.status == 1) {
+                                                clearInterval(s);
+                                                $(".hide_box").fadeToggle();
+                                                $(".shang_box").fadeToggle();
+                                                notes('购买成功','success');
+                                                setTimeout(function(){
+                                                    window.location.reload();
+                                                },2000);
+                                            }
+                                        } catch (e) {
+                                            return;
+                                        }
+                                    }
+                                });
+                            }, 1800);
+                            $(".buyOperating").hide();
+                            $("body").append(data.data.html);
+                            return true;
+                        }
+                    },
+                    error: function () {
+                        return false
+                    }
+
+                });
+            } else {
+                $(".buyOperating").hide();
+                $(".mask").hide();
+                $("#charge").attr('id', '');
+                setTimeout("", 3000);
+                form.submit();
+            }
+        } else if (data.status == 9) {
+            notes(data.info, 'failure');
+            window.location.reload();
+        } else {
+            notes(data.info, 'failure');
+            return false;
+        }
+    }, 'json');
+};
+$(function(){
+    
+    $('a.J_msg').click(function(){
+        var to_id = $(this).attr('data-id');
+        if(to_id == uid){
+            notes('不能自己给自己发私信','failure');
+            return false;
+        }
+        if(to_id == ''){
+            notes('参数错误','failure');
+            return false;
+        }
+        ui.sendmessage(to_id, 0);
+    });
+    
+    $('.classmain-hd ul li').live('click',function(){
+        $(this).addClass('on').siblings().removeClass('on');
+        $('div.classmain_con').hide();
+        $('div.classmain_con').eq($(this).index()).show();
+    });
+    // 选择支付类型
+    $('.zfb_zxzf a').click(function(){
+        $(this).siblings().find('em').removeClass('ch_z');
+        $(this).find('em').addClass('ch_z');
+        $(this).parents('form').find('input:hidden[name="pay"]').val($(this).attr('val'));
+    });
+    
+    //暂不支付
+    $('.w-close a,.buy-btn .cancel').click(function(){
+        $('.buyOperating,.mask').hide();
+    });
+    
+    //点击购买
+    $('#charge').live('click',function(){
+        if('{$mid}' <=0){
+            reg_login();
+            return false;
+        }
+        $('.buyOperating').show();
+        $('.mask').show();
+    });
+    
+    
+    //关注
+    $('.J_follow').click(function(){
+        var _this = $(this);
+        var fid = _this.attr('data-id');
+        if(MID=='0'){
+            reg_login();
+            return;
+        }
+        var type = _this.attr('data-type');
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+fid+"&type="+type,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    notes(data.info,'failure');
+                }else{
+                	notes(data.info,'success');
+                	if(type == 'off'){
+                		_this.attr('data-type','follow').text("关注ta");
+                      $('#fansnb').html(parseInt($('#fansnb').html()) -1 );
+
+                	}else{
+
+                		_this.attr('data-type','off').text("已关注");
+                        $('#fansnb').html(parseInt($('#fansnb').html()) +1 );
+
+                	}
+                	
+                }
+                return;
+
+            }
+        });
+    });
+});
+</script>
+<include file="__THEME__/public_footer" />

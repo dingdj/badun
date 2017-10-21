@@ -1,0 +1,102 @@
+<include file="__THEME__/public_header" />
+<!--分类筛选使用的jquery1.7.1不兼容，故使用jquery  主要用于课程直播分类筛选-->
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+<div class="worap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+
+    <div class="user-con fl user-pbottom">
+        <div class="user-con-title">
+          <a href="{:U('classroom/User/teacherVideo')}">我上传的课程</a>
+          <a class="onactive" onclick="navClick(this,'uploadvideo')" href="javascript:;">修改直播课程</a>
+        </div>
+        <!--图片列表-->
+        <ul class="user-imglist">
+        </ul>
+        <div class="uploadvideo">
+            <form method="POST" action="{:U('classroom/User/doUploadLive')}" name="detail_form">
+
+              <div class="form2">
+                  <ul class="user-set-sz">
+                    <li>
+                        <label class="label1"><em>*</em>名称：</label>
+                        <input type="text" class="user-width" name="title" value="{$title}" class="head_search upload_input_a" >
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em>分类：</label>
+                        <php>$fullcategorypaths = trim($cate_id , ',');</php>
+                        {:W('VideoLevel',array('type'=>3,'default'=>$fullcategorypaths))}
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 课程简介：</label>
+                        <textarea id="form_video_intro" class="user-textarea" name="introduce" value="{$introduce}">{$introduce}</textarea>
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 价格：</label>
+                        <input type="text" class="user-width"  name="price" value="{$price}" >
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 观看人数：</label>
+                        <input type="text" name="maxNum" value="{$maxNum}" class="head_search upload_input_a" > 0无限制
+                    </li>
+                     <li>
+                        <label class="label1"><em>*</em> 评分：</label>
+                        <input type="text" name="score" value="{$score}" class="head_search upload_input_a" >请输入0-5之间的整数
+                    </li>
+                    <li id="image_live_cover">
+                        <label class="label1"><em>*</em>封面上传：</label>
+                        {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'live_cover','urlquery'=>'input_id=live_cover'))}
+                        建议尺寸：520px*320px
+                        <php>if($cover){</php>
+                            <div id="small_cover">
+                                <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$cover_path}" />
+                                <input type="hidden" name="live_cover_ids" data="live_cover_ids" value="{$cover}" />
+                            </div>
+                        <php>}</php>
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 讲师账号：</label>
+                        <input type="text" class="user-width" name="account" value="{$account}" class="head_search upload_input_a" >
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 讲师密码：</label>
+                        <input type="text" class="user-width" name="passwd" value="{$passwd}" class="head_search upload_input_a" >
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em> 讲师简介：</label>
+                        <textarea class="user-textarea" name="info" value="{$info}">{$info}</textarea>
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em>开始时间：</label>
+                        <input type="text"  name="beginTime" value="<?php echo date("Y-m-d H:i:s",$beginTime/1000); ?>" id="beginTime" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                    </li>
+                    <li>
+                        <label class="label1"><em>*</em>结束时间：</label>
+                        <input type="text"  name="endTime" value="<?php echo date("Y-m-d H:i:s",$endTime/1000); ?>" id="endTime" onfocus="core.rcalendar(this,'full');" readonly="readonly" >
+                    </li>
+                    <li>
+                        <label class="label1">&nbsp;</label>
+                        <input type="hidden" name="id" value="{$id}" />
+                        <input  class="user-submit" type="submit"  value="保 存">
+                    </li>
+                  </ul>
+              </div>   
+          </form>
+        </div>
+      </div>
+    <!--右-->
+    <include file="../User/_right" />
+</div>
+<script>
+  
+  function callback(data){
+    $("#"+data.input_id+"_cover").remove();
+    $("#image_"+data.input_id).append(
+      '<div id='+data.input_id+'_cover>'
+      +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+      +'</div>'
+    ).find('input:file').val('');
+    $("#"+data.input_id+"_ids").val(data.attach_id);
+  }
+</script>
+<include file="__THEME__/public_footer" />

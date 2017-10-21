@@ -1,0 +1,76 @@
+<include file="__THEME__/public_header" />
+
+<div class="content cf2">
+	<div class="wrap">
+    	<!--左-->
+	    <include file="../User/_left" />
+	    <!--右-->
+        <div class="jgpage_right">
+        	<div class="jgpage_right_tit mb50">独立域名</div>
+            <div class="jgpage_right_con">
+            	<div class="txt">您可以填写想要修改的域名名称，并提交申请，我们将在收到申请的15个工作日内审核您的申请并及时反馈，请耐心等待。</div>
+                <div class="jgbox">
+                <form>
+                    <div class="jgformitem">
+                    	<label><span>*</span>原域名:</label>
+						<php>if($doadmin){</php>
+                        	{$doadmin}{$setDomain}
+						<php>}else{</php>
+							无
+						<php>}</php>
+                    </div>
+                    <php>if(!$verified || $verified['status'] != 0){</php>
+	                    <div class="jgformitem">
+	                    	<label><span>*</span>修改域名:</label>
+	                        <input class="jg_input"  placeholder="请输入要修改的域名前缀" name="doadmin" id="doadmin" type="text" >
+	                        <span>{$setDomain}</span>
+	                    </div>
+	                    <div class="jgformitem">
+	                        <a class="jg_btn" href="javascript:;" onclick="saveDomaiName()">提交申请</a>
+	                    </div>
+                    <php>}else{</php>
+                    	<div class="jgformitem">
+	                    	<label><span>*</span>修改域名:</label>
+	                        {$verified.doadmin}{$setDomain}
+	                    </div>
+	                    <div class="jgformitem">
+	                        <input  class="jg_btn"  type="submit" style="background: #ccc;width: 200px;" value="已申请,请等待审核">
+	                    </div>
+	                <php>}</php>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function saveDomaiName(){
+    var doadmin = $('#doadmin').val();
+    if(!doadmin){
+    	notes('请输入修改域名', 'failure');
+		return false;
+    }
+	if(!/^[\u4E00-\u9FA5\w]{1,}$/.test(doadmin)){
+		notes('域名格式不正确', 'failure');
+		return false;
+	}
+	$.ajax({
+		type:"POST",
+		url:"{:U('school/User/domainName')}",
+		data:{doadmin:doadmin},
+		dataType:"json",
+		success:function(data){
+			if(data.status == 1){
+				ui.success(data.info);
+				setTimeout(function(){
+					location.reload();
+				},1500);
+			}else{
+				ui.error(data.info);
+				return false;
+			}
+		}
+	});
+}
+</script>
+<include file="__THEME__/public_footer" />

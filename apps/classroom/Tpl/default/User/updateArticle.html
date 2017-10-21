@@ -1,0 +1,124 @@
+<include file="__THEME__/public_header" />
+<include file="__THEME__/editor" />
+
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>1))}">我的文章</a>
+
+                    <php>if(!$article){</php>
+                        <a class="on" onclick="navClick(this,'updateArticle')" href="javascript:;">添加文章</a>
+                    <php> }else{ </php>
+                        <a class="on" onclick="navClick(this,'updateArticle')" href="javascript:;">修改文章</a>
+                    <php> }</php>
+                </div>
+            </div>
+
+            <div class="center_right_con">
+                <form method="POST" action="{:U('classroom/User/doUpdateArticle',array('id'=>$_GET['id']))}" id="detail_form" name="detail_form" class="infobox" >
+                    <dl>
+                        <dt><span>*</span>标题：</dt>
+                        <dd>
+                            <input name="art_title" class="inp01" type="text" id="art_title" value="{$article.art_title}">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>文章封面：</dt>
+                        <dd id="image_cover">
+                            <if condition="$article['cover']">
+                                <div id="width_999">
+                                    <input style="border:0" type="file" name="cover" inputname="cover" value="上传封面" onchange="stepUploadBigImg(this)" urlquery="input_id=cover" limit="1" event-node="uploadinput">
+                                </div>建议尺寸：200*100
+                                <div id="small_cover">
+                                    <img style="max-width:392px;" id="cover_img" src="{:getCover($article['cover'])}">
+                                    <input type="hidden" name="article_cover" data="article_cover" id="article_cover" value="{$article['cover']}">
+                                </div>
+                                <else/>
+                                <div id="width_999">
+                                    <input style="border:0" type="file" name="cover" inputname="cover" value="上传封面" onchange="stepUploadBigImg(this)" urlquery="input_id=cover" limit="1" event-node="uploadinput">
+                                </div>建议尺寸：200*100
+                                <div id="small_cover">
+                                </div>
+                            </if>
+                            <script>
+                                function stepUploadBigImg(obj){
+                                    if("undefined"  != typeof(core.uploadFile)){
+                                        core.uploadFile.filehash = new Array();
+                                    }
+                                    core.plugInit('uploadFile',obj,function(data){
+                                        var url = "<php>echo strip_tags($_SERVER['HTTP_HOST']);</php>";
+                                        $(obj).parents('#width_999').siblings('#small_cover').html('<img class="pic-size"style="max-width:392px;" src="http://'+url+'/data/upload/'+data.src+'">' +
+                                                '<input type="hidden" name="article_cover" data="article_cover" id="article_cover" value="'+data.attach_id+'">');
+                                    },'image');
+                                };
+                            </script>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>内容：</dt>
+                        <dd>
+                            {:W('Editor',array('contentName'=>'article','value'=>$article['article'],'width'=>'99%','height'=>'350'))}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <a href="javascript:;" class="btn" type="submit" id="form_submit" style="height: 40px;line-height: 40px;">保 存</a>
+                        </dd>
+                    </dl>
+                </form>
+            </div>
+
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#form_submit').click(function () {
+//        $("textarea[name='article']").html(E.getData());
+
+        if($("#art_title").val()==""){
+            ui.error("请输入标题!");
+            return false;
+        }
+        if(!$("input[name='article_cover']").val()){
+            ui.error("请上传文章封面!");
+            return false;
+        }
+        if($("textarea[name='article']").val()==""){
+            ui.error("请输入内容!");
+            return false;
+        }
+        var detail_form = $("form[name='detail_form']");
+        $.ajax({
+            type: detail_form.attr('method') || 'POST',
+            url:detail_form.attr("action"),
+            data:detail_form.serialize(),
+            dataType:"json",
+            cache: false,
+            success: function(res){
+                if(res.status == 1){
+                    ui.success(res.info);
+                    setTimeout(function(){
+                        location.href = res.url;
+                    },'1500');
+                }else{
+                    ui.error(res.info);
+                    return false;
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError){
+                ui.error("未知错误!");
+            }
+        });
+        return false;
+    });
+
+</script>
+<include file="__THEME__/public_footer" />

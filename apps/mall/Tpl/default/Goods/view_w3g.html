@@ -1,0 +1,170 @@
+<include file="__THEME__/public_header_twolevel"/>
+<script src="__THEME__/js/core.js"></script>
+<script src="__THEME__/js/common.js"></script>
+    <div class="body">
+		<div class="malltop clearfix">
+        	<img class="bg" src="{:cutImg($data['cover_id'],640,500)}" alt="{$data.title}" />
+            <a class="malltop_nav" href="javascript:history.go(-1);"></a>
+            <div class="txt">
+                <h3>{$data.title}</h3>
+                <div class="info">
+                    <div class="fl">所需积分<input type="hidden" id="price" name="price" value="{$data.price}" /><span>{$data.price}</span></div>
+                    <ul class="fr">
+                        <li><p>{$data.stock}</p>仓库剩余</li>
+                        <li><p>{$data.goods_count}</p>兑换人数</li>
+                    </ul>
+                </div>
+                <dl>
+                    <dt>配送</dt>
+                    <php>if($address['location']){</php>
+                        <dd id="charge_address">
+                            <em id="old">{$address.location}&nbsp;&nbsp;{$address.address}</em>
+                        </dd>
+                    <php>}else{</php>
+                        <a href="{:U('classroom/User/address')}" style="color: #188eee;">新增地址</a>
+                    <php>}</php>
+                    <span>快递费{$data.fare}积分</span>
+                    <input class="address_id" name="address_id" value="{$address.id}" type="hidden" />
+                </dl>
+                <dl>
+                    <dt>简介</dt>
+                    <dd><php>if($data['info']){</php>{$data.info|msubstr=0,87,'utf-8',true}<php>}else{</php>暂时没有该商品的相关简介<php>}</php></dd>
+                </dl>
+                <dl>
+                    <dt>数量</dt>
+                    <dd>
+                        <a class="adbtn minus" href="javascript:;">-</a>
+                        <input id="count" name="count" type="text" value="1" onkeyup="formatMoneyWith6digts(this);"/>
+                        <a class="adbtn add" href="javascript:;">+</a><span>件</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="mallbot">
+            <div class="mallmain-hd">
+            	<ul>
+                	<li class="choose on"><a href="javascropt:;">详情</a></li>
+                    <li class="choose"><a href="javascropt:;">兑换记录</a></li>
+                </ul>
+            </div>
+            <div class="mallmain-bd goodsInfo" style="display: block;font-size: 13px;">
+                <php>if(!$data['details']){</php>
+                  <p>暂时没有该商品的详情介绍</p>
+                <php>}else{</php>
+                  {$data.details}
+                <php>}</php>
+            </div>
+            <div class="mallmain-bd goodsInfo" style="display: none;">
+                <ul class="mallrecordlist">
+                    <php>if(!$goodsOrder){</php>
+                        <li><span>暂时还没有人兑换过该商品</span></li>
+                    <php>}else{</php>
+                        <volist name="goodsOrder" id="re" offset="0" length="6">
+                            <li>
+                                <img src="{:getUserFace($re['uid'],'m')}" alt="{$re.uname}">
+                                <h3><span>{$re.ctime}</span>{$re.uname}</h3>
+                                <p><span>{$re.price}</span>积分兑换了{$re.count}个{$re['goods_info'].title}</p>
+                            </li>
+                        </volist>
+                    <php>}</php>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mall_foot">
+        <li><a class="dh" href="javascropt:;" onclick="saveGoods();">兑换</a></li>
+    </div>
+    <a class="backtop"></a>
+<script>
+$(function(){
+    $(".choose").click(function(){
+        $(this).addClass("on").siblings().removeClass();
+        var index = $(this).index();
+        $(".goodsInfo").hide().eq(index).show();
+    });
+    var total_count = '{$data.stock}';
+    $(".add").click(function(){
+        var t =$(this).prev("input");
+        var	num = parseInt(t.val());
+        if( num >= total_count){
+            t.val(total_count);
+        }else{
+            t.val(num+1);
+        }
+    });
+
+    $(".minus").click(function(){
+        var inputObj = $(this).next("input");
+        var t=parseInt(inputObj.val());
+        if(t <= 1){
+            inputObj.val(1);
+        }else{
+            inputObj.val(t-1);
+        }
+    });
+    //地址选择操作
+    $("#charge_address").click(function(){
+        window.setTimeout("charge_address()",1000);
+        ui.box.load(U('mall/Goods/getAddress'),'选择收货地址');
+    });
+});
+    function formatMoneyWith6digts( obj ){
+        obj.value = obj.value.replace(/\D/g,'')
+        var stock = parseInt('{$data.stock}');
+        if(obj.value < 1){
+            obj.value = 1;
+        }
+        if(obj.value > stock){
+            obj.value = stock;
+        }
+    }
+    var uid = '{$uid}';
+    function saveGoods(){
+    if(uid<=0){
+        if(confirm("请先登录")){
+            window.location.href = "{:U('public/Passport/login_g')}";
+        }
+        return false;
+    }
+    var price = $("#price").val();
+    var count = $("#count").val();
+    var fare = '{$data.fare}';
+    var total = price * count;
+    var goods_id = '{$Think.get.id}';
+    var address_id = $(".address_id").val();
+    if(!address_id){
+        alert("请选择收货地址");
+        return false;
+    }
+    if(confirm("是否确认花费"+total+"积分兑换"+count+"个{$data.title}？")){
+        $.ajax({
+            type: "POST",
+            url:"{:U('mall/Goods/doSaveGoods')}",
+            data:{
+                count:count,
+                total:total,
+                fare:fare,
+                goods_id:goods_id,
+                address_id:address_id,
+            },
+            dataType:"json",
+            success:function(res){
+                var res = getResponseData(res);
+                if(res.status == 1){
+                    alert(res.message);
+                    setTimeout(function(){
+                        location.reload();
+                    },'1500');
+                }else{
+                    alert(res.message);
+                    return false;
+                }
+            }
+        });
+    }
+}
+function charge_address(){
+    ui.box.load(U('mall/Goods/getAddress'),'选择收货地址');
+}
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

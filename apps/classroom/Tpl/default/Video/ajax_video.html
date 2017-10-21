@@ -1,0 +1,25 @@
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+	<li>
+		<php>if($vo['type'] == 1){</php>
+			<a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">
+		<php>}else{</php>
+			<a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
+		<php>}</php>
+			<strong><img src="{:cutImg($vo['cover'],140,85)}" alt=""></strong>
+			<span>
+				<h4>{:limitNumber($vo['video_title'],30)}</h4>
+				<b>
+					<php>if($vo['mzprice']['price'] == 0) {</php><i style="color: #39b75d;">免费</i> <php>} else {</php>￥{$vo['mzprice']['price']}<php>}</php>
+				</b>
+				<if condition="$vo['type'] eq 1">
+					<em>点播</em>
+					<else/>
+					<em>直播</em>
+				</if>
+			</span>
+		</a>
+
+	</li>
+</volist>
+<php>}</php>

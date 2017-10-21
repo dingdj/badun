@@ -1,0 +1,24 @@
+<foreach name="data" item="l">
+    <li>
+        <!-- <div class="position-rt">
+            <div class="Operation-list" >
+                <a href="javascript:;" onclick="dellive(this,{$l.oid})">删除<span></span></a>
+            </div>
+            <a href="{:U('live/index/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 222,144)}"> </a> </div>
+        <h2><a href="{:U('live/index/view',array('id'=>$l['id']))}">{$l.video_title}</a></h2>
+        <div class="user-imglistbt"><span>{$l.video_order_count}人购买</span></div>
+        <div class="user-imglistbt">
+            <em class="fl"><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{:limitNumber($l['video_intro'],10)}</a></em>
+            <span class="Price fr">￥{$l.money}</span>
+        </div> -->
+        <a href="{:U('live/index/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a>
+        <div class="user-title">
+            <h3><a href="{:U('live/index/view',array('id'=>$l['id']))}">{$l.video_title}</a></h3>
+            <!--<div class="fx fl"><a  href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank"><i class="icon-01"></i>分享</a></div>
+            <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.oid})"><i class="icon-02"></i>删除</a></div>-->
+            <p><a href="#">江湖学院</a><a href="#">韩叫兽</a></p>
+            <span><strong>¥{$l.money}</strong><small>557989577人在学</small></span>
+        </div>
+    </li>
+</foreach>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>

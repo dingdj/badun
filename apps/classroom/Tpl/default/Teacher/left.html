@@ -1,0 +1,118 @@
+<div class="teacher-sidebar">
+<div class="teacher-information">
+    <php>if(!empty($school)){</php>
+	<div class="org-box">
+    	<a href="{$school.domain}"><b class="avatar-smaller"><img src="{$school.logo}" alt="{$school.title}" width="54" height="54"></b></a>
+        <div class="org-info">
+        	<div class="new-title"><a href="{$school.domain}" target="_blank">{:msubstr(t($school['title']),0,10,'utf-8',true)}<php>if($school['school_vip_cover']){</php><img src="{$school.school_vip_cover}" width="19" height="19"><php>}</php></a></div>
+            <div class="aptitude">类型：<span>{$school.type}</span></div>
+        </div>
+    </div>
+    <php>}</php>
+    <div class="info-box">
+    	<div class="self-info">
+        <h2 class="name">{:msubstr(t($data['name']),0,10,'utf-8',true)}</h2>
+        <!--<span class="num">ID:{$data.identification}</span>-->
+        <div class="score-comment-data">
+            <div class="score">
+                 <if condition="$data['star'] GT 0 "> <i class="icon-star"></i>
+                 <else /><i class="icon-star_no"></i></if>
+                 <if condition="$data['star'] GT 1 "> <i class="icon-star"></i>
+                 <else /><i class="icon-star_no"></i></if>
+                 <if condition="$data['star'] GT 2 "> <i class="icon-star"></i>
+                 <else /><i class="icon-star_no"></i></if>
+                 <if condition="$data['star'] GT 3 "> <i class="icon-star"></i>
+                 <else /><i class="icon-star_no"></i></if>
+                 <if condition="$data['star'] GT 4 "> <i class="icon-star"></i>
+                 <else /><i class="icon-star_no"></i></if>
+                 <span>{$data.star}分</span>
+            </div>
+            <span class="score-text"></span>
+            <a href="#teacher-comment">（<span>{$count}</span> 条评价）</a></div>
+        </div>
+        <ul class="data">
+            <li>{$data.video}<br>课程</li>
+            <li>{$follow}<br>学生</li>
+            <li><eq name="data.teach_time" value="">0<case/>{$data.teach_time}</eq><br>教学时长</li>
+            <li>{$data.favorable_rate}<br>好评率</li>
+        </ul>
+        <ul class="auth">
+            <li><i class="icon-01"></i>身份认证</li>
+            <li><i class="icon-02"></i>教师认证</li>
+            <li><i class="icon-03"></i>学历认证</li>
+            <li><i <php>if($data['teach_way']){</php>class="icon-04"<php>}</php>></i>{$data.teach_way}</li>
+            <li><i class="icon-05"></i>{$data.teacher_age}年教龄</li>
+        </ul>
+
+        <ul class="tag showTag" >
+            <php>foreach ($data['label'] as $k=>$v) {</php>
+                <php>if($k <= 3){</php><li>{$v}</li><php>}</php>
+            <php>}</php>
+        </ul>
+        <php>if(count($data['label']) > 4){</php>
+            <a class="view-more showLabel" style="display: block;">展开全部标签</a>
+            <ul class="tag hideTag" style="display: none;">
+                <php>foreach ($data['label'] as $k=>$v) {</php><li>{$v}</li><php>}</php>
+            </ul>
+            <a class="view-more hideLabel" style="display: none;">收起标签</a>
+        <php>}</php>
+    </div>
+</div>
+
+
+<div class="teacher-success">
+    <div class="new-title"><i class="icon-star"></i>相关案例</div>
+    <php>if(!$case){</php>
+        <span>暂无讲师相关案例</span>
+    <php>}else{</php>
+    <ul>
+        <volist name="case" id="vo" offset="0" length='2'>
+        <li>
+            <div class="title">{$vo.Time}&nbsp;&nbsp;{$vo.title}</div>
+            <p>{:msubstr($vo['content'],0,50,'utf-8',true)}<php>if(mb_strlen($vo['content'],'utf-8') > 50 ){</php><a href="javascript:void(0);" class="showContent">&nbsp;&nbsp;展开全部</a><php>}</php></p>
+            <p class="close" style="display: none;">{$vo.content}<a href="javascript:void(0);" class="hideContent">&nbsp;&nbsp;收起全部</a></p>
+        </li>
+        </volist>
+    </ul>
+    <php>}</php>
+</div>
+<div class="teacher-experience">
+    <div class="new-title"><i class="icon-flag"></i>过往经历</div>
+    <php>if(!$experience){</php>
+        <span>暂无讲师过往经历</span>
+    <php>}else{</php>
+    <ul>
+        <volist name="experience" id="vo" offset="0" length='2'>
+        <li>
+            <div class="title">{$vo.Time}&nbsp;&nbsp;{$vo.title}</div>
+            <p>{:msubstr($vo['content'],0,50,'utf-8',true)}<php>if(mb_strlen($vo['content'],'utf-8') > 50 ){</php><a href="javascript:void(0);" class="showContent">&nbsp;&nbsp;展开全部</a><php>}</php></p>
+            <p class="close" style="display: none;">{$vo.content}<a href="javascript:void(0);" class="hideContent">&nbsp;&nbsp;收起全部</a></p>
+        </li>
+        </volist>
+        <a class="more-success" href="{:U('classroom/Teacher/details',array('id'=>$data['id']))}">更多成果&gt;</a>
+    </ul>
+    <php>}</php>
+</div>
+</div>
+<script type="text/javascript">
+$(".showLabel").click(function(){     
+    $(this).siblings(".hideTag , .hideLabel").show();
+    //$(this).siblings(".hideLabel").show();              
+    $(this).siblings(".showTag").hide();
+    $(this).hide(); 
+});
+$(".hideLabel").click(function(){         
+    $(this).siblings(".showTag , .showLabel").show();
+    //$(this).siblings(".showLabel").show();              
+    $(this).siblings(".hideTag").hide();
+    $(this).hide(); 
+});
+$(".showContent").click(function(){     
+        $(this).parent("p").next(".close").show();             
+        $(this).parent("p").hide();
+    });
+$(".hideContent").click(function(){         
+    $(this).parent().hide();          
+    $(".showContent").parent().show();
+});
+</script>

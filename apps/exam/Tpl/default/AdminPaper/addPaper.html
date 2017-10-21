@@ -1,0 +1,188 @@
+<include file="__THEME__/admin_header" />
+<php>
+ set_time_limit(0);
+</php>
+	
+	<div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('exam/AdminQuestion/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+    <div class="tit_tab">
+        <ul>
+        <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+        <volist name='pageTab' id='t'>
+            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+        </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    <form method="POST" action="{:U('exam/AdminPaper/doAddPaper')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+    	<div class="form2">
+    		<input type="hidden" name="paper_id" value="{$_GET['paper_id']}" />
+    		<dl class="lineD" id="paper_category">
+		      	<dt><font color="red"> * </font>试卷分类：</dt>
+				<dd>
+					<php>$fullcategorypaths = trim($paper['fullcategorypath'] , ',');</php>
+					{:W('CategoryLevel',array('table'=>'ex_paper_category','id'=>'ex_paper_category_id','default'=>$fullcategorypaths))}
+				</dd>
+				
+		    </dl>
+
+			<dl class="lineD" id="paper_name">
+				<dt><font color="red"> * </font>试卷名称：</dt>
+				<dd><input type="text" class="s-txt" style="width:400px;" name="paper_name" value="{$paper['paper_name']}" /></dd>
+				
+			</dl>
+			
+			<dl class="lineD" id="paper_describe">
+				<dt><font color="red"> * </font>试卷说明：</dt>
+				<dd><textarea id="paper_describe" name="paper_describe" cols="80" rows="10">{$paper['paper_describe']}</textarea></dd>
+			</dl>
+		    <dl class="lineD" id="paper_category">
+		      	<dt><font color="red"> * </font>出卷方式：</dt>
+				<dd>
+					<select name="paper_type" id="paper_type" class="s-select" style="width:200px;" onchange="selected();">
+						<option value="1" <if condition="$paper.paper_type eq 1"> selected</if> >自动出卷</option>
+						<option value="0" <if condition="$paper.paper_type eq 0"> selected</if> >手动出卷</option>
+					</select>
+				</dd>
+		    </dl>
+		    <dl class="lineD" id="question_category" <if condition="$paper.paper_type eq 0"> style="display:none;" </if>>
+		      	<dt><font color="red"> * </font>试题类型：</dt>
+				<dd>
+					<php>$fullcategorypaths = trim($paper['paper_question_fullcategorypath'] , ',');</php>
+					{:W('CategoryLevel',array('table'=>'ex_question_category','id'=>'ex_question_category_id','default'=>$fullcategorypaths))}
+				</dd>
+		    </dl>
+		    <dl class="lineD" id="questiontype" <if condition="$paper.paper_type eq 0"> style="display:none;" </if> >
+		      	<dt><font color="red"> * </font>试题筛选：</dt>
+				<dd id="type">
+				<volist name="question_type" id="val">
+					{$val.question_type_title}：<input type="text" name="{$val.question_type_id}" value="0">  题 此类型下共有 <font color="#088d08;">{$val.question_count}</font>  道题<br/>
+				</volist>
+				</dd>
+		    </dl>
+
+		    <dl class="lineD">
+		    	<dt>音频文件：</dt>
+		    	<dd>
+		    		{:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp3'))}
+		    		<php>if($videofile_ids){</php>
+		    			<input type="hidden" name="attach[]" value="{$attach_id}" />
+		    		<php>}</php>
+		    	</dd>
+		    </dl>
+			<div class="page_btm">
+				<input type="hidden" name="question_type" id="question_type">
+		        <input type="submit" class="btn_b" value="保存">
+		    </div>
+    	</div>
+    </form>
+    <script type="text/javascript">
+    	function selected(){
+    		if($("#paper_type").val()==1){
+    			$("#questiontype").css("display","block");
+    			$("#question_category").css("display","block");
+    		}else{
+    			$("#questiontype").css("display","none");
+    			$("#question_category").css("display","none");
+    		}
+    	}
+		function checkForm(form){
+			var _this = $(form);
+			var paper_name     = _this.find('input[name="paper_name"]').val();
+			var paper_describe = _this.find('textarea[name="paper_describe"]').val();
+			var paper_category = _this.find('select[name="paper_category"]').val();
+			if(paper_name == ''){
+				ui.error("试卷名称不能为空");
+				return false;
+			}
+			if(paper_describe == ''){
+				ui.error("试卷说明不能为空");
+				return false;
+			}
+			if(paper_category == '0'){
+				ui.error("请选择试卷分类");
+				return false;
+			}
+			var question_type="";
+			var files = $("#type").find("input[type='text']");
+		    files.each(function(){
+		        if($(this).val()>0){
+		        	question_type+= ","+$(this).attr("name")+"-"+$(this).val();
+		        }
+		    });
+		    var question_type=question_type.substring(1);
+		    $("#question_type").val(question_type);
+			return true;
+		}
+		function j_validateCallback(form,call,callback) {
+			var $form = $(form);
+			if(typeof call != 'undefined' && call instanceof Function){    
+				$i = call($form);
+				if(!$i){
+					return false;
+				}
+			}
+			var _submitFn = function(){
+				$.ajax({
+					type: form.method || 'POST',
+					url:$form.attr("action"),
+					data:$form.serializeArray(),
+					dataType:"json",
+					cache: false,
+					success: function(xMLHttpRequest, textStatus, errorThrown){
+						if(typeof callback != 'undefined' && callback instanceof Function){   
+							callback($form,xMLHttpRequest);
+						}  
+					},
+					error: function(xhr, ajaxOptions, thrownError){
+						ui.error("未知错误!");
+					}
+				});
+			}
+			_submitFn();
+			return false;
+		}
+		function post_callback(_form,data){
+			if(data.status != undefined){
+				if(data.status == '0'){
+					ui.error(data.info);
+				} else {
+					ui.success(data.info);
+					window.location.href = U('exam/AdminPaper/index')+"&tabHash=index";
+				}
+			}
+		}
+
+		$(".mzLevel[id='ex_question_category").live('change',function(){
+			var cate_id = $(this).val();
+			if(cate_id == 0){
+				cate_id = $(this).prev().val();
+			}
+
+			$.ajax({
+				type: 'POST',
+				url:'{:U("exam/AdminPaper/getQuestionCount")}',
+				data:{question_category_id:cate_id},
+				dataType:"json",
+				cache: false,
+				success: function(xMLHttpRequest, textStatus, errorThrown){
+					if(xMLHttpRequest.status == 1){
+						$("#type").html(xMLHttpRequest.data.html);
+						return true;
+					} 
+
+					ui.error("未查询到相关试题数量");
+				},
+				error: function(xhr, ajaxOptions, thrownError){
+					ui.error("未知错误!");
+				}
+			});
+		});
+	</script>
+<include file="__THEME__/admin_footer" />

@@ -1,0 +1,206 @@
+/* 面包屑导航 */
+.grid-total{width: 100%;float: left;background-color: #fff;padding: 30px 0;}
+.screen-outer{width:1170px;margin:0 auto;display:flow-root;}
+.position-label-find{float:left;width:100%}
+.position-label-find li{float:left;font-size:12px}
+.position-label-find li a{color:#888;line-height:24px}
+.position-label-find li .cuorse-label{float:left;border-radius:4px;border:1px dotted #00BED4;color:#00BED4;padding:0 5px;line-height:20px;margin-left:10px;cursor:pointer}
+.position-label-find li .cuorse-label i{font-size:12px;padding:0 0 0 6px;font-weight:700}
+.position-label-find li .course-find{border-radius:5px;border:1px solid #e5e5e5;line-height:20px;margin-left:10px}
+.position-label-find li .course-find input{height:13px;font-size:12px;border:0;color:#888;text-indent:5px}
+.position-label-find li .course-find i{font-size:14px;color:#888;padding:0 5px;cursor:pointer}
+.all-find{float:left;width:100%;margin-top:30px}
+.school-choice{width:33.3%;float: left;}
+.school-choice:last-child{margin-right:0}
+.school-choice .region{float:left;color:#888;font-size:14px;height:30px;width:160px;border-radius:4px;border:1px solid #d3d3d3;padding:0 8px;line-height:30px;margin-left:20px;cursor:pointer;position:relative}
+.school-choice dd,.school-choice dt{float:left}
+.school-choice dt h5{color:#656565;font-size:16px;line-height:32px}
+.school-choice dt h5 i{font-size:18px;padding:0 10px 0 0}
+.school-choice dd p{float:left}
+.school-choice dd i{float:right;color:#666}
+.school-choice .region ul{position:absolute;top:30px;left:-1px;border-radius:4px;border:1px solid #d3d3d3;display:none;max-height:210px;overflow-y:auto;width:100%;background-color:#fff}
+.school-choice .region ul a:hover{color:#fff;background-color:#00BED4}
+.school-choice .region ul li a{display:block;color:#888;font-size:14px;padding-left:8px;line-height:30px}
+.regin-on{background-color:#00BED4;}
+.regin-on a{color:#fff!important;}
+.school-choice em{float:left;color:#888;font-size:14px;line-height:32px;padding:0 0 0 20px}
+.date-choice .region{width:74px}
+
+/* 三级菜单 */
+.line-course-menu{width:100%;float:left;margin-top:30px;}
+.one-line-course-menu{border-radius:4px;border:1px dotted #dcdcdc;background-color:#fafafa;float:left;width:100%}
+.one-line-course-menu h5{color:#656565;font-size:14px;margin-top:25px;margin-left:20px}
+.one-line-course-menu h5 i{padding-right:10px}
+.one-line-course-menu h5 .one-menu{float:right;width:1080px}
+.line-course-menu li{float:left;margin-right:20px;margin-bottom:20px;padding:0 10px;line-height:24px;font-size:14px;border-radius:4px;margin-top:-2px}
+.line-course-menu li a{float:left;color:#333}
+.line-course-menu li a:hover{color:#00BED4;}
+.active-on01{background-color:#00BED4}
+.active-on01 a{color:#fff!important}
+.active-on02 a{color:#00BED4!important}
+.one-line-course-menu li:hover{background-color:#00BED4}
+.one-line-course-menu li:hover a{color:#fff}
+.three-menu-box,.two-menu-box{float:left;width:100%;border:1px dotted #dcdcdc;border-top:0}
+.two-menu-box li{float:left}
+.two-menu-box li a:hover{color:#00BED4}
+.three-menu-box .three-menu,.two-menu-box .two-menu{float:right;width:1080px;padding-top:20px}
+
+/* 课程列表 */
+.crumbs-clearfix{width:100%;float:left;background-color:#f0f0f2}
+.group-name{float:left;height:40px;margin-top:30px;width:100%;height:100%;border-bottom:1px solid #dcdcdc}
+.group-name ul li{padding:0 25px;line-height:40px;float:left;position:relative;border:1px solid transparent;border-top:2px solid transparent;border-bottom:2px solid transparent;margin-bottom:-1px;color:#656565}
+.name-on{color:#00BED4!important;border:1px solid #dcdcdc!important;border-top:2px solid #00BED4!important;border-bottom:2px solid #f0f0f2!important}
+.name-on a{color:#00BED4!important}
+.group-name ul li a{color:#656565;padding:0 25px;display:block}
+.group-name ul li:hover div{display:block}
+.group-name ul li:last-child{padding:0 25px}
+.group-name li div{width:170px;position:absolute;top:41px;left:0;border:solid 1px #ccc;background:#fff;float:left;display:none;text-align:center;background-color:#fff}
+.group-name li div a{color:#656565!important;}
+.group-name li div a:hover{color:#00BED4!important;}
+.course-all-tab{padding-bottom:50px;}
+.course-all-tab dl{background-color:#fff;float:left;width:1142px;padding:14px;margin-top:30px;border-radius:4px}
+.course-all-tab dd{float:left;width:460px;margin-left:26px}
+.course-all-tab dd:first-child{width:330px;height:200px;overflow:hidden;margin-left:0}
+.course-all-tab dd img{width:100%;min-height:200px}
+.course-all-tab dd h5{font-size:18px;line-height:22px}
+.course-all-tab dd h5 a{color:#333}
+.course-all-tab dd b{display:block;font-size:24px;line-height:44px;color:#fe575f}
+.course-all-tab dd small{display:block;font-size:14px;line-height:28px;color:#656565}
+.course-all-tab dd p{font-size:14px;line-height:20px;color:#888;margin-top:20px}
+.las-uvlo{width:260px!important;padding-top:55px;text-align:center}
+.las-uvlo a{display:inline-block;width:140px;line-height:32px;border-radius:4px;border:1px solid #00BED4;color:#00BED4;font-size:14px;text-align:center;margin-bottom:28px}
+.las-uvlo a:hover{color:#fff;background-color:#00BED4}
+
+/* 分页 */
+.course-all-tab .page{width:100%;margin:0 auto;padding:30px 0;text-align:center;font-size:14px;margin-top:16px;display: inline-block;}
+.pagebox{display:inline-block}
+.pagebox a{float:left;display:inline-block;margin:0 -1px;width:38px;height:38px;border:solid 1px #d8d8d8;background-color:#f7f7f7;color:#333;text-align:center;line-height:38px;padding: 0;}
+.pagebox .current,.pagebox a:hover{border:solid 1px #00BED4;background-color:#00BED4;color:#fff}
+.pagebox a.next,.pagebox a.pre{padding:0 10px;width:auto}
+
+
+/* 线下课_课程主页 */
+/* 课程信息明细 */
+.course-deta .position-label-find li{line-height:36px}
+.course-deta dl{width:1130px;background-color:#fff;float:left;padding:20px;border-radius: 4px;}
+.course-deta dd{float:left}
+.course-deta dd a{display:block;width:580px;height:350px;overflow:hidden}
+.course-deta dd a img{width:100%;min-height:350px}
+.course-deta .course-deta-txt{width:530px;float:right}
+.course-deta .course-deta-txt h3{color:#444;font-size:24px;padding-bottom:10px}
+.course-deta .course-deta-txt small{display:block;color:#888;font-size:14px;margin-top:14px}
+.course-deta .course-deta-txt p{color:#888;font-size:16px;margin-top:55px}
+.course-deta .course-deta-txt p em{text-decoration:line-through}
+.course-deta .course-deta-txt b{font-size:24px;color:#fe575f;margin-top:5px;font-weight: normal}
+.course-deta .course-deta-txt b strong{font-size:16px}
+.course-deta .course-deta-txt button{display:block;width:160px;line-height:40px;border-radius:4px;border:1px solid #00BED4;color:#00BED4;font-size:16px;background-color:#fff;margin-top:20px}
+.course-deta .course-deta-txt button:hover{background-color:#00BED4;color:#fff}
+
+/* left */
+.center_left{float:left;width:870px;background-color:#fff;border-radius:4px;overflow:hidden}
+.mar01{margin-top:30px;padding-bottom:30px}
+.center_left_tit{height:50px;line-height:50px;background-color:#fff;border-bottom:1px solid #e7e6e5}
+.center_left_tit li{float:left;border-bottom:2px solid transparent}
+.center_left_tit .on{border-color:#00BED4}
+.center_left_tit .on a{color:#00BED4}
+.center_left_tit li a{display:block;padding:0 25px;font-size:16px;color:#333}
+.center_left_tit .course-contents{width:830px;float:left;padding:0 20px}
+.course-infos{display:none}
+.course-infos:first-child{display:block}
+.center_left_tit .evalua p{color:#656565;line-height:30px;font-size:14px;text-indent:28px;padding:30px 0}
+#video_meun1{padding:24px 0}
+.class_directory{margin-bottom:15px}
+.class_directory dt{margin-bottom:15px;background-color:#f4f4f4;color:#333;padding:0 20px}
+.class_directory dd,.class_directory dt{height:44px;font-size:14px;line-height:44px}
+.class_directory dd:hover{background-color:#f6fafd}
+.class_directory dd a{float:left;display:block;padding:0 3%;color:#656565;width:94%}
+.class_directory dd i{float:right;margin-top:11px;width:30px;height:22px}
+.class_directory dd span{margin-right:10px;float:right;color:#888}
+.pt20 .classmain-bd #video_meun1 #video_meun .free{float:right;display:none;margin-top:7px;padding:5px;width:40px;border-radius:4px;color:#fff;text-align:center;font-weight:400;line-height:20px}
+.title{float:right}
+.title a{color:#776e6e}
+.video-review{width:100%;height:auto;overflow:hidden}
+.clearfix{display:none;height:auto;position:relative;zoom:1}
+.qa-ci-wrap{width:100%;background:0 0;color:#999;font-size:12px}
+form #review_form .reply-star{line-height:30px;width:100%}
+.form-label{float:left;padding-right:5px;padding:7px 0}
+.star_ul{float:left}
+.star_ul i{font-size:14px;float:left;color:#ccc;margin:1px 2px 0 0}
+.qa-txt-iarea{width:97%;margin:10px 0;background:#f5f5f5;border-radius:4px;border:0;height:120px;padding:10px;color:#888;font-size:14px;resize:none}
+.qa-reply-footright{padding:10px 0 10px 0;float:right}
+.btn-mc-light{background-color:#AAA;border:1px solid #fff;margin-right:5px;line-height:28px;padding:0 23px;font-size:12px;border-radius:3px;color:#fff;transition:border-color .25s;-webkit-transition:border-color .25s;-moz-transition:border-color .25s;-o-transition:border-color .25s}
+.btn-mini{background:#00BED4;border:none;color:#fff;font-size:12px;line-height:28px;padding:0 23px;border-radius:3px}
+.classmain-bd{padding:0 30px;background-color:#fff;min-height:50px}
+.big{overflow:hidden;font-size:14px;color: #656565;}
+.big div{float:left}
+.big .star{margin:0 20px;color:#666768;font-size:16px}
+.big .star i{margin:0 2px 0;font-size:18px;color:#FF6813}
+.wenda-listcon{overflow:hidden;width:100%;float:left}
+.classmain-bd{padding:0 10px;background-color:#fff;min-height:50px}
+.teacher-dp{overflow:hidden;padding-bottom:20px;padding-left:57px;min-height:85px;font-size:14px;line-height:24px;border-bottom:dashed 1px #ebebeb;margin-bottom:20px}
+.teacher-dp .name{width:60px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:6px;float: left;}
+.teacher-dp dt{position:absolute;overflow:hidden;margin-left:-55px;width:40px}
+.teacher-dp .pic{overflow:hidden;width:40px;height:40px;border-radius:50%;margin-top: 14px;}
+.teacher-dp .pic img{width:100%}
+.teacher-dp .name a{color:#333}
+.teacher-dp dd{padding-bottom:20px}
+.teacher-dp dd .tit{overflow:hidden;margin:4px 0 8px}
+.teacher-dp dd .tit i{color:#FF6813}
+.teacher-dp dd .star{float:left;margin:6px 20px 0 0}
+.teacher-dp dd .txt{color:#898a8b}
+.replymegfooter{float:left;width:100%}
+.keyword-list,.wenda-time{float:left;color: #888;}
+.qa-comment-addon-r{float:right;color:#656565}
+.qa-total-reply{margin-right:20px;cursor:pointer}
+.js-qacom-supported-user{cursor:pointer}
+.classmain #video_comment .video-review .review .icon-pl{margin-right:3px;font-size:18px}
+.qa-tr-up{position:relative;display:none}
+.qa-tr-up i{font-size:14px;padding:0 5px}
+.qa-tr-up b{border-color:transparent transparent #cecece;border-style:solid;border-width:7px;bottom:-21px;height:0;left:7px;position:absolute;width:0}
+.qa-replies{margin-bottom:-1px;padding-left:75px;float:left;display:none}
+.qa-reply-c{position:relative;background:#f7f7f7;width:680px;margin-bottom:20px;border-radius: 4px;}
+.qa-reply-item{position:relative}
+.qa-reply-item-author{position:absolute;left:10px;top:10px;line-height:1em}
+.qa-reply-item-author img{width:24px;border-radius:50%}
+.qa-reply-item-inner{margin-left:44px;font-size:12px}
+.qa-reply-item-inner .username{line-height: 33px;}
+.qa-reply-nick:link,.qa-reply-nick:visited{color:#00a3b5;font-size:12px}
+.q-reply-item-c{color:#656565;font-size:12px;line-height:1.7em;padding-top:3px;word-break:break-all;word-wrap:break-word;overflow:hidden}
+.qa-reply-item-foot{color:#888;font-size:12px}
+.qa-reply-item-reply{display:inline-block;cursor:pointer;margin-left:10px}
+.qa-reply-more{width:100%;height:50px;line-height:50px;text-align:center}
+.qa-reply-more :hover{color:#00BED4}
+.qa-reply-more a{color:#656565;font-size:14px}
+.qa-reply-ibox{padding:20px 0;border-bottom:1px solid #e3e5e5;display:none}
+.qa-reply-iavator{width:60px;text-align:center;float:left}
+.qa-reply-iavator img{width:40px;border-radius:50%}
+.qa-reply-iwrap{padding:0 0 0 7px;overflow:hidden;margin-left:60px}
+.qa-reply-iarea{line-height:1em}
+.qa-reply-iwrap .qa-reply-iarea textarea{border:1px solid #e3e5e5;padding:7px;resize:none;height:60px;line-height:1.7em;font-size:12px;background-color:#fff;width:572px;max-height:90px;overflow:inherit;min-height:22px}
+
+/* right */
+
+.center_right{width:270px;float:right;border-radius:4px;overflow:hidden}
+.teacher-school{padding:0 10px;background-color:#fff;float:left}
+.teacher-school h3{border-bottom:solid 1px #ddd;color:#333;font-size:16px;line-height:50px}
+.teacher-school-per{padding-bottom:20px;float:left}
+.teacher-school-per li{margin-top:20px;float:left}
+.teacher-school-per li div{float:left}
+.teacher-school-per li div span{float:left;width:60px;height:60px;overflow:hidden;border-radius:50%}
+.teacher-school-per li div span img{width:60px;min-height:60px}
+.teacher-school-per li div h4{float:left;margin-left:10px;font-size:18px}
+.teacher-school-per li div h4:hover a{color:#00BED4}
+.teacher-school-per li div h4 a{color:#656565;line-height:24px}
+.teacher-school-per li div h4 small{display:block;color:#888;line-height:46px}
+.teacher-school-per li p{float:left;color:#888;font-size:14px;line-height:24px}
+.school-02ul h4{line-height:60px}
+
+/* 联系我们 */
+.course-evaluate{width:250px;padding:0 10px 20px;float: left;background-color: #fff;margin-top:30px;}
+.contact-us{float: left;width:100%;}
+.course-evaluate h3{width:100%;float:left;color:#333;font-size:16px;line-height:50px;border-bottom:1px solid #E5E5E5}
+.contact-us-home p{font-size:13px;color:#333;margin-top:15px;float:left;width:100%}
+.contact-us-home p i{font-size:18px;padding:0 8px 0 0}
+.contact-us-home b,.contact-us-home button{display:block;margin:auto;text-align:center;margin-top:15px}
+.contact-us-home b{font-size:18px;color:#fe575f}
+.contact-us-home button{cursor: pointer;width:160px;line-height:40px;border-radius:3px;border:0;color:#fff;font-size:16px;background-color:#00BED4}

@@ -1,0 +1,467 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<!--content start-->
+<div class="body">
+    <div class="question-box">
+        <h2>{$wdinfo.wd_description}</h2>
+        <dl>
+            <dt>
+                <a href="{:U('classroom/UserShow/index',array('uid'=>$wdinfo['uid']))}">
+                    <img src="{:getUserFace($wdinfo['uid'],'m')}" class="lazyloading">{:getUserName($wdinfo['uid'])}</a> 发表于：{:getDateDiffer($wdinfo['ctime'])}
+            </dt>
+        </dl>
+        <form>
+            <div class="item border"><textarea name="content" id="content" placeholder="说说自己的看法..."></textarea></div>
+            <div class="item t-right">可以输入140个字<button type="button" onclick="huifuBang(this,{$wdinfo.id})">提交回答</button></div>
+        </form>
+    </div>
+    <php>if(!empty($cmlist['data'])){</php>
+    <div class="classmain-bd bgw">
+        <foreach name="cmlist.data" item="cl">
+            <div class="classmain_con">
+            <ul class="comment_list">
+                <li>
+                    <div class="pic"><a href="{:U('classroom/UserShow/index',array('uid'=>$cl['uid']))}"><img src="{:getUserFace($cl['uid'],'m')}" class="lazyloading"></a></div>
+                    <div class="name"><a href="{:U('classroom/UserShow/index',array('uid'=>$cl['uid']))}">{:getUserName($cl['uid'])}</a></div>
+                    <div class="text"><php>echo strip_tags($cl['description'], 'hdfth<a><br><span><b><i><strong><img>');</php></div>
+                    <div class="info">
+                        <a href="javascript:;" onclick="zanBang(this,{$cl.id})"><span class="icon-pl"></span><span class="zanCount">{$cl.help_count}</span></a>
+                        <a href="javascript:;" onclick="comment(this,{$cl.id})"><span class="icon-zan"></span>{$cl.comment_count}</a>
+                        {:getDateDiffer($cl['ctime'])}
+                    </div>
+                    <php>if($mid!=""){</php>
+                    <ul class="children" style="display:none">
+                        <li style="padding-left:0px;">
+                            <div class="qa-reply-c" id="comm{$cl.id}" >
+                                <div class="qa-reply-more"  id="fallbtn{$cl.id}">
+                                    <a href="#">点击显示更多</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="pic"><a href="{:U('classroom/UserShow/index',array('uid'=>$mid))}"><img src="{:getUserFace($mid,'m')}" class="lazyloading"></a></div>
+                            <form class="childrenform">
+                                <div class="item pl"><textarea name="text{$cl.id}" id="text{$cl.id}" placeholder="写下你的评论..."></textarea></div>
+                                <div class="item btn">
+                                    <a href="javascript:;" style="display: none" onclick="closeBang(this,{$wdinfo.id},{$cl.id})">取消</a>
+                                    <button type="button" onclick="scommBang(this,{$cl.id},{$wdinfo.id})">提交</button>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                    <php>}</php>
+                </li>
+            </ul>
+            </div>
+        </foreach>
+    </div>
+    <php>}</php>
+</div>
+
+<script>
+    var ahtml="";
+    /*  $(document).ready(function(){
+     $(".js-reply-ipt-default").mousedown(function(){
+     $(".qa-reply-footright").css("display","block");
+     });
+     });//控制回答别人回复下面的textarea 提交按钮*/
+    var username="{:getUserName($mid)}";
+    var headsrc="{:getUserFace($mid,'m')}";
+
+    var url;
+    var p;
+    var fdata;
+    function comment(cate,id){
+        if(MID==0){
+            if(confirm("该操作需要登录？")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return;
+        }
+        url="{:U('wenda/Index/getSonComment')}";
+        p=1;
+        fdata="id="+id;
+        $("#comm"+id).html("");
+        ajaxComm(url,fdata,id,p);
+        //$(cate).css("display", "none"); //隐藏js-qa-tr-num
+        //$(cate).siblings(".qa-icon").css("background-position","-25px -107px"); //显示js-qa-tr-num同级的qa-icon  hover事件
+        //$(cate).siblings(".qa-tr-up").css({"display":"inline","color":"#333333"}); //显示js-qa-tr-num同级的qa-tr-up
+        if($(cate).parents(".info").next(".children").css("display")=="none"){
+            $(cate).parents(".info").next(".children").show(); //查找js-qa-tr-num上一级为qa-comment-inner的并且下一级为qa-replies的div，效果为显示
+        }else{
+            $(cate).parents(".info").next(".children").hide();
+        }
+
+
+    }
+    $(document).ready(function () {
+        /*$(".qa-tr-up").click(function () {
+            $(this).css("display", "none");
+            $(this).siblings(".qa-icon").css("background-position","-25px -83px");
+            $(this).siblings(".js-qa-tr-num").css("display", "inline");
+            $(this).parents("div.qa-comment-inner").siblings(".qa-replies").hide();
+        });*/
+        <php>if($is_mescom){</php>
+            document.getElementById('ptr{$msgcomid}').scrollIntoViewIfNeeded();
+            var cmid="{$msgcomid}";
+            var id=parseInt(cmid);
+            comment("#ptr"+id,id);
+            <php>}</php>
+        var cate;
+        <php>
+
+            foreach($cmlist['data'] as $cl){
+            if($cl['isson']){
+            </php>
+            cate=$("#ptr{$cl.id}");
+            comment(cate,"{$cl.id}");
+            <php>}}</php>
+    });
+
+    //提交子评论
+    function scommBang(cate,id,wid){
+        var cmval=$("#text"+id).val();
+        if($.trim(cmval)==""){
+            notes("对不起，回复内容不能为空","failure");
+            return;
+        }
+        if($.trim(cmval).length<3){
+            notes("对不起，回复内容最少为3个字符","failure");
+            return;
+        }
+        $(cate).text("提交中...");
+        $(cate).attr('disabled',"true");
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doSonComment')}",
+            data:"id="+id+"&wid="+wid+"&txt="+cmval,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+                    notes("恭喜，回复成功！","success");
+                    url="{:U('wenda/Index/getSonComment')}";
+                    p=1;
+                    fdata="id="+id;
+                    $("#comm"+id).html("");
+                    ajaxComm(url,fdata,id,p);
+                    var numberComm=parseInt($("#nbcomm"+id).text());
+                    numberComm+=1;
+                    $("#nbcomm"+id).text(numberComm);
+
+                    $("#text"+id).val("");
+                }
+
+                $(cate).text("提交");
+                $(cate).removeAttr("disabled");
+
+            }
+        });
+
+    }
+
+    //ajax加载子回复
+    function ajaxComm(url,fdata,id,p,callback){
+        if(fdata!=""){
+            var fdata="&"+fdata;
+        }
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p="+p+fdata,
+            dataType:"json",
+            success:function(data){
+
+                $("#fallbtn"+id).remove();
+                if(data.data!=""){
+                    $("#comm"+id).append(data.data);
+                }
+
+                if(data.nowPage+1>data.totalPages){
+                    return ;
+                }else{
+                    var idname="fallbtn"+id;
+                    p=data.nowPage+1;//下一页
+                    var html="<div class=\"qa-reply-more\"  id="+idname+"><a href=\"javascript:;\" onclick=\"fallBang("+id+","+p+")\">点击显示更多</a></div>"
+                    $("#comm"+id).append(html);
+
+                }
+            }
+        });
+
+    }
+    function delCommBang(cate,pid,id){
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/delCommComment')}",
+            data:"id="+id+"&pid="+pid,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+                    notes("删除成功！","success");
+                    url="{:U('wenda/Index/getSonComment')}";
+                    p=1;
+                    fdata="id="+pid;
+                    $("#comm"+pid).html("");
+                    ajaxComm(url,fdata,pid,p);
+                    var numberComm=parseInt($("#nbcomm"+pid).text());
+                    numberComm-=1;
+                    $("#nbcomm"+pid).text(numberComm);
+
+                    $("#text"+pid).val("");
+                }
+            }
+        });
+    }
+    /**
+     * 赞
+     * @param cate
+     * @param id
+     */
+    function zanBang(cate,id){
+        if(MID==0){
+            if(confirm("该操作需要登录？")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doWendaCommentZan')}",
+            data:"id="+id,
+            dataType:"text",
+            success:function(data){
+                if(data==200){
+                    var text=parseInt($(cate).children('.zanCount').text());
+                    $(cate).children('.zanCount').text(text=(text+1));
+
+                }else{
+                    return;
+                }
+            }
+        });
+    }
+    /**
+     * 删除问答
+     * @param cate
+     * @param id
+     */
+    /*function delwenda(id){
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/delwenda')}",
+            data:"id="+id,
+            dataType:"text",
+            success:function(data){
+                if(data==200){
+                    notes("删除成功！","success");
+                    window.location.href = U('wenda/Index/index');
+                }else{
+                    notes("删除失败!","failure");
+                }
+            }
+        });
+    }*/
+    /**
+     * 回复问答
+     * @param cate
+     * @param id
+     */
+    function huifuBang(cate,id){
+        if(MID==0){
+            if(confirm("该操作需要登录？")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return;
+        }
+        var cmval= $('#content').val();
+        if($.trim(cmval)==""){
+            notes("对不起，回复内容不能为空","failure");
+            return;
+        }
+        if($.trim(cmval).length<3){
+            notes("对不起，回复内容最少为3个字符","failure");
+            return;
+        }
+        $(cate).text("提交中...");
+        $(cate).attr('disabled',"true");
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doWendaComment')}",
+            data:"wid="+id+"&count="+cmval,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    $(cate).text("提交");
+                    $(cate).attr('disabled',"false");
+                    notes(data,"failure");
+
+                }else{
+
+                    location.reload();
+                }
+            }
+        });
+    }
+    //加载更多
+    function fallBang(id,p){
+        fdata="id="+id;
+        ajaxComm(url,fdata,id,p);
+    }
+
+
+
+    //第三级加载
+    function sonCommBang(cate,uid,wid,pid,sid){
+        var funame=$("#uname"+uid).text();//加载回复人的姓名
+        var cmtext="回复 "+funame+":";
+        $("#text"+pid).val(cmtext);
+        $("#text"+pid).focus();
+        $("#clbtn"+pid).css("display","inline");
+        $("#soncomm"+pid).attr("onclick","dosCommBang("+uid+","+wid+","+pid+","+sid+");");
+    }
+    //第三级编辑
+    /*function updateCommBang(cate,uid,wid,pid,sid){
+        var description=$("#description"+uid).text();//加载回复人的姓名
+        var cmtext=description;
+        $("#text"+pid).val(cmtext);
+        $("#text"+pid).focus();
+        $("#clbtn"+pid).css("display","inline");
+        $("#soncomm"+pid).attr("onclick","updatesonComm("+uid+","+wid+","+pid+","+sid+");");
+    }*/
+    //取消第三级回复
+    function closeBang(cate,wid,pid){
+        $("#soncomm"+pid).attr("onclick","scommBang(this,"+pid+","+wid+");");
+        $(cate).css("display","none");
+        $("#text"+pid).val("");
+    }
+
+    //关注作者
+    /*function followBang(cate){
+        var fid=$(cate).attr("data-id");
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/User/doFollow')}",
+            data:"uid="+fid,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+
+                    $(cate).children("i.wenda-gz").removeClass().addClass("wenda-gz-Toggle");
+                    $(cate).children("span.fr").text("已关注");
+                    $(cate).attr("title","已关注");
+                    $(cate).attr("onclick","#");
+                }
+            }
+        });
+    }*/
+
+    /**
+     * 提交第三级评论
+     * @param uid
+     * @param wid
+     * @param pid
+     */
+    function dosCommBang(uid,wid,pid,sid){
+
+        var funame=$("#uname"+uid).text();//加载回复人的姓名
+        funame="回复 "+funame+":";
+        var cmval=$("#text"+pid).val();
+        cmval=cmval.replace(funame,"");
+        if($.trim(cmval)==""){
+            notes("对不起，回复内容不能为空","failure");
+            return;
+        }
+        if($.trim(cmval).length<3){
+            notes("对不起，回复内容最少为3个字符","failure");
+            return;
+        }
+        $("#soncomm".pid).text("提交中...");
+        $("#soncomm".pid).attr('disabled',"true");
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doSonComms')}",
+            data:"id="+pid+"&wid="+wid+"&txt="+cmval+"&uid="+uid+"&sid="+sid,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+                    notes("恭喜，回复成功！","success");
+                    url="{:U('wenda/Index/getSonComment')}";
+                    p=1;
+                    fdata="id="+pid;
+                    $("#comm"+pid).html("");
+                    ajaxComm(url,fdata,pid,p);
+                    var numberComm=parseInt($("#nbcomm"+pid).text());
+                    numberComm+=1;
+                    $("#nbcomm"+pid).text(numberComm);
+
+                    $("#text"+pid).val("");
+                }
+                $("#soncomm"+pid).text("提交");
+                $("#soncomm"+pid).removeAttr("disabled");
+                $("#soncomm"+pid).attr("onclick","scommBang(this,"+pid+","+wid+");");
+            }
+        });
+    }
+    /**
+     * 编辑第三级评论
+     * @param uid
+     * @param wid
+     * @param pid
+     */
+    /*function updatesonComm(uid,wid,pid,sid){
+        var cmval=$("#text"+pid).val();
+        if($.trim(cmval)==""){
+            notes("对不起，回复内容不能为空","failure");
+            return;
+        }
+        if($.trim(cmval).length<3){
+            notes("对不起，回复内容最少为3个字符","failure");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/updateSonComment')}",
+            data:"id="+sid+"&txt="+cmval,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+                    notes("恭喜，编辑成功！","success");
+                    url="{:U('wenda/Index/getSonComment')}";
+                    p=1;
+                    fdata="id="+pid;
+                    $("#comm"+pid).html("");
+                    ajaxComm(url,fdata,pid,p);
+                    $("#text"+pid).val("");
+                }
+            }
+        });
+    }*/
+    /*function delBang(wid,id){
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/delcomm')}",
+            data:"id="+id+"&wid="+wid,
+            dataType:"text",
+            success:function(data){
+                if(data!=200){
+                    notes(data,"failure");
+                }else{
+                    notes("删除成功！","success");
+                    location.reload();
+                }
+            }
+        });
+    }*/
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

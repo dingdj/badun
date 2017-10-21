@@ -1,0 +1,40 @@
+<include file="__THEME__/public_header" />
+<include file="public/_top" />
+<!--centerbox end-->
+<div class="left-all">
+    <div class="center_right">
+        <div class="center_right_tit">
+            <div class="user-con-title">
+                <h5>小组</h5>
+                <!--<a href="{:U('group/Index/index')}">更多></a>-->
+            </div>
+        </div>
+        <input type = "hidden"  id = "clickstate"  value = "done"/>
+
+        <div class="center_right_con">
+            <ul class="user-imglist">
+                <if condition="$group_data eq null">
+                    <li style="border: none;box-shadow: none;">TA还没有相关小组。。</li>
+                    <else/>
+                    <foreach name="group_data" item="gd" key='k'>
+                        <li>
+                            <a href="{:U('group/Index/view',array('gid'=>$gd['id']))}" class="img"><img src="{$gd.logo}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                            <div class="user-title">
+                                <h3><a href="{:U('group/Index/view',array('gid'=>$gd['id']))}">{:msubstr(t($gd['name']),0,15,'utf-8',true)}</a></h3>
+                                <p>{$gd.cid0}</a></p>
+                            </div>
+                        </li>
+                    </foreach>
+                </if>
+            </ul>
+            <div class="page">
+                <div class="pagebox">
+                    {$listData['html']}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<include file="public/_right" />
+<include file="__THEME__/public_footer" />

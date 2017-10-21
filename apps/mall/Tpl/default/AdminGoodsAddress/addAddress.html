@@ -1,0 +1,84 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+	<div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('mall/AdminGoodsAddress/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+
+    <div class="tit_tab">
+        <ul>
+        <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+        <volist name='pageTab' id='t'>
+            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+        </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    <form method="POST" action="{:U('mall/AdminGoodsAddress/addAddress')}" id="detail_form" name="detail_form">
+		<input type="hidden" name="id" value="{$data['id']}">
+    	<div class="form2">
+			<dl class="lineD" id="form_v_price">
+				<dt><font color="red"> * </font>用户ID：</dt>
+				<dd>
+					<php>if(isset($data['id'])):</php>
+					<!--编辑的情况-->
+					{$data['uid']}
+					<input name="uid" type="hidden" value="{$data['uid']}" class="s-txt">
+					<php>else:</php>
+					<!--添加的情况-->
+					<input name="uid" type="text" value="" class="s-txt">
+					<php>endif;</php>
+				</dd>
+			</dl>
+			<dl class="lineD">
+				<dt><font color="red"> * </font>省/市/区：</dt>
+				<dd>
+					<php>if(isset($data['id'])):</php>
+					<!--编辑的情况-->
+					{:W('Area',array('curPro'=>$data['province'],'curCity'=>$data['city'],'area'=>$data['area'],'city_names'=>$data['location'],'tpl'=>'selectArea'))}
+					<php>else:</php>
+					<!--添加的情况-->
+                    {:W('Area',array('tpl'=>'selectArea'))}
+					<php>endif;</php>
+                </dd>
+			</dl>
+
+		    <dl class="lineD" id="dl_video">
+		    	<dt><font color="red"> * </font>详细地址：</dt>
+		    	<dd>
+		    		<textarea name="address" id="form_video_intro" rows="10" cols="80">{$data['address']}</textarea>
+		    	</dd>
+		    </dl>
+
+			<dl class="lineD">
+				<dt><font color="red"> * </font>收货人姓名：</dt>
+				<dd>
+					<input name="name" type="text" value="{$data['name']}" class="s-txt">
+				</dd>
+			</dl>
+
+			<dl class="lineD">
+				<dt><font color="red"> * </font>收货人手机：</dt>
+				<dd>
+					<input name="phone" type="text" value="{$data['phone']}" class="s-txt">
+				</dd>
+			</dl>
+
+			<dl class="lineD">
+				<dt>是否设为默认收货地址：</dt>
+				<dd>
+					<input name="is_default" type="radio" value="1" <eq name="data.is_default" value="1">checked="checked"</eq>>是
+					<input name="is_default" type="radio" value="0" <eq name="data.is_default" value="0">checked="checked"</eq>>否
+				</dd>
+			</dl>
+
+		    <div class="page_btm">
+				<input type="submit" class="btn_b" value="保存" id="orm_submit">
+    		</div>
+    	</div>
+    </form>
+<include file="__THEME__/admin_footer" />

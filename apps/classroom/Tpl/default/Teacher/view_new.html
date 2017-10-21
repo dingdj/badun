@@ -1,0 +1,989 @@
+<!--header-->
+<include file="__THEME__/public_header" />
+<!--header end-->
+
+<!--top-->
+<include file="./top" />
+<!--top end-->
+
+<!--content-->
+<div class="content  adjust">
+	<div class="wrap">
+    <!--left-->
+    <include file="./left" />
+    <!--left end-->
+
+        <div class="teacher-content">
+        	<div class="teacher-course">
+                <ul class="course-nav">
+                    <!--<li class="active trial-course"><a>预约试听<span> HOT!</span></a></li>-->
+                    <li class="active trial-course"><a>线下班课&nbsp;({$meetcoursecount})</a></li>
+                    <li class="trial-course"><a>视频课程&nbsp;({$coursecount})</a></li>
+                    <!--<li class="trial-course"><a>1对1课程&nbsp;({$meetonecount})</a></li>-->
+                    <li class="trial-course"><a>直播课程 ({$livecount})</a></li>
+                </ul>
+
+
+                <div class="teacher_course-content" style="height: 340px;">
+                    <!--<div class="trial-course video_all">-->
+                       <!--<form  action ="{:U('classroom/PayTeacher/operatTeacherOrder')}"   method ="post"  target="_blank">-->
+
+                        <!--<div class="trial-content ">-->
+                            <!--<div class="trial-title">-->
+                                <!--<input type ="hidden"   name ="pay"  value ="alipay" />-->
+                                <!--<input type ="hidden"  id ="charge"  name ="money"  value ="{$data.online_price}"/>-->
+                                <!--<input type ="hidden"  id ="meetingtype"  name ="meetingtype"   value ="online" />-->
+                                <!--<input type ="hidden"   name ="teacherid"  value ="{$data.id}" />-->
+
+                                <!--<div class="course-length">试听课<span>0.5</span>小时</div>-->
+                                <!--<php>if($data['video']>0){</php><div class="text-info"><i class="icon-info"></i><a href ="{:U('classroom/video/view',array('id'=> $tcourse))}">对老师感兴趣但是不知道选什么课？先来试听一下吧</a></div><php>}</php>-->
+                            <!--</div>-->
+                            <!--<div class="form">-->
+                                <!--<div class="form-group">-->
+                                    <!--<label class="form-label">试听方式及价格：</label>-->
+                                    <!--<div class="form-controls">-->
+                                        <!--<span class="lesson-way active"  id ="online"  val="{$data.online_price}">在线试听<em class="text-primary">¥ {$data.online_price}</em></span>-->
+                                        <!--<span class="lesson-way"  id="offline" val="{$data.offline_price}">线下试听<em class="text-primary">¥ {$data.offline_price}</em></span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="form-group">-->
+                                    <!--<label class="form-label">给老师留言：</label>-->
+                                    <!--<div class="form-controls">-->
+                                        <!--<div class="form-editor">-->
+                                            <!--<div class="placeholder-wrapper"><textarea class="form-text" maxlength="200" id="form-text" name ="form-text" placeholder="XXX老师好！我想预约您在线试听。预约时间为13号上午10:00，想试听三角函数"   onKeyup=checklenth(this)   onKeyDown=checklenth(this)></textarea></div>-->
+                                        	<!--<div class="form-hint" ><strong></strong></div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="form-action"><div     id = "gomeeting"  class="btn-primary btn-trial"  onclick="meetingteacher(this)" >预约试听</div></div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--</form>-->
+
+                    <!--</div>-->
+                    <div class="trial-course video_all">
+                        <div class="itemtit">
+                            <php>if($data['video'] > 0){</php>
+                            <a class="hyh new change_meet_lot" href="javascript:;"><i class="icon-hyh"></i>换一换&nbsp;|</a>
+                            <a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}" class="more">查看全部</a>
+                            <php>}</php>
+                        </div>
+                        <ul class="meet-course"></ul>
+                    </div>
+
+                    <div class="trial-course video_all" style="display: none;">
+                        <div class="itemtit">
+                        <php>if($data['video'] > 0){</php>
+                          <a class="hyh new change_a_lot" href="javascript:;"><i class="icon-hyh"></i>换一换&nbsp;|</a><a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}" class="more">查看全部</a>
+                        <php>}</php>
+                        </div>
+                        <ul class="online-course"></ul>
+                    </div>
+                    
+                    <!--<div class="trial-course video_all" style="display: none;">-->
+                        <!--<div class="itemtit">-->
+                            <!--<php>if($data['video'] > 0){</php>-->
+                            <!--<a class="hyh new change_meetone_lot" href="javascript:;"><i class="icon-hyh"></i>换一换</a>&nbsp;-->
+                            <!--<php>}</php>-->
+                        <!--</div>-->
+                        <!--<ul class="meetone-course"></ul>-->
+                    <!--</div>-->
+
+                    <div class="trial-course video_all" style="display: none;">
+                        <div class="itemtit">
+                            <php>if($data['video'] > 0){</php>
+                            <a class="hyh new change_live_lot" href="javascript:;"><i class="icon-hyh"></i>换一换&nbsp;|</a><a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}" class="more">查看全部</a>
+                            <php>}</php>
+                        </div>
+                        <ul class="live-course"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="teacher-media">
+            	<div class="media-player-box">
+            	<h3 class="new-title">照片/视频<span>
+                <php>if(!$photos_deatil){</php>
+                    <div class="media-list"><p>该讲师未上传任何照片和视频</p></div>
+                <php>}else{</php>
+                ({$data.video_count}个视频,{$data.picture_count}张照片)</span><a class="more-media" href="{:U('classroom/Teacher/style',array('id'=>$data['id']))}">查看全部&gt;</a></h3>
+                    <div class="wrapper-video">
+                        <ul class="bigImg">
+                        <volist name="photos_deatil" id="vo" offset="0" length='8'>
+                            <php>if($vo['type'] == 1){</php>
+                            <li>
+                                 <a href="javascript:;"><img src="{:getCover($vo['resource'],682,350)}" /></a>
+                                 <h4 style="bottom: 12px;">{$vo.title}</h4>
+                            </li>
+                            <php>}else if($vo['type'] == 2){</php>
+                            <li>
+                                 <a href="javascript:;"><img src="{:getCover($vo['cover'],682,350)}" /></a>
+                                 <h4 style="bottom: 12px;">{$vo.title}</h4>
+                            </li> 
+                            <php>}</php>
+                        </volist>
+                        </ul>                        
+                        <div class="smallScroll">
+                            <a class="sPrev" href="javascript:void(0)">&lt;</a>
+                            <a class="sNext" href="javascript:void(0)">&gt;</a>
+                            <div class="smallImg">
+                                <ul>
+                                <volist name="photos_deatil" id="vo" offset="0" length='8'>
+                                    <php>if($vo['type'] == 1){</php>
+                                    <li><img src="{:getCover($vo['resource'],130,66)}" /></li>
+                                    <php>}else if($vo['type'] == 2){</php>
+                                    <li><img src="{:getCover($vo['cover'],130,66)}" /></li>
+                                    <php>}</php>
+                                </volist>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <php>}</php>
+                
+                </div>
+            </div>
+            <div class="article-main">
+                <php>if($article['data'] == 0){</php>
+                    <span class="title">文章<span class="count" data-domain="MKFmissyuxin">(0篇文章)</span></span>
+                    <div class="article-list" style="height: 70px;line-height: 70px;margin-left: 40px;">
+                        <p>该讲师未上传任何文章</p>
+                    </div>
+                <php>}else{</php> 
+                <span class="title">文章<span class="count" data-domain="MKFmissyuxin">({:count($article['data'])}篇文章)</span></span>
+                <a class="all" href="{:U('classroom/Teacher/article',array('id'=>$data['id']))}" >全部文章&gt;</a>
+                <div class="article-list">
+                    <volist name="article.data" id="l" offset="0" length='2'>
+                        <div class="list first has-cover">
+                            <a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}">
+                            <div class="article-cover"><img src="{:getCover($l['cover'],200,112)}" width="200" height="112"></div>
+                            <div class="list-center">
+                                <div class="top"><span class="article-title">{$l.art_title}</span></div>
+                                <div class="article-content">{:msubstr(t($l['article']),0,90,'utf-8',true)}</div>
+                                <div class="article-shot-actions">
+                                    <span class="shot-action">{:date("Y-m-d H:i:s",$l['ctime'])}</span>
+                                    <a class="js-qa-comment-support qa-comment-support  js-qacom-supported-user fr" href="javascript:;" onclick="zanBang(this,{$l.id})"><i <php>if($l['praise']){echo "class='qa-iconhover'";}else{echo "class='qa-icon'";}</php> ></i></a>
+                                    <span>{$l['praise']}</span>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    </volist>
+                </div>
+                <php>}</php> 
+            </div>
+            <php>if($data['details']){</php>
+            <div class="teacher-other">
+                <div class="teacher-other-title">更多详情</div>
+                <div class="rich-text">
+                    <p>{$data.details}</p>
+                </div>
+            </div>
+            <php>}</php>
+            <div class="teacher-comment">
+            	<div class="new-title">所有评价</div>
+            	<div class="overview">
+                    <div class="action"><a type ="review" href="javascript:;" class="btn btn-primary" id="comment-more">写评价</a></div>
+                    <div class="teacher-score">
+                        <strong>{$staro}</strong>
+                        <div class="score33">
+                            <php>for($i=0;$i<$star;$i++){ </php>
+                            <i class="icon-star"></i>
+                            <php>}</php>
+                            <php>for($i=5;$i>$star;$i--){ </php>
+                            <i class="icon-star_no"></i>
+                            <php>}</php>
+                        </div>
+                    </div>
+                    <div class="detail single">
+                    	<div class="star-comment">主动评价星级分布</div>
+                        <ul>
+                            <li><span class="text">5星</span><div class="progress primary"><div class="meter" style="width: {$fivestar}"></div></div><span style="margin-left: 3px"> {$fivestar} </span></li>
+                            <li><span class="text">4星</span><div class="progress primary"><div class="meter" style="width: {$fourstar}"></div></div><span style="margin-left: 3px"> {$fourstar} </span></li>
+                            <li><span class="text">3星</span><div class="progress primary"><div class="meter" style="width: {$threestar}"></div></div><span style="margin-left: 3px"> {$threestar} </span></li>
+                            <li><span class="text">2星</span><div class="progress primary"><div class="meter" style="width:{$twostar}"></div></div><span style="margin-left: 3px"> {$twostar} </span></li>
+                            <li><span class="text">1星</span><div class="progress primary"><div class="meter" style="width:{$onestar}"></div></div><span style="margin-left: 3px"> {$onestar}</span></li>
+						</ul>
+                    </div>
+                </div>
+                <div  class="video-review back review_con">
+                    <!--点评 默认隐藏-->
+                    <div id="review-comments" style="display:none;padding: 10px 0 0 0; height:auto;position: relative;" class="clearfix">
+                        <div class="qa-ci-wrap">
+                            <form id="review_form" onsubmit="return false;">
+                                <div class="reply-star clearfix">
+                                    <label class="form-label  fl f3" for="score">评分：</label>
+                                    <ul id="star_ul" class="star_ul fl">
+                                        <li class="grade-back-default"></li>
+                                        <li class="grade-back-default"></li>
+                                        <li class="grade-back-default"></li>
+                                        <li class="grade-back-default"></li>
+                                        <li class="grade-back-default"></li>
+                                    </ul>
+                                    <span class="color_hui" id="how-score"></span>
+                                    <p class="fl font12 f9">&nbsp;（请根据课程质量打分）</p>
+                                </div>
+
+                                <label style="margin-right:30px;">授课技巧：
+                                    <select name="skill" id="skill" style="margin-left:10px;">
+                                        <option value="0">请选择</option>
+                                        <option value="1">优</option>
+                                        <option value="2">良</option>
+                                        <option value="3">好</option>
+                                    </select>
+                                </label>
+
+                                <label style="margin-right:30px;">专业知识：
+                                    <select name="Professional" id="Professional" style="margin-left:10px;">
+                                        <option value="0">请选择</option>
+                                        <option value="1">优</option>
+                                        <option value="2">良</option>
+                                        <option value="3">好</option>
+                                    </select>
+                                </label>
+
+
+                                <label style="margin-right:30px;">教学态度：
+                                    <select name="attitude" id="attitude" style="margin-left:10px;">
+                                        <option value="0">请选择</option>
+                                        <option value="1">优</option>
+                                        <option value="2">良</option>
+                                        <option value="3">好</option>
+                                    </select>
+                                </label>
+
+
+                                <input type="hidden" name="score"  id="course_score"/>
+                                <textarea id="review_con" class="qa-ci-iarea js-reply-ipt-default" placeholder="点评可以是你对该讲师质量和难度的感受、学习建议，以及可能内容是否符合自己的期望等。..."></textarea>
+                                <div class="qa-reply-footright fr"> <span class="qa-tips"></span>
+                                    <button type="review" class="btn-mc-light js-ipt-cancel">取消</button>
+                                    <button onclick="doDianpin()" class="btn-mc btn-mini btn-mc-green">确认</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!--点评循环-->
+                </div>
+
+                <div class="tab-nav-info">
+                	<div class="top-nav">
+                    	<div class="dropdown sort-select" name="slt-list">
+                        	<div class="btn-default"><span class="txt">推荐排序</span><i class="icon-sj"></i></div>
+                        	<ul class="dropdown-menu">
+                            	<li data-value="推荐排序" class="active"   onclick = order("default")>推荐排序</li>
+                                <li data-value="最近评价"  onclick =order("rentime")>最近评价</li>
+                            </ul>
+                        </div>
+                        <a href="javascript:;" class="item active"><span  onclick="new_orders(this,'0')">全部评价</span></a>
+                        <!--<a href="javascript:;" class="item"><span  onclick="new_orders(this,'3')" >1对1评价</span></a>-->
+                        <a href="javascript:;" class="item"><span  onclick="new_orders(this,'2')">班课评价</span></a>
+                        <a href="javascript:;" class="item"><span  onclick="new_orders(this,'1')">视频课评价</span></a>
+                    </div>
+                </div>
+                <div class="nav-content">
+                    <div class="card-main">
+                        <ul class="classlist clearfix"></ul>
+                    </div>
+                    <div class="page">
+                        <div class="pagebox">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="message_add_order_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>加入我的看单</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">该课程需要加入我的看单后方可学习，确定加入？</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn shou_mount add_order_video" style="color: #fff;background: rgb(101, 173, 221);">确　定</a>
+        <a class="quer_btn close_btn">取　消</a>
+    </div>
+</div>
+<input type = "hidden"  id = "vidvalue">
+<input type = "hidden"  id = "playtype"  value="zy_video">
+<!--content end-->
+<script type="text/javascript">
+    var teauid = "{$teauid}";
+
+$(function(){
+    $(".wrapper-video .smallImg li").on("mouseover",function(){
+        $(this).css("border","1px solid #188EEE").siblings().css("border","1px solid #ddd");
+        var war = $(this).index();
+        $(".bigImg li").hide();
+        $(".bigImg li").eq(war).show();
+    });
+
+    $(".bigImg li:first").show();
+
+
+    //推荐。。。
+    $(document).on('click','[name="slt-list"] .btn-default',function(){
+            $(this).parent().addClass('focus');
+            $(this).parent().find('.dropdown-menu').css('display','block'); 
+            return false;
+        });
+    //导航
+    $(document).on('click','[name="slt-list"] .dropdown-menu li',function(){
+        var val = $(this).attr('data-value');
+        $(this).addClass('active').siblings().removeClass('active');
+        $(this).parent().siblings('.btn-default').find('.txt').text(val);
+        $(this).parent().css('display','none');
+        $(this).parent().parent().removeClass('focus');
+        return false;
+    });
+
+    //异步加载视频课程
+        $.ajax({
+            type:"GET",
+            url:"{:U('classroom/Teacher/getVideoCourseList')}",
+            data:{tid:tid},
+            dataType:"json",
+            success:function(data){
+                appendVideoHtml(data);
+            }
+        });
+
+
+    //异步加载视频课程
+    $.ajax({
+        type:"GET",
+        url:"{:U('classroom/Teacher/getmeetCourseList')}",
+        data:{tid:tid},
+        dataType:"json",
+        success:function(data){
+            appendmeetVideoHtml(data);
+        }
+    });
+
+    //异步加载视频课程
+    /*$.ajax({
+        type:"GET",
+        url:"{:U('classroom/Teacher/getmeetoneCourseList')}",
+        data:{tid:tid},
+        dataType:"json",
+        success:function(data){
+            appendmeetoneVideoHtml(data);
+        }
+    });*/
+
+    //异步加载视频课程
+    $.ajax({
+        type:"GET",
+        url:"{:U('classroom/Teacher/getliveCourseList')}",
+        data:{tid:tid},
+        dataType:"json",
+        success:function(data){
+            appendliveVideoHtml(data);
+        }
+    });
+
+    $('.change_a_lot').click(function(){
+        $(".online-course").html("");
+        ajaxReturn();
+    });
+
+    $('.change_meet_lot').click(function(){
+        $(".meet-course").html("");
+        meetReturn();
+    });
+
+
+    $('.change_meetone_lot').click(function(){
+        $(".meetone-course").html("");
+        meetoneReturn();
+    });
+
+    $('.change_live_lot').click(function(){
+        $(".live-course").html("");
+       liveReturn();
+    });
+
+
+
+	$(".course-nav li").click(function(){
+		$(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".teacher-course .video_all").hide().eq(index).show();
+	});
+
+
+
+
+    if(onlineorder)
+    {
+        $('#gomeeting').text("你已预约");
+        $('#gomeeting').css('background', 'gray');
+        $('#gomeeting').css('border', 'solid 1px gray');
+
+        return;
+    }
+
+});
+    function ajaxReturn(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Teacher/getVideoCourseList')}",
+            data:{tid:tid},
+            dataType:"json",
+            success:function(data){
+                appendVideoHtml(data);
+            }
+        });
+    }
+
+    function meetReturn(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Teacher/getmeetCourseList')}",
+            data:{tid:tid},
+            dataType:"json",
+            success:function(data){
+                appendmeetVideoHtml(data);
+            }
+        });
+    }
+
+    function meetoneReturn(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Teacher/getmeetoneCourseList')}",
+            data:{tid:tid},
+            dataType:"json",
+            success:function(data){
+                appendmeetoneVideoHtml(data);
+            }
+        });
+    }
+
+    function liveReturn(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Teacher/getliveCourseList')}",
+            data:{tid:tid},
+            dataType:"json",
+            success:function(data){
+                appendliveVideoHtml(data);
+            }
+        });
+    }
+
+
+    //追加html
+    function appendVideoHtml(data){
+        $(".online-course").html("");
+        if(data.data==""){
+            $(".online-course").append("<span>暂无课程~</span>");
+        }else{
+            $(".online-course").append(data.data);
+        }
+    }
+    //追加html
+    function appendliveVideoHtml(data){
+        $(".live-course").html("");
+        if(data.data==""){
+            $(".live-course").append("<span>暂无课程~</span>");
+        }else{
+            $(".live-course").append(data.data);
+        }
+    }
+
+    //追加html
+    function appendmeetVideoHtml(data){
+        $(".meet-course").html("");
+        if(data.data==""){
+            $(".meet-course").append("<span>暂无课程~</span>");
+        }else{
+            $(".meet-course").append(data.data);
+        }
+    }
+    //追加html
+    function appendmeetoneVideoHtml(data){
+        $(".meet-courseone").html("");
+        if(data.data==""){
+            $(".meetone-course").append("<span>暂无课程~</span>");
+        }else{
+            $(".meetone-course").append(data.data);
+        }
+    }
+
+
+/**
+   * 赞
+   * @param cate
+   * @param id
+   */
+  function zanBang(cate,id){
+      if(MID==0){
+          reg_login();
+          return;
+      }
+      $.ajax({
+          type: "POST",
+          url:"{:U('classroom/teacher/addZan')}",
+          data:"id="+id,
+          dataType:"text",
+          success:function(data){
+             if(data==200){
+                 var text=parseInt($(cate).next().text());
+                 text=(text+1);
+                $(cate).next().text(text);
+                $(cate).children("i.qa-icon").removeClass().addClass("qa-iconhover");
+             }else{
+                 ui.error('请不要重复点赞');
+                 return;
+             }
+          }
+      });
+  }
+
+var     orderby ="";
+//追加html
+function getNowPage(url,name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = url.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+//加载分页
+function setPageBoxClick(totalPages){
+    $(".pagebox a").on('click',function(e){
+        p = getNowPage($(this).attr('href'),'p');
+        if(p > totalPages){
+            return false;
+        }
+        $(".ind-teacher").html("");
+        var e = event || window.event
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        } else{
+            e.cancelBubble = true;
+        };
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+        ajaxBang();
+    });
+}
+
+var mid = "{$mid}";
+var tid = "{$data.id}";
+var arr=['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
+//星星评分
+score('star_ul');
+//追加html
+function appendHtml(data){
+//        $(".more1").remove();
+    if(data.data!=""){
+        $(".classlist").html("");
+        $(".classlist").append(data.data);
+        /*if(data.nowPage+1>data.totalPages){
+         return;
+         }else{
+         var html="<div class=\"more1\" ><a href=\"javascript:void(0)\" id=\"getList\">查看更多</a></div>"
+         $(".classlist").append(html);
+         p=data.nowPage+1;//下一页
+         }*/
+//        data.html+='<div class="pagediv">';
+//        data.html+='  <span>共<p id="pageTotal" style="display: inline-block;">'+data.totalPages+'</p>页,去第</span>';
+//        data.html+='<input type="text" name="pageNum"  id ="pageNum">';
+//        data.html+=' <span>页</span>';
+//        data.html+=' <a class="goto" href="javascript:;"onclick="gotoPage();">确定</a>';
+//        data.html+='  </div>';
+        $(".pagebox").html(data.html);
+        $("#nowPage").html(data.nowPage+'/'+data.totalPages);
+        setPageBoxClick(data.totalPages);
+    }else{
+        $(".classlist").append("<script>对不起,暂无评价<\/script>");
+    }
+}
+
+//页面加载完毕执行
+$(function(){
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getreList')}",
+        data:"p=1"+"&tid="+tid+"&type="+0,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+});
+function gotoPage() {
+    $(".pagediv a").on('click',function(e){
+        p = $("input[name='pageNum']").val();
+        var total = parseInt($("#pageTotal").text());
+        if(p > total){
+            alert('超过最大页数！');
+            return;
+        }
+        var e = event || window.event
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        } else{
+            e.cancelBubble = true;
+        };
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+        ajaxBang();
+    });
+};
+//综合排序
+function order($orderby){
+    $(".classlist").html("");
+
+    orderby = $orderby;
+    tid =tid;
+    p=1;
+    ajaxBang();
+}
+//最新
+function new_orders(cate,$type){
+    $(".classlist").html("");
+    $(cate).parent().addClass('active').siblings().removeClass('active');;
+    type=$type;
+    tid =tid;
+    p=1;
+    orderby ="";
+    ajaxBang();
+}
+//排序请求事件 TODO
+function ajaxBang(){
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getreList')}",
+        data:"p="+p+"&type="+type+"&tid="+tid+"&order="+orderby,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+}
+
+
+
+var id = '{$uid}';
+var review_uid    = '{$mid}';
+var onlineorder    = '{$onlineorder}';
+var offorder    = '{$offorder}';
+
+//显示/隐藏 问题、笔记、点评输入框
+$('#comment-more,.js-ipt-cancel').click(function(){
+    if(id<=0){
+        reg_login();
+        return false;
+    }
+    var types = $(this).attr('type');
+    $('#'+types+'-comments').toggle();
+});
+
+//星星评分
+function score(id)
+{
+    var oStarUl=document.getElementById(id);
+    var aLi=oStarUl.children;
+    for(var i=0; i<aLi.length; i++)
+    {
+        //aLi[i].style.backgroundPosition=i%2?'-12px 0':'0 0';
+        aLi[i].index=i;
+        //鼠标移入
+        aLi[i].onmouseover=function ()
+        {
+            for (var i=0; i<aLi.length; i++)
+            {
+                aLi[i].className="grade-back-default";
+            }
+
+            for (var i=0; i<this.index+1; i++)
+            {
+                aLi[i].className="grade-back-set";
+            }
+        };
+        aLi[i].onclick=function ()
+        {
+            $("#course_score").val(this.index+1);
+            $('#how-score').text('评分:'+(this.index+1)+'分');
+        };
+    }
+}
+
+
+
+//写点评
+function doDianpin(){
+
+    if(review_uid <=0){
+        reg_login();
+        return false;
+    }
+    var score = $('#course_score').val();
+    var content = $('#review_con').val();
+    var skill=$("#skill").val();
+    var Professional=$("#Professional").val();
+    var  attitude=$("#attitude").val();
+    content = content.replace(/&nbsp;/ig, "");
+    content = content.replace(/[ ]/g,"");//去除空格
+    content = content.replace(/<[^>].*?>/g,"");//去html标签
+    if(score == 0){
+        notes('请给讲师打分!','failure');
+        return false;
+    }
+    if(skill ==0)
+    {
+        notes('请选择授课技巧!','failure');
+        return false;
+    }
+    if(Professional ==0)
+    {
+        notes('请选择专业知识!','failure');
+        return false;
+    }
+    if(attitude == 0)
+    {
+        notes('请选择教学态度!','failure');
+        return false;
+    }
+    if(content == ""){
+        //ui.error('请输入评价内容!');
+        notes('请输入评价内容!','failure');
+        return false;
+    }
+    for(var i=0; i<arr.length; i++)
+    {
+        if(content.indexOf(arr[i])>-1)
+        {
+            notes('评价内容不得包含敏感词!','failure');
+
+            return false;
+        }
+    }
+    ajaxPinjia(score,content,skill,Professional,attitude);
+}
+
+//提交点评
+function ajaxPinjia(score,content,skill,Professional,attitude){
+    $.ajax({
+        type: "POST",
+        url:U('classroom/Teacher/add'),
+        data: "score="+score+'&content='+content+'&Professional='+Professional+'&attitude='+attitude+'&skill='+skill+'&skill='+skill+'&tid='+tid+'&review_uid='+review_uid,
+        async:false,
+        dataType:"text",
+        success:function(data){
+            $('.js-ipt-cancel').click();
+            appendHtml(data);
+            ajaxReload();
+        }
+    });
+}
+/**
+ * 处理ajax返回数据之后的刷新操作
+ */
+function ajaxReload(){
+    callback = "location.href = location.href";
+    ui.success("点评成功");
+    setTimeout(callback,1000);
+
+};
+
+//检查字数输入
+function checklenth() {
+    var len =$('#form-text').val().length;
+    var wordNumObj = $('.form-hint');
+
+    if(len==0){
+        wordNumObj.css('color','').html('你还可以输入<strong id="strconunt">'+ (200-len) + '</strong>字');
+
+    }else if( len > 200 ){
+        wordNumObj.css('color','red').html('已超出<strong id="strconunt">'+ (len-200) +'</strong>字');
+
+    }else if( len <= 200 ){
+        wordNumObj.css('color','').html('你还可以输入<strong id="strconunt">'+ (200-len) + '</strong>字');
+
+    }
+};
+
+ $('.lesson-way').click(function ()
+        {
+
+           var money = $(this).attr('val');
+            $(this).addClass("active").siblings().removeClass("active");
+            $(this).parents('form').find('input:hidden[name="money"]').val(money);
+            $(this).parents('form').find('input:hidden[name="meetingtype"]').val(this.id);
+            if(this.id == 'offline' )
+            {
+                if(offorder)
+                {
+                    $('#gomeeting').text("你已预约");
+                    $('#gomeeting').css('background', 'gray');
+                    $('#gomeeting').css('border', 'solid 1px gray');
+                    return;
+                }
+
+                $('#gomeeting').text("预约试听");
+                $('#gomeeting').css('background', '#00BED4');
+                $('#gomeeting').css('border', 'solid 1px #00BED4');
+            }
+            if(this.id == 'online' )
+            {
+                if(onlineorder)
+                {
+                    $('#gomeeting').text("你已预约");
+                    $('#gomeeting').css('background', 'gray');
+                    $('#gomeeting').css('border', 'solid 1px gray');
+
+                    return;
+                }
+                $('#gomeeting').text("预约试听");
+                $('#gomeeting').css('background', '#f29100');
+                $('#gomeeting').css('border', 'solid 1px #f29100');
+
+            }
+        }
+);
+
+
+
+
+//约课
+function meetingteacher(sbt){
+    if(id<=0){
+        reg_login();
+        return false;
+    }
+
+
+    if($('#gomeeting').html() == "你已预约")
+    {
+        return;
+    }
+    if(teauid  == id)
+    {
+        notes("不能预约自己！");
+        return ;
+    }
+
+    var meetmoney = $('#charge').val();
+
+   var  meetingtype = $('#meetingtype').val();
+   var  words = $('#form-text').val();
+
+    	window.location.href = "{:U('classroom/Teacher/buymeetteacher',array('meetmoney' => '"+meetmoney+"','meetingtype' => '"+meetingtype+"','tid' =>  '"+tid+"','teauid' =>  '"+teauid+"','words' =>  '"+words+"'))}";
+
+
+}
+
+
+
+    //购买操作
+    function buycoursevideo(vid,money,playtype) {
+
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+        var form  = $('#pay_form');
+        var vid = vid;
+          $('#vidvalue').val(vid);
+
+        if(!vid ){
+            ui.error('参数错误');
+            return false;
+        }
+
+        if(playtype == 2)
+        {
+            $('#playtype').val('zy_live');
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = money;
+         var check_type ='zy_video';
+        if(money <= 0){
+            $('.message_add_order_box').show();
+            $('.mask').show();
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                ui.error('购买金额必须为整数');
+            }else{
+                ui.error('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        var mount_url = "{$_GET['mid']}";
+        $.post(U("classroom/PayVideo/checkPay"),{check_type:check_type,vid:vid,money:money},function(data){
+
+            if(data.status == 1){
+
+                if(mount_url){
+                    window.location.href = '/pay/'+vid+"%2C"+check_type+"%2C"+mount_url+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+                }else{
+                    window.location.href = '/pay/'+vid+"%2C"+check_type+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                }
+            } else if(data.status == 9){
+                ui.error(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    $('.add_order_video').click(function () {
+
+        var form  = $('#pay_form');
+        var vid = $('#vidvalue').val();
+        var vtype = $('#playtype').val();
+
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+            if(data.status == 1){
+                $('.message_add_order_box').hide();
+                ui.success(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+    $('.message_add_order_box .w-close a,.close_btn').click(function () {
+        $('.message_add_order_box').hide();
+        $('.mask').hide();
+    });
+
+
+</script>
+
+
+<!--footer-->
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,255 @@
+<include file="__THEME__/public_header_twolevel"/>
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_w3g/css/style_media.css">
+<style>
+    .icon-arrowDown{background: transparent;}
+</style>
+<div class="course-deta">
+    <div class="img-box">
+        <img src="{:getCover($data['cover'] ,520 , 320 )}" style="max-height: 190px;">
+    </div>
+    <div class="course-deta-per-box">
+        <dl>
+            <dt><h3>{:msubstr(t($data['course_name']),0,25,'utf-8',true)}</h3></dt>
+            <dd><p>主讲人：{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</p></dd>
+            <dd><p>已报名：{$data.course_order_count}人</p></dd>
+            <dd><p>开课时间：{:date('Y-m-d',$data['listingtime'])}～{:date('Y-m-d',$data['uctime'])}</p></dd>
+            <dd><p>地点：{$data['user']['Teach_areas'] | default='无限制'}</p></dd>
+            <!--<dd><p class="top01">原价：<small>¥96</small></p></dd>-->
+            <dd><b><strong>优惠价：</strong><if condition="$data['mzprice']['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['mzprice']['price']}</if></b></dd>
+        </dl>
+        <div class="course-deta-service">
+            <if condition="$data['is_buy'] eq 3"><button>已预约</button><else/><button onclick="meetingteacher(this,{$data['course_id']},{$data['user']['id']},{$data['course_price']})">预约课程</button></if>
+            <!--<span><i class="icon icon-shoucang"></i><i class="icon icon-fenxiang"></i></span>-->
+        </div>
+    </div>
+</div>
+<hr/>
+
+<!-- 课程详情 and 课程评价 -->
+<div class="course-evaluate">
+    <ul class="course-evaluate-head">
+        <li>课程详情</li>
+        <!--<li>课程评价</li>-->
+    </ul>
+    <div class="course-evaluate-content">
+        <!-- 课程详情 -->
+        <div class="somle som01">
+            <p>{$data.course_intro}</p>
+        </div>
+        <!-- 课程评价 -->
+        <!--<div class="somle som02">
+            <dl>
+                <dt class="somle-head">
+                <div class="level">
+                    <small>综合评分<em>（101人评价）</em></small>
+                    <b>5.0
+                        <i class="icon icon-xingji-yiping"></i>
+                        <i class="icon icon-xingji-yiping"></i>
+                        <i class="icon icon-xingji-yiping"></i>
+                    </b>
+                </div>
+                <div class="comment-box">
+                    <i class="icon icon-xiepinglun"></i>评一下
+                </div>
+                </dt>
+                &lt;!&ndash; 课程评论 &ndash;&gt;
+                <dd>
+                        <span>
+                            <a href="#">
+                                <img src="http://b391.photo.store.qq.com/psb?/V13U7oqX44FmIX/kWrejEsNwXqvtvvK9YN3WxF5aL5BmMbRg2MzsBqdBbg!/m/dGmUGOkUEgAAnull&bo=gAJVAwAAAAABB*Q!&rf=photolist&t=5" width="30">
+                            </a>
+                        </span>
+                    <div class="somle-head-txt">
+                        <h1><a href="#">娱乐不在线</a>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                        </h1>
+                        <p>老师讲的那叫一个好，巴巴掌拍起来，哈哈哈哈哈哈哈，来个五星吧!!!!</p>
+                        <div class="clus-mouing-all">
+                            <small>2小时前</small>
+                            <em class="em02"><i class="icon icon-dianzan"></i>156</em>
+                            <em class="em01"><i class="icon icon-pinglun"></i>3</em>
+                        </div>
+                    </div>
+                    &lt;!&ndash; 用户回复 &ndash;&gt;
+                    <ul>
+                        <li>
+                                <span>
+                                    <a href="#">
+                                        <img src="http://b391.photo.store.qq.com/psb?/V13U7oqX44FmIX/kWrejEsNwXqvtvvK9YN3WxF5aL5BmMbRg2MzsBqdBbg!/m/dGmUGOkUEgAAnull&bo=gAJVAwAAAAABB*Q!&rf=photolist&t=5" width="30">
+                                    </a>
+                                </span>
+                            <div class="somle-head-txt">
+                                <h1><a href="#">娱乐不在线</a>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                </h1>
+                                <p>老师讲的那叫一个好，巴巴掌拍起来，哈哈哈哈哈哈哈，来个五星吧!!!!</p>
+                                <div class="clus-mouing-all">
+                                    <small>2小时前</small>
+                                    <strong>回复</strong>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                                <span>
+                                    <a href="#">
+                                        <img src="http://b391.photo.store.qq.com/psb?/V13U7oqX44FmIX/kWrejEsNwXqvtvvK9YN3WxF5aL5BmMbRg2MzsBqdBbg!/m/dGmUGOkUEgAAnull&bo=gAJVAwAAAAABB*Q!&rf=photolist&t=5" width="30">
+                                    </a>
+                                </span>
+                            <div class="somle-head-txt">
+                                <h1><a href="#">声声慢</a>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                </h1>
+                                <p>老师讲的那叫一个好，巴巴掌拍起来，哈哈哈哈哈哈哈，来个五星吧!!!!</p>
+                                <div class="clus-mouing-all">
+                                    <small>2小时前</small>
+                                    <strong>回复</strong>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </dd>
+                <dd>
+                        <span>
+                            <a href="#">
+                                <img src="http://b391.photo.store.qq.com/psb?/V13U7oqX44FmIX/kWrejEsNwXqvtvvK9YN3WxF5aL5BmMbRg2MzsBqdBbg!/m/dGmUGOkUEgAAnull&bo=gAJVAwAAAAABB*Q!&rf=photolist&t=5" width="30">
+                            </a>
+                        </span>
+                    <div class="somle-head-txt">
+                        <h1><a href="#">娱乐不在线</a>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                            <i class="icon icon-xingji-yiping"></i>
+                        </h1>
+                        <p>老师讲的那叫一个好，巴巴掌拍起来，哈哈哈哈哈哈哈，来个五星吧!!!!</p>
+                        <div class="clus-mouing-all">
+                            <small>2小时前</small>
+                            <em class="em02"><i class="icon icon-dianzan"></i>156</em>
+                            <em class="em01"><i class="icon icon-pinglun"></i>3</em>
+                        </div>
+                    </div>
+                    <ul>
+                        <li>
+                                <span>
+                                    <a href="#">
+                                        <img src="http://b391.photo.store.qq.com/psb?/V13U7oqX44FmIX/kWrejEsNwXqvtvvK9YN3WxF5aL5BmMbRg2MzsBqdBbg!/m/dGmUGOkUEgAAnull&bo=gAJVAwAAAAABB*Q!&rf=photolist&t=5" width="30">
+                                    </a>
+                                </span>
+                            <div class="somle-head-txt">
+                                <h1><a href="#">娱乐不在线</a>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                    <i class="icon icon-xingji-yiping"></i>
+                                </h1>
+                                <p>老师讲的那叫一个好，巴巴掌拍起来，哈哈哈哈哈哈哈，来个五星吧!!!!</p>
+                                <div class="clus-mouing-all">
+                                    <small>2小时前</small>
+                                    <strong>回复</strong>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+            &lt;!&ndash; 查看更多 &ndash;&gt;
+            <button><i class="icon icon-xia"></i>查看更多</button>
+        </div>-->
+    </div>
+</div>
+
+
+<!--footer start-->
+<div class="footer" style="display: none;">
+        <!-- 回到顶部 -->
+    <span class="icon icon-huidaodingbu"></span>
+</div>
+<!--footer end-->
+
+<!-- cover -->
+<div class="cover" style="top:0;z-index:100"></div>
+<!-- 评论框 -->
+<!--<div class="text-speak">
+    <div class="com-star">
+        <i class="icon icon-xingji-yiping"></i>
+        <i class="icon icon-xingji-yiping"></i>
+        <i class="icon icon-xingji-yiping"></i>
+        <i class="icon icon-xingji-yiping"></i>
+        <i class="icon icon-xingji-yiping"></i>
+        <small>（0.0分）</small>
+    </div>
+    <div class="textarea-box">
+        <textarea placeholder="说点什么..." autofocus oninput="keys()"></textarea>
+        <button>提交</button>
+    </div>
+</div>-->
+
+<script>
+
+    //约课
+    function meetingteacher(sbt,cid,tuid,price){
+        var vtype = "zy_teacher";
+        if(MID<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+        if(tuid  == MID)
+        {
+            alert("该课程不需要您购买！");
+            return ;
+        }
+        if(price <= 0){
+            if(confirm('该线下课程需要加入我的看单后方可学习，确定加入？')){
+                $.post(U("classroom/PayVideo/add_order"),{vid:cid,vtype:vtype},function(data){
+                    if(data.status == 1){
+                        alert(data.info);
+                        window.location.reload();
+                    } else {
+                        alert(data.info);
+                        return false;
+                    }
+                },'json');
+            }
+            return false;
+        }
+        $.post(U("classroom/PayVideo/checkPay"),{vid:cid,money:price},function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+cid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+            } else {
+                alert(data.info);
+                return false;
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+</script>
+<script src="__THEME__/../_static_w3g/js/details_h5.js"></script>
+
+<include file="__THEME__/public_footer_twolevel"/>

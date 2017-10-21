@@ -1,0 +1,137 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+
+            <div class="center_right_tit">
+                <ul>
+                    <ul>
+                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/video')}">购买的课程</a></li>
+                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/video',['tab'=>1])}">收藏的课程</a></li>
+                    </ul>
+                </ul>
+            </div>
+
+            <div class="center_right_con">
+                <if condition="$_GET['tab'] eq null">
+                <div class="content-card">
+                    <ul class="user-imglist">
+                        <if condition="$video_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;">您还没有相关课程。。</li>
+                            <else/>
+                            <foreach name="video_data['data']" item="l">
+                                <li>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+                                        <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                    </a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                        <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_neme']}</a></p>
+                                        <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                                        <div class="sc fr"><a href="javascript:;" onclick="delalbum(this,{$l.oid},'buy')">删除</a></div>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$video_data['html']}
+                        </div>
+                    </div>
+                </div>
+                <else/>
+                <div class="content-card">
+                    <ul class="user-imglist">
+                        <if condition="$merge_video_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;">您还没有相关课程。。</li>
+                            <else/>
+                            <foreach name="merge_video_data['data']" item="l">
+                                <li>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+                                        <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                    </a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                        <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_neme']}</a></p>
+                                        <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                                        <div class="sc fr"><a href="javascript:;" onclick="delalbum(this,{$l.cid},'col')">删除</a></div>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$merge_video_data['html']}
+                        </div>
+                    </div>
+                </div>
+                </if>
+
+            </div>
+
+        </div>
+
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/video')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+//    $(".content-card:first").show();
+//    $(".center_right_tit li").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".content-card").hide();
+//        $(".content-card").eq(tit_li).show();
+//    });
+
+    /**
+     * 删除课程方法
+     * @param id
+     */
+    function delalbum(cate,id,type){
+        var id=id;
+        url="{:U('classroom/Album/delalbum')}";
+        //删除我购买的套餐
+        if(type=="buy"){
+            var fdata="type=1&rtype=1&id="+id;
+        }else if(type=="col"){
+            var fdata="type=1&rtype=2&id="+id;
+        }
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    $(cate).parent().parent().parent().fadeOut();
+                    window.location.href = window.location.href;
+                }
+            }
+        });
+    }
+</script>
+
+<include file="__THEME__/public_footer" />

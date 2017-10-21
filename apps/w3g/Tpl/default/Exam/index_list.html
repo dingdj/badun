@@ -1,0 +1,29 @@
+<script>
+    var p="{$p}";//定义页码
+    var cateId="{$cateId}";//定义分类
+</script>
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+	<li>
+        <a href="javascript:;" onclick="selectexam({$vo.exam_id})">
+		<i></i>
+	    <h3>{$vo.exam_name}</h3>
+	    <p><span>考试时间：{$vo.exam_begin_time} ~ {$vo.exam_end_time}</span><span>考试时长：{$vo.exam_total_time}</span></p>
+        </a>
+	</li>
+</volist>
+<php>}else{</php>
+<span>暂无考试信息</span>
+<php>}</php>
+<script >
+//请求事件
+function selectexam(id){
+    var uid = '{$uid}';
+    if(uid<=0 || uid=="undefined"){
+        alert("登录后才能考试！");
+        window.location.href ="{:U('w3g/Passport/login')}"; 
+    }else{
+       window.location.href = "{:U('w3g/Exam/exam')}"+"&id="+id; 
+    }
+}
+</script>

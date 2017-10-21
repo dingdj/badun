@@ -1,0 +1,151 @@
+<include file="__THEME__/public_header" />
+<include file="../User/public/_top" />
+<style>
+    .info:hover .Operation-wd {display: block;}
+    .comment_list span{padding: 0 15px;}
+</style>
+<div class="content cbg">
+    <div class="wrap">
+        <!--中 -->
+        <div class="center_right">
+            <div class="center_right_tit">
+                <ul>
+                    <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/collect')}">收藏资讯</a></li>
+                    <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/collect',['tab'=>1])}">收藏机构</a></li>
+                    <li <if condition="$_GET['tab'] eq 2">class="on"</if> ><a href="{:U('classroom/Home/collect',['tab'=>2])}">收藏讲师</a></li>
+                </ul>
+            </div>
+            <div class="center_right_con">
+
+                <!--问答内容-->
+                <ul class="comment_list">
+                    <if condition="$_GET['tab'] eq null">
+
+                        <if condition="$topic_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 72px 20px;">您还没有收藏的资讯。。</li>
+                            <else/>
+                            <foreach name="topic_data['data']" item="l" key='k'>
+                                <li>
+                                    <div class="name">
+                                        <a   href="{:U('classroom/Topic/view',array('id'=>$l['source_id']))}">{$l.topictitle|msubstr=0,28,'utf-8',true}</a>
+                                    </div>
+                                    <div class="text"> <a   href="{:U('classroom/Topic/view',array('id'=>$l['source_id']))}">{$l.topicdesc|msubstr=0,60,'utf-8',true} </a></div>
+
+                                    <div class="info"><a href="#"><span class="icon-pl"></span>{$l.commentcount}</a>时间：{$l.ctime|friendlyDate}</div>
+                                </li>
+                            </foreach>
+                            <div class="page">
+                                <div class="pagebox">
+                                    {$topic_data['html']}
+                                </div>
+                            </div>
+                        </if>
+
+                    <elseif condition="$_GET['tab'] eq 1"/>
+
+                        <if condition="$school_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 72px 20px;">您还没有收藏的机构。。</li>
+                            <else/>
+                            <foreach name="school_data['data']" item="l" key='k'>
+                                <li>
+                                    <div class="pic">
+                                        <a href="{$l.domain}">
+                                            <img class="lazyloading" src="{:getCover($l['logo'],60,60)}">
+                                        </a>
+                                    </div>
+                                    <div class="name">
+
+                                        <a   href="{$l.domain}">{$l.title}</a>
+
+                                    </div>
+                                    <div class="text"> <a   href="{$l.domain}">{$l.info} </a></div>
+
+                                    <div class="info">
+                                        <a href="javascript:;" onclick="ui.confirm(this,'确定要取消收藏机构吗？');return false;" callback="delCollect({$l['collection_id']},'school')" >取消收藏</a>
+                                        时间：{$l.ctime|friendlyDate}
+                                    </div>
+                                </li>
+                            </foreach>
+                            <div class="page">
+                                <div class="pagebox">
+                                    {$school_data['html']}
+                                </div>
+                            </div>
+                        </if>
+
+                    <elseif condition="$_GET['tab'] eq 2"/>
+
+                        <if condition="$teacher_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 72px 20px;">您还没有收藏的讲师。。</li>
+                            <else/>
+                            <foreach name="teacher_data['data']" item="l" key='k'>
+                                <li>
+                                    <div class="pic">
+                                        <a href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">
+                                            <img class="lazyloading" src="{:getCover($l['head_id'],60,60)}">
+                                        </a>
+                                    </div>
+                                    <div class="name">
+
+                                        <a   href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">{$l.name}</a>
+                                        头衔: <a>{$l.title}</a>
+
+                                    </div>
+                                    <div class="text"> <a   href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">{$l.inro} </a></div>
+
+                                    <div class="info">
+                                        <a href="javascript:;" onclick="ui.confirm(this,'确定要取消收藏讲师吗？');return false;" callback="delCollect({$l['collection_id']},'zy_teacher')" >取消收藏</a>
+                                        时间：{$l.ctime|friendlyDate}
+                                    </div>
+                                </li>
+                            </foreach>
+                            <div class="page">
+                                <div class="pagebox">
+                                    {$teacher_data['html']}
+                                </div>
+                            </div>
+                        </if>
+
+                    </if>
+                </ul>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/collect')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+
+    //取消收藏
+    function delCollect(collection_id,tableName){
+        var id=collection_id;
+        $.post("{:U('classroom/Home/delCollect')}", {id:id,tableName:tableName}, function(res){
+            if(res==200){
+                notes('取消收藏成功!')
+                location.reload();
+            }else{
+                notes('对不起，取消收藏失败请重试!','failure');
+            }
+        });
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

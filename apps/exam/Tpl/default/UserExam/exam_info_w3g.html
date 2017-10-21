@@ -1,0 +1,195 @@
+<include file="__THEME__/public_header_twolevel"/>
+<link href="__ROOT__/apps/exam/_static/css/exam.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+  #bg{ display: none; position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: #8e9091; z-index:1001; -moz-opacity: 0.7; opacity:.70; filter: alpha(opacity=70);}
+  #show{display: none; position: absolute; top: 30%; left: 35%; width: 30%; height: 30%; padding: 8px; z-index:1002; }
+  /*.fixed{position:fixed; top:20px;}*/
+  /*.fixed{_position:absolute; _top:expression((20+(noValue = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop))+'px');}*/
+  img{width:auto;}
+  .col-md-9{width:100%;}
+  .col-md-3 , .col-md-9{float:none;}
+  </style>
+  <script src="__ROOT__/apps/exam/_static/js/exam.js"></script>
+<script>
+//倒计时
+var test_time=0;
+window.onload=function(){ 
+  var time=<?php echo $exam_info["exam_total_time"]; ?>;
+  if(time>0){
+    test_time=time*60;
+    var t=window.setInterval(time_djs, 1000);
+  }
+}
+</script>
+
+<div class="row">
+  <div class="col-md-3">
+    <div id="float_box" style="width:100%;">
+        <div class="testpaper-card">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <span class="testpaper-card-timer">
+                <small  style="font-size:14px;color:#666666">考试时间：
+                <?php 
+                  if($exam_info['exam_total_time']==0){ 
+                    echo "不受限制";
+                  }else{ 
+                    echo $exam_info['exam_total_time']."分钟";
+                  } ?>
+                </small>
+              </span>
+              <div class='testpaper-card-timer'>
+                <small class='text-muted' style='font-size:14px;color:#666666'>考试所花时间：{$user_exam.user_total_date}</small>
+              </div>
+              <div>
+                <div class="fen" style="float:left;margin:10px 15px 20px 0px;"><img src="__ROOT__/apps/exam/_static/images/fen.png"></div>
+                <div style="width:150px;">
+                  <small style='font-size:14px;color:#666666';>总分：{$data.score} 分</small><br/>
+                  <small style='font-size:14px;'>得分：{$user_exam.user_exam_score} 分</small>
+                </div>
+              </div>
+        </div>
+        <div class="panel-body">
+          <div class="panel-body-title">
+            <div style='height:15px;width:50px; float:left;margin-right:15px;'>
+              <div style='background-color:#079d07;width:20px;height:15px;float:left;margin-right:5px;'></div>
+              <img src="__ROOT__/apps/exam/_static/images/right.png" style="padding-bottom:10px;">
+            </div>
+            <div style='height:15px;width:50px; float:left;'>
+              <div style='background-color:#c20025;width:20px;height:15px;float:left;margin-right:5px;'></div>
+              <img src="__ROOT__/apps/exam/_static/images/error.png" style="padding-bottom:10px;">
+            </div>
+          </div>
+          <div style="clear:both;margin-bottom:15px;"></div>
+          <?php 
+          $num=0;
+          foreach ($question_type as $v) {
+            foreach ($data["question_list"] as $k=> $vo) {
+              if($vo['question_type']==$v['question_type_id']){
+                foreach ($user_answer as $answer) {
+                  if($answer["user_question_id"]==$vo["question_id"]){
+                    $num++;
+                    if($answer["user_question_answer"]==$vo["question_answer"]){
+                      echo "
+                        <a href='#question$num' style='float:left;margin-right:5px;margin-bottom:5px;'>
+                          <div style='width:30px; height:30px;background-color:#079d07; border-radius:25px;'>
+                            <span style='height:30px; line-height:30px; display:block; color:#FFF; text-align:center'>".$num."</span>
+                          </div>
+                        </a>
+                      ";
+                    }else{
+                      if($vo["question_type"]==5){
+                        echo "
+                        <a href='#question$num' style='float:left;margin-right:5px;margin-bottom:5px;'>
+                          <div style='width:30px; height:30px; background-color:#000; border-radius:25px;'>
+                            <span style='height:30px; line-height:30px; display:block; color:#FFF; text-align:center'>".$num."</span>
+                          </div>
+                        </a>
+                      ";
+                      }else{
+                        echo "
+                          <a href='#question$num' style='float:left;margin-right:5px;margin-bottom:5px;'>
+                            <div style='width:30px; height:30px; background-color:#c20025; border-radius:25px;'>
+                              <span style='height:30px; line-height:30px; display:block; color:#FFF; text-align:center'>".$num."</span>
+                            </div>
+                          </a>
+                        ";
+                      }
+                    }
+                  }
+                } 
+              }
+            }
+          }
+          ?>
+          <div class="clearfix mtm mbm"></div>
+        </div>
+
+        <!--排名-->
+        <php>if($exam_info['exam_publish_result_flg'] == 1) {</php>
+        <div class="panel-heading" style="border-top:1px solid #e0e0e0; border-bottom:none;">
+              <span class="testpaper-card-timer">排名</span>
+              <div class='testpaper-card-timer'>
+                <small class='text-muted' style='font-size:14px;color:#666666;padding:10px 0;'>你当前排名  <font color="#ffa200">{$my.rank}</font></small><br>
+                <volist name="my.lists" id="vo" offset="0" length='10'>
+                  <small class='text-muted' style='font-size:14px;color:#666666;padding:10px 0;'>{$vo.rank}，{$vo.uname}：{$vo.user_exam_score}分</small><br>
+                </volist>
+              </div>
+              
+        </div>
+        <php>}</php>
+
+      </div>  
+    </div>
+    </div>
+
+    &nbsp;
+  </div>
+
+<div class="col-md-9">
+  <div class="testpaper-body">
+    <?php $num=0;?>
+   <volist name="question_type" id="v">
+    <div class="panel panel-default testpaper-question-block" id="{$v.question_type_id}">
+      <div class="panel-heading">
+        <strong class="">{$v.question_type_title}</strong>
+        <small class="text-muted">共{$v.sum}题，共{$v.score}分</small>
+      </div>
+      <?php 
+       foreach ($data["question_list"] as $k=> $vo) {
+        if($vo['question_type']==$v['question_type_id']){
+          $num++;
+      ?>
+        <div class="panel-body" id="question{$num}">
+          <div>
+            <div class="testpaper-question-body">
+              <div class="testpaper-question-stem-wrap clearfix">
+                <div class="testpaper-question-seq-wrap">
+                  <div class="testpaper-question-seq">{$num}</div>
+                  <div class="testpaper-question-score">{$vo.paper_content_point}分</div>
+                </div>
+              <div class="testpaper-question-stem">{$vo.question_content}</div>
+            </div>
+              <?php if($vo["question_type"]!=3 && $vo["question_type"]!=5){ ?>
+              <ol class="testpaper-question-choices" type="A">
+                <?php foreach ($vo["option_list"] as $l=> $list) {
+                  echo "<li>".$subscript[$l]."：".$list['option_content']."</li>";
+                } ?>
+              </ol>
+            <?php } ?>
+          </div>
+          <div class="testpaper-question-footer clearfix">
+            <div class="testpaper-question-choice-inputs"> 
+              <if condition="$vo['question_type'] neq 5">正确答案：<font style="color:green">{$vo.question_answer}，</font></if>您的答案：
+              <?php 
+                foreach ($user_answer as $answer) {
+                  if($answer["user_question_id"]==$vo["question_id"]){
+                    if($answer["user_question_answer"]==$vo["question_answer"]){
+                      echo "<font style='color:green;'>".$answer["user_question_answer"]."</font>";
+                    }else{
+                      if($vo["question_type"]==5){
+                        echo "<font style='color:#000000;'>".$answer["user_question_answer"]."</font>";
+                      }else{
+                        echo "<font style='color:red;'>".$answer["user_question_answer"]."</font>";
+                      }
+                    }
+                  }
+                } 
+              ?>
+            </div>
+          </div>
+          <div class="testpaper-question-footer clearfix">
+            <div class="testpaper-question-choice-inputs" style="margin-top:10px;"> 
+              解析：{$vo.question_qsn_guide}
+            </div>
+          </div>
+        </div> 
+      </div>
+    <?php } } ?>
+  </div>
+  </volist>
+    </div>
+  </div>
+</div>
+</div>
+<include file="__THEME__/public_footer_twolevel"/>

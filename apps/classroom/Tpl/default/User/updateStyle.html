@@ -1,0 +1,266 @@
+<include file="__THEME__/public_header" />
+<link href="__APP__/css/teacher.css" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+    .ico_top, .ico_btm {
+        background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;
+        height: 14px;
+        width: 12px;
+    }
+
+    .ico_top, .ico_btm {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ico_top {
+        background-position: -12px 0;
+    }
+
+    .ico_btm {
+        background-position: -24px 0;
+    }
+
+    .ico_top:hover {
+        background-position: 0 0;
+    }
+
+    .ico_btm:hover {
+        background-position: -35px 0;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .position-rt-float{
+        width:248px;
+    }
+    .user-imglist li .img{
+        height: 138px;
+    }
+    .user-imglist .position-rt{
+        width:248px;
+        height: 138px;
+    }
+    .user-imglist li h2{
+        padding: 0 20px;
+    }
+    .user-con-title .on{
+        color:#00BED4;
+    }
+</style>
+
+<include file="__THEME__/swfupload" />
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting"/>
+
+        <div class="center_right" style="margin-bottom:30px;">
+
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>2))}" >我的相册</a>
+                    <php>if($_GET['type']){</php>
+                    <a class="on" onclick="navClick(this,'updateStyle')" href="javascript:;" >上传照片</a>
+                    <php> }else{ </php>
+                    <a class="on" onclick="navClick(this,'updateStyle')" href="javascript:;" >上传视频</a>
+                    <php> }</php>
+                </div>
+            </div>
+
+            <div class=" Manage_all" style="display:block;">
+                <div class="center_right_con">
+                    <form method="POST" action="{:U('classroom/User/UpdateStyle')}" id="detail_form" name="detail_form">
+                        <div class="infobox" style="margin-top:30px;">
+                            <dl>
+                                <dt><span>*</span>名称：</dt>
+                                <dd>
+                                    <input type="hidden" name="photo_id" id="photo_id"  value="{$_GET['photo_id']}">
+                                    <input type="text" class="inp01" id="title" name="title" id="form_title"  value="">
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><span>*</span>类型：</dt>
+                                <php>if($_GET['type']){</php>
+                                <dd>
+                                    <input class="type" type="radio" name="type" value="1" checked="checked" >图片
+                                </dd>
+                                <php>}else{</php>
+                                <dd>
+                                    <input class="type" type="radio" name="type" value="2" checked="checked" >视频
+                                    <php>}</php>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <php>if($_GET['type']){</php>
+                                <dt><span>*</span>图片上传：</dt>
+                                <dd>{:W('Upload',array('inputname'=>'attach','attachIds'=>$data['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}</dd>
+                                <php>}else{</php>
+                                <dt><span>*</span>封面上传：</dt>
+                                <dd>{:W('Upload',array('inputname'=>'cover','attachIds'=>$data['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}建议尺寸：520px*320px</dd>
+                                <php>if($style['cover']){</php>
+                                <dd>
+                                    <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$style.cover_path}" />
+                                    <input type="hidden" name="cover_ids" value="{$style.cover}" />
+                                </dd>
+                                <php>}</php>
+                                <php>}</php>
+                            </dl>
+                            <php>if(!$_GET['type']){</php>
+                            <dl id="video_upload">
+                                <dt><span>*</span>上传视频：</dt>
+                                <php>if($upload_room == 0){</php>
+                                {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp4,flv,f4v'))}
+                                <php>}else if($upload_room == 4){</php>
+                                <div id="content">
+                                    <div class="swfupload-box">
+                                        <p>点击“浏览”按钮，选择您要上传的文件后，</p>
+                                        <p>再确认提交上传，系统将自动上传并在完成后提示您。</p>
+
+                                        <form id="addvform" name="addvform" action="" method="get" onsubmit="alert('提交视频');">
+                                            <input id="cc_title" disabled="disabled" name="cc_title" value="{$filename}" type="hidden"/>
+                                            <input id="tag" name="tag" disabled="disabled" value="跟谁学{$filename}" type="hidden"/>
+                                            <textarea id="description" name="description" rows="5" cols="30" disabled="disabled" style="display: none;">{$site['site_keyword']}视频简介{$filename}</textarea>
+                                            <input id="videoid_cc" name="videoid" type="hidden" value="" disabled="disabled"/>
+
+                                        <span style="float:left;">
+                                            <input  name="videofile" id="videofile" disabled="disabled" type="text" style="height: 21px;"/>
+                                        </span>
+                                            <div style="float:left; position:relative; width:80px; height:25px;">
+                                                <div id="swfDiv" style="width:80px;height:25px;position:absolute;z-index:2;"></div>
+                                                <input type="button" value="浏览"	id="btn_width_cc" style="width:80px;height:25px;position:absolute;z-index:1;" />
+                                            </div><br><br>
+                                            <p>一次只能上传一个视频文件！</p>
+                                            <p>支持流行视频格式flv，f4v，mp4</p>
+
+                                            <div class="fieldset flash" id="fsUploadProgressCC" style="display:none;">
+                                                <div class="progressWrapper">
+                                                    <div class="progressContainer green">
+                                                        <a class="progressCancel" href="#" style="visibility: hidden;"> </a>
+                                                        <div class="progressName" id="cc_file_name"></div>
+                                                        <div class="progressBarStatus" id="progress_cc"></div>
+                                                        <div class="progressBarInProgress" id="progress_bar_cc"></div>
+                                                    </div>
+                                                </div>
+                                            </div><br>
+
+                                            <div >
+                                                <input type="button" value="提交上传" onclick="submitCCVideo();" style="width: 100px;height: 29px;background: #fff;font-weight: bold;">
+                                                <input type="button" value="取消上传" onclick="delCCVideo();" style="margin-left: 5px; font-size: 8pt; height: 29px;">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <include file="__THEME__/ccuploader" />
+                                <php>}else{</php>
+                                <dd class="swfupload-box" style="width:350px;">
+                                    <div> 一次只能上传一个视频文件！<br/> 支持流行视频格式flv，f4v，mp4</div>
+                                    <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+                                        <div class="fieldset flash" id="fsUploadProgress"></div>
+                                        <div style="margin-top:15px;">
+                                            <div style="width:auto;float:left;">
+                                                <span id="spanButtonPlaceHolder" ></span>
+                                            </div>
+                                            <div>
+                                                <input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px; width:70px;background-color:#f0f0f0;color:#535353;" />
+                                            </div>
+                                        </div>
+                                    </form>
+                                </dd>
+                                <php>}</php>
+                            </dl>
+                            <php>}</php>
+                            <dl>
+                                <dd>
+                                    <input type="hidden" name="id" value="{$id}" />
+                                    <input id="videokey" name="videokey" type="hidden" value="{$qiniu_key}">
+                                    <input name="video_address" type="hidden" value="{$video_address}">
+                                    <input  class="btn"  type="submit"  style="line-height: 0;" value="保 存">
+                                </dd>
+                            </dl>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+$(".lineD .type").click(function(){
+    var val=$('input:radio[name="type"]:checked').val();
+  if(val == 1){
+    $("#dl_photo_id").show();
+    $("#photo_video").hide();
+  }else if(val == 2){
+    $("#dl_photo_id").hide();
+    $("#photo_video").show();
+  }
+});
+
+$("form[name='detail_form']").submit(function(evt){
+  var e = evt || window.event;
+  window.event?e.returnValue = false:e.preventDefault();
+  window.event?e.cancelBubble=true:e.stopPropagation();
+  if($(this).attr('locked') == 1){
+    return false;
+  }
+  var type = $("input[name='type']:checked").val();
+  if($("#title").val()==""){
+      ui.error("请输入名称!");
+      return false;
+    }
+    if(!$("input[type='radio']:checked").val()){
+      ui.error("请选择类型!");
+      return false;
+    }
+  if(type == 1){
+    if(!$("input[name='attach']").val()){
+      ui.error("请上传图片!");
+      return false;
+    }
+  }else if(type == 2){
+    if(!$("input[name='cover_ids']").val()){
+      ui.error("请上传封面!");
+      return false;
+    }
+  }
+  $(this).attr('locked',1);
+  var detail_form = $("form[name='detail_form']");
+
+    $.ajax({
+        type: detail_form.attr('method') || 'POST',
+        url:detail_form.attr("action"),
+        data:detail_form.serialize(),
+        dataType:"json",
+        cache: false,
+        success: function(res){
+          $(this).attr('locked',0);
+          if(res.status == 1){
+            notes(res.info, 'success');
+            setTimeout(function(){
+              location.href = res.url;
+            },'1500');
+          }else{
+            notes(res.info, 'failure');
+
+            return false;
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+    });
+  return false;
+});
+
+});
+  </script>
+<include file="__THEME__/public_footer" />

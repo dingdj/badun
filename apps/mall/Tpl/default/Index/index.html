@@ -1,0 +1,218 @@
+<include file="__THEME__/public_header_onelevel" />
+
+<link href="__THEMENEW__/css/integral.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/integral_media.css" rel="stylesheet" type="text/css">
+
+<div class="banner-box">
+    <div class="ma-box">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/" style="color: #999;">首页</a><span>&gt;</span>
+                    <a href="{:U('mall/Index/index')}" style="color: #999;">积分商城</a>
+                </li>
+            </ul>
+        </div>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <php>if($ad_list){</php>
+                    <volist name="ad_list" id="vo">
+                        <div class="swiper-slide">
+                            <a target="_blank" href="{$vo.bannerurl}">
+                                <img src="{:getCover($vo['banner'],1200,498)}" width="1200" height="498" class="lazyloading"/>
+                            </a>
+                        </div>
+                    </volist>
+                <php>}else{</php>
+                    <div class="swiper-slide">
+                        <a target="_blank" href="{:U(mall/Index/index)}">
+                            <img src="__THEMENEW__/image/mall_default_banner.png" width="1200" height="498" class="lazyloading"/>
+                        </a>
+                    </div>
+                <php>}</php>
+            </div>
+           <!-- 分页器 -->
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!-- 个人中心 
+        <div class="information-box">
+            <div class="distinguish"></div>
+            <div class="potrait">
+                <if condition="$_SESSION['mid']">
+                    <div class="information-box-img" style="background: none">
+                        <a target="_blank" title="{:getUserName($_SESSION['mid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="otherHead" style="height: 64px;width: 64px;float: left;position: inherit;" >
+                            <img class="lazyloading" src="{:getUserFace($user['uid'],'b')}" style="border-radius: 50%;height: 64px;width: 64px;">
+                        </a></div>
+                    <else/>
+                    <div class="information-box-img"></div>
+                </if>
+            </div>
+            <div class="welcome">
+                <span>hi 您好！</span>
+                <span class="top1">欢迎来到{$site['site_keyword']}在线教育云平台！</span>
+            </div>
+            <div class="login">
+                <if condition="$_SESSION['mid']">
+                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">主页</a>
+                    <a href="{:U('classroom/User/setInfo')}">设置</a>
+                    <else/>
+                    <a href="{:U('public/Passport/login_g')}">登录</a>
+                    <a href="{:U('public/Passport/reg')}">注册</a>
+                </if>
+            </div>
+            <div class="distinguish top2"></div>
+            <div class="notice">
+                    <span><i></i>学院公告
+                        <div class="notice-txet">
+                            {$new_suggest}
+                        </div>
+                    </span>
+            </div>
+            <div class="distinguish"></div>
+        </div>
+        -->
+    </div>
+</div>
+
+<!-- 兑换排行榜 -->
+<div class="integral-box">
+    <div class="integral">
+        <div class="integral-name">
+            <div class="intar">
+                <div class="integral-icon"></div>
+                <h4>兑换排行榜</h4>
+            </div>
+            <div class="integral-ma">
+                <a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多
+                    <span></span>
+                </a>
+            </div>
+            <div class="added"><a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多</a></div>
+        </div>
+        <div class="integral-hoice">
+            <volist name="ranking_list" id="vo" key="k">
+                <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+                <div class="integral-num">
+                    <h3>{$k}</h3>
+                    <span>{:msubstr(t($vo['title']),0,10,'utf-8',true)}</span>
+                    <small>{$vo.price}<i class="fonc">积分</i></small><i>库存{$vo.stock}份</i>
+                    <img src="{:cutImg($vo['cover_ids'],190,125)}" class="lazyloading" />
+                </div>
+                </a>
+            </volist>
+        </div>
+    </div>
+</div>
+
+<hr/>
+
+<foreach name="good_category" item="l" key="k">
+    <!-- 商品第一层 -->
+    <div class="goods-box">
+        <div class="goods">
+            <div class="goods-name">{$l.cate_name}
+                <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}" class="mor">更多<i></i></a>
+            </div>
+            <div class="goods-exhibition">
+                <foreach name="l.data_list" item="vo" >
+                    <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+                        <div class="exhibition-img">
+                            <img src="{:cutImg($vo['cover_ids'],277,182)}">
+                        </div>
+                        <div class="goods-per">
+                            <h3>{$vo.title|msubstr=0,6,'utf-8',true}</h3>
+                            <span><i>{$vo.price}<small>积分</small></i><small>运费<i>{$vo.fare}</i>积分</small></span>
+                            <small class="places">剩余{$vo.stock}名额</small>
+                        </div>
+                    </a>
+                </foreach>
+            </div>
+            <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">
+                <img src="{:cutImg($l['middle_ids'],300,574)}" class="gooks-imgs">
+            </a>
+        </div>
+    </div>
+    <div class="added">
+        <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">更多</a>
+    </div>
+    <hr/>
+</foreach>
+
+<script>
+    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
+        $(window).load(function () {
+            $("#linsde").height(44);
+
+            var goods =  $(".goods-exhibition a").siblings();
+            for(var i=0;i<goods.length;i++){
+                if((i+1)%2==0){
+                    goods.eq(i).css("float","right");
+                }
+            }
+            $(".swiper-slide").removeClass("swiper-no-swiping"); 
+        });
+
+        $(".modular").on("click",function(){
+            $(".win").show();
+            $(".window-box").animate({marginLeft:"0"});
+        });
+
+        $(".win").on("click",function(){
+            $(".window-box").animate({marginLeft:'-70%'});
+            $(".win").hide();
+        });
+    }
+</script>
+<script>
+    var url="{:U('mall/Index/getRankingList')}";
+    var p = 1;
+    $(function(){
+        var totalPages = parseInt('{$ranking.totalPages}');
+        $(".next").click(function(){
+            if(p < totalPages){
+                p = p+1;
+                ajaxReturn();
+            }
+        });
+        $(".prev").click(function(){
+            if(p > 1){
+                p = p-1;
+                ajaxReturn();
+            }
+        });
+
+        var mySwiper = new Swiper ('.swiper-container', {
+           //竖着滚动 direction: 'vertical',
+            loop: true,
+            autoplay: 5000,
+            autoplayDisableOnInteraction : true,
+            
+            //分页器
+            paginationClickable :true,
+            pagination: '.swiper-pagination',
+            
+            //前进后退按钮
+            nextButton: '.swiper-button-next',
+            prevButton: '.swiper-button-prev',  
+        }) 
+        $(".swiper-slide").addClass("swiper-no-swiping"); 
+    });
+
+    //查看更多
+    function ajaxReturn() {
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {p:p},
+            dataType: "json",
+            success: function (data) {
+                if(data.data){
+                    $(".ranking_list").html('');
+                    $(".ranking_list").append(data.data);
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer_onelevel" />

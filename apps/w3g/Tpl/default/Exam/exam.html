@@ -1,0 +1,205 @@
+<include file="../Public/_header" />
+<!--container-->
+<div class="container"> 
+    <div class="test-top">
+        <h2>{$exam_info.exam_name}</h2>
+        <h3><i class="icon-time"></i>剩余时间<span id='time_go' style='color:#000000;'></span></h3>
+        <div class="txt">
+            <p>{$exam_info.exam_describe}</p>
+            <p>{$exam_info.paper_describe}</p>
+        </div>
+    </div>
+    <form method="POST" action="{:U('exam/Index/doExam')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+    <div class="question-conent">
+        <?php 
+            $num=0;
+            foreach ($question_type as $k => $v) {
+        ?>
+        <div class="item_box">
+            <div class="test-title">{$k+1}、{$v.question_type_title} 共{$v.sum}题，(共{$v.score}分)</div>
+            <?php 
+               foreach ($data["question_list"] as $k=> $vo) {
+                if($vo['question_type']==$v['question_type_id']){
+                  $num++;
+            ?>
+                <ul class="question-conent-list">
+                    <li>
+                        <i>{$num}.&nbsp;&nbsp;</i>
+                        <div class="question" style="margin-left:10px;width:300px;">{$vo.question_content} {$vo.paper_content_point}分</div>
+                        <?php if($vo["question_type"]!=3){ ?>
+                          <ol class="testpaper-question-choices" type="A">
+                            <?php foreach ($vo["option_list"] as $l=> $list) {
+                              echo "<li>".$subscript[$l]."：".$list['option_content']."</li>";
+                            } ?>
+                          </ol>
+                        <?php } ?>
+                        <div class="select_an" name="group-list">
+                        <?php
+                            for ($i=0; $i<$vo['question_option_count']; $i++) { 
+                              if($vo["question_type"]==1 || $vo["question_type"]==4){ ?>
+                                <input type='radio' style="width:10px;height:10px;" name='user_question{$num}' value='{$subscript[$i]}' onclick='selected({$num})' style="width:5px;float:left;">
+                                  <label>
+                                    &nbsp;&nbsp;{$subscript[$i]}
+                                  </label>
+                              <?php }else if($vo["question_type"]==2){ ?>
+                                <input type='checkbox' style="width:15px;height:15px;float:left;" name='user_question{$num}' value='{$subscript[$i]}' onclick='selected({$num})' style="width:5px;float:left;">
+                                  <label >&nbsp;&nbsp;{$subscript[$i]}</label> 
+                              <?php }else if($vo["question_type"]==3){ ?>
+                                  <label >
+                                    <input type='text' name='user_question{$num}' id="user_question{$num}" style="border:1px solid #ececec;height:25px;padding-left:5px;" onblur="inputtext({$num})">
+                                  </label>
+                        <?php } }  ?>
+                            <if condition="$vo['question_type'] eq 5">
+                                <textarea style="border:1px solid #000;width:300px;height:150px;"></textarea>
+                            </if>
+                            <input type='hidden' name='answer{$num}' value='{$vo.question_answer}'>
+                            <input type='hidden' name='question_id{$num}' value='{$vo.question_id}'>
+                            <input type='hidden' name='question_type{$num}' value='{$vo.question_type}'>
+                            <input type='hidden' name='point{$num}' value='{$vo.paper_content_point}'>
+                        </div>
+                    </li>
+                </ul>
+            <?php } } ?>
+        </div>
+         <?php } ?>
+          <input type="hidden" id="sum" value="{$sum}"/>
+          <input type="submit" class="question-btn" style="height:30px;border:0;margin-left:100px;" id="form_submit" value="我要交卷"/>
+    </div>
+    <input type='hidden' name="begin_time" value='{$begin_time}'/>
+    <input type='hidden' id='user_score' name="user_score">
+    <input type='hidden' id='errorcount' name="errorcount">
+    <input type='hidden' id='rightcount' name="rightcount">
+    <input type='hidden' id='question_list' name="question_list">
+    <input type='hidden' id='exam_id' name='exam_id'value="{$exam_info.exam_id}">
+    <input type='hidden' id='paper_id' name='paper_id'value="{$exam_info.paper_id}">
+    </form>
+</div>
+<input type='hidden' id='time' value='1'>
+<input type='hidden' id='tm_mode' value='{$exam_info.exam_publish_result_tm_mode}'/>
+<input type='hidden' id='result_tm' value='{$exam_info.exam_publish_result_tm}'/>
+<script>
+function time_djs(){
+  if (test_time > 0 && $("#time").val()==1) {
+     test_time = test_time - 1;
+     var second = Math.floor(test_time % 60);// 计算秒     
+     var minite = Math.floor((test_time / 60) % 60);//计算分
+     var hour = Math.floor((test_time / 3600) % 24);
+     if(hour<10){
+      hour ="0"+hour;
+     }
+     if(minite<10){
+      minite ="0"+minite;
+     }
+     if(second<10){
+      second ="0"+second;
+     }
+    if(test_time==300){
+      ui.error("考试时间还有五分钟，请尽快完成作答！");
+      $("#time_go").css("color","red");
+      }
+    if(test_time==60){
+      ui.error("考试时间还有一分钟，请准备提交试卷！");
+    }
+    $("#time_go").html(hour+"："+minite + "：" + second);
+  }else{
+    if(test_time==0){
+      ui.error("考试时间到，本次成绩将不会被记录！");
+      test_time=-1;
+      $("#time").val(0);
+    }
+  }
+}
+function checkForm(){
+    if(confirm("你确定要提交试卷?")){
+      var rightcount=0;
+      var errorcount=0;
+      var question_list="";
+      var score=0;
+      if($("#time").val()==0){
+        ui.error("交卷时间已过!");
+        return false;
+      }else{
+        $("#time").val(0);
+        var sum=$("#sum").val();
+        for(var i=1;i<=sum;i++){
+          var user_question="";
+          //获取正确答案,试题ID,试题类型
+          zq_answer=$("input[name='answer"+i+"']").val();
+          question_id=$("input[name='question_id"+i+"']").val();
+          point=$("input[name='point"+i+"']").val();
+          question_type=$("input[name='question_type"+i+"']").val();
+          //判断问题类型获取值
+          if(question_type==1 || question_type==4){
+            user_question=$("input[name='user_question"+i+"']:checked").val();
+          }else if(question_type==2){
+            $("input[name='user_question"+i+"']:checked").each(function(){
+              user_question+=$(this).val()+','; 
+            });
+            user_question=user_question.substring(0,user_question.length-1);
+          }else if(question_type==3){
+            user_question=$("input[name='user_question"+i+"']").val();
+          }
+          //判断用户答案是否正确
+          if(user_question==zq_answer){
+            question_list+=question_id+"-"+user_question+"+";
+            rightcount++;
+            score=+score+(+point);
+          }else{
+            if(user_question){
+              question_list+=question_id+"-"+user_question+"+"; 
+            }else{
+              question_list+=question_id+"-"+null+"+"; 
+            }
+            errorcount++;
+          }
+        }
+        question_list=question_list.substring(0,question_list.length-1);
+        $("#question_list").val(question_list);
+        $("#errorcount").val(errorcount);
+        $("#rightcount").val(rightcount);
+        $("#user_score").val(score);
+      }
+      return true;
+    }
+  }
+  function j_validateCallback(form,call,callback) {
+    var $form = $(form);
+    if(typeof call != 'undefined' && call instanceof Function){    
+      $i = call($form);
+      if(!$i){
+        return false;
+      }
+    }
+    var _submitFn = function(){
+      $.ajax({
+        type: form.method || 'POST',
+        url:$form.attr("action"),
+        data:$form.serializeArray(),
+        dataType:"json",
+        cache: false,
+        success: function(xMLHttpRequest, textStatus, errorThrown){
+          if(typeof callback != 'undefined' && callback instanceof Function){   
+            callback($form,xMLHttpRequest);
+          }  
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+      });
+    }
+    _submitFn();
+    return false;
+  }
+function post_callback(_form,data){
+    if(data.status != undefined){
+          if(data.status == '0'){
+            alert(data.info);
+          } else {
+            alert("提交成功！");
+            window.location.href ="{:U('w3g/Exam/index')}"; 
+          }
+    }
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

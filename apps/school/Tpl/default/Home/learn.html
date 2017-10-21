@@ -1,0 +1,92 @@
+<include file="__THEME__/public_header" />
+<div class="worap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+    <!--中 -->
+    <div class="user-con fl user-pbottom">
+        <div class="user-con-title">
+            <a href="javascript:;" onclick="navClick(this,'me')" class="onactive">我的学习记录</a>
+        <!--问答内容-->
+        </div>
+        <ul class="user-wenda">
+            <!--提问循环-->
+
+            <!--回答循环-->
+        </ul>
+    </div>
+    
+    <!--右-->
+    <include file="../User/_right" />
+</div>
+        <script>
+            var type;
+            var p;
+            var url="{:U('classroom/Home/getlearnlist')}";
+            $(function(){
+                type="me"
+                $.ajax({
+                    type:"POST",
+                    url:url,
+                    data:"p=1&type="+type,
+                    dataType:"json",
+                    success:function(data){
+                        appendHtml(data,type);
+                    }
+                });
+                //请求事件
+                function ajaxBang(url,type,callback){
+                    $.ajax({
+                        type: "POST",
+                        url:url,
+                        data:"p="+p+"&type="+type,
+                        dataType:"json",
+                        success:function(data){
+                            appendHtml(data,type);
+                            callback && callback();
+                        }
+                    });
+                }
+                //头部点击事件
+                function navClick(cate,type){
+
+                        $(".user-wenda").html("");
+                        type=type;
+                        $("a").removeClass("onactive");
+                        $(cate).addClass("onactive");
+                        p=1;
+                        ajaxBang(url,type);
+                    }
+                
+                
+            });
+            //追加html
+            function appendHtml(data){
+                    $(".more").remove();
+                    if(data.data==""){
+                        $(".user-wenda").append("<span>你还没有记学习记录哦~</span>");
+                    }else{
+                        $(".user-wenda").append(data.data);
+                    }
+                    if(data.nowPage+1>data.totalPages){
+                        return;
+                    }else{
+                        var html="<div class=\"more\" ><a href=\"javascript:void(0)\" onclick='fallBang(this)' id=\""+type+"\" >查看更多</a></div>"
+                        $(".user-con").append(html);
+                        p=data.nowPage+1;//下一页
+                    }
+            }
+
+            //删除问答
+            function delWenda(id){
+            var id=id;
+           $.post("{:U('wenda/Index/delWenda')}", {id:id}, function(res){
+                   if(res==200){
+                       location.reload();
+                   }else{
+                       notes('对不起，删除失败请重试!','failure');
+                   }
+                });
+            }
+        </script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

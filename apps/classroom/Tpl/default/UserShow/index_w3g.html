@@ -1,0 +1,166 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<div class="body">
+    <div class="teachertop">
+        <img class="bg" src="__THEME__/icon/bg2.jpg" alt="" style="max-height: 160px;"/>
+        <a class="teacher_nav" href="javascript:;"></a>
+        <div class="teacher_nav_box" id="show" style="display: none;">
+            <dl>
+                <dd><a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的名片</a></dd>
+                <dd><a href="{:U('classroom/User/setInfo')}">个人资料</a></dd>
+                <dd><a href="{:U('classroom/User/recharge')}">财富充值</a></dd>
+                <dd><a href="{:U('classroom/Home/share')}">我的分享</a></dd>
+                <dd><a href="{:U('classroom/Home/order')}">我的订单</a></dd>
+                <dd><a href="{:U('classroom/Home/video')}">我的课程</a></dd>
+                <dd><a href="{:U('classroom/Home/live')}">我的直播</a></dd>
+                <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+                <dd><a href="{:U('classroom/User/teacherVideo')}">上传课程</a></dd>
+                <php>}</php>
+                <dd><a href="{:U('classroom/Home/wenti')}">我的提问</a></dd>
+                <dd><a href="{:U('classroom/Home/wenda')}">我的问答</a></dd>
+                <dd><a href="{:U('classroom/Home/review')}">我的点评</a></dd>
+                <dd><a href="{:U('classroom/Home/note')}">我的笔记</a></dd>
+                <dd><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></dd>
+                <dd><a href="{:U('classroom/User/address')}">收货地址</a></dd>
+                <!--<dd><a href="{:U('classroom/User/appcertific')}">申请认证</a></dd>-->
+                <dd><a href="{:U('classroom/User/changepsw')}">修改密码</a></dd>
+            </dl>
+        </div>
+        <div class="personal-box">
+            <div class="center-pic">
+                <img src="{:getUserFace($user['uid'],'b')}" width="62" height="62" alt="{:getUserName($user['uid'])}" />
+            </div>
+            <?php $credits = getUserCredit($userid);?>
+            <?php $tmp = getFollowCount(array($userid));?>
+            <div class="monsli">
+                <h3>{:getUserName($user['uid'])}</h3>
+                <ul>
+                    <li>积分：{$user['credit_user']}</li>
+                    <li>粉丝：{$tmp[$uid]['follower']}</li>
+                    <li style="border:0;">课程：{$videocont}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="teacherbot">
+        <php>if($_GET['uid'] == $_SESSION['mid']){</php>
+        <div class="classitem bgw">
+            <div class="classtit"><em></em>签到赚学分</div>
+            <div class="classcon">
+                <div class="credits">
+                    {:W('CheckIn', array('tpl'=>'zy'))}
+                </div>
+            </div>
+        </div>
+        <php>}</php>
+        <div class="classitem bgw">
+            <div class="classcon">
+                <dl class="teacher-dl">
+                    <dt>所在地</dt>
+                    <dd>{$user['location']}</dd>
+                </dl>
+                <dl class="teacher-dl">
+                    <dt>性别</dt>
+                    <dd>{$user['sex'] ==1 ? 男 : 女}</dd>
+                </dl>
+                <dl class="teacher-dl">
+                    <dt>个人简介</dt>
+                    <dd>
+                        <if condition="$user['intro']">
+                            {$user.intro}
+                            <else/>
+                            TA很懒，什么都没留下~~
+                        </if>
+                    </dd>
+                </dl>
+                <?php $tmp = getFollowCount(array($userid));?>
+                <div id="showInfo" style="display: none;">
+                    <php>if($user['phone']){</php>
+                    <dl class="teacher-dl">
+                        <dt>手机号码</dt>
+                        <dd>
+                            <php>$phone = substr($user['phone'],0,3).'****'.substr( $user['phone'] , 7);</php>
+                            <php>echo $phone; </php>
+                        </dd>
+                    </dl>
+                    <php>}</php>
+                    <dl class="teacher-dl">
+                        <dt>职业</dt>
+                        <dd>
+                            <if condition="$user['profession']">
+                                {$user.profession}
+                                <else/>
+                                无
+                            </if>
+                        </dd>
+                    </dl>
+                </div>
+                <a class="teacher_btn opeanInfo" href="javascript:;">展开更多</a>
+            </div>
+        </div>
+        <div class="classitem bgw">
+            <div class="classtit"><!--<php>if($photos){</php><a href="{:U('classroom/Teacher/view',array('id'=>$tid))}" class="fr">更多 ><php>}</php><i class="icon-more"></i></a>--><em></em>视频/相册</div>
+            <ul class="classlist">
+                <php>if(!$photos){</php>
+                <p style="font-size:14px;padding: 12px;">该用户未上传任何照片和视频</p>
+                <php>}else{</php>
+                <volist name="photos" id="pic" offset="0" length="6" >
+                    <li>
+                        <a href="{:U('classroom/Teacher/getPhotoList',array('id'=>$pic['tid'],'photo_id'=>$pic['id']))}" title="{$pic.title}">
+                            <img src="{:cutImg($pic['cover_id'],305,162)}" alt="{$pic.title}" />
+                            <h3>{$pic.title}</h3>
+                            <p class="price"><b>¥35</b><small>22人在学</small></p>
+                        </a>
+                    </li>
+                </volist>
+                <php>}</php>
+            </ul>
+        </div>
+        <div class="classitem bgw">
+            <div class="classtit"><!--<php>if($tid){</php><a href="{:U('classroom/Video/index')}" class="fr">更多 ><i class="icon-more"></i></a><php>}</php>--><em></em>我的课程</div>
+            <ul class="classlist">
+                <if condition="$data['data']">
+                    <volist name="data.data" id="dtt">
+                        <li>
+                            <a href="{:U('classroom/Video/view',array('id'=>$dtt['id']))}">
+                                <img src="{:cutImg($dtt['cover'],140,85)}" alt="{$dtt.video_title}">
+                                <h3>{:msubstr(t($dtt['video_title']),0,12,'utf-8',true)}</h3>
+                                <!-- <div class="text">
+                                     <if condition="$dtt['video_binfo']">
+                                         {:msubstr($dtt['video_binfo'],0,12,'utf-8',true)}
+                                         <else/>
+                                         该课程暂无简介信息
+                                     </if>
+                                 </div>-->
+                                <p class="price"><b>¥{$dtt.t_price}</b><small>22人在学</small></p>
+                            </a>
+                        </li>
+                    </volist>
+                    <else/>
+                    <div style="border: none;height: 80px;font-size: 14px;padding: 12px 19px;"><if condition="$is_me">您<else/>TA</if>暂无课程</div>
+                </if>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="layer-shade"></div>
+<script>
+    $(function(){
+        $(".opeanInfo").click(function(){
+            $("#showInfo").show();
+            $(".opeanInfo").hide();
+        });
+    });
+    function setCreditScore(num){
+        if(!num) return ;
+
+        setTimeout(function(){
+            var val = parseInt($('#setCreditScore').text());
+            $('#setCreditScore').text(val+num);
+        }, 2000);
+
+    }
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

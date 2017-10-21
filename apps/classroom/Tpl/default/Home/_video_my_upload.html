@@ -1,0 +1,23 @@
+<foreach name="data" item="l">
+    <!--<li><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+        <img src="{:getAttachUrlByAttachId($l['middle_ids'])}">
+        </a>
+        <h2><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></h2>
+        <div class="user-imglistbottom"><span>{$l.video_order_count}人学习</span></div>
+        </a>
+    </li>-->
+
+    <li>
+        <div class="position-rt">
+            <div class="Operation-list" >
+                <a href="javascript:;" onclick="delalbum(this,{$l.id})">删除<span></span></a>
+            </div>
+            <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 222,144)}"> </a> </div>
+        <h2><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></h2>
+        <div class="user-imglistbt"><span>{$l.video_order_count}人购买</span></div>
+        <div class="user-imglistbt">
+            <em class="fl"><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{:limitNumber($l['video_intro'],10)}</a></em>
+            <span class="Price fr">￥{$l.money}</span>
+        </div>
+    </li>
+</foreach>

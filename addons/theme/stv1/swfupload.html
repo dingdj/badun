@@ -1,0 +1,65 @@
+
+<script type="text/javascript" src = "__THEME__/js/swfupload/js/fileprogress.js"></script>
+<script type="text/javascript" src = "__THEME__/js/swfupload/js/handlers.js"></script>
+<script type="text/javascript" src = "__THEME__/js/swfupload/swfupload/swfupload.js"></script>
+<script type="text/javascript" src = "__THEME__/js/swfupload/js/swfupload.queue.js"></script>
+
+<php>
+ set_time_limit(0);
+</php>
+	<link rel="stylesheet" href="__THEME__/js/swfupload/css/style.css">
+	<style type="text/css">
+		.ico_top, .ico_btm {background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent; height: 14px;width: 12px;}
+		.ico_top, .ico_btm { display: inline-block; vertical-align: middle;}
+		.ico_top { background-position: -12px 0;}
+		.ico_btm {background-position: -24px 0;}
+		.ico_top:hover { background-position: 0 0;}
+		.ico_btm:hover { background-position: -35px 0;}
+	</style>
+	
+	<script type="text/javascript">
+	var swfu;
+	window.onload = function() {
+		var uptoken = "{$uptoken}";
+		var filename= "{$filename}";
+		var entrycode="{$entrycode}";
+		var settings = {
+			flash_url : "__THEME__/js/swfupload/swfupload/swfupload.swf",
+			upload_url: "http://upload.qiniu.com",
+			post_params: {"token" :uptoken ,"key" :filename,"persistentOps": "avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg=="},
+			file_size_limit : "1024 MB",
+			file_post_name:'file',
+			file_types : "*.flv;*.f4v;*.mp4;*.mp3",
+			file_types_description : "All Files",
+			file_upload_limit : 1,  //配置上传个数
+			file_queue_limit : 0,
+			custom_settings : {
+				progressTarget : "fsUploadProgress",
+				cancelButtonId : "btnCancel"
+			},
+			debug: false,
+			// Button settings
+			button_image_url: "__THEME__/js/swfupload/TestImageNoText_65x29.png",
+			button_width: "100",
+			button_height: "29",
+			button_top_padding: 30,
+			button_placeholder_id: "spanButtonPlaceHolder",
+			button_text_style: ".theFont { font-size: 16; }",
+			button_text_left_padding: 12,
+			button_text_top_padding: 3,	
+			file_queued_handler : fileQueued,
+			file_queue_error_handler : fileQueueError,
+			file_dialog_complete_handler : fileDialogComplete,
+			upload_start_handler : uploadStart,
+			upload_progress_handler : uploadProgress,
+			upload_error_handler : uploadError,
+			upload_success_handler : uploadSuccess,
+			upload_complete_handler : uploadComplete,
+			queue_complete_handler : queueComplete	
+		};
+		swfu = new SWFUpload(settings);
+     };
+     function testclick(){
+    	 swfu.cancelQueue_misszhou();
+     }
+	</script>

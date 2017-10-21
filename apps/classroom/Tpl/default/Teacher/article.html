@@ -1,0 +1,214 @@
+<!--header-->
+<include file="__THEME__/public_header" />
+<!--header end-->
+
+<!--top-->
+<include file="./top" />
+<!--top end-->
+
+<!--content-->
+<div class="content adjust">
+	<div class="wrap">
+    <!--left-->
+    <include file="./left" />
+    <!--left end-->
+
+        <div class="teacher-content">
+            <div class="article-main">
+                <div class="article-store-wrapper"><div class="article-store-list"><span class="article-store-label active" data-type="1">{:msubstr(t($data['name']),0,10,'utf-8',true)}的文章</span></div></div>
+                <php>if($article['data'] == 0){</php>
+                    <div class="article-list" style="height: 70px;line-height: 70px;margin-left: 40px;">
+                        <p>该讲师未上传任何文章</p>
+                    </div>
+                <php>}else{</php> 
+                <div class="article-list">
+                    <volist name="article.data" id="l">
+                        <div class="list first has-cover">
+                    	<a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}">
+                        <div class="article-cover"><img src="{:getCover($l['cover'],200,112)}" width="200" height="112"></div>
+                        <div class="list-center">
+                            <div class="top"><span class="article-title">{$l.art_title}</span></div>
+                            <div class="article-content">
+                            <p>{:msubstr(t($l['article']),0,95,'utf-8',true)}<a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}" class="fr">查看更多</a>
+                            </div>
+                            <div class="article-shot-actions">
+                            	<span class="shot-action">{:date("Y-m-d H:i:s",$l['ctime'])}</span>
+                                <a class="js-qa-comment-support qa-comment-support  js-qacom-supported-user fr" href="javascript:;" onclick="zanBang(this,{$l.id})"><i <php>if($l['praise']){echo "class='qa-iconhover'";}else{echo "class='qa-icon'";}</php> ></i></a>
+                                <span>{$l['praise']}</span>
+                            </div>
+
+                        </div>
+                        </a>
+                        </div>
+                </volist>
+
+                </div>
+                <php>}</php> 
+            </div>
+        </div>
+    </div>
+</div>
+<!--content end-->
+<script src="__THEME__/js/jquery.SuperSlide.2.1.1.js"></script>
+<script type="text/javascript">
+
+var     orderby ="";
+//追加html
+function getNowPage(url,name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = url.substr(1).match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+}
+//加载分页
+function setPageBoxClick(totalPages){
+    $(".pagebox a").on('click',function(e){
+        p = getNowPage($(this).attr('href'),'p');
+        if(p > totalPages){
+            return false;
+        }
+        $(".ind-teacher").html("");
+        var e = event || window.event
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        } else{
+            e.cancelBubble = true;
+        };
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+        ajaxBang();
+    });
+}
+
+var mid = "{$mid}";
+var tid = "{$data.id}";
+//追加html
+//function appendHtml(data){
+////        $(".more1").remove();
+//    if(data.data!=""){
+//        $(".classlist").html("");
+//        $(".classlist").append(data.data);
+//        /*if(data.nowPage+1>data.totalPages){
+//         return;
+//         }else{
+//         var html="<div class=\"more1\" ><a href=\"javascript:void(0)\" id=\"getList\">查看更多</a></div>"
+//         $(".classlist").append(html);
+//         p=data.nowPage+1;//下一页
+//         }*/
+//        data.html+='<div class="pagediv">';
+//        data.html+='  <span>共<p id="pageTotal" style="display: inline-block;">'+data.totalPages+'</p>页,去第</span>';
+//        data.html+='<input type="text" name="pageNum"  id ="pageNum">';
+//        data.html+=' <span>页</span>';
+//        data.html+=' <a class="goto" href="javascript:;"onclick="gotoPage();">确定</a>';
+//        data.html+='  </div>';
+//        $(".pagebox").html(data.html);
+//        $("#nowPage").html(data.nowPage+'/'+data.totalPages);
+//        setPageBoxClick(data.totalPages);
+//    }else{
+//        $(".classlist").append("<script>对不起,暂无评价<\/script>");
+//    }
+//}
+
+//页面加载完毕执行
+$(function(){
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getreList')}",
+        data:"p=1"+"&tid="+tid+"&type="+0,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+});
+function gotoPage() {
+    $(".pagediv a").on('click',function(e){
+        p = $("input[name='pageNum']").val();
+        var total = parseInt($("#pageTotal").text());
+        if(p > total){
+            alert('超过最大页数！');
+            return;
+        }
+        var e = event || window.event
+        if (e.stopPropagation) {
+            e.stopPropagation()
+        } else{
+            e.cancelBubble = true;
+        };
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }else{
+            e.returnValue = false;
+        }
+        ajaxBang();
+    });
+};
+//综合排序
+function order($orderby){
+    $(".classlist").html("");
+
+    orderby = $orderby;
+    tid =tid;
+    p=1;
+    ajaxBang();
+}
+//最新
+function new_orders(cate,$type){
+    $(".classlist").html("");
+    $(cate).parent().addClass('nav-active').siblings().removeClass('nav-active');;
+    type=$type;
+    tid =tid;
+    p=1;
+    orderby ="";
+    ajaxBang();
+}
+//排序请求事件 TODO
+function ajaxBang(){
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Teacher/getreList')}",
+        data:"p="+p+"&type="+type+"&tid="+tid+"&order="+orderby,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+}
+
+
+/**
+ * 赞
+ * @param cate
+ * @param id
+ */
+function zanBang(cate,id){
+    if(MID==0){
+        reg_login();
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url:"{:U('classroom/teacher/addZan')}",
+        data:"id="+id,
+        dataType:"text",
+        success:function(data){
+            if(data==200){
+                var text=parseInt($(cate).next().text());
+                text=(text+1);
+                $(cate).next().text(text);
+                $(cate).children("i.qa-icon").removeClass().addClass("qa-iconhover");
+            }else{
+                ui.error('请不要重复点赞');
+                return;
+            }
+        }
+    });
+}
+
+</script>
+
+
+<!--footer-->
+<include file="__THEME__/public_footer" />

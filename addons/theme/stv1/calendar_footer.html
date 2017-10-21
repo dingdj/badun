@@ -1,0 +1,193 @@
+<style>
+    .footer_top_img{
+        position: relative;
+        height: 54px;
+        padding: 20px 0;
+        background-color: #f5f5f5;
+        text-align: center;
+        float: left;
+        width: 100%;
+        min-width: 1200px;
+    }
+    .botservicelist {
+        overflow: hidden;
+        width: 1200px;
+        margin: 0 auto;
+    }
+    .botservicelist li {
+        float: left;
+        width: 25%;
+    }
+    p {
+        color: #959799;
+    }
+</style>
+<!--itembox end-->
+<!--<div class="footer_top_img">
+    <ul class="botservicelist">
+        <li><img src="/addons/theme/stv1/_static/icon/service_items_1.png" alt=""></li>
+        <li><img src="/addons/theme/stv1/_static/icon/service_items_2.png" alt=""></li>
+        <li><img src="/addons/theme/stv1/_static/icon/service_items_3.png" alt=""></li>
+        <li><img src="/addons/theme/stv1/_static/icon/service_items_4.png" alt=""></li>
+    </ul>
+</div>-->
+<!--itembox end-->
+<div class="footer">
+    <div class="foot_top">
+        <ul class="botservicelist">
+            <li><img src="__THEME__/icon/service_items_1.png" alt=""/></li>
+            <li><img src="__THEME__/icon/service_items_2.png" alt=""/></li>
+            <li><img src="__THEME__/icon/service_items_3.png" alt=""/></li>
+            <li><img src="__THEME__/icon/service_items_4.png" alt=""/></li>
+        </ul>
+    </div>
+    <div class="footer_main">
+        <div class="left">
+            <volist name="pageCategory" id="vo" offset="0" length="5">
+                <dl>
+                    <dt>{$key}</dt>
+                    <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                        <dd><a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a></dd>
+                    </volist>
+                </dl>
+            </volist>
+        </div>
+
+        <div class="right">
+            <span class="icon-phone"></span>
+            <p>{$site.site_phone}</p>
+            <div>周一至周日 9:00-23:00</div>
+        </div>
+    </div>
+    <div class="foot_bot">
+        <div class="links">
+            <a href="javascript:;" target="_blank">关于我们</a>|
+            <a href="javascript:;" target="_blank">联系我们</a>|
+            <a href="javascript:;" target="_blank">联系客服</a>|
+            <a href="javascript:;" target="_blank">商家入驻</a>|
+            <a href="javascript:;" target="_blank">帮助中心</a>|
+            <a href="javascript:;" target="_blank">手机跟我学</a>|
+            <a href="javascript:;" target="_blank">友情链接</a>|
+            <a href="javascript:;" target="_blank">代理合作</a>|
+            <a href="javascript:;" target="_blank">跟我学社区</a>|
+            <!--<a href="javascript:;" target="_blank">风险监测</a>|
+            <a href="javascript:;" target="_blank">京东公益</a>|
+            <a href="javascript:;" target="_blank">English Site</a>|
+            <a href="javascript:;" target="_blank">Contact Us</a>-->
+        </div>
+        <div class="copyright">
+            <img src="__THEME__/icon/f00.png"> {$site['site_footer']}
+        </div>
+        <div class="authentication">
+            <a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202007080200026" target="_blank"><img width="103" height="32" alt="经营性网站备案中心" src="__THEME__/icon/f01.png"></a>
+            <a href="https://ss.knet.cn/verifyseal.dll?sn=2008070300100000031&ct=df&pa=294005" target="_blank"><img width="103" height="32" alt="可信网站" src="__THEME__/icon/f02.png"></a>
+            <a href="http://www.bj.cyberpolice.cn/index.do" target="_blank"><img width="103" height="32" alt="网络警察" src="__THEME__/icon/f03.jpg"></a>
+            <a href="https://search.szfw.org/cert/l/CX20120111001803001836" target="_blank"><img width="103" height="32" src="__THEME__/icon/f04.png"></a>
+            <a href="http://www.12377.cn" target="_blank"><img width="103" height="32" src="__THEME__/icon/f05.jpg"></a>
+            <a href="http://www.12377.cn/node_548446.htm" target="_blank"><img width="103" height="32" src="__THEME__/icon/f06.jpg"></a>
+        </div>
+    </div>
+</div>
+
+<!--<div class="footer">
+    <div class="wrap">
+        <div class="footer-main">
+            <div class="foot-left">
+                <div class="footer-logo">
+                    <a href="/" title="跟我学在线教育系统"><img src="{$site.logo_foot}" class="logo-img" width="160" height="50"></a>
+                    <div class="phone">{$site.site_phone}</div>
+                </div>
+                <ul>
+                    <li class="xl"></li>
+                    <li class="wx"></li>
+                    <li class="pg"></li>
+                    <li class="az"></li>
+                </ul>
+            </div>
+            <volist name="pageCategory" id="vo" offset="0" length="5">
+                <div class="footer-link">
+                    <dl>
+                        <dt>{$key}</dt>
+                        <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                            <dd><a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a></dd>
+                        </volist>
+                    </dl>
+                </div>
+            </volist>
+        </div>
+        <div class="copyright">
+            <p>{$site['site_footer']}.</p>
+            <p>北京跟我学教育集团版权所有</p>
+        </div>
+    </div>
+</div>-->
+<!--footer end-->
+
+<div class="sidernav">
+    <ul>
+        <!--
+            <li><a href="javascript:;">
+                <i class="icon-01"></i>
+                <div class="siderbox">
+                    <img src="{:getAttachUrlByAttachId($site['app_qrcode'])}" alt="APP二维码">
+                    <p>扫描下载APP</p>
+                </div>
+            </a></li>
+            <li><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">
+                <i class="icon-02"></i>
+                <div class="siderbox">
+                    <dl>
+                        <dt style="color:#188eee; margin-bottom:15px;"><span class="icon-qq"></span>QQ在线咨询</dt>
+                    </dl>
+                    <dl>
+                        <dt><span class="icon-ph"></span>咨询热线：</dt>
+                        <dd style="color:#188eee;">{$site.site_phone}</dd>
+                        <dd style="color:#25c151;">{$site.site_phone_two}</dd>
+                    </dl>
+                </div>
+            </a></li>
+            <li class="backtop"><a href="javascript:;"><i class="icon-03"></i></a></li>
+            -->
+        <li><a href="javascript:;">
+            <i class="icon-01"></i>
+        </a></li>
+        <li><a href="javascript:;">
+            <i class="icon-02"></i>
+        </a></li>
+        <li><a href="javascript:;">
+            <i class="icon-03"></i>
+        </a></li>
+        <li><a href="javascript:;">
+            <i class="icon-04"></i>
+        </a></li>
+        <li><a href="javascript:;">
+            <i class="icon-05"></i>
+        </a></li>
+        <li><a href="javascript:;">
+            <i class="icon-06"></i>
+        </a></li>
+        <li class="backtop"><a href="javascript:;"><i class="icon-07"></i></a></li>
+    </ul>
+</div>
+<!--footer end-->
+
+<!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+<!--<div id="site_analytics_code" style="display:none;">-->
+<!--{$site.site_analytics_code|base64_decode}-->
+<!--</div>-->
+<!--<eq name='site.site_online_count' value='1'>-->
+<!--<script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>-->
+<!--</eq>-->
+
+
+<!--&lt;!&ndash;百度推广网页转化&ndash;&gt;-->
+<!--<script type="text/javascript">-->
+<!--var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");-->
+<!--document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F9efa5e6b982a815a97700d8e78129b16' type='text/javascript'%3E%3C/script%3E"));-->
+<!--</script>-->
+
+<!--<script type="text/javascript" src="__THEME__/js/jquery.min.js"></script>-->
+<script type="text/javascript" src="__THEME__/js/jquery.SuperSlide.2.1.1.js"></script>
+<script type="text/javascript" src="__THEME__/js/script.js"></script>
+</body>
+</html>

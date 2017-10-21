@@ -1,0 +1,49 @@
+<include file="../Public/_header" />
+<div class="container"> 
+    <div class="login_box">
+    	<h3><a href="{:U('w3g/Passport/reg')}">注册</a></h3>
+    	<form id="ajax_login_form" method="POST" action="{:U('w3g/Passport/doLogin')}">
+	        <div class="login_item"><input class="login_ip" name="login_email" id="login_email" type="text" placeholder="账号 / 手机 / 注册邮箱"></div>
+	        <div class="login_item"><input class="login_ip" type="password" name="login_password" id="login_password" placeholder="密码"></div>
+	        <a class="login_btn" href="javascript:;" onclick="log_sub();">登录</a>
+        </form>
+        <div id="js_login_input"></div>
+        <h4><a href="{:U('w3g/Passport/repwd')}">忘记密码？点击找回</a></h4>
+    </div>
+</div>
+<script>
+    $(document).keydown(function(event){
+        if(event.keyCode == 13){
+            log_sub();
+        }
+    });
+    function log_sub(){
+        var login_email=$("#login_email").val();
+        var login_password=$("#login_password").val();
+        if(login_email==""){
+          alert("请输入账号 / 手机 / 注册邮箱");
+          return false;
+        }
+        if(login_password==""){
+          alert("请输入密码");
+          return false;
+        }
+        $.ajax({
+          type: "POST",
+          url:"{:U('w3g/Passport/doLogin')}",
+          data:"login_email="+login_email+"&login_password="+login_password,
+          dataType:"text",
+          success:function(data){
+            if(isNaN(data)){
+              alert(data);
+            }else{
+              window.location.href="{:U('w3g/Index/index')}";
+            }
+          }
+        });
+    }
+</script>
+<eq name='site.site_online_count' value='1'> 
+  <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script> 
+</eq>
+<include file="../Public/_footer" />

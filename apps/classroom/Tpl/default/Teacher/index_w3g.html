@@ -1,0 +1,192 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <style>
+        .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
+    </style>
+    <div class="min-height-wrap">
+        <div class="maskbox"></div>
+        <div class="body">
+            <ul class="selectul">
+                <li class="r01" name="list_dl">
+                    <div class="hd"><switch name="sort_type"><case value="1">最热</case><case value="2">最新</case><default/>综合排序</switch><i></i></div>
+                    <div class="bd">
+                        <dl>
+                            <dd <eq name='sort_type' value=''> class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="">综合排序</a></dd>
+                            <dd <eq name="sort_type" value="1">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="1">最热</a></dd>
+                            <dd <eq name="sort_type" value="2">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="2">最新</a></dd>
+                        </dl>
+                    </div>
+                </li>
+                <li class="r02 border_sx" name="list_dl">
+                    <div class="hd"><php>if($cateId){</php>{:limitNumber($title,6)}<php>}else{</php>全部<php>}</php><i></i></div>
+                    <div class="bd">
+                        <dl>
+                            <dd class="clearfix n1">
+                                <div class="item <eq name='cateId' value=''>active</eq>"><a href="{:U('classroom/Teacher/index')}"  id="cate0">全部</a></div>
+                                <volist name="selCate" id="vo">
+                                    <div class="item <eq name='vo.zy_teacher_category_id' value='$cateId'>active</eq>"><a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_teacher_category_id}" >{$vo.title}</a></div>
+                                </volist>
+                            </dd>
+                            <dd class="n2">
+                            <volist name="cate" id="vo">
+                                <div class="item <eq name='vo.zy_teacher_category_id' value='$cate_id'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_teacher_category_id}" >{$vo.title}</a></div>
+                            </volist>
+                            </dd>
+                            <dd class="n3">
+                            <volist name="childCate" id="vo">
+                                <div class="item <eq name='vo.zy_teacher_category_id' value='$cate_ids'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_teacher_category_id}" >{$vo.title}</a></div>
+                            </volist>
+                            </dd>
+                        </dl>
+                    </div>
+                </li>
+                <li class="r03" name="list_dl">
+                    <div class="hd">筛选<i></i></div>
+                    <div class="bd">
+                        <dl>
+                            <dt>课程类型</dt>
+                            <dd name="group-list">
+                                <a href="javascript:;" class="screen <eq name="course_type" value="1">checked</eq>" data-type="course_type" data-value="1" >录播<span class="icon-ck"></span></a>
+                                <a href="javascript:;" class="screen <eq name="live_type" value="2">checked</eq>" data-type="live_type" data-value="2" >直播<span class="icon-ck"></span></a>
+                            </dd>
+                        </dl>
+                    </div>
+                </li>
+            </ul>
+            <php>if($cateId){</php>
+            <div class="searchdiv">在“<span>{:msubstr(t($title),0,10,'utf-8',true)}</span>”分类下，找到{$data.count}讲师</div>
+            <php>}</php>
+            <ul class="teacherlist clearfix" >
+                <php>if($listData){</php>
+                    <volist name="listData" id="vo">
+                        <li>
+                            <a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">
+                                <img src="{:cutImg($vo['head_id'],70,70)}" alt="{$vo.name}">
+                                <div class="tit">
+                                    <h3>{:msubstr(t($vo['name']),0,15,'utf-8',true)}</h3>
+                                    <php>if($vo['teacher_title_cover_id']){</php>
+                                    <i style="background:url({:getCover($vo['teacher_title_cover_id'],19,19)}) 0 0 no-repeat;display:inline-block;vertical-align: middle;width: 19px;height: 19px;"></i>
+                                    <php>}</php>
+                                    <span>{:msubstr(t($vo['school']),0,10,'utf-8',true)}</span>
+                                </div>
+                                <div class="dis">{:limitNumber($vo['inro'],35)}</div>
+                                <div class="info">综合评分：{$vo.star}分<span>|</span><i class="icon-03"></i>{$vo.Teacher_areas}</div>
+                                <div class="label">
+                                    <span>{$vo.teacher_age}年教龄</span>
+                                    <php>foreach($vo['label'] as $k=>$v){</php>
+                                    <php>if($k < 4){</php><span>{:msubstr(t($v),0,15,'utf-8',true)}</span><php>}</php>
+                                    <php>}</php>
+                                    <span>{:limitNumber($vo['teach_evaluation'],15)}</span>
+                                </div>
+                            </a>
+                        </li>
+                    </volist>
+                <php>}else{</php>
+                    <span style="font-size: 14px;padding: 10px;">已经没有相关老师啦~~</span>
+                <php>}</php>
+            </ul>
+        </div>
+        <php>if($listData){</php>
+            <div class="loadding">
+                <if condition="$data['nowPage'] eq $data['totalPages']">
+                    <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+                </if>
+            </div>
+            <a class="backtop"></a>
+        <php>}</php>
+    </div>
+<script>
+    $(function(){
+        $(".hd").click(function(){
+            if($(".maskbox").css("display")=="none") {
+                $(".maskbox").css({"display": "block"});
+            }else{
+                $(".maskbox").css({"display": "none"});
+            }
+        });
+
+        //同步请求
+        $(".screen").click(function(){
+            var _this = this;
+            var type = $(_this).data("type"),
+                value = $(_this).data("value"),
+                baseUrl = "{:U('classroom/Teacher/index')}";
+
+            window.location.href = getRequestUrl(type,value,baseUrl);
+        });
+        function getRequestUrl(field,value,baseUrl){
+            if(field){
+                //匹配是否有该参数
+                var reg = new RegExp("(^|&)" + field + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                //已经存在参数
+                var in_params = false;
+                if (r != null){
+                    in_params = true;
+                }
+                //获取参数部分
+                var url = window.location.search;
+                var replaceReg = new RegExp(field+'=[^&]+','g');
+                if(value){
+                    //合法参数传递方式
+                    if(in_params){
+                        url = url.replace(replaceReg,field+'='+value);
+                    }else{
+                        if(url.indexOf("?") != -1){
+                            url += '&'+field+'='+value;
+                        }else{
+                            url += '?'+field+'='+value;
+                        }
+                    }
+
+                }else{
+                    //如果value不存在,移除该参数
+                    url = url.replace(replaceReg,'');
+                }
+            }
+            url = url.replace(/&{2,}/,'&').replace(/&$/,'');
+            setsearchUrl = url;
+            return baseUrl ? baseUrl+url: document.domain + url;
+        }
+        var p = 1;
+        $(window).scroll(function(){
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if(!p || p >= "{$data['totalPages']}"){
+                    $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                }else{
+                    p = p+1;
+                    ajaxBang();
+                }
+            }
+        });
+        //请求事件
+        function ajaxBang(){
+            $.ajax({
+                type: "GET",
+                url:"{:U('classroom/Teacher/getTeacherList')}",
+                data:"p="+p+"&sort_type={$_GET['sort_type']}&cateId={$_GET['cateId']}&course_type={$_GET['course_type']}&mhm_id={$_GET['mhm_id']}",
+                dataType:"json",
+                success:function(data){
+                    appendHtml(data);
+                }
+            });
+        }
+        //追加html
+        function appendHtml(data){
+            $(".teacherlist").append(data.data);
+            if(!p || p >= data.totalPages){
+                $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                return false;
+            }
+        }
+    });
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

@@ -1,0 +1,243 @@
+<include file="__THEME__/public_header" />
+
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="javascript:;" class="on" onclick="navClick(this,'getTeacherVideo')" style="width:auto;float: left;">我的录播课程</a>
+                    <a href="javascript:;" onclick="navClick(this,'getTeacherLive')" style="width:auto;float: left;">我的直播课程</a>
+                    <!--<a href="javascript:;" onclick="navClick(this,'getTeacherFace')" style="width:auto;float: left;">我的面授课程</a>-->
+                    <a href="javascript:;" onclick="navClick(this,'getTeacherLineClass')" style="width:auto;float: left;">我的线下课</a>
+                    <a href="{:U('classroom/User/uploadVideo')}" style="width:auto;float: left;">上传课程</a>
+                </div>
+            </div>
+
+            <div class="center_right_con">
+                <!--录播课程列表-->
+                <ul class="user-imglist" id="getTeacherVideo" style="float: left;">
+                    <!--<li style="border: none;box-shadow: none;margin: 30px 0px 50px 30px;">您还没有录播课程。。</li>-->
+                    <!--<li>-->
+                        <!--<div class="position-rt">-->
+                            <!--<div class="position-rt-float" style="width:248px;">-->
+                                <!--<span class="position-rt-float-a">-->
+                                    <!--<a href="#" class="a1">章节管理</a>-->
+                                <!--</span>-->
+                                <!--<span class="position-rt-float-a">-->
+                                    <!--<a href="#" class="a1">修改</a>-->
+                                <!--</span>-->
+                                <!--<span class="position-rt-float-b">删除</span>-->
+                            <!--</div>-->
+                            <!--<a href="#" class="img">-->
+                                <!--<img src="http://link.51el3.com/data/upload/2017/0329/10/58db2088c923e_222_144.jpg"> -->
+                            <!--</a> </div>-->
+                        <!--<h2>-->
+                            <!--<a href="#">如何在家实施正面管教</a>-->
+                        <!--</h2>-->
+                        <!--<div class="user-imglistbt">-->
+                            <!--<span>1人购买</span>-->
+                            <!--<span style="margin-left:15px;">3人收藏</span>-->
+                        <!--</div>-->
+                    <!--</li>-->
+                </ul>
+                <!--直播课程列表-->
+                <ul class="user-imglist" id="getTeacherLive" style="display:none;float: left"></ul>
+                <!--面授课程列表-->
+                <ul class="uploadvideo" id="getTeacherFace" style="display:none;float: left"></ul>
+                <!--线下课程列表-->
+                <ul class="user-imglist" id="getTeacherLineClass" style="display:none;float: left;"></ul>
+                <!--上传录播课程-->
+                <div class="uploadvideo" id="uploadVideo" style="display:none;float: left"><include file="../User/_upload_video" /></div>
+            </div>
+        </div>
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+
+
+
+<script>
+    var btnclick="getTeacherVideo";
+    var fdata;
+    var magstatus;
+
+    $(function(){
+        navClick('','getTeacherVideo');
+    });
+    //头部点击事件
+    function navClick(cate,type){
+        $(".user-imglist").html("");
+        btnclick=type;
+        magstatus=false;
+        if(type == 'getTeacherVideo'){
+            $('#'+type).css('display','block');
+            $('#getTeacherLive').css('display','none');
+            $('#getTeacherFace').css('display','none');
+            $('#uploadVideo').css('display','none');
+            $('#uploadLive').css('display','none');
+            $("#getTeacherLineClass").css('display','none');
+            url="{:U('classroom/User/getTeacherVideo')}";
+            p=1;
+            ajaxBang(url,type,fdata,'',type);
+        }else if(type == 'getTeacherLive'){
+            $('#'+type).css('display','block');
+            $('#getTeacherVideo').css('display','none');
+            $('#getTeacherFace').css('display','none');
+            $('#uploadVideo').css('display','none');
+            $('#uploadLive').css('display','none');
+            $("#getTeacherLineClass").css('display','none');
+            url="{:U('classroom/User/getTeacherLive')}";
+            p=1;
+            ajaxBang(url,type,fdata,'',type);
+        }else if(type == 'getTeacherFace'){
+            $('#getTeacherFace').html('');
+            $('#'+type).css('display','block');
+            $('#getTeacherVideo').css('display','none');
+            $('#getTeacherLive').css('display','none');
+            $('#uploadVideo').css('display','none');
+            $('#uploadLive').css('display','none');
+            var url = "{:U('classroom/User/getTeacherFace')}";
+            $.ajax({
+                type: "POST",
+                url:url,
+                data:"p=1",
+                dataType:"json",
+                success:function(data){
+                    $("#getTeacherFace").append(data.data);
+                }
+            });
+        }else if(type == 'uploadVideo'){
+            // $('#uploadVideo').html('');
+            // $('#uploadLive').html('');
+            $('#'+type).css('display','block');
+            $('#getTeacherVideo').css('display','none');
+            $('#getTeacherLive').css('display','none');
+            $('#getTeacherFace').css('display','none');
+            $('#uploadLive').css('display','none');
+            $("#getTeacherLineClass").css('display','none');
+            // var url = "{:U('classroom/User/uploadVideo')}";
+            // $.ajax({
+            //     type: "POST",
+            //     url:url,
+            //     data:"p=1",
+            //     dataType:"json",
+            //     success:function(data){
+            //         $("#uploadVideo").append(data.data);
+            //     }
+            // });
+        }else if(type == 'uploadLive'){
+            //$('#uploadVideo').html('');
+            $('#uploadLive').html('');
+            $('#'+type).css('display','block');
+            $('#getTeacherVideo').css('display','none');
+            $('#getTeacherLive').css('display','none');
+            $('#getTeacherFace').css('display','none');
+            $('#uploadVideo').css('display','none');
+            $("#getTeacherLineClass").css('display','none');
+            var url = "{:U('classroom/User/uploadLive')}";
+            $.ajax({
+                type: "POST",
+                url:url,
+                data:"p=1",
+                dataType:"json",
+                success:function(data){
+                    $("#uploadLive").append(data.data);
+                }
+            });
+        }else if(type == 'getTeacherLineClass'){
+            $('#'+type).css('display','block');
+            $('#getTeacherVideo').css('display','none');
+            $('#getTeacherLive').css('display','none');
+            $('#uploadVideo').css('display','none');
+            $('#uploadLive').css('display','none');
+            var url = "{:U('classroom/User/getTeacherLineClass')}";
+            $.ajax({
+                type: "POST",
+                url:url,
+                data:"p=1",
+                dataType:"json",
+                success:function(data){
+                    $("#getTeacherLineClass").append(data.data);
+                }
+            });
+        }
+        $(cate).addClass("on").siblings('a').removeClass("on");
+    }
+
+    //点击查看更多事件
+    function fallBang(cate){
+        var clickid=$(cate).attr('id');
+        var url="{:U('classroom/User/"+clickid+"')}";
+        ajaxBang(url,clickid,fdata,function(){
+        });
+
+    }
+
+    function delvideo(cate,id){
+      var id=id;
+      url="{:U('classroom/User/delvideo')}";
+      fdata="id="+id;
+      if(confirm("你确定要删除这个课程？")){
+        $.ajax({
+          type: "POST",
+          url:url,
+          data:fdata,
+          dataType:"json",
+          success:function(data){
+             if(data.status==1){
+                 ui.success("删除成功!");
+                $(cate).parent().parent().parent().fadeOut();
+             }
+          }
+        });
+      }
+    }
+
+    function dellive(cate,id){
+      var id=id;
+      url="{:U('classroom/User/dellive')}";
+      fdata="id="+id;
+      if(confirm("你确定要删除这个直播课程？")){
+        $.ajax({
+          type: "POST",
+          url:url,
+          data:fdata,
+          dataType:"json",
+          success:function(data){
+             if(data.status==1){
+                 ui.success("删除成功!");
+                $(cate).parent().parent().parent().fadeOut();
+             }else{
+                 ui.error(data.info);
+             }
+          }
+        });
+      }
+    }
+
+    //删除线下课程
+    function delLineClass(cate,id){
+        var id=id;
+        url="{:U('classroom/User/delLineClass')}";
+        fdata="id="+id;
+        if(confirm("你确定要删除这个线下课程？")){
+            $.ajax({
+                type: "POST",
+                url:url,
+                data:fdata,
+                dataType:"json",
+                success:function(data){
+                    if(data.status==1){
+                        ui.success("删除成功!");
+                        $(cate).parent().parent().parent().fadeOut();
+                    }
+                }
+            });
+        }
+    }
+
+ </script>
+<include file="__THEME__/public_footer" />

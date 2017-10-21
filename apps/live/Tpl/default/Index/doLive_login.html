@@ -1,0 +1,33 @@
+<include file="__THEME__/public_header" />
+    <div style="background:url(__THEME__/images/live_teacherbg.jpg) 0 0 no-repeat;margin:0;height: 670px;width: 100%;display: block;margin-bottom: -19px;">
+        <div style="width:1200px;margin: 0 auto;height: auto;z-index: 2;padding: 20px 0;">
+            <h5 style="margin: 80px auto 50px auto;text-align: center;color: #fff;margin-left: -25px;font-size: 18px;font-weight: bold;
+                text-shadow: 0px 1px 1px #555;">直播课堂教师登录<sup></sup></h5>
+            <div class="logind" style="margin-top:50px;width: 410px;border: 0;padding: 5px 0;background: #fff;margin: 0 auto;-webkit-box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .3);box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .3);">
+                <div style="display: block; position: relative;overflow: hidden;position: relative;overflow: hidden;">
+                    <form action="{:U('live/Index/live_teacher')}" method="post">
+                        <div class="login" style="width: 371px;padding:50px 0 0 35px;height: 296px;float: left;color: #999999;margin: 0;">
+                            <ul>
+                                <li style="margin: 20px 0;">
+                                    <label class="label">课堂编号：</label>
+                                    <input name="number" type="text" placeholder="请输入直播课堂编号" style="padding-left: 5px;margin-left: 5px;width: 239px;height: 34px;line-height: 30px;border: 1px solid #D7D7D7;">
+                                </li>
+                                <!--<li>-->
+                                    <!--<label class="label">昵　　称：</label>-->
+                                    <!--<input name="nickname" type="text" placeholder="请输入您的昵称" style="padding-left: 5px;margin-left: 5px;width: 239px;height: 34px;line-height: 30px;border: 1px solid #D7D7D7;">-->
+                                <!--</li>-->
+                                <li>
+                                    <label class="label">口　　令：</label>
+                                    <input name="token" type="text" placeholder="请输入加入口令" style="padding-left: 5px;margin-left: 5px;width: 239px;height: 34px;line-height: 30px;border: 1px solid #D7D7D7;">
+                                </li>
+                            </ul>
+                            <div style="padding-left:70px;margin-top:40px;">
+                                <input type="submit" value="登 录" style="width:150px;height: 30px;background: #65ADDD;color: white;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,133 @@
+<include file="__THEME__/public_header" />
+<include file="../User/public/_top" />
+<div class="content cbg">
+    <div class="wrap">
+        <!--中 -->
+        <div class="center_right">
+            <div class="center_right_tit">
+                <h5>我的小组</h5>
+            </div>
+            <input type = "hidden"  id = "clickstate"  value = "done"/>
+
+            <div class="center_right_con">
+                <ul class="user-imglist">
+                    <if condition="$group_data eq null">
+                        <li style="border: none;box-shadow: none;">您还没有相关小组。。</li>
+                        <else/>
+                        <foreach name="group_data" item="gd" key='k'>
+                            <li>
+                                <a href="{:U('group/Index/view',array('gid'=>$gd['id']))}" class="img"><img src="{$gd.logo}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                                <div class="user-title">
+                                    <h3><a href="{:U('group/Index/view',array('gid'=>$gd['id']))}">{:msubstr(t($gd['name']),0,15,'utf-8',true)}</a></h3>
+                                    <p>{$gd.cid0}</a></p>
+                                    <span>
+                                        <strong style="line-height: 24px;font-size: 14px;">
+                                            <a href="{:U('group/Index/editgroup',array('id'=>$gd['id']))}" >编辑</a>
+                                        </strong>
+                                        <small><a href="javascript:;" onclick="delgroup(this,{$gd.id})">删除</a></small>
+                                    </span>
+                                </div>
+                            </li>
+                        </foreach>
+                    </if>
+                </ul>
+                <!-- 个人中心隐藏此分页，学习中心显示此分页 -->
+                <div class="page">
+                    <div class="pagebox">
+                        {$listData['html']}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<script>
+    var btnclick="getbuycourselist";
+    var fdata;
+    var magstatus;
+    var mid = "{$mid}";
+    
+    //头部点击事件
+    function navClick(cate,type){
+        $(".user-imglist").html("");
+        btnclick=type;
+        magstatus=false;
+        url="{:U('classroom/Home/getcgroup')}";
+        if(type=="getbuycourselist"){
+            fdata="is_del=0";
+            $('#clickstate').val('done');
+        }else{
+            fdata="is_del=1";
+            $('#clickstate').val('failed');
+        }
+        $(".center_right_tit ul li a").parent().removeClass("on");
+        $(cate).parent().addClass("on");
+        p=1;
+        ajaxBang(url,type,fdata);
+    }
+    //点击查看更多事件
+    function fallBang(cate){
+        var clickid=$(cate).attr('id');
+        var url="{:U('classroom/Home/"+clickid+"')}";
+        ajaxBang(url,clickid,fdata,function(){
+            if(magstatus==true){
+                $(".Operation-list").css("display","block");
+            }else{
+                $(".Operation-list").css("display","none");
+
+            }
+        });
+
+    }
+
+    //请求事件
+    function ajaxBang(url,type,callback){
+        var ordertype;
+
+        url = "{:U('classroom/Home/getcgroup')}";
+        if($('#clickstate').val() == 'done')
+        {
+            ordertype = 1;
+        }
+        if($('#clickstate').val() == 'failed')
+        {
+            ordertype = 2;
+        }
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p="+p+"&ordertype="+ordertype,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,type);
+                callback && callback();
+            }
+        });
+    }
+
+    /**
+     * 删除课程方法
+     * @param id
+     */
+    function delgroup(cate,id){
+        var id=id;
+        url="{:U('classroom/Home/delgroup')}";
+        fdata="id="+id;
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    $(cate).parent().parent().parent().parent().fadeOut();
+                    window.location.reload();
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

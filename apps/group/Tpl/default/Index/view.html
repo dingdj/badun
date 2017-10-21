@@ -1,0 +1,226 @@
+<include file="__THEME__/public_header" />
+<script type="text/javascript" src="__APP__/Js/common.js"></script>
+
+<div class="communitybox">
+    <div class="wrap">
+        <div class="community-wrap">
+            <div class="pic">
+                <img src= "{:logo_path_to_url($group['logo'])}"  class="lazyloading">
+
+                <php>if($level == '')  { </php>
+                <a class="join" href="javascript:;"   onclick =joingroup("{$gid}");>加入小组</a>
+                <php>  } else  if($level == 0) {</php>
+                <a class="join" >等待审核</a>
+                <php>} else {</php>
+                <a class="join" >你已加入</a>
+                <php>}</php>
+
+            </div>
+            <div class="info">
+                <div class="tit">
+                    <h2>{$group.name}</h2>
+                </div>
+                <div class="txt">{$group.intro}</div>
+                <div class="tit">
+                    <div class="fl"><img src = "__THEME__/icon/people.png" alt=""/></img><i class="people"></i><span class="c2">{$membercount}</span>人</div>
+                    <div class="fl">|</div>
+                    <div class="fl"><img src = "__THEME__/icon/ring.png" alt=""/></img><span class="c1">{$topiccount}</span>条</div>
+                </div>
+            </div>
+            <div class="ebtn">
+                <php>if($level == 1 || $level==2){</php>
+                <a href="{:U('group/Manage/index',array('gid'=>$gid))}">管理该小组</a>
+                <php>}</php>
+                <php>if($level == 2 || $level == 3){</php>
+                <a href="javascript:;" onclick="quitgroup({$gid})" >退出该小组</a>
+                <php>}</php>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content bgf7 pt20">
+    <div class="wrap">
+        <div class="classmain">
+            <div class="classmain-hd">
+                <ul>
+                    <li  <php>if($_GET['type']==0){echo "class='on'";    echo "id = 'all'";}</php>><a href="{:U('group/Index/view',array('type'=>0,'gid'=>$gid))}">全部帖子</a></li>
+                    <li  <php>if($_GET['type']==1){echo "class='on'";  echo "id = 'top'"; }</php>><a href="{:U('group/Index/view',array('type'=>1,'gid'=>$gid))}">精华帖子</a></li>
+                </ul>
+            </div>
+            <div class="classmain-bd">
+                <div class="classmain_con">
+                    <php>if($topic['data']){</php>
+                    <ul class="tiezi-list" id="posts_list">
+                        <volist name = "topic.data" id ="vo">
+                            <li>
+                                <h3>
+                                    <if condition="$level == 1 || $level == 2">
+                                        <input name="topic_id[]" type="checkbox" value="{$vo.id}" class="checkbox" />
+                                    </if>
+                                    <a href="{:U('group/Topic/topic',array('gid'=>$gid,'tid'=>$vo['id']))}">
+                                        <php>if($vo['dist']){</php><strong class="sk_elite" style="color: #00a251">[精华]</strong><php>}</php>
+                                        <php>if($vo['lock']){</php> <strong class="sk_top" style="color: #2b92f9">[锁定]</strong><php>}</php>
+                                        <php>if($vo['top']){</php> <strong class="sk_top" style="color: #fb8700">[置顶]</strong><php>}</php>
+                                        {$vo.title}</a>
+                                </h3>
+                                <div class="info">
+                                    <div class="fr"><span class="icon-pl"></span>{$vo.commentcount}</div>
+                                    <div class="name"><a href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}"><img   src="{:getUserFace($vo['uid'],'b')}"      width="30" height="30" class="lazyloading"  >{$vo.uname}</a></div>
+                                    <div class="date">{$vo.addtime}</div>
+                                </div>
+                            </li>
+                        </volist>
+                    </ul>
+                    <php>}else{</php>
+                    <span>没有相关帖子~</span>
+                    <php>}</php>
+
+                    <if condition="$level == 1 || $level == 2">
+                        <php>if($topiccount > 0){</php>
+                        <li style="margin-top:20px;list-style:none;">
+                            <label><input type="checkbox" value="" onclick="check_all_post(this)" class="checkbox" style="_vertical-align:3px;*margin:0 2px 0 0;" />全选</label>&nbsp;&nbsp;
+                            <a href="javascript:;" onclick="admin_set('del');">删除</a>&nbsp;&nbsp;
+                            <a href="javascript:;" onclick="admin_set('top');">置顶</a> /
+                            <a href="javascript:;" onclick="admin_set('untop');">取消置顶</a>&nbsp;&nbsp;
+                            <a href="javascript:;" onclick="admin_set('dist');">设置精华</a> /
+                            <a href="javascript:;" onclick="admin_set('undist');">取消精华</a>&nbsp;&nbsp;
+                            <a href="javascript:;" onclick="admin_set('lock');">锁定</a> /
+                            <a href="javascript:;" onclick="admin_set('unlock');">取消锁定</a>
+                        </li>
+                        <php>}</php>
+                    </if>
+
+                    <php>if($topic['data'] && $topic['totalPages'] > 1){</php>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$topic['html']}
+                            <div class="pagediv">
+                                <span>共<p id="pageTotal" style="display: inline-block;">{$topic['totalPages']}</p>页,去第</span>
+                                <input type="text" name="pageNum" id="pageNum"> <span>页</span>
+                                <a class="goto gotoPage"    href="javascript:;"    onclick ="gotopage()">确定</a>
+                            </div>
+                        </div>
+                    </div>
+                    <php>}</php>
+
+                </div>
+            </div>
+        </div>
+        <div class="classside">
+            <div class="classsideitem">
+                <h3 class="classsidetit">热门帖子</h3>
+                <div class="classsidecon">
+                    <ul class="dotlist">
+                        <volist name = "hottopic"   id = "vo">
+                            <li><a href="{:U('/Topic/topic',array('gid'=>$vo['gid'],'tid'=>$vo['id']))}">{$vo.title}</a></li>
+                        </volist>
+                    </ul>
+                    <php>if($level != '')  { </php>
+                    <a class="fb_btn" href="{:U('group/Topic/add',array('gid'=>$gid))}">发布新帖</a>
+                    <php>}</php>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    var get_checked_id = function()
+    {
+        var ids = new Array();
+        $.each($('#posts_list input:checked'), function(i, n){
+            var id = $(n).val();
+            if (id > 0) {
+                ids.push( id );
+            }
+        });
+        return ids;
+    }
+
+    var check_all_post = function(e)
+    {
+        var $post_list_input = $('#posts_list input[name="topic_id[]"]');
+        if( e.checked == true ){
+            $post_list_input.attr('checked','true');
+        }else{
+            $post_list_input.removeAttr('checked');
+        }
+    }
+
+    var admin_set = function(op)
+    {
+        var tids = get_checked_id();
+        if (tids == '') {
+            ui.error('请选择帖子');
+            return false;
+        }
+        if (op == 'del' && !confirm('删除后无法恢复, 确认删除?'))
+            return false;
+
+        $.ajax({
+            type: "POST",
+            url:  "{:U('group/Topic/"+op+"')}",
+            data: 'gid=<?php echo $gid; ?>&tid=' + tids + '&type=thread&ajax=1',
+            dataType:"json",
+            success: function(data)
+            {
+                // 取消勾选
+                $.each($('#posts_list input:checked'), function(i, n){
+                    $(n).removeAttr('checked');
+                });
+
+                if (data.flag == 1) {
+                    ui.success(data.msg);
+                    tids = tids.toString().split(',');
+                    switch (op) {
+                        case 'del':
+                            for (i = 0 ; i < tids.length ; i++) {
+                                $('#posts_list input[name="topic_id[]"][value="' + tids[i] + '"]').parent().parent().remove();
+                            }
+                            break;
+                        default:
+                            setTimeout(function(){location.reload();},1000);
+                            break;
+                    }
+                } else {
+                    ui.error(data.msg);
+                }
+            }
+        });
+    }
+
+    //请求事件
+    function gotopage(){
+        if($("#all").length>0)
+        {
+            type  = 0;
+            var p = $('#pageNum').val();
+            window.location.href= U('group/Index/view')+"&p="+p+"&type="+type;
+            return;
+        }
+        if($("#top").length>0)
+        {
+            type = 1;
+        }
+
+        var p = $('#pageNum').val();
+        window.location.href= U('group/Index/view')+"&p="+p+"&type="+type;
+    }
+
+
+    // 加入群组
+    function joingroup(gid) {
+
+        if(MID=='0'){
+            reg_login();
+        }
+        ui.box.load(U('group/Index/joinGroup')+'&gid='+gid,'加入群组');
+    }
+</script>
+
+
+
+<include file="__THEME__/public_footer" />

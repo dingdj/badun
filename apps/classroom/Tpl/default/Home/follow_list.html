@@ -1,0 +1,41 @@
+<foreach name="data" item="l" key="k">
+    <php>if($type == 'me'){</php>
+        <php>if($l['tid'] != 0){</php>
+            <li  class="li" <php> if($k == 0) echo "style='padding:0 0 20px;'"</php>>
+                <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}"><img width="40" height="40" src="{:getCover($l['head_id'],180,180)}"></a>
+                    <div class="detailmeg">
+                          <div class="mynote">
+                          <em>讲师姓名:</em><a target="_blank" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}">{$l.name}</a>
+                          <em>头衔:</em><a>{$l.title}</a><br/>
+                          <em>简介:</em><a>{$l.inro}</a>
+                          </div>
+                        <div class="fbtime">时间：
+                            <span>{$l.ctime|date="Y/m/d ",###}</span>
+                            <div class="Operation-wd">
+                              <a href="javascript:;" onclick="ui.confirm(this,'确定要取消关注讲师吗？');return false;" callback="delFollow({$l['follow_id']})" ><span>取消关注</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+          <php>}</php>
+    <php>}else{</php>
+        <li  class="li">
+            <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" href="{$l.domain}"><img width="40" height="40" src="{:getCover($l['logo'],180,180)}"></a>
+                <div class="detailmeg">
+                    <div class="mynote">
+                        <em>机构名称:</em><a target="_blank" href="{$l.domain}">{$l.title}</a>
+                        <br/>
+                        <em>简介:</em><a>{$l.info}</a>
+                    </div>
+                    <div class="fbtime">时间：
+                        <span>{$l.ctime|date="Y/m/d ",###}</span>
+                        <div class="Operation-wd">
+                            <a href="javascript:;" onclick="ui.confirm(this,'确定要取消关注机构吗？');return false;" callback="delFollow({$l['follow_id']})" ><span>取消关注</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    <php>}</php>
+</foreach> 

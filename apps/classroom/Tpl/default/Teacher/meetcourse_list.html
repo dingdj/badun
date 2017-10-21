@@ -1,0 +1,23 @@
+<neq name="course.data" value="">
+	<volist name="course.data" id="l">
+		<li class="item">
+			<a href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}">
+				<img src="{:getCover($l['cover'],175,100)}" width="175px" height="100px" alt="">
+			</a>
+			<div class="info">
+				<div class="new-title"><a class="title" href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}">{:msubstr(t($l['course_name']),0,20,'utf-8',true)}</a></div>
+				<ul class="course-info">
+					<li>已报名：{$l.course_order_count}人</li>
+					<li>开课时间：<span>{:date('Y-m-d',$l['listingtime'])}～{:date('Y-m-d',$l['uctime'])}</span></li>
+					<li>上课地点：{$l['teach_areas'] | default='无限制'}</li>
+					<li>上课方式：线下授课</li>
+				</ul>
+				<div class="button-box" style="right: 0px;">
+					<div class="price">课程总价：<if condition="$l['price']  eq 0 OR $l['is_charge'] eq 1"><span style = "color : #56b02a;"> 免费</span><else/><span>￥ {$l['price']}</span></if></div>
+				</div>
+			</div>
+		</li>
+	</volist>
+	<else />
+	暂无数据
+</neq>

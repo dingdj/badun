@@ -1,0 +1,94 @@
+<dl class="pop-area">
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">用户组名称：</div><div class="r"><input type="text" placeholder="用户组名称" id="user_group_name" value="{$category['user_group_name']}" class="s-txt" style="width:245px;"></div></dt>
+
+    <dd>
+        <php>if(isset($category)):</php>
+        <input type="button" class="btn_b" onclick="upTreeCategory()" value="确定" />
+        <php>else:</php>
+        <input type="button" class="btn_b" onclick="addTreeCategory()" value="确定" />
+        <php>endif;</php>
+        <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
+    </dd>
+    <div class="clear"></div>
+</dl>
+
+<script type="text/javascript">
+    /**
+     * 添加用户组操作
+     * @return void
+     */
+    var addTreeCategory = function()
+    {
+        var user_group_name = $.trim($('#user_group_name').val());
+        var pid            = "{$pid}";
+        var limit          = "{$limit}";
+
+        if(user_group_name == '') {
+            ui.error('请输入用户组名称');
+            return false;
+        }
+        if(limit>0 && getLength(user_group_name)>limit){
+            ui.error('用户组名称不能超过'+limit+'个字');
+            return false;
+        }
+
+        var data = {user_group_name:user_group_name,pid:pid,};
+
+        // 提交添加
+        $.post(U('school/AdminUserGroup/addUsergroup'), data, function(e) {
+            if(e.status == 1) {
+                ui.success(e.info);
+                setTimeout(function() {
+                    location.href = location.href;
+                }, 1500);
+                ui.box.close();
+            } else {
+                ui.error(e.info);
+                return false;
+            }
+        }, 'json');
+    };
+    /**
+     * 编辑用户组操作
+     * @return void
+     */
+    var upTreeCategory = function()
+    {
+        var user_group_name = $.trim($('#user_group_name').val());
+        var id            = "{$category['user_group_id']}";
+        var pid            = "{$pid}";
+        var limit          = "{$limit}";
+
+        if(user_group_name == '') {
+            ui.error('请输入用户组名称');
+            return false;
+        }
+        if(limit>0 && getLength(user_group_name)>limit){
+            ui.error('用户组名称不能超过'+limit+'个字');
+            return false;
+        }
+
+        var data = {user_group_id:id,user_group_name:user_group_name,pid:pid,};
+
+        // 判断用户组名称是否有变化
+        /*  if(title == "{$category['title']}") {
+         ui.error('用户组名称无变化，未提交修改');
+         ui.box.close();
+         return false;
+         }*/
+
+        // 提交添加
+        $.post(U('school/AdminUserGroup/addUsergroup'), data, function(e) {
+            if(e.status == 1) {
+                ui.success(e.info);
+                setTimeout(function() {
+                    location.href = location.href;
+                }, 1500);
+                ui.box.close();
+            } else {
+                ui.error(e.info);
+                return false;
+            }
+        }, 'json');
+    };
+</script>

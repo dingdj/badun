@@ -1,0 +1,18 @@
+<neq name="course.data" value="">
+	<volist name="course.data" id="l">
+		<li class="item">
+			<div class="info">
+				<ul class="course-info">
+					<li>预约方式：{$l.type}课时</li>
+					<li>预约时间：<span>{:date("Y-m-d H:i",$l['ctime'])}</span></li>
+					<li>预约留言：{$l.words}</li>
+				</ul>
+				<div class="button-box">
+					<div class="price">预约价格：<span>￥{$l.price}</span></div>
+				</div>
+			</div>
+		</li>
+	</volist>
+	<else />
+	暂无数据
+</neq>

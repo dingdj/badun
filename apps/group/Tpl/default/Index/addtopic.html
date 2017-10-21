@@ -1,0 +1,183 @@
+<include file="__THEME__/public_header" />
+
+<!--分类筛选使用的jquery1.7.1不兼容，故使用jquery  主要用于课程直播分类筛选-->
+<div class="content">
+    <div class="wrap">
+        <div class="class_left">
+            <div class="content-place">
+
+
+                <div class="breadcrumb"> <a href="{:U('group')}">小组首页</a>&gt
+                    <a>发布新帖</a>
+                </div>
+                <div class="sk_main">
+
+                    <div class="newpost">
+                        <a href=""  class="quealltab onactive">发布新帖</a>
+
+
+
+                    </div>
+                    <div class="sk_l2">
+                        <form name="addform" action="{:U('group/Index/doAdd')}"     method="post" >
+
+                            <ul class="user-set-sz" style="padding-left:0px;margin-top:30px;width:100%">
+                                <li>
+                                    <label class="label"><em>*</em> 标题：</label>
+                                    <input name="topcititle"   id ="topcititle"  class="user-width" style="border: 1px solid #cce4f4;" type="text" placeholder="">
+                                </li>
+                                <li>
+
+                                    <label class="label"><em>*</em> 分类：</label>
+
+
+                                    <select name="group_id" id="group_id"   onchange = "selectvideo()">
+
+                                        <foreach name="group" item="vo" key="k">
+                                            <option <eq name="group_id" >selected="selected"</eq>value="{$vo.gid}">{$vo.groupname}</option>
+                                        </foreach>
+
+                                        <option selected value="">请选择</option>
+                                    </select>          （温馨提示：只能加入小组才能在本小组发帖）
+                                </li>
+
+
+
+
+
+                                <li>
+
+                                    <label class="label"><em>*</em> 图片上传：</label>
+                                    <dd>{:W('Upload',array('inputname'=>'attach','attachIds'=>$data['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}</dd>
+
+                                </li>
+
+
+
+
+                                <script>
+                                    function largeCover(obj) {
+                                        if ("undefined" != typeof(core.uploadFile)) {
+                                            core.uploadFile.filehash = new Array();
+                                        }
+                                        core.plugInit('uploadFile', obj, function (data) {
+                                            $(obj).parents('#divup_9999').siblings('#show_cover').html('<img class="pic-size" width="80" height="80"   style ="margin-left:96px;margin-top:25px;"   src="' + data.src + '">');
+                                            $(obj).parents('#divup_9999').siblings('#cover_ids').val(data.attach_id);
+                                        }, 'image');
+                                    }
+                                    function largeCover2(obj) {
+                                        if ("undefined" != typeof(core.uploadFile)) {
+                                            core.uploadFile.filehash = new Array();
+                                        }
+                                        core.plugInit('uploadFile', obj, function (data) {
+                                            $(obj).parents('#divup_8888').siblings('#show_cover').html('<img class="pic-size" width="400" height="83"   style ="margin-left:96px;"    src="' + data.src + '">');
+                                            $(obj).parents('#divup_8888').siblings('#background_cover').val(data.attach_id);
+                                        }, 'image');
+                                    }
+                                </script>
+
+
+                                <li>
+                                    <label class="label"><em>*</em> 简介：</label>
+                                    <textarea id="intro" class="user-textarea"  id ="intro"   name="intro" style="width:520px">{$groupinfo['intro']}</textarea>
+                                </li>
+
+
+                                <li>
+                                    <label class="label"><em>*</em> 验证码：</label>
+                                    <input id="verify" name ="verify" placeholder="请输入验证码">
+                                    <img class="verifyimg" src="{:U('group/Index/verify')}" title ="点击刷新验证" style="height: 40px;" />
+                                </li>
+
+
+                                <li>
+                                    <label class="label">&nbsp;</label>
+                                    <input type="hidden" name="dosubmit" value="1">
+                                    <input class="user-submit"   type = "button"  name="button" value="保存"  href="javascript:;" onclick="subtopic(this)">
+                                </li>
+                            </ul>
+                        </form>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    $('.verifyimg').click(function (){
+        var url = "{:U('group/Index/verify')}";
+        $('.verifyimg').removeAttr('src');
+        $('.verifyimg').attr('src',url);
+    });
+
+    function  subtopic(o)
+    {
+
+
+        var intro = $.trim($('#intro').val());
+        var topcititle = $.trim($('#topcititle').val());
+        var  group_id =  $('#group_id').find('option:selected').attr('value');
+        var verify = $.trim($('#verify').val());
+        var attach_ids =$("#attach_ids").val();
+
+        if($("#topcititle").val().length == 0) {
+            ui.error("标题名称不能为空","failure");
+            return;
+        }
+        if( $("#topcititle").val().length > 30) {
+            ui.error("标题名称不能超过30个字","failure");
+            return;
+        }
+
+        if(!$("#attach_ids").val()){
+            ui.error("请上传图片!");
+            return false;
+        }
+
+        if($("#intro").val().length == 0) {
+            ui.error("简介不能为空","failure");
+            return;
+        }
+        if($("#intro").val().length > 200) {
+            ui.error("简介不能超过200个字","failure");
+            return;
+        }
+
+
+        if(!group_id)
+        {
+            ui.error('请选择小组分类');
+            return;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url:"{:U('group/Index/doaddtopic')}",
+            data:"topcititle="+topcititle+"&intro="+intro+"&group_id="+group_id+"&verify="+verify+"&attach_ids="+attach_ids,
+            dataType:"text",
+            success:function(data){
+                if(isNaN(data)){
+                    notes(data,"failure");
+                }else{
+                    notes("恭喜，发布成功！","success");
+                    var iddata = data;
+                    location.href = U('group/Index/detail')+'&id='+iddata;
+                }
+
+            }
+        });
+
+    }
+
+
+
+</script>
+
+<include file="__THEME__/public_footer" />

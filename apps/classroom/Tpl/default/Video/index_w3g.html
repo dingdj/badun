@@ -1,0 +1,251 @@
+<include file="__THEME__/public_header_twolevel"/>
+    <style>
+		body{background-color: #fff}
+        li.border_sx .bd .n2,li.border_sx .bd .n3{
+            border-bottom: 1px solid #c8d0d8;
+        }
+		.maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
+    </style>
+	<div class="min-height-wrap">
+		<div class="maskbox"></div>
+		<div class="body">
+			<ul class="selectul">
+				<li class="r01" name="list_dl">
+					<div class="hd"><switch name="orderBy"><case value="hot">人气排序</case><case value="t_price">价格最低</case><case value="t_price_down">价格最高</case><default/>综合排序</switch><i></i></div>
+					<div class="bd">
+						<dl>
+							<dd <php>if(!$orderBy || $orderBy == "default"){</php>class="active"<php>}</php>><a href="javascript:;" class="screen" data-type="orderBy" data-value="default">综合排序</a></dd>
+							<dd <eq name="orderBy" value="new">class="active"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="new">最新</a></dd>
+							<dd <eq name="orderBy" value="hot">class="active"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="hot">人气排序</a></dd>
+							<dd <eq name="orderBy" value="t_price">class="active"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="t_price">价格最低</a></dd>
+							<dd <eq name="orderBy" value="t_price_down">class="active"</eq>><a href="javascript:;" class="screen" data-type="orderBy" data-value="t_price_down">价格最高</a></dd>
+						</dl>
+					</div>
+				</li>
+				<li class="r02 border_sx" name="list_dl">
+					<div class="hd"><php>if($cateId){</php>{:limitNumber($title,6)}<php>}else{</php>全部<php>}</php><i></i></div>
+					<div class="bd">
+						<dl>
+							<dd class="clearfix n1">
+								<div class="item <eq name='cateId' value=''>active</eq>"><a href="{:U('classroom/Video/index')}"  id="cate0">全部</a></div>
+							<volist name="selCate" id="vo">
+								<div class="item <eq name='vo.zy_currency_category_id' value='$cateId'>active</eq>"><a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_currency_category_id}" >{$vo.title}</a></div>
+							</volist>
+							</dd>
+							<dd class="n2">
+							<volist name="cate" id="vo">
+								<div class="item <eq name='vo.zy_currency_category_id' value='$cate_id'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_currency_category_id}" >{$vo.title}</a></div>
+							</volist>
+							</dd>
+							<dd class="n3">
+							<volist name="childCate" id="vo">
+								<div class="item <eq name='vo.zy_currency_category_id' value='$cate_ids'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_currency_category_id}" >{$vo.title}</a></div>
+							</volist>
+							</dd>
+
+						</dl>
+					</div>
+				</li>
+				<li class="r03" name="list_dl">
+					<div class="hd">筛选<i></i></div>
+					<div class="bd">
+						<dl>
+							<dt>课程类型</dt>
+							<dd name="group-list">
+								<a href="javascript:;" class="<eq name="vtype" value="1">checked</eq>" data-type="vtype" data-value="1" >录播<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="vtype" value="2">checked</eq>" data-type="vtype" data-value="2" >直播<span class="icon-ck"></span></a>
+							</dd>
+							<dt>价格区间</dt>
+							<dd name="group-list">
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="1">checked</eq>" data-type="lower" data-value="1">不限<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="1,49">checked</eq>" data-type="lower" data-value="1,49">¥50以下<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="50,100">checked</eq>" data-type="lower" data-value="50,100">¥50-100<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="100,500">checked</eq>" data-type="lower" data-value="100,500">¥100-500<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="500,1000">checked</eq>" data-type="lower" data-value="500,1000">¥500-1000<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="Think.get.lower" value="1000,">checked</eq>" data-type="lower" data-value="1000,1000000">¥1000以上<span class="icon-ck"></span></a>
+							</dd>
+							<dt>课程内容包含（可多选）</dt>
+							<dd name="check-list">
+								<a href="javascript:;" class="<eq name="charge" value="1">checked</eq>" data-type="charge" data-value="1" >可试听<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="videofile" value="1">checked</eq>" data-type="videofile" data-value="1" >有资料<span class="icon-ck"></span></a>
+								<a href="javascript:;" class="<eq name="eaxm_id" value="1">checked</eq>" data-type="eaxm_id" data-value="1" >有考试<span class="icon-ck"></span></a>
+							</dd>
+							<div class="btn">
+								<a class="fr screen prevValue" href="javascript:;">确定</a>
+								<a class="fl screen prevValue" data-type="clear" href="javascript:;">清空条件</a>
+							</div>
+						</dl>
+					</div>
+				</li>
+			</ul>
+			<php>if($cateId){</php>
+			<div class="searchdiv">在“<span>{:msubstr(t($title),0,10,'utf-8',true)}</span>”分类下，找到{$data.count}门课程</div>
+			<php>}</php>
+			<ul class="classlist clearfix" style="padding-bottom: 10px;float:left">
+				<php>if($listData){</php>
+					<volist name="listData" id="vo">
+						<li>
+							<php>if($vo['type'] == 1){</php>
+								<a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">
+							<php>}else{</php>
+								<a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
+							<php>}</php>
+									<strong><img src="{:cutImg($vo['cover'],140,85)}" alt=""></strong>
+									<span>
+										<h4>{:limitNumber($vo['video_title'],30)}</h4>
+										<b>
+											<php>if($vo['mzprice']['price'] == 0) {</php><i style="color: #39b75d;">免费</i> <php>} else {</php>￥{$vo['mzprice']['price']}<php>}</php>
+										</b>
+										<if condition="$vo['type'] eq 1">
+												<em>点播</em>
+												<else/>
+												<em>直播</em>
+											</if>
+									</span>
+							</a>
+						</li>
+					</volist>
+				<php>}else{</php>
+					<span style="font-size: 14px;padding: 10px;">暂无此分类课程。。</span>
+				<php>}</php>
+			</ul>
+		</div>
+		<php>if($listData){</php>
+			<div class="loadding">
+				<if condition="$data['nowPage'] eq $data['totalPages']">
+					<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+				</if></div>
+			<a class="backtop"></a>
+		<php>}</php>
+	</div>
+<script>
+	$(function(){
+		setsearchUrl = window.location.search;
+		function removeByValue(arr, val) {
+		  for(var i=0; i<arr.length; i++) {
+			if(arr[i] == val) {
+			  arr.splice(i, 1);
+			  break;
+			}
+		  }
+		}
+		$(".hd").click(function(){
+			if($(".maskbox").css("display")=="none") {
+				$(".maskbox").css({"display": "block"});
+			}else{
+				$(".maskbox").css({"display": "none"});
+			}
+		});
+
+		//同步请求
+		$(".screen").click(function(){
+			var _this = this;
+			var baseUrl = "{:U('classroom/Video/index')}";
+			var url = '';
+			if($(_this).hasClass('prevValue')){
+				var checked_list = $(_this).parent().prevAll("dd").find(".checked");
+				//可选项
+				var checked_allow_list = [];
+				checked_allow_a = $(_this).parent().prevAll("dd").find('a');
+				$.each(checked_allow_a,function(i,v){
+					if($.inArray($(v).data('type'),checked_allow_list) == -1){
+						checked_allow_list.push($(v).data('type'));
+					}
+				});
+				if($(_this).data('type') != 'clear'){
+					//选中的项
+					$.each(checked_list,function(i,v){
+						url = getRequestUrl($(v).data('type'),$(v).data('value'),baseUrl);
+						removeByValue(checked_allow_list,$(v).data('type'));
+					});
+				}
+				url = getRequestUrl('','',baseUrl,checked_allow_list);
+			}else{
+				var type = $(_this).data("type"),
+					value = $(_this).data("value");
+				var url = getRequestUrl(type,value,baseUrl)
+			}
+			window.location.href = url;
+		});
+		function getRequestUrl(field,value,baseUrl,removeParam){
+			//获取参数部分
+			var url = setsearchUrl;
+			if(removeParam && $.isArray(removeParam)){
+				$.each(removeParam,function(i,v){
+					var replaceReg = new RegExp(v+'=[^&]+','g');
+					url = url.replace(replaceReg,'');
+				});
+			}
+			if(field){
+				//匹配是否有该参数
+				var reg = new RegExp("(^|&)" + field + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				//已经存在参数
+				var in_params = false;
+				if (r != null){
+					in_params = true;
+				}
+				
+				var replaceReg = new RegExp(field+'=[^&]+','g');
+
+				if(value){
+					//合法参数传递方式
+					if(in_params){
+						url = url.replace(replaceReg,field+'='+value);
+					}else{
+						if(url.indexOf("?") != -1){
+							url += '&'+field+'='+value;
+						}else{
+							url += '?'+field+'='+value;
+						}
+					}
+
+				}else{
+					//如果value不存在,移除该参数
+					url = url.replace(replaceReg,'');
+				}
+			}
+			url = url.replace(/&{2,}/,'&').replace(/&$/,'');
+			setsearchUrl = url;
+			return baseUrl ? baseUrl+url: document.domain + url;
+		}
+		var p = 1;
+        $(window).scroll(function(){
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = $(this).height();
+            if(scrollTop + windowHeight == scrollHeight){
+				if(!p || p >= "{$data['totalPages']}"){
+//					$('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+					return false;
+				}else{
+					p = p+1;
+					ajaxBang();
+				}
+            }
+        });
+		//请求事件
+		function ajaxBang(){
+			$.ajax({
+				type: "GET",
+				url:"{:U('classroom/Video/getVideoList')}",
+				data:"p="+p+"&orderBy={$_GET['orderBy']}&cateId={$_GET['cateId']}&vtype={$_GET['vtype']}&charge={$_GET['charge']}&videofile={$_GET['videofile']}&eaxm_id={$_GET['eaxm_id']}&lower={$_GET['lower']}&mhm_id={$_GET['mhm_id']}",
+				dataType:"json",
+				success:function(data){
+					appendHtml(data);
+				}
+			});
+		}
+		//追加html
+		function appendHtml(data){
+			$(".classlist").append(data.data);
+			if(!p || p >= data.totalPages){
+				$('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+				return false;
+			}else{
+				p = data.nowPage;//下一页
+			}
+		}
+	});
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

@@ -1,0 +1,166 @@
+<include file="__THEME__/public_header" />
+
+<!--header end-->
+<include file="../User/public/_top" />
+<style>
+    .content-card{
+        margin-top:0;
+    }
+    .center_right_con .comment_list {
+        padding: 0 25px 25px;
+    }
+    .comment_list li {
+        padding-top: 10px;
+    }
+    .detailmeg {
+        float: left;
+        width: 100%;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+
+            <div class="center_right_tit">
+                <ul>
+                    <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/wenti')}">我的提问</a></li>
+                    <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/wenti',['tab'=>1])}">我的回复</a></li>
+                </ul>
+            </div>
+
+            <div class="center_right_con">
+                <if condition="$_GET['tab'] eq null">
+                <div class="content-card">
+                    <ul class="comment_list">
+                        <if condition="$wenti_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关提问。。</li>
+                            <else/>
+                            <foreach name="wenti_data['data']" item="l" key='k'>
+                                <li>
+                                    <!--<div class="pic"> <a target="_blank" title="{:getUserName($l['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"  ><img width="60" height="60" src="{:getUserFace($l['uid'],'m')}"></a></div>-->
+                                    <php>if($l['type']==1){</php>
+                                    <div class="text"><a target="_blank" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">
+                                        {:limitNumber($l['qst_description'],150)} </a> </div>
+                                    <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}</a>
+                                    <php>}else{</php>
+                                    
+                                    <div class="text"><a target="_blank" href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">
+                                        {:limitNumber($l['qst_description'],150)} </a> </div>
+                                    <div class="pic">
+                                        <a title="{:getUserName($l['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}">{:getUserName($l['uid'])}</a>源自:
+                                        <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Album/view',array('id'=>$l['oid']))}" target="_blank">{$l.course_title}</a>
+                                    </div>
+                                    <php>}</php>
+                                    <div class="info" style="margin-top:12px"><a href="javascript:;"><span class="icon-zan"></span>{$l.qst_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|friendlyDate}</div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <if condition="$wenti_data['data']">
+                        <div class="page">
+                            <div class="pagebox">
+                                {$wenti_data['html']}
+                            </div>
+                        </div>
+                    </if>
+                </div>
+                <else/>
+                <div class="content-card">
+                    <ul class="comment_list">
+                        <if condition="$huif_data['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关回复。。</li>
+                            <else/>
+                            <foreach name="huif_data['data']" item="l" key='k'>
+                                <li  class="li">
+                                    <!--<div class="pic"> <a target="_blank" title="{:getUserName($l['wenti']['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['wenti']['uid']))}"><img width="60" height="60" src="{:getUserFace($l['wenti']['uid'],'m')}"></a></div>-->
+                                    <div class="detailmeg">
+                                        <!--<div class="firendreply"> <a  title="{:getUserName($l['uid'])}" class="firendHead" ><img src="{:getUserFace($l['uid'],'s')}"></a>-->
+                                        <div class="lzreply"> <span>我的回复:</span> <em>{:limitNumber($l['qst_description'],150)}</em></div>
+                                        <div class="report" style="margin-bottom: 2px;">
+                                            <php>if($l['type']==1){</php>
+                                            <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}>> {:limitNumber($l['wenti']['qst_description'],120)} </a>
+                                            <php>}else{</php>
+                                            <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}>> {:limitNumber($l['wenti']['qst_description'],120)} </a>
+                                            <php>}</php>
+                                        </div>
+                                    </div>
+                                    <div class="info"><a href="javascript:;"><span class="icon-zan"></span>{$l.qst_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|friendlyDate}</div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <if condition="$huif_data['data']">
+                        <div class="page">
+                            <div class="pagebox">
+                                {$huif_data['html']}
+                            </div>
+                        </div>
+                    </if>
+                </div>
+                </if>
+            </div>
+
+        </div>
+
+        <!--right-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/wenti')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+
+//    $(".content-card:first").show();
+//    $(".center_right_tit li").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".content-card").hide();
+//        $(".content-card").eq(tit_li).show();
+//    });
+
+    //删除问答
+    function delWenda(id){
+        var id=id;
+
+        $.post("{:U('wenda/Index/delWenda')}", {id:id}, function(res){
+            if(res==200){
+                location.reload();
+            }else{
+                notes('对不起，删除失败请重试!','failure');
+            }
+        });
+    }
+
+
+    //删除问答评价
+    function delWendacomment(id){
+        var id=id;
+
+        $.post("{:U('wenda/Index/delWendacomment')}", {id:id}, function(res){
+            if(res==200){
+                location.reload();
+            }else{
+                notes('对不起，删除失败请重试!','failure');
+            }
+        });
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

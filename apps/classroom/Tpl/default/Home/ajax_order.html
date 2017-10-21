@@ -1,0 +1,116 @@
+<if condition="$data neq ''">
+    <volist name="data" id="l">
+        <li>
+            <div class="top">
+                        <span>
+                            <switch name="l.pay_status">
+                                <case value="2">已取消</case>
+                                <case value="3">已支付</case>
+                                <case value="5">已退款</case>
+                                <default/>未支付
+                            </switch>
+                        </span>
+                <a .chref="#">{$l.ctime|date="Y-m-d",###}</a>
+            </div>
+            <div class="mid">    <php>if($ordertype == 'course') { </php> <a href="{:U('classroom/Video/view',array('id'=>$l['video_id']))}"> <php> } else {</php>     <a href="{:U('live/index/view',array('id'=>$l['live_id']))}">  <php>}</php>
+                <div class="pic"><img src="{:cutImg($l['cover'],151,80)}" style="max-width:151px" alt="{:limitNumber($l['video_name'],12)}" /></div>
+                <h3>{:limitNumber($l['video_name'],15)}</h3>
+                <p style="font-size: 13px;margin-top: 5px;">{:limitNumber($l['video_binfo'],30)}</p>
+                <div class="info">
+                    <php>if($l['mzprice']['price']) {</php> <div class="price">¥{$l.price}</div><php>}</php>
+                    <div class="del">¥{$l['old_price']}</div>
+                    <div class="num">x1</div>
+                </div>
+            </a></div>
+            <div class="bot">
+                <div class="txt">共1门课程  合计：<span>{$l['price']}</span></div>
+
+                <div class="btn">
+                    <if condition="($check_type eq 'zy_video') OR ($check_type eq 'zy_album') OR ($check_type eq 'zy_live') OR ($check_type eq 'zy_teacher')">
+                        <if condition="$l['pay_status'] eq 1">
+                            <form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
+                                <a href="javascript:;" id="charge_video" data-id="{$l.coupon_id}">继续支付</a>
+
+                                <if condition="$check_type eq 'zy_video'">
+                                    <input type="hidden" value="{$l.video_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_album'"/>
+                                    <input type="hidden" value="{$l.album_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_live'"/>
+                                    <input type="hidden" value="{$l.live_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_teacher'"/>
+                                    <input type="hidden" value="{$l.video_id}" name="vid" />
+                                </if>
+                                <input type="hidden" value="{$check_type}" name="check_type" />
+                                <input type="hidden" value="ConPay" name="type" />
+                                <if condition="$check_type eq 'zy_video'">
+                                    <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_album'"/>
+                                    <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_live'"/>
+                                    <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_teacher'"/>
+                                    <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                </if>
+                                <a href="javascript:;" id ="{$l.id}" onclick ="delCancel(this.id)">取消订单</a><br><br>
+                                <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                                <!--<a href="javascropt:;">评价课程</a>-->
+                            </form>
+                        </if>
+
+                        <if condition="$l['pay_status'] eq 2">
+                            <form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
+                                <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a><br><br>
+                                <if condition="$check_type eq 'zy_video'">
+                                    <input type="hidden" value="{$l.video_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_album'"/>
+                                    <input type="hidden" value="{$l.album_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_live'"/>
+                                    <input type="hidden" value="{$l.live_id}" name="vid" />
+                                    <elseif condition="$check_type eq 'zy_teacher'"/>
+                                    <input type="hidden" value="{$l.video_id}" name="vid" />
+                                </if>
+                                <input type="hidden" value="{$check_type}" name="check_type" />
+                                <if condition="$check_type eq 'zy_video'">
+                                    <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_album'"/>
+                                    <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_live'"/>
+                                    <input type="hidden" id="money" value="{$l['mzprice']['price']}" name="money" />
+                                    <elseif condition="$check_type eq 'zy_teacher'"/>
+                                    <input type="hidden" id="money" value="{$l['price']}" name="money" />
+                                </if>
+
+                                <a href="javascript:;" id="charge_video2">重新购买</a>
+                            </form>
+                        </if>
+
+                        <if condition="$l['pay_status'] eq 3">
+                            <if condition="$l['price'] gt 0">
+                                <a href="javascript:;" id ="{$l.id}" onclick ="applyForRefund(this.id)">申请退款</a>
+                            </if>
+                            <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                        </if>
+                        <if condition="$l['pay_status'] eq 4">
+                            <a href="javascript:;">退款审核中。。</a>
+                            <a href="javascript:;" id ="{$l.id}" onclick ="withdraw(this.id)">取消申请</a>
+                        </if>
+                        <if condition="$l['pay_status'] eq 5">
+                            <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
+                            <a href="javascript:;" id ="{$l.id}" style="color: green;">退款成功</a>
+                        </if>
+                        <if condition="$l['pay_status'] eq 6">
+                            <a href="javascript:;" id ="{$l.id}" onclick = checkResigInfo(this.id,"{$check_type}")>查看驳回原因</a><br><br>
+                            <a href="javascript:;" id ="{$l.id}" onclick ="applyForRefund(this.id)">重新申请退款</a>
+                        </if>
+
+                    </if>
+
+
+                </div>
+
+            </div>
+        </li>
+    </volist>
+    <else/>
+    <li>您还没有此类订单。。</li>
+</if>

@@ -1,0 +1,63 @@
+<foreach name="data" item="l" key='k'>
+<php>if(empty($l['wenti'])){</php>
+    <li>
+    <div class="pic"> <a target="_blank" title="{:getUserName($l['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"  ><img width="60" height="60" src="{:getUserFace($l['uid'],'m')}"></a></div>
+
+    <php>if($l['type']==1){</php>
+        
+    <div class="text"><a target="_blank" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">
+        {:limitNumber($l['qst_description'],150)} </a> </div>
+    <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}</a>
+    <php>}else{</php>
+        <div class="text"><a target="_blank" href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">
+        {:limitNumber($l['qst_description'],150)} </a> </div>
+        <div class="pic"><a title="{:getUserName($l['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}">{:getUserName($l['uid'])}</a>源自:<a title="{:getUserName($l['uid'])}" href="{:U('classroom/Album/view',array('id'=>$l['oid']))}" target="_blank">{$l.course_title}</a></div>
+    <php>}</php>
+        <div class="info"><a href="#"><span class="icon-zan"></span>{$l.qst_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|date="Y/m/d H:i",###}</div>
+        </li>
+<php>}else{</php>
+    <li  class="li">
+        <div class="pic"> <a target="_blank" title="{:getUserName($l['wenti']['uid'])}" class="otherHead" href="{:U('classroom/UserShow/index',array('uid'=>$l['wenti']['uid']))}"><img width="60" height="60" src="{:getUserFace($l['wenti']['uid'],'m')}"></a></div>
+            <div class="detailmeg">
+                
+                <!--<div class="firendreply"> <a  title="{:getUserName($l['uid'])}" class="firendHead" ><img src="{:getUserFace($l['uid'],'s')}"></a>-->
+                <div class="lzreply"> <span>我回答:</span> <em>{:limitNumber($l['qst_description'],150)}</em> </div>
+                <div class="report">
+                    <php>if($l['type']==1){</php>
+                        <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}>> {:limitNumber($l['wenti']['qst_description'],120)} </a>
+                    <php>}else{</php>
+                        <a title="{:getUserName($l['uid'])}" href="{:U('classroom/Video/view',array('id'=>$l['oid']))}" target="_blank">源自：{$l.course_title}>> {:limitNumber($l['wenti']['qst_description'],120)} </a>
+                    <php>}</php>
+                </div>
+            </div>
+            <div class="info"><a href="#"><span class="icon-zan"></span>{$l.qst_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|date="Y/m/d H:i",###}</div>
+            </div>
+        </div>
+    </li>
+<php>}</php>
+</foreach>
+
+<div class="page">
+    <div class="pagebox">
+        {$wentidata['html']}
+    </div>
+</div>
+
+<script>
+    $('.goto').click(function () {
+        if($('#goto_page').val()){
+            if($('#goto_page').val() != 0 ){
+                window.location.href = "{:U('classroom/Home/getwentilist')}&p="+$('#goto_page').val();
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    });
+</script>
+
+
+
+
+

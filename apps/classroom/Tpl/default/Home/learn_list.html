@@ -1,0 +1,49 @@
+<foreach name="data" item="l" key="k">
+    <li  class="li" <php> if($k == 0) echo "style='padding:0 0 20px;'"</php>>
+        <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" ><img width="40" height="40" src="{:getUserFace($l['uid'],'m')}"></a>
+            <div class="detailmeg">
+                  <!--<div class="mynote"><a title="Sunflower">{:getUserName($l['uid'])}</a><br/> -->
+                  <em>学习课程:</em> <a title="Sunflower" href="{:U('classroom/video/view',array('id'=>$l['vid']))}" target="_blank">{$l.video_title}</a>&nbsp;&nbsp;
+                  <em>学习课程-章节:</em> <a title="Sunflower" href="javascript:;">{$l.video_chapter_title} >> {$l.video_section_title}</a>&nbsp;&nbsp;
+                  </div>
+                <div class="fbtime">
+                    <em>学习时长:</em><a><if condition="$l['time'] gt 0">{$l.time}<else/><1</if>分钟</a>
+                    学习时间：
+                    <span>{$l.ctime|date="Y/m/d H:i",###}</span>
+                    <div class="Operation-wd">
+                      <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该学习记录吗？');return false;" callback="delLearn({$l['id']})" ><i></i><span>删除</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</foreach>
+
+
+
+
+
+
+
+<div class="page">
+    <div class="pagebox">
+        {$learndata['html']}
+    </div>
+</div>
+
+
+
+<script>
+    $('.goto').click(function () {
+        if($('#goto_page').val()){
+            if($('#goto_page').val() != 0 ){
+                window.location.href = "{:U('classroom/Home/getlearnlist')}&p="+$('#goto_page').val();
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    });
+
+</script>

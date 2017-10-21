@@ -1,0 +1,106 @@
+
+<include file="__THEME__/public_header" />
+
+<!---选择地址弹出框-->
+<script>
+    $(document).ready(function(){
+        $('div.user-con-title a:eq({:intval($_GET["tab"])})').click();
+        $("#user-shcool_select").click(function(){
+            $(".user-fixdworap").css("display","block");
+        });
+    });
+</script>
+<style>
+    .box-ver{
+        float: right;
+        margin-right: 70px;
+    }
+    .user-con-title a{
+        width:auto;
+    }
+    .center_right_tit div a{
+        color: #00BED4;
+    }
+    .user-imglist{
+        padding-bottom: 30px;
+    }
+    .wrap{
+        margin:0 auto;
+    }
+    .center_right {
+        margin-bottom: 30px;
+    }
+</style>
+
+<include file="../User/public/_top" />
+<!--centerbox end-->
+
+<!--course-->
+<div class="left-all">
+    <div class="center_right">
+        <div class="center_right_tit">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <h5>课程</h5>
+                    <a href="{:U('classroom/Home/video')}">更多></a>
+                </div>
+            </div>
+        </div>
+        <div class="center_right_con Manage_all">
+            <ul class="user-imglist">
+                <if condition="$video_data['data'] eq null">
+                    <li style="border: none;box-shadow: none;">您还没有相关课程。。</li>
+                    <else/>
+                    <foreach name="video_data['data']" item="l">
+                        <li>
+                            <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img">
+                                <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                            </a>
+                            <div class="user-title">
+                                <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_neme']}</a></p>
+                                <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                            </div>
+                        </li>
+                    </foreach>
+                </if>
+            </ul>
+        </div>
+    </div>
+
+    <!--live-->
+    <div class="center_right">
+        <div class="center_right_tit">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <h5>直播</h5>
+                    <a href="{:U('classroom/Home/live')}">更多></a>
+                </div>
+            </div>
+        </div>
+        <div class="center_right_con Manage_all">
+            <ul class="user-imglist">
+                <if condition="$live_data['data'] eq null">
+                    <li style="border: none;box-shadow: none;">您还没有相关直播课程。。</li>
+                    <else/>
+                    <foreach name="live_data['data']" item="l">
+                        <li>
+                            <a href="{:U('live/Index/view',array('id'=>$l['id']))}" class="img">
+                                <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                            </a>
+                            <div class="user-title">
+                                <h3><a href="{:U('live/Index/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
+                                <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_neme']}</a></p>
+                                <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
+                            </div>
+                        </li>
+                    </foreach>
+                </if>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<include file="../User/public/_right" />
+
+<include file="__THEME__/public_footer" />

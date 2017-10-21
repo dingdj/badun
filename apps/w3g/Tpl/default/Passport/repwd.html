@@ -1,0 +1,97 @@
+<include file="../Public/_header" />
+<!--container-->
+<div class="container"> 
+    <div class="login_box">
+        <form class="login_bd db">
+        	<div class="login_item"><input class="login_ip" type="text" id="rephoneval" placeholder=" 手机号码 "></div>
+            <div class="login_item">
+            <input class="login_ip login_ewm" type="text" placeholder="请输入验证码" id="repverval" >
+            <a class="login_yzm" href="javascript:;" onclick="getRepPhoneVerify()">发送验证码</a></div>
+            <div class="login_item"><input class="login_ip" type="password" placeholder="请输入6-12位密码" id="ppwd"></div>
+            <div class="login_item"><input class="login_ip" type="password" placeholder="重复密码" id="ppwds"  ></div>
+            <a class="login_btn" href="javascript:;" onclick="okPhonepwd(this);">确定</a>
+        </form>
+    </div>
+</div>
+<script>
+/**
+ * 确认通过手机重置密码
+ */
+function okPhonepwd(cate){
+	var phone=$.trim($("#rephoneval").val());//获取用户手机号
+	var pverify=$.trim($("#repverval").val());//获取验证码
+	var pwd=$.trim($("#ppwd").val());//获取新密码
+	var pwds=$.trim($("#ppwds").val());//获确认密码
+	if(!phone.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+		alert("对不起，手机格式不正确！");
+		return;
+	}
+	if(pverify.length!=6){
+		alert("对不起，验证码长度不正确！");
+		return;
+	}
+	if(pwd.length<6 || pwd.length>20){
+		alert("对不起，新密码长度不正确！");
+		return;
+	}
+	if(pwds!=pwd){
+		alert("对不起，两次密码输入不一致");
+		return;
+	}
+	$(cate).attr("disabled","disabled");
+	$(cate).val("提交中....");
+	//修改密码
+	 $.ajax({
+		 type: "POST",
+		 url:"{:U('w3g/Passport/repwdhandle')}",
+		 data:"phone="+phone+"&pwd="+pwd+"&repwd="+pwds+"&code="+pverify,
+		 dataType:"text",
+		 success:function(data){
+			 if(isNaN(data)){
+		 		alert(data);
+			 	$(cate).removeAttr('disabled');
+			    $(cate).val("确定");
+		       	return;
+			 }else{
+			 	alert("修改成功");
+			    window.location.href="{:U('w3g/Passport/login')}";
+			 }
+		}
+	}); 
+}
+function getRepPhoneVerify(){
+	phone=$.trim($("#rephoneval").val());//获取用户手机号
+	//检查手机号格式
+	if(!phone.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+		 alert('对不起，请填写正确的手机号!');
+		 return;
+	}
+	//获取手机验证码
+	 $.ajax({
+		 type: "POST",
+		 url:"{:U('w3g/Passport/getVrifi')}",
+		 data:"phone="+phone,
+		 dataType:"text",
+		 success:function(data){
+			 if(isNaN(data)){
+		        alert(data);
+		       	return;
+			 }else{
+			 	alert("短信发送成功");
+		        timerc = 60;
+		        dctime();
+		       	return;
+			 }
+		 }
+	}); 
+}
+var timerc; 
+function dctime(){
+    if(timerc > 1){ 
+    	timerc=timerc-1; 
+        setTimeout("dctime()", 1000); //设置1000毫秒以后执行一次本函数
+    }
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

@@ -1,0 +1,57 @@
+
+
+<volist name="data" id="vo">
+    <li class="li">
+        <div class="pic"><a target="_blank" title="{:getUserName($vo['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}" class="otherHead" ><img class="lazyloading" src="{:getUserFace($vo['uid'],'m')}"></a></div>
+        <div class="name"><a href="#">提问：</a></div>
+        </div>
+        <div class="text"><a target="_blank" href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:getShort(t($vo['wd_description']) , 50)}</a></div>
+        <php>if(!empty($vo['duid'])){</php>
+        <!--<div class="firendreply"> <a  title="Sunflower" class="firendHead" ><img class="lazyloading" src="{:getUserFace($vo['duid'],'s')}"></a>-->
+            <div class="lzreply"> <span><a title="{:getUserName($vo['duid'])}">{:getUserName($vo['duid'])}</a> 回答:</span> <em>{:limitNumber($vo['description'],150)}</em> </div>
+        </div>
+        <php>}</php>
+        <div class="info">时间：{$vo['ctime']|friendlyDate}
+            <php>if($wenda!="meque"){</php>
+
+
+            <php>if(!empty($vo['commentid'])){</php>
+            <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该回答吗？');return false;" callback="delWendacomment({$vo['commentid']})"  ><i></i>删除</a>
+            <php>}  else {</php>
+            <a href="{:U('wenda/Index/editWenda',array('wid'=>$vo['id']))}" class="fr"><i class="bianji-ico"></i>编辑</a>
+            <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该问答吗？');return false;" callback="delWenda({$vo['id']})"  ><i></i>删除</a>
+            <php>} </php>
+
+            <php>}</php>
+        </div>
+    </li>
+</volist>
+
+
+
+<div class="page">
+    <div class="pagebox">
+        {$wendadata['html']}
+    </div>
+</div>
+
+
+
+<script>
+
+   var gotype = $('#wendatype').val();
+
+
+    $('.goto').click(function () {
+        if($('#goto_page').val()){
+            if($('#goto_page').val() != 0 ){
+                window.location.href = "{:U('classroom/Home/"+gotype+"')}&p="+$('#goto_page').val();
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    });
+
+   </script>

@@ -1,0 +1,140 @@
+<table id="J_course_cl" class="dataTable" aria-describedby="J_course_cl_info" style="width: 960px;">
+    <thead>
+    <tr role="row">
+        <th class="sorting_disabled text-center" tabindex="0" rowspan="1" colspan="1" style="width: 48px;"><span></span></th>
+        <th class="sorting_disabled text-left text-width" tabindex="0" rowspan="1" colspan="1" style="width: 670px;"><span></span></th>
+        <th class="sorting_disabled text-center text-padding" tabindex="0" rowspan="1" colspan="1" style="width: 242px;"><span></span></th>
+    </tr>
+    </thead>
+    <tbody role="alert" aria-live="polite" aria-relevant="all">
+    <volist name="mount_data['data']" id="mda">
+        <tr class="odd">
+            <td class="text-center"><div class="item-left">
+                <!--<span class="s-checkbox show" data-id="20959"></span>-->
+            </div></td>
+            <td class="text-left text-width">
+                <div class="item clearfix">
+                    <div class="item-content">
+                        <ul class="course-content-to clearfix">
+                            <li class="img-wrap">
+                                <if condition="$mda['type'] eq 1">
+                                    <a href="{:U('classroom/Video/view',array('id'=>$mda['id']))}" target="_blank">
+                                        <else/>
+                                    <a href="{:U('live/Index/view',array('id'=>$mda['id']))}" target="_blank">
+                                </if>
+                                    <img src="{:getCover($mda['cover'],219,122)}" alt="{$fll['video_title']}" class="lazyloading" width="219" height="122">
+                                </a>
+                                <div class="course-detail"><span class="course-count">课件数：{$mda.sectionNum}</span><span class="course-length">{$mda.school_title}</span></div>
+                            </li>
+                            <li class="course-info">
+                                <div class="title-wrap clearfix">
+                                    <if condition="$mda['type'] eq 1">
+                                        <a href="{:U('classroom/Video/view',array('id'=>$mda['id']))}" target="_blank">
+                                            <else/>
+                                        <a href="{:U('live/Index/view',array('id'=>$mda['id']))}" target="_blank">
+                                    </if>
+                                        {$mda.video_title}</a>
+                                    <if condition="$mda['type'] eq 1">
+                                        <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
+                                        <else/>
+                                        <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
+                                    </if>
+                                </div>
+                                <div class="introduce">{$mda.video_binfo}</div>
+                                <div class="bottom-wrap clearfix">
+                                    <div class="teacher"><b>讲师</b><a href="{:U('classroom/Teacher/view',array('id'=>$mda['teacher_id']))}" style="margin-left:6px;" target="_blank">{$mda.teacher_name}</a></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </td>
+            <td class="text-center text-padding"><div class="item-right">
+                <div style="height: 84px;padding-top: 33px;">
+                    <p class="price-count clearfix">
+                    <p style="">售价：</p>
+                    <span style="color: #5bf;font-weight: 700;margin-bottom: 7px;white-space: nowrap;overflow: hidden;">￥{$mda.t_price}</span>
+                    <!--<span style="margin:0 2px;">至</span>-->
+                    <!--<span class="price right" title="0">￥0</span>-->
+                    </p>
+                </div>
+                <div>
+                    <if condition="$mda['mount_status']">
+                        <if condition="$mda['mount_status'] eq 1">
+                            <a class="ac-course" href="javascript:;" style="    background: rgba(101, 103, 101, 0.59);">已申请待审核</a>
+                        </if>
+                        <if condition="$mda['mount_status'] eq 2">
+                            <a class="ok-course" href="javascript:;" style="background: rgba(0, 140, 0, 0.59);">已成功加入</a>
+                        </if>
+                        <else/>
+                        <a class="add-course" href="javascript:;" data-id="{$mda['id']}" data_price="{$mda['mount_price']}">加入我的网校</a>
+                    </if>
+                </div>
+            </div></td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<!--<div id="J_course_cl_processing" class="dataTables_processing" style="visibility: hidden; top: 40px;"><span class="loadingTip">内容正在加载，请稍等...</span></div>-->
+<div class="ui-bbar clearfix" style="display: block;">
+    <div class="pagebox" style="float: right;">
+        {$mount_data.html}
+        <!--<div class="pagediv">-->
+        <!--<span>共{$mount_data.totalPages}页，去第</span>-->
+        <!--<input type="text" id="goto_page">-->
+        <!--<span>页</span>-->
+        <!--<a class="goto" href="javascript:;">确定</a>-->
+        <!--</div>-->
+    </div>
+    <div class="dataTables-total">共{$mount_data.count}条</div>
+</div>
+
+<script>
+    var uid = '{$uid}';
+    $('.add-course').click(function () {
+        $('.shou_mount').attr('onclick',"shou_mount("+$(this).attr('data-id')+")");
+        $('span.tips_info').html("确定申请该课程到您的机构销售，销售成功您将获得<span style='color:red;'>￥"+$(this).attr('data_price')+"/笔订单</span>的盈利！");
+        $('.message_prompt_box').show();
+        $('.mask').show();
+    });
+
+    $('.w-close a,.close_btn').click(function () {
+        $('.message_prompt_box').hide();
+        $('.mask').hide();
+    });
+
+    $('.pagebox a').click(function () {
+        $(this).removeAttr('href');
+        p = $(this).attr('p');
+        ajaxHtml();
+        $('body,html').animate({scrollTop:0},300);
+    });
+
+    function shou_mount(mount_id) {
+        if(uid<=0){
+            $('.message_prompt_box').hide();
+            $('.mask').hide();
+            reg_login();
+            return false;
+        }
+        if(!mount_id){
+            ui.error("参数错误");
+            return false;
+        }
+        $.post("{:U('school/Mount/doMount')}", {mount_id:mount_id}, function (e) {
+            if(e.status == 1){
+                ui.success(e.info);
+                $('.message_prompt_box,.mask').hide();
+
+                mount_cid = $('#mount_cate').val();
+                mount_order = $('#mount_order').val();
+                mount_map = $('#mount_map').val();
+                search_key = $('.search-key').val();
+
+                ajaxHtml();
+            }else{
+                ui.error(e.info);
+            }
+        }, 'json');
+    }
+</script>

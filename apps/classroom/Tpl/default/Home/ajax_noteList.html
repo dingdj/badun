@@ -1,0 +1,55 @@
+<foreach name="data" item="l" key='k'>
+
+    <li>
+        <div class="pic"><a  href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img class="lazyloading"  src="{:getUserFace($l['uid'],'m')}"></a></div>
+        <div class="name">
+
+            <php>if($l['type']==1){</php>
+            <a   href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">笔记：{$l.note_title}&nbsp;(<?php if($l["is_open"]==1){ ?>公开<?php }else{ ?><font style="color:#2388c0;">私密</font><?php } ?>)</a>
+            <php>}else{</php>
+            <a   href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">笔记：{$l.note_title}&nbsp;(<?php if($l["is_open"]==1){ ?>公开<?php }else{ ?><font style="color:#2388c0;">私密</font><?php } ?>)</a>
+            <php>}</php>
+        </div>
+        <div class="text"> {:limitNumber($l['note_description'],150)} </div>
+
+        <div class="info"><a href="#"><span class="icon-zan"></span>{$l.note_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|date="Y/m/d H:i",###}
+
+    </li>
+
+</foreach>
+
+<script>
+    $(function(){
+        var p="{$notedata['nowPage']}";
+        var type='{$type}';
+        $(window).scroll(function () {
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if (!p || parseInt(p) >= "{$notedata['totalPages']}") {
+                    return false;
+                } else {
+                    p = p+1;
+                    ajaxReturn(url,type);
+                }
+            }
+        });
+        //请求事件
+        function ajaxReturn(url,type) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {p:p,type:type},
+                dataType: "json",
+                success: function (data) {
+                    appendHtml(data);
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,146 @@
+<include file="__THEME__/public_header" />
+<include file="../User/public/_top" />
+
+<div class="content cbg">
+    <div class="wrap">
+        <!--中 -->
+        <div class="center_right">
+            <div class="center_right_tit">
+                <ul>
+                    <li  class="on" ><a href="javascript:;" onclick="navClick(this,'getbuycourselist')">已预约的课程</a></li>
+                    <li><a onclick="navClick(this,'failed')" href="javascript:;">已完成的约课</a></li>
+                </ul>
+            </div>
+            <input type = "hidden"  id = "clickstate"  value = "done"/>
+
+            <div class="center_right_con">
+                <ul class="user-imglist">
+                </ul>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<script>
+var btnclick="getbuycourselist";
+var fdata;
+var magstatus;
+var mid = "{$mid}";
+$(function(){
+    var url="{:U('classroom/Home/getbuycourselist')}";
+	//异步加载我购买的课程
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:"p=1&is_del=0&ordertype=1",
+        dataType:"json",
+        success:function(data){
+            appendHtml(data,btnclick,'getbuycourselist');
+        }
+    });
+});
+    //头部点击事件
+    function navClick(cate,type){
+        $(".user-imglist").html("");
+        btnclick=type;
+        magstatus=false;
+        url="{:U('classroom/Home/getbuycourselist')}";
+        if(type=="getbuycourselist"){
+           fdata="is_del=0";
+            $('#clickstate').val('done');
+        }else{
+            fdata="is_del=1";
+            $('#clickstate').val('failed');
+        }
+        $(".center_right_tit ul li a").parent().removeClass("on");
+        $(cate).parent().addClass("on");
+        p=1;
+        ajaxBang(url,type,fdata);
+    }
+//点击查看更多事件
+function fallBang(cate){
+    var clickid=$(cate).attr('id');
+    var url="{:U('classroom/Home/"+clickid+"')}";
+    ajaxBang(url,clickid,fdata,function(){
+        if(magstatus==true){
+            $(".Operation-list").css("display","block");
+        }else{
+            $(".Operation-list").css("display","none");
+
+        }
+    });
+
+}
+
+//请求事件
+function ajaxBang(url,type,callback){
+    var ordertype;
+
+    url = "{:U('classroom/Home/getbuycourselist')}";
+    if($('#clickstate').val() == 'done')
+    {
+        ordertype = 1;
+    }
+    if($('#clickstate').val() == 'failed')
+    {
+        ordertype = 2;
+    }
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:"p="+p+"&ordertype="+ordertype,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data,type);
+            callback && callback();
+        }
+    });
+}
+
+/**
+ * 删除课程方法
+ * @param id
+ */
+function delcourse(cate,id){
+    var id=id;
+    url="{:U('classroom/Home/delCourse')}";
+    fdata="id="+id;
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:fdata,
+        dataType:"json",
+        success:function(data){
+           if(data.status==1){
+               $(cate).parent().parent().parent().fadeOut();
+           }
+        }
+    });
+}
+    /**
+     * 完成约课方法
+     * @param id
+     */
+    function saveFinished(id,type){
+        url="{:U('classroom/Home/saveFinished')}";
+        fdata={id:id,type:type};
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    ui.success(data.info);
+                    window.location.reload();
+                }else{
+                    ui.error(data.info);
+                    return;
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,222 @@
+<include file="__THEME__/public_header"/>
+
+
+<div class="content">
+    <div class="wrap">
+        <div class="class_left">
+            <div class="content-place">
+
+
+                <div class="breadcrumb"><a href="{:U('group')}">小组首页</a>&gt
+                    <a>《创建小组》</a>
+                </div>
+                <div class="sk_main">
+
+                    <div class="newpost">
+                        <a href="" class="quealltab onactive">创建小组</a>
+
+
+                    </div>
+                    <div class="sk_l2">
+                        <form name="addform" action="{:U('group/Index/doAdd')}" method="post">
+
+                            <ul class="user-set-sz" style="padding-left:0px;margin-top:30px;width:100%">
+                                <li>
+                                    <label class="label"><em>*</em> 小组名称：</label>
+                                    <input name="name" id="gruopname" value="{$groupinfo['name']}" class="user-width"
+                                           style="border: 1px solid #cce4f4;" type="text" placeholder="">
+                                </li>
+                                <li>
+                                    <label class="label"><em>*</em> 分类：</label>
+                                    <div class="c2" id="pid">
+                                        <select name="cid0" id="cid0">
+                                            <option value="">请选择</option>
+                                            <volist name="categrory" id="vo">
+                                                <option value="{$vo.a}"
+                                                <php>if($_GET['fid'] == $vo['a']){</php>
+                                                selected
+                                                <php>}</php>
+                                                >{:msubstr(t($vo['t']),0,20,'utf-8',true)}</option>
+                                            </volist>
+                                        </select>
+                                    </div>
+                                </li>
+                                <li>
+                                    <label class="label"><em>*</em> 封面：</label>
+                                    <dd>
+                                        <div id="width_150 sc_img">
+                                            <div id="divup_9999" type="file" rel="9999">
+                                                <input type="file" name="middle_ids" rel="9999"
+                                                       onchange="largeCover(this)"
+                                                       urlquery="attach_type=feed_image&amp;upload_type=image&amp;thumb=1"
+                                                       class="file ck">
+                                            </div>
+                                            <div id="show_cover" class="show_cover_diy"></div>
+                                            <p>请上传至少 160*160 尺寸的图片</p>
+                                            <input name="cover_ids" id="cover_ids" type="hidden" class="s-txt">
+                                        </div>
+                                    </dd>
+                                </li>
+
+                                <script>
+                                    function largeCover(obj) {
+                                        if ("undefined" != typeof(core.uploadFile)) {
+                                            core.uploadFile.filehash = new Array();
+                                        }
+                                        core.plugInit('uploadFile', obj, function (data) {
+                                            $(obj).parents('#divup_9999').siblings('#show_cover').html('<img class="pic-size" width="80" height="80" src="' + data.src + '">');
+                                            $(obj).parents('#divup_9999').siblings('#cover_ids').val(data.attach_id);
+                                        }, 'image');
+                                    }
+                                    function largeCover2(obj) {
+                                        if ("undefined" != typeof(core.uploadFile)) {
+                                            core.uploadFile.filehash = new Array();
+                                        }
+                                        core.plugInit('uploadFile', obj, function (data) {
+                                            $(obj).parents('#divup_8888').siblings('#show_cover').html('<img class="pic-size" width="400" height="83" src="' + data.src + '">');
+                                            $(obj).parents('#divup_8888').siblings('#background_cover').val(data.attach_id);
+                                        }, 'image');
+                                    }
+                                </script>
+
+                                <li>
+                                    <label class="label"><em>*</em> 简介：</label>
+                                    <textarea id="intro" class="user-textarea" id="intro" name="intro"
+                                              style="width:520px">{$groupinfo['intro']}</textarea>
+                                </li>
+
+                                <li>
+                                    <label class="label"><em>*</em> 公告：</label>
+                                    <textarea id="announce" class="user-textarea" name="announce" style="width:520px">{$groupinfo['announce']}</textarea>
+                                </li>
+
+                                <!--<li>-->
+                                    <!--<label class="label"><em>*</em> 验证码：</label>-->
+                                    <!--<dd>-->
+                                        <!--<input id="verify" name="verify" placeholder="请输入验证码">-->
+                                        <!--<img class="verifyimg" src="{:U('group/Index/verify')}" title="点击刷新验证"-->
+                                             <!--style="height: 40px;"/>-->
+                                    <!--</dd>-->
+                                <!--</li>-->
+
+                                <li>
+                                    <label class="label">&nbsp;</label>
+                                    <input type="hidden" name="dosubmit" value="1">
+                                    <input class="user-submit" type="button" name="button" value="保存"
+                                           href="javascript:;" onclick="dosubgroup(this)"/>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<include file="__THEME__/public_footer"/>
+
+<script>
+    window.URL = window.URL || window.webkitURL;
+    var fileElem = $("#logoxz");
+    function handleFiles(obj) {
+        var files = obj.files,
+                img = new Image();
+        if (window.URL) {
+            $('#logo_src').attr('src', window.URL.createObjectURL(files[0]))
+        } else if (window.FileReader) {
+            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+            var reader = new FileReader();
+
+            $('#logo_src').attr('src', this.result)
+
+        } else {
+            //ie
+            obj.select();
+            obj.blur();
+            var nfile = document.selection.createRange().text;
+            document.selection.empty();
+            img.src = nfile;
+            $('#logo_src').attr('src', nfile)
+
+            //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+        }
+    }
+
+    $('.verifyimg').click(function () {
+        var url = "{:U('wenda/Index/verify')}";
+        $('.verifyimg').removeAttr('src');
+        $('.verifyimg').attr('src', url);
+    });
+
+
+    function dosubgroup(o) {
+
+        var v_form = $.trim($('#form').val());
+        var gruopname = $.trim($('#gruopname').val());
+        var cid0 = $.trim($('#cid0').val());
+        var intro = $.trim($('#intro').val());
+        var announce = $.trim($('#announce').val());
+        var verify = $.trim($('#verify').val());
+        var cover_ids = $.trim($('#cover_ids').val());
+
+        if ($("#gruopname").val().length == 0) {
+            notes("群组名称不能为空", "failure");
+            return;
+        }
+        if ($("#gruopname").val().length > 30) {
+            notes("群组名称不能超过30个字", "failure");
+            return;
+        }
+        if ($("#cid0").val() <= 0) {
+            notes("请选择群组分类", "failure");
+            return;
+        }
+        if ($("#intro").val().length == 0) {
+            notes("群组简介不能为空", "failure");
+            return;
+        }
+        if ($("#announce").val().length == 0) {
+            notes("群组公示不能为空", "failure");
+            return;
+        }
+        if ($("#announce").val().length > 200) {
+            notes("群组公示不能超过200个字", "failure");
+            return;
+        }
+
+        if ($("#announce").val().length > 200) {
+            notes("群组公示不能超过200个字", "failure");
+            return;
+        }
+
+//        if ($("#verify").val() == '') {
+//            notes('请输入验证码', "failure");
+//            return;
+//        }
+
+        $.ajax({
+            type: "POST",
+            url: "{:U('group/Index/doAdd')}",
+            data: "gruopname=" + gruopname + "&cid0=" + cid0 + "&intro=" + intro + "&announce=" + announce + "&verify=" + verify + "&cover_ids=" + cover_ids,
+            dataType: "text",
+            success: function (data) {
+                if (isNaN(data)) {
+                    notes(data, "failure");
+                } else {
+                    if(data == 200){
+                        notes("恭喜申请成功，请等待管理员审核！", "success");
+                    }else{
+                        notes("恭喜申请成功！", "success");
+                    }
+                    var iddata = data;
+//                    location.href = U('group/Index/view') + '&gid=' + iddata;
+                    location.href = U('classroom/Home/group');
+                }
+            }
+        });
+
+    }
+
+</script>

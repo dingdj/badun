@@ -1,0 +1,42 @@
+<include file="__THEME__/public_header" />
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <include file="_tab" />
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all" style="display:block;min-height: 205px;padding: 180px 0;text-align: center">
+                <p class="txt_r ft24 pb20"> 可用余额
+                    <em class="green_txt ft30 mlr22">{:unLast0($userLearnc['score'])}</em>积分
+                    <a class="green_txt ft14 ml20" href="{:U('classroom/User/recharge')}" style="margin-right: 20px;">去充值</a>或者
+                    <a class="green_txt ft14 ml20" href="{:U('mall/Index/index')}">去兑换</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<include file="__THEME__/public_footer" />

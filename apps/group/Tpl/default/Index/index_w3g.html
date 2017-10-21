@@ -1,0 +1,253 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<link href="__THEMENEW__/css/group.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/group_media.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/public_input.css" rel="stylesheet" type="text/css">
+<div class="min-height-wrap">
+	<div class="group-box">
+		<div class="group">
+			<div class="gu-pos">
+				<div class="square"><em>小组广场</em><div class="btns-icon"></div>
+					<ul>
+						<li <if condition="$_GET['cate_id'] eq ''"> class="cate_li"</if> ><a href="{:U('group/Index/index')}">全部</a></li>
+						<volist name="cate_list" id="clt">
+							<if condition="$_GET['cate_id'] eq $clt['id']">
+								<li class="cate_li"><a href="{:U('group/Index/index',['cate_id'=>$clt['id']])}">
+									<else/>
+								<li><a href="{:U('group/Index/index',['cate_id'=>$clt['id']])}" >
+							</if>
+							{:msubstr(t($clt['title']),0,10,'utf-8',true)}</a></li>
+						</volist>
+					</ul>
+				</div>
+				<div class="com-btns"><span>综合排序</span><div class="btns-icon"></div>
+					<div class="group-name">
+						<button <if condition="$_GET['or'] eq ''"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id']])}">综合排序<i></i></a></button>
+						<button <if condition="$_GET['or'] eq 2"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id'],'or'=>2])}">最近合约<i></i></a></button>
+						<button <if condition="$_GET['or'] eq 3"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id'],'or'=>3])}">热门小组<i></i></a></button>
+					</div>
+				</div>
+				<div class="masking"></div>
+				<div class="order" style="width: 100%;">
+					<div class="group-class">
+						<div class="group_searchdiv">找到{$ground_list['count']}个相关小组</div>
+						<div class="group-content">
+							<php>if($ground_list['data']){</php>
+								<volist name="ground_list['data']" id="gla">
+									<if condition="$gla['groupstatus'] eq ''">
+										<a href="javascript:;" onclick =joingroups("{$gla['id']}");>
+											<else/>
+											<a href="{:U('group/Index/view',array('gid'=>$gla['id']))}">
+									</if>
+
+									<div class="group-content-img">
+										<img src="{:logo_path_to_url($gla['logo'])}">
+										<php>	if($gla['groupstatus'] == 0)  { </php>
+											<span>加入小组</span>
+										<php>  } else  if($gla['groupstatus'] == 1){</php>
+											<span>等待审核</span>
+										<php>  } else  if($gla['groupstatus'] > 1){</php>
+											<span style="background: rgba(0, 128, 0, 0.71)">您已加入</span>
+										<php>}</php>
+									</div>
+									<div class="group-content-per">
+										<h3>{$gla.name}</h3>
+										<p>{$gla.intro|msubstr=0,20,'utf-8',true}</p>
+										<div class="ibor"><i>成员：{$gla.membercount}</i><i class="ipos">帖子：{$gla.threadcount}</i></div>
+									</div>
+									</a>
+								</volist>
+							<php>}else{</php>
+								<p>暂时没有相关数据。。</p>
+							<php>}</php>
+						</div>
+						<php>if($ground_list['data']){</php>
+						<div class="loadding">
+							<if condition="$ground_list['nowPage'] eq $ground_list['totalPages']">
+								<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+							</if>
+						</div>
+						<php>}</php>
+					</div>
+				</div>
+				<div class="page">
+					<div class="pagebox">
+						{$ground_list['html']}
+					</div>
+				</div>
+			</div>
+
+			<div class="advertisement-box">
+				<div class="shenq_div">
+					<a href="{:U('group/Index/addgroup')}" class="block_a">
+						<div class="sapan_icon"></div><span>申请小组</span></a>
+				</div>
+				<div class="recommend-group">
+					<h4>热门小组
+						<ul>
+							<volist name="ground_hot_list['data']" id="ght">
+								<li>
+									<img src="{:logo_path_to_url($ght['logo'])}">
+									<div class="recommend">
+										<p>{$ght.name}</p>
+										<i>{$ght.membercount}个成员</i>
+										<if condition="$ght['groupstatus'] eq ''">
+											<a href="javascript:;" onclick =joingroups("{$ght['id']}");>+加入小组</a>
+											<else/>
+											<a href="{:U('group/Index/view',array('gid'=>$ght['id']))}">+加入小组</a>
+										</if>
+									</div>
+								</li>
+							</volist>
+						</ul>
+					</h4>
+				</div>
+				{:Addons::hook('show_ad_space', array('place'=>'group_home_left'))}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
+		$(function(){
+			$("#linsde").height(44);
+			$("#meid").show();
+			$(".loadding").show();
+
+			$(".modular").on("click",function(){
+	            $(".win").show();
+	            $(".window-box").animate({marginLeft:"0"});
+	        });
+
+	        $(".win").on("click",function(){
+	            $(".window-box").animate({marginLeft:'-70%'});
+	            $(".win").hide();
+	        });
+
+			$(".square").on("click",function(){
+				$(".masking").toggle();
+				$(".square .btns-icon").css("background-position","213px 200px");
+				$(".square").css({"color":"#00BED4","backgroundColor":"#fff","border-color":"#fff"});
+				$(".square ul").show();
+				$(".group-name").hide();
+				$(".com-btns .btns-icon").css("background-position","265px 200px");
+				$(".com-btns").css({"color":"#656565","backgroundColor":"#f7f7f7","border-color":"#fff"});
+				$(".masking").show();
+
+			});
+
+			$(".com-btns").on("click",function(){
+				$(".masking").toggle();
+				$(".com-btns .btns-icon").css("background-position","213px 200px");
+				$(".com-btns").css({"color":"#00BED4","backgroundColor":"#fff","border-color":"#fff"});
+				$(".group-name").show();
+				$(".square ul").hide();
+				$(".square .btns-icon").css("background-position","265px 200px");
+				$(".square").css({"color":"#656565","backgroundColor":"#f7f7f7","border-color":"#fff"});
+				$(".masking").show();
+			});
+
+			$(".masking").on("click",function(){
+				$(".masking").hide();
+				$(".group-name").hide();
+				$(".square ul").hide();
+				$(".square .btns-icon").css("background-position","265px 200px");
+				$(".com-btns .btns-icon").css("background-position","265px 200px");
+				$(".square,.com-btns").css({"color":"#656565","background-color":"#f7f7f7"});
+
+			});
+
+            $(".group-name button.group-btn i").html("√");
+            $(".group-name button.group-btn").css("backgroundColor","#fff");
+			$(".group-name button").on("click",function(){
+				var j = $(this).index();
+				$(".group-name button").css("backgroundColor","#fff");
+				$(".group-name button i").html("");
+				$(".group-name button i").eq(j).html("√");
+
+			});
+
+			$("header").show();
+
+		});
+	}
+</script>
+<script>
+    var p = 1;
+    $(window).scroll(function () {
+        //已经滚动到上面的页面高度
+        var scrollTop = $(this).scrollTop();
+        //页面高度
+        var scrollHeight = $(document).height();
+        //浏览器窗口高度
+        var windowHeight = $(this).height();
+        //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+        if (scrollTop + windowHeight == scrollHeight) {
+            if(!p || p >= "{$ground_list['totalPages']}"){
+                return false;
+            }else{
+                p = p + 1;
+                ajaxBang();
+            }
+        }
+    });
+
+    //请求事件
+    function ajaxBang(){
+        console.log("p="+p+"&cate_id={$_GET['cate_id']}"+"&or={$_GET['or']}");
+        $.ajax({
+            type: "GET",
+            url:"{:U('group/Index/getGroupList')}",
+            data:"p="+p+"&cate_id={$_GET['cate_id']}"+"&or={$_GET['or']}",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".group-content").append(data.data);
+        console.log(p+" ***3");
+        console.log(data.totalPages+"****data.totalPages");
+        if(!p || p >= data.totalPages){
+            $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+            return false;
+        }else{
+            p = data.nowPage+1;//下一页
+        }
+    }
+
+
+
+	// 加入群组
+	function joingroups(gid) {
+
+		if(MID<=0){
+			if(confirm("请先登录")){
+				window.location.href = "{:U('public/Passport/login_g')}";
+			}
+			return false;
+		}
+
+		if(!confirm("确定要加入该小组吗？")){
+			return false;
+		}
+
+		var accept = accept == 0 ? 0 : 1;
+		$.ajax({
+			type: "POST",
+			url: U('group/Index/joinGroups'),
+			data:   "addsubmit=1&gid="+gid+"&accept=" + accept + "&reason=" + $('#reason').val(),
+			success: function(msg){
+				if (msg == 1) {
+					alert('加入成功！');
+					window.location.reload();
+				} else {
+					alert('加入失败！');
+				}
+			}
+		});
+	}
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

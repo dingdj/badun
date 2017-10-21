@@ -1,0 +1,242 @@
+<style>
+    .adjust{margin-top: 65px;}
+</style>
+<div class="teacherpalce">
+    <div class="wrap">
+        <div class="content-place">
+            <div class="wrap"><a href="/">首页</a><span>&gt;</span><a href="{:U('classroom/Teacher')}">讲师</a><span>&gt;</span><span>{:msubstr(t($data['name']),0,10,'utf-8',true)}</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="topbox teacherbg" style="<php>if($data['background']){</php>background:url({$data.background})<php>}else{</php>background:url(__THEME__/images/banner1.jpg)<php>}</php> center center no-repeat;background-size: cover;">
+    <div class="wrap">
+        <div class="teacher-profile">
+            <div class="info">
+                <div class="portrait"><img src="{:getCover($data['head_id'],180,180)}" alt="{$data.name}"></div>
+                <div class="data">
+                    <div class="title-box">
+                        <h1 class="name"><a href="javascript:;">{:msubstr(t($data['name']),0,10,'utf-8',true)}</a></h1>
+                        <php>if($data['teacher_title_cover']){</php><img src="{$data.teacher_title_cover}" alt="{$data.teacher_title_category}" width="19px" height="19px"><php>}</php>
+                        <span class="visit-count">（{$data.views}人看过）</span>
+                    </div>
+                    <div class="summary-box">
+                        <div class="voice1">
+                            <object id="_AudioPlayer_0" type="application/x-shockwave-flash"  width="1px" height="1px" class="audio-player">
+                                <param name="wmode" value="transparent">
+                                <param name="movie" value="http://cdn.com/dep/audioPlayer/0.0.2/asset/audioPlayer.swf">
+                                <param name="quality" value="high"><param name="menu" value="false">
+                                <param name="allowScriptAccess" value="always">
+                                <param name="flashvars" value="movieName=_AudioPlayer_0">
+                            </object>
+                        </div>
+                        <span class="slogon">{$data.inro|msubstr=0,15,'utf-8',true}</span>
+                    </div>
+                    <div class="address"><i class="icon-address"></i>{$location}</div>
+                    <div class="btn-box">
+                        <a  onclick="ui.sendmessage({$data.uid}, 0)"   href="javascript:void(0)" event-node="postMsg" class="btn zx" style="margin-top: 10px;">咨询老师</a>
+                        <php>if($mid!=$_GET['uid']){</php>
+
+                            <php>if($isfollow){</php>
+                        <a class="btn gzl" href="javascript:;"  onclick="offyou(this,{$data.uid},{$data.id},'off')">  <img src="__THEME__/icon/ygz.png"></a>
+                            <php>}else{</php>
+                            <a class="btn gzl" href="javascript:;" onclick="followyou(this,{$data.uid},{$data.id})" >  <img src="__THEME__/icon/gz.png"></a>
+                            <php>}</php>
+
+                        <php>}</php>
+                    </div>
+                </div>
+                <div class="anther zhuang-left">
+                    <ul class="action">
+
+
+
+
+                        <div class="fr zhuang-left" style="position: relative;" >
+                        <li class="favor"><a  href="javascript:;" ><i class="icon-01"></i>
+                        </a>分享</li>
+
+
+                            <div class="_share_my_firends" >
+                                <div class="_share_all_channel">
+                                    <i class="side-ills-fell"></i>
+                                    <p  style="padding-top: 4px; text-indent: 10px;">分享到：</p>
+                                    <div class="bdsharebuttonbox"  data-tag="share_1">
+                                        <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>
+                                    </div>
+                                    <script>
+                                        var share_url = "{$share_url}";
+                                        window._bd_share_config={"common":{
+                                            bdUrl:share_url,
+                                            bdText:"",
+                                            bdMini:"2",
+                                            bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],
+                                            bdPic:"",
+                                            bdSize:"24"
+                                        },
+                                            share:{},
+                                            image:{"viewList":["tsina","weixin","qzone","sqq"],
+                                                viewText:"分享到：","viewSize":"0"}};
+                                        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+
+                                    </script>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+
+
+
+                        <li>
+
+                            <i class="icon-02"></i>手机浏览
+                                <div class="qrcode-wrap" style="height: 116px;">
+                                    <span></span>
+                                    <div id="qrcode" class="fxp" title="http://dafengche.51eduline.com/live/770.html">
+                                    </div>
+                                    <p>用手机扫码看</p>
+                                </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+                <script src="__THEME__/js/qrcode.js"></script>
+                <script>
+                    var qrcode = new QRCode(document.getElementById("qrcode"), {
+                        width : 100,
+                        height : 100
+                    });
+
+                    function makeCode () {
+                        var elText = '{$url}';
+                        qrcode.makeCode(elText);
+                    }
+                    makeCode();
+                </script>
+                </div>
+                <ul class="nav-box" id="view_main_nav">
+                    <li <eq name="ACTION_NAME" value="view">class="active"</eq>><a href="{:U('classroom/Teacher/view',array('id'=>$data['id']))}">主页</a></li>
+                    <li <eq name="ACTION_NAME" value="video">class="active"</eq>><a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}">课程</a></li>
+                    <li <eq name="ACTION_NAME" value="style">class="active"</eq>><a href="{:U('classroom/Teacher/style',array('id'=>$data['id']))}">相册/视频</a></li>
+                    <li <eq name="ACTION_NAME" value="article">class="active"</eq>><a href="{:U('classroom/Teacher/article',array('id'=>$data['id']))}">文章</a></li>
+                    <li <eq name="ACTION_NAME" value="details">class="active"</eq>><a href="{:U('classroom/Teacher/details',array('id'=>$data['id']))}">个人资料</a></li>
+                    <li <eq name="ACTION_NAME" value="evaluate">class="active"</eq>><a href="{:U('classroom/Teacher/evaluate',array('id'=>$data['id']))}">评价</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+<script type="text/javascript">
+    window.onload=function(){
+        var view_main_nav = document.getElementById('view_main_nav');
+
+        window.onscroll = function(){
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+            if(scrollTop <= 596){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop && scrollTop <= 596){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop){
+                $('#view_main_nav').attr("style","position: fixed;top: -61px;z-index: 9;background: #fff;height:43px");
+            }else{
+                $('#view_main_nav').removeAttr("style");
+            }
+        }
+    };
+
+    //关注讲师
+    function followyou(cate,uid,id,type){
+        if(MID=='0'){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+uid+"&tid="+id+"&type="+type,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    notes(data.info,'failure');
+                    return;
+                }else{
+                    window.location.href = window.location.href;
+                }
+            }
+        });
+    }
+
+    //关注讲师
+    function offyou(cate,uid,id,type){
+        if(MID=='0'){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+uid+"&tid="+id+"&type="+type,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    notes(data.info,'failure');
+                    return;
+                }else{
+                    window.location.href = window.location.href;
+                }
+
+            }
+        });
+    }
+
+</script>
+
+
+<style>
+
+    .zhuang-left:hover ._share_my_firends{display: block;}
+    ._share_my_firends {
+        height: 62px;
+        position: absolute;
+        right: 44px;
+        bottom: 3px;
+        width: 168px;
+        top: 0px;
+        left: 0;
+        display: none;
+        margin-top: 20px
+    }
+
+    ._share_all_channel {
+        margin-top: 13px;
+        width: 155px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(83,87,88,.2);
+        margin-top: 10px;
+    }
+
+
+    .side-ills-fell {
+        width: 0!important;
+        position: absolute;
+        height: 0!important;
+        top: 5px;
+        left: 11px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 5px solid #FFF;
+    }
+
+</style>

@@ -1,0 +1,205 @@
+<include file="__THEME__/admin_header"/>
+
+<style type="text/css">
+    .ico_btm,.ico_top{background:url(__THEME__/admin/image/ico_top_btm.gif) no-repeat scroll 0 0 transparent;height:14px;width:12px}
+    .ico_btm,.ico_top{display:inline-block;vertical-align:middle}
+    .ico_top{background-position:-12px 0}
+    .ico_btm{background-position:-24px 0}
+    .ico_top:hover{background-position:0 0}
+    .ico_btm:hover{background-position:-35px 0}
+    .sort .l1{float:left;overflow:hidden;width:15%}
+    .sort .c1{float:left;overflow:hidden;width:15%}
+    .sort li.underline{height:30px}
+    .underline:hover{background: #E3E6EB}
+    .sort li .c2 .disabled {color:#333}
+    .sort li .c2 .disabled:hover {cursor:not-allowed;opacity:1}
+</style>
+
+<div id="container" class="so_main">
+    <div class="page_tit">{$pageTitle}</div>
+
+    <!-- START TAB框 -->
+    <if condition="$pageTab neq []">
+        <div class="tit_tab">
+            <ul>
+                <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] = $pageTab[0]['tabHash'];</php>
+                <volist name='pageTab' id='t'>
+                    <li><a href="{$t.url}&tabHash={$t.tabHash}" <if condition="$t['tabHash'] eq $_REQUEST['tabHash']">class="on"</if> >{$t.title}</a></li>
+                </volist>
+            </ul>
+        </div>
+    </if>
+    <!-- END TAB框 -->
+
+    <!-- START TOOLBAR -->
+    <div class="Toolbar_inbox">
+    </div>
+    <!-- END TOOLBAR -->
+
+    <!-- START LIST -->
+    <div class="list">
+        <ul class="sort">
+            <li class="title">
+                <div class="line-l c1">用户组名称</div>
+                <div class="line-l l1">用户组类型</div>
+                <div class="line-l l1">用户组图标</div>
+                <div class="line-l c2">操作</div>
+            </li>
+        </ul>
+
+        <if condition="$pageTab neq null">
+            <span class="textC" style="line-height:26px;display:block">{:L('PUBLIC_NO_RELATE_DATA')}!</span>
+            <else/>
+            {:showUserGroupTree($tree, 0, $delParam, $level, $extra, 1, $limit, $type)}
+        </if>
+    </div>
+    <!-- END LIST -->
+
+    <!-- START BOTTOMBAR -->
+    <div class="Toolbar_inbox">
+    </div>
+    <!-- END BOTTOMBAR -->
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        admin.foldCategory("{$mugid}");
+    });
+    /**
+     * 收起与展开效果
+     * @param integer cid 用户组ID
+     * @return boolean false
+     */
+    admin.foldCategory = function (cid) {
+        var offImg = THEME_URL + '/admin/image/off.png';
+        var onImg = THEME_URL + '/admin/image/on.png';
+        $('#sub_' + cid).toggle();
+        $img = $('#img_' + cid);
+        if ($img.attr('src') == offImg) {
+            $img.attr('src', onImg);
+        } else {
+            $img.attr('src', offImg);
+        }
+        return false;
+    };
+    /**
+     * 移动用户组位置
+     * @param integer cid 用户组ID
+     * @param string type 移动类型
+     * @param string stable 所操作的数据表
+     * @return boolean false
+     */
+    admin.moveTreeCategory = function (cid, type, stable) {
+        // 验证数据正确性
+        if (typeof cid === "undefined" || typeof type === "undefined" || typeof stable === "undefined") {
+            return false;
+        }
+        // 提交数据，修改排序位置
+        $.post(U('admin/Public/moveTreeCategory'), {cid: cid, type: type, stable: stable}, function (msg) {
+            if (msg.status == 1) {
+                ui.success(msg.data);
+                var $category = $('#' + stable + '_' + cid);
+                if (type === 'up') {
+                    var size = $category.prev().size();
+                    if (size > 0) {
+                        var otherId = $($category.prevAll('li[id^="' + stable + '_"]')[0]).attr('id');
+                        otherId = otherId.split('_').pop();
+                        $target = $('#' + stable + '_' + otherId);
+                        $target.before($category);
+                        $('#sub_' + cid).length > 0 && $target.before($('#sub_' + cid));
+                    }
+                } else if (type === 'down') {
+                    var size = $category.next().size();
+                    if (size > 0) {
+                        var otherId = $($category.nextAll('li[id^="' + stable + '_"]')[0]).attr('id');
+                        otherId = otherId.split('_').pop();
+                        $target = $('#' + stable + '_' + otherId);
+                        if ($('#sub_' + otherId).length > 0) {
+                            $target = $('#sub_' + otherId);
+                        }
+                        $('#sub_' + cid).length > 0 && $target.after($('#sub_' + cid));
+                        $target.after($category);
+                    }
+                }
+            } else {
+                ui.error(msg.data);
+            }
+        }, 'json');
+        return false;
+    };
+    /**
+     * 添加子用户组
+     * @parma integer cid 用户组ID
+     * @param string stable 所操作的数据表
+     * @parma integer limit 字数限制
+     * @param integer type 用户组所属 云课堂特有
+     * @return boolean false
+     */
+    admin.addUserGroupTreeCategory = function (id, limit, box_title) {
+        if (typeof id === "undefined") {
+            return false;
+        }
+        admin.foldCategory(id);
+        var box_title = box_title ? box_title : "添加用户组";
+        ui.box.load(U('school/AdminUserGroup/addUserGroupTreeCategory') + '&id=' + id + '&limit=' + limit, box_title);
+        return false;
+    };
+    /**
+     * 编辑用户组权限
+     * @param integer cid 用户组ID
+     * @param integer type 用户组所属 云课堂特有
+     * @return boolean false
+     */
+    admin.upUserGroupTreeCategory = function (id, limit, box_title) {
+        if (typeof id === "undefined") {
+            return false;
+        }
+        ui.box.load(U('school/AdminUserGroup/upUserGroupTreeCategory') + '&id=' + id + '&limit=' + limit, box_title);
+        return false;
+    };
+    /**
+     * 编辑用户组
+     * @param integer cid 用户组ID
+     * @param integer type 用户组所属 云课堂特有
+     * @return boolean false
+     */
+    admin.upUserGroupListTreeCategory = function (id, box_title) {
+        if (typeof id === "undefined") {
+            return false;
+        }
+        ui.box.load(U('school/AdminUserGroup/upUserGroupListTreeCategory') + '&id=' + id, box_title);
+        return false;
+    };
+    /**
+     * 删除用户组
+     * @param integer cid 用户组ID
+     * @return boolean false
+     */
+    admin.rmUserGroupTreeCategory = function (id,is) {
+        if (typeof id === "undefined") {
+            return false;
+        }
+//        if(is === 9){
+//            ui.error("当前用户组下存在子用户组,不允许删除");
+//            return false;
+//        }
+        // 删除操作
+        if (confirm("删除用户组将会删除子用户组,确认删除该用户组吗?")) {
+            $.post(U('school/AdminUserGroup/delUserGroup'), {
+                id: id,
+            }, function (e) {
+                if (e.status == 1) {
+                    ui.success(e.info);
+                    location.href = location.href;
+                    return false;
+                } else {
+                    ui.error(e.info);
+                    return false;
+                }
+            }, 'json');
+        }
+        return false;
+    };
+</script>
+
+<include file="__THEME__/admin_footer"/>

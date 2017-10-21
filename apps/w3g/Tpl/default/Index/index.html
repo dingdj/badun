@@ -1,0 +1,104 @@
+<include file="../Public/_header" />
+<div id="focus" class="focus">
+    <div class="hd">
+        <ul></ul>
+    </div>
+    <div class="bd">
+        <ul>
+            <volist name="ad_list" id="vo">
+                <li><a href="{$vo.bannerurl}" target="_blank"><img _src="{:cut_img($vo['banner'] , 750 , 260)}" src="icon/blank.png" /></a></li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+  TouchSlide({ 
+      slideCell:"#focus",
+      titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+      mainCell:".bd ul", 
+      effect:"leftLoop",
+      interTime:"4000", 
+      autoPlay:true,//自动播放
+      autoPage:true, //自动分页
+      switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+  });
+</script>
+<!--container-->
+<div class="container"> 
+    <div class="item_box bl">
+    	<ul class="promotelist">
+        	<li><a href="http://51eduline.com/app.html" target="_black">
+            	<span class="icon-promote01"></span>
+                <h3>客户端下载</h3>
+                <p>最有逼格的在线学习平台</p>
+            </a></li>
+            <li><a href="{:U('w3g/Live/index')}">
+            	<span class="icon-promote02"></span>
+                <h3>在线直播</h3>
+                <p>随时观看在线直播，轻松便捷</p>
+            </a></li>
+            <li><a href="{:U('w3g/Exam/index')}">
+            	<span class="icon-promote03"></span>
+                <h3>考试系统</h3>
+                <p>智能题库、系统阅卷、错题分析</p>
+            </a></li>
+        </ul>
+    </div>
+    
+    <div class="item_box bl">
+    	<ul class="ind-list">
+        	<li><a href="{:U('w3g/Video/limit')}"><img src="__APP__/icon/g1.jpg"/></a></li>
+            <volist name="free_limit_list" id="vo">
+            <if condition="$key+1 eq 1">
+                <li class="mx"><a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}"><img src="{:cut_img($vo['cover'],258,234)}" /></a></li>
+            <else/>
+                <li><a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}"><img src="{:cut_img($vo['cover'],266,234)}"  /></a></li>
+            </if>
+            </volist>
+        </ul>
+    </div>
+    <div class="item_box bl">
+    	<ul class="ind-list">
+            <volist name="br_list.big_list" id="vo">
+                <if condition="$key+1 eq 1">
+                    <li class="mx"><a href="{:U('w3g/Album/view',array('id'=>$vo['id']))}"><img src="{:cut_img($vo['cover'],266,234)}" /></a></li>
+                </if>
+            </volist>
+        	<li><a href="{:U('w3g/Album/index')}"><img src="__APP__/icon/g2.jpg"/></a></li>
+            <volist name="br_list.big_list" id="vo">
+                <if condition="$key+1 neq 1">
+                    <li><a href="{:U('w3g/Album/view',array('id'=>$vo['id']))}"><img src="{:cut_img($vo['cover'],266,234)}" /></a></li>
+                </if>
+            </volist>
+        </ul>
+    </div>
+    
+    <div class="item_box bl">
+    	<h3 class="ind-tit">畅销榜单</h3>
+        <div class="ind-con">
+        	<ul class="ind-top">
+                <volist name="sw_list" id="vo">
+                    <li><a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}"><img src="{:cut_img($vo['cover'],266,170)}"/></a></li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="item_box">
+    	<h3 class="ind-tit">讲师推荐</h3>
+        <ul class="ind-teacher">
+            <volist name="beTeacher" id="vo">
+                <li>
+                    <div class="info"><a href="{:U('w3g/Teacher/view',array('id'=>$vo['teacher_id']))}">
+                        <div class="pic"><img src="{:cut_img($vo['head_id'],105,105)}"></div>
+                        <h3>{$vo.name}</h3>
+                        <p>{:limitNumber($vo['inro'],65)}</p>
+                    </a></div>
+                    <div class="txt">热门课程：<eq name="vo['video_title']" value="">Ta还没有课程<else /><a href="{:U('w3g/Video/view',array('id'=>$vo['id']))}">{$vo.video_title}</a></eq></div>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<!--footer-->
+<include file="../Public/_footer" />

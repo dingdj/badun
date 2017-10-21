@@ -1,0 +1,65 @@
+
+
+<volist name="data" id="vo">
+    <li class="li">
+        <div class="pic"><a target="_blank" title="{:getUserName($vo['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}" class="otherHead" ><img class="lazyloading" src="{:getUserFace($vo['uid'],'m')}"></a></div>
+        <div class="name"><a href="#">提问：</a></div>
+        </div>
+        <div class="text"><a target="_blank" href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:getShort(t($vo['wd_description']) , 50)}</a></div>
+        <php>if(!empty($vo['duid'])){</php>
+        <!--<div class="firendreply"> <a  title="Sunflower" class="firendHead" ><img class="lazyloading" src="{:getUserFace($vo['duid'],'s')}"></a>-->
+            <div class="lzreply"> <span><a title="{:getUserName($vo['duid'])}">{:getUserName($vo['duid'])}</a> 回答:</span> <em>{:limitNumber($vo['description'],150)}</em> </div>
+        </div>
+        <php>}</php>
+        <div class="info">时间：{$vo['ctime']|friendlyDate}
+            <php>if($wenda!="meque"){</php>
+
+
+            <php>if(!empty($vo['commentid'])){</php>
+            <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该回答吗？');return false;" callback="delWendacomment({$vo['commentid']})"  ><i></i>删除</a>
+            <php>}  else {</php>
+            <a href="{:U('wenda/Index/editWenda',array('wid'=>$vo['id']))}" class="fr"><i class="bianji-ico"></i>编辑</a>
+            <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该问答吗？');return false;" callback="delWenda({$vo['id']})"  ><i></i>删除</a>
+            <php>} </php>
+
+
+            <php>}</php>
+        </div>
+    </li>
+</volist>
+
+<script>
+    $(function(){
+        var p="{$wendadata['nowPage']}";
+        var type='{$type}';
+        $(window).scroll(function () {
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if (!p || parseInt(p) >= "{$wendadata['totalPages']}") {
+                    return false;
+                } else {
+                    p = p+1;
+                    ajaxReturn(url,type);
+                }
+            }
+        });
+        //请求事件
+        function ajaxReturn(url,type) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {p:p,type:type},
+                dataType: "json",
+                success: function (data) {
+                    appendHtml(data);
+                }
+            });
+        }
+    });
+</script>

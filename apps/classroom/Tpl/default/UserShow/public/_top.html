@@ -1,0 +1,213 @@
+
+<!--header end  background:url(centerbg.jpg) center center no-repeat;-->
+<style>
+    /*个人主页、首页*/
+    .center_right_tit div a.on {
+        border-color: #00BED4;!important;
+        color: #00BED4;!important;
+        background-color: #fff;!important;
+    }
+    .center_right_tit div a {
+        height: 50px;!important;
+        padding: 0 25px;!important;
+        font-size: 16px;!important;
+        line-height: 50px;!important;
+        display: block;!important;
+        float: right;!important;
+        color: #00BED4
+    }
+    .center_right_tit li a:hover {
+        border-color: #00BED4;!important;
+        color: #00BED4;!important;
+        background-color: #fff;!important;
+    }
+    .center_left li.on a {
+        background-color: #00BED4!important;!important;
+        color: white!important;!important;
+    }
+    .center-info h3 span img{
+        border: none;
+    }
+    .sr-bdimgshare-black .bdimgshare-bg,.bdimgshare-content{
+        display: none;
+    }
+    .center_left .top li{
+        border-top:none;
+        line-height: normal;
+    }
+    .look-home .on a{
+        color:#00BED4;
+    }
+    .center_right_con{
+        float: left;
+        width:100%;
+        padding: 0 0 50px;
+    }
+    .content {
+	    background-color: #f0f0f2;
+   		padding-top: 30px;
+	}
+   	.bdshare-button-style1-24 a, .bdshare-button-style1-24 .bds_more{
+   		margin: 6px;
+   	}
+</style>
+
+<if condition="$isteacher">
+    <style>
+        .center-type .box{
+            width: 33%;
+        }
+        a.bg:hover{cursor: pointer}
+    </style>
+</if>
+
+<form id="user_img_forms" action="{:U('classroom/User/doAddUserAttach')}" method="POST" enctype="multipart/form-data">
+
+<if condition="$user['background_id']">
+    <div class="centerbox" style="background:url({:getAttachUrlByAttachId($user['background_id'])}) center center no-repeat;background-size: cover;">
+<else/>
+    <div class="centerbox" style="background:url(__APP__/image/centerbg.jpg) center center no-repeat;" id="cover_yulan">
+</if>
+
+        <div class="wrap">
+            <div class="act">
+                <div class="fr zhuang-left">
+                    <a class="fx" href="javascript:;">
+                        <i class="icon-fx"></i>
+                    </a>
+                    <div class="_share_my_firends">
+		                <div class="_share_all_channel">
+		                	<i class="side-ills-fell"></i>
+		                	<p>分享到：</p>
+		                    <div class="bdsharebuttonbox">
+		                        <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+		                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+		                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+		                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+		                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+
+		                        <script>window._bd_share_config={"common":{"bdSnsKey":{"tqq":"http://share.baidu.com/code#"},"bdText":"","bdMini":"2","bdMiniList":["tsina","weixin","qzone","sqq","renren","copy"],"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{},"image":{"viewList":["tsina","weixin","qzone","sqq"],"viewText":"分享到：","viewSize":"0"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+		                    </div>
+		                </div>
+		            </div>
+                </div>
+                <if condition="$is_me">
+                    <div class="fr zhuang-right">
+                        <a class="bg" href="javascript:;">
+                            <i class="icon-bg"></i>更改背景
+                            <input type="file" name="cover" id="cover" class="b bg-img"  value="更改背景" title="更改背景" onchange="handleFiles(this)" style="opacity: 0;width: 96px;height: 28px;margin: 0 0 0 -86px;position: absolute;" >
+                        </a>
+                    </div>
+                </if>
+
+            </div>
+            <div class="center-info">
+                <img src="{:getUserFace($user['uid'],'b')}">
+                <h3>
+                    <span class="name">{:strip_tags(getUserSpace($user['uid']),'<img>')}</span>
+                </h3>
+                <div class="follow-private">
+                    <if condition="$isfollow eq null">
+                        <a href="javascript:;" <if condition='$is_me'>class="follow-bg02"<else/>class="follow-bg01" onclick="setFollow({$_GET['uid']}, true)"</if> >+关注</a>
+                        <else/>
+                        <a href="javascript:;" onclick="setFollow({$_GET['uid']}, false)" class="follow-bg02">已关注</a>
+                    </if>
+                    <if condition='$is_me'>
+                        <a href="javascript:;" class="follow-bg02">私信</a>
+                        <else/>
+                        <a href="javascript:ui.sendmessage({$_GET['uid']}, 0)" class="follow-bg01">私信</a>
+                    </if>
+                </div>
+                <!--<p>{:limitNumber($user['intro'],46)}</p>-->
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    window.onload=function(){
+        var view_main_nav = document.getElementById('view_main_nav');
+
+        window.onscroll = function(){
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+            if(scrollTop <= 563){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop && scrollTop <= 563){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop){
+                $('#view_main_nav').attr("style","position: fixed;top: 0;z-index: 9;background: #fff;");
+            }else{
+                $('#view_main_nav').removeAttr("style");
+            }
+        }
+    };
+
+    //    $('.wrap .box a').click(function () {
+    //        $('body,html').animate({scrollTop:563},200);
+    //    });
+
+    window.URL = window.URL || window.webkitURL;
+    var fileElem = document.getElementById("cover");
+    function handleFiles(obj) {
+        var files = obj.files, img = new Image();
+        if(window.URL){
+//            style="background:url(centerbg.jpg) center center no-repeat;"
+            $('#cover_yulan').attr('style',"background:url("+window.URL.createObjectURL(files[0])+") center center no-repeat");
+        }else if(window.FileReader){
+            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+            var reader = new FileReader();
+            $('#cover_yulan').attr('style',"background:url("+this.result+") center center no-repeat");
+        }else{
+            //ie
+            obj.select();
+            obj.blur();
+            var nfile = document.selection.createRange().text;
+            document.selection.empty();
+            img.src = nfile;
+            $('#cover_yulan').attr('style',"background:url("+nfile+") center center no-repeat");
+            //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+        }
+        $('#user_img_forms').submit();
+    }
+
+    function setFollow(uid, follow){
+        if(MID=='0'){
+            reg_login();
+            return;
+        }
+        action = follow?'doFollow':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:uid}, function(data){
+            if(data.status){
+                ui.success('操作成功');
+                setTimeout('window.location.reload()', 1500);
+            }else{
+                ui.error('操作失败');
+            }
+        }, 'json');
+    }
+</script>
+
+<div class="'center-type">
+    <div class="wrap">
+        <ul class="look-home">
+            <li <if condition="ACTION_NAME eq 'index'">class="on"</if> >
+                <if condition="($user_show_type eq 'user') OR ($is_me)">
+                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">首页</a>
+                    <else/>
+                    <a href="{:U('classroom/UserShow/index',array('uid'=>$userid))}">首页</a>
+                </if>
+            </li>
+            <li  <if condition="ACTION_NAME eq 'course'">class="on"</if> > <a href="{:U('classroom/UserShow/course',array('uid'=>$userid))}">课程</a></li>
+            <li  <if condition="ACTION_NAME eq 'live'">class="on"</if>   > <a href="{:U('classroom/UserShow/live',array('uid'=>$userid))}">直播</a></li>
+            <li  <if condition="ACTION_NAME eq 'group'">class="on"</if>  > <a href="{:U('classroom/UserShow/group',array('uid'=>$userid))}">小组</a></li>
+            <li  <if condition="ACTION_NAME eq 'question'">class="on"</if> > <a href="{:U('classroom/UserShow/question',array('uid'=>$userid))}">提问</a></li>
+            <li  <if condition="ACTION_NAME eq 'wenda'">class="on"</if>  > <a href="{:U('classroom/UserShow/wenda',array('uid'=>$userid))}">问答</a></li>
+            <li  <if condition="ACTION_NAME eq 'note'">class="on"</if>   > <a href="{:U('classroom/UserShow/note',array('uid'=>$userid))}">笔记</a></li>
+            <li  <if condition="ACTION_NAME eq 'fans'">class="on"</if>   > <a href="{:U('classroom/UserShow/fans',array('uid'=>$userid))}">粉丝</a></li>
+            <li  <if condition="ACTION_NAME eq 'follow'">class="on"</if> > <a href="{:U('classroom/UserShow/follow',array('uid'=>$userid))}">关注</a></li>
+        </ul>
+    </div>
+</div>
+<div class="content cbg">
+    <div class="wrap">

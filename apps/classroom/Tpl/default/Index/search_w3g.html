@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+        <meta charset="utf-8">
+        <meta content="<neq name= '_keywords' value=''>{$_keywords}<else />{$site.site_header_keywords}</neq>" name="keywords">
+        <meta content="<neq name= '_description' value=''>{$_description}<else />{$site.site_header_description}</neq>" name="description">
+        <meta name="viewport" charset="UTF-8" content="user-scalable=no"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="qc:admins" content="1403267155765154541656375" />
+        <meta property="wb:webmaster" content="fdcd9430a88b1552" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Access-Control-Allow-Origin" content="*">
+        <link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
+        <!-- 引入 Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/iconfont.css">
+        <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/search_media.css">
+
+        <script src="__THEME__/js/index_new/jquery-1.8.3.min.js"></script>
+        <script src="__THEME__/js/index_new/search_media.js"></script>
+        <script>
+            $(function(){
+                $('#btn_search_site').click(function(){
+                    var search_cate = $('#search_cate').val();
+                    var search_combo_input = $('#search_combo_input').val();
+                    if(search_combo_input != ''){
+                        if(search_cate == 'video'){
+                            window.open("{:U('classroom/Video/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'school'){
+                            window.open("{:U('school/Index/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'teacher'){
+                            window.open("{:U('classroom/Teacher/index')}"+"?search="+search_combo_input);
+                        }
+                    }
+                });
+                $(document).keydown(function(event){
+                    var search_cate = $('#search_cate').val();
+                    var search_combo_input = $('#inval').val();
+                    if(search_combo_input != '') {
+                        if (event.keyCode == 13) {
+                            if(search_cate == 'video'){
+                                location.href = ("{:U('classroom/Video/index')}"+"?search="+search_combo_input);
+                            }else if(search_cate == 'school'){
+                                location.href = ("{:U('school/Index/index')}"+"?search="+search_combo_input);
+                            }else if(search_cate == 'teacher'){
+                                location.href = ("{:U('classroom/Teacher/index')}"+"?search="+search_combo_input);
+                            }
+                        }
+                    }
+                });
+            })
+        </script>
+    </head>
+    <body>
+        <div class="search-bodyer">
+            <!-- 搜索 -->
+            <div class="goods-eac-box">
+                <div class="eac-per-ens">
+                    <div class="aingstoit">
+                        <input value="video" id="search_cate" type="hidden" disabled />
+                        <p>课程</p><i class="icon icon-xia"></i>
+                        <span>
+                            <a href="javascript:void(0)" attr="video" style="display: none;">课程</a>
+                            <a href="javascript:void(0)" attr="teacher">老师</a>
+                            <a href="javascript:void(0)" attr="school">机构</a>
+                        </span>
+                    </div>
+                    <input autofocus="autofocus"  oninput="shap()" id="search_combo_input" >
+                    <i class="icon icon-quxiao" ></i>
+                </div>
+                <button id="btn_search_site">搜索</button>
+            </div>
+
+            <!-- 热门搜索 -->
+            <div class="headlines">
+                <h5>大家都在搜</h5>
+                <ul id="video_list">
+                    <volist name="video" id="vo" offset="0" length='4'>
+                        <li><a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>{$vo.video_title|msubstr=0,10,'utf-8',true}</a></li>
+                    </volist>
+                </ul>
+                <ul id="teacher_list" style="display: none;">
+                    <volist name="teacher" id="tr" offset="0" length='4'>
+                        <li><a href="{:U('classroom/Teacher/view',array('id'=>$tr['id']))}">{$tr.name|msubstr=0,10,'utf-8',true}</a></li>
+                    </volist>
+                </ul>
+                <ul id="school_list" style="display: none;">
+                    <volist name="school" id="sc" offset="0" length='4'>
+                        <li><a href="{$sc['domain']}">{$sc.title|msubstr=0,10,'utf-8',true}</a></li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

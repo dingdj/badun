@@ -1,0 +1,28 @@
+<include file="__THEME__/public_header" />
+
+<include file="./top" />
+
+<div class="content adjust">
+    <div class="wrap">
+        <include file="./left" />
+            <!--文章详情-->
+            <div class="teacher-content">
+                <div class="center_right_con" style="display: block">
+                    <div class="question-box">
+                        <h2 style="text-align: center;">{$art_title|msubstr=0,20,'utf-8',true}</h2>
+                        <dl>
+                            <dd>
+                                <a href="{:U('classroom/Teacher/article',array('id'=>$data['id']))}" class="fr">返回文章</a>
+                            </dd>
+                            <dt>发布于：{$ctime|date="Y年m月d日 H:i",###}&nbsp;&nbsp;点赞量: {$praise}&nbsp;&nbsp; </dt>
+                        </dl>
+                        <div class="question-page">
+                            {$article}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,313 @@
+<include file="__THEME__/public_header_twolevel"/>
+<!--ckplayer  -->
+<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
+<!-- cuplayer -->
+<script type="text/javascript" src="__ROOT__/player/cuplayer/js/action.js"></script>
+<script type="text/javascript" src="__ROOT__/player/cuplayer/js/swfobject.js"></script>
+<script type="text/javascript" src="__ROOT__/player/audiojs/audio.min.js"></script>
+<style>
+    .container {position: relative;width: 100%;max-width: 750px;min-height: 100%;margin: 0 auto;overflow-x: hidden;background-color: #fff;}
+    .video_box_tit {height:40px;padding:0 10px;line-height:40px;font-size:15px;color:#fff;background-color:#000;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+
+    .vedioPlay-msg{ width:100%; height:328px;position: absolute;z-index:102;text-align:center; background:#000000;filter:alpha(opacity=80);-moz-opacity:0.80;opacity:0.80; margin-right:370px}
+    .vedioPlay-msgbox{font-size: 13px;width: 315px;height: 20px;margin: 140px auto;}
+    .vedioPlay-msgbox span{color: #999999;}
+    .vedioPlay-msgbox a{color: #ffffff;}
+    .float_left{float: left;}
+    .video_box{padding:5px;min-height: 80px;}
+    .audiojs{width:auto;left:0;}
+    .audiojs .scrubber{width:170px;}
+
+</style>
+<!--content start-->
+<div class="body">
+    <div class="container">
+        <div class="video_box">
+            <h3 class="video_box_tit">{$video_title}</h3>
+            <div class="vedioPlay-msg" style="display: none">
+                <div class="vedioPlay-msgbox">
+                    <span class="float_left">需要继续观看视频,</span>
+                    <a class="float_left" id="buyNow" href="{:U('classroom/Video/view','id='.$aid)}">立即购买！</a>
+                    <span class="float_left">或者&nbsp;&nbsp;</span>
+                    <a class="float_left" href="/">返回首页！</a>
+                </div>
+            </div>
+            <php>if($video_type == 1){</php>
+                <if condition="$video_upload_room eq 4">
+                    <div class="learn-box" id="vplayer" style="z-index: 455" ><script src="http://p.bokecc.com/player?vid={$videokey}&siteid={$ccvideo_config['cc_userid']}&autoStart=true&width=100%&height=400px&playerid=82F980DA3FB79C8D&playertype=1" type="text/javascript"></script></div>
+                <else/>
+                    <div id="vplayer" class="learn-box" style="height:200px;"></div>
+                    <script type="text/javascript">
+                        var flashvars={
+                            f:"{$video_address}",
+                            c:0,
+                            p:1,
+                            g:parseInt("{$learn_record.time}"),
+                            loaded:'loadedHandler'
+                        };
+                        '<php>if($is_free==0 && $isBuyVideo==false && $free==0){</php>'
+                        function loadedHandler(){
+                            if(CKobject.getObjectById('ckvideo').getType()){
+                                //说明使用html5播放器
+                                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
+                            }else{
+                                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+                            }
+                        }
+                        var ispause=false;
+                        var test_time={$test_time};
+                        function timeHandler(t){
+                            if (!ispause && t>test_time){
+                                ispause=true;
+                                CKobject.getObjectById('ckvideo').videoPause();
+                                $("#vplayer").html('');
+
+                                $(".vedioPlay-msg").css("display","block");
+                            }
+                        }
+                        '<php>} else{</php>'
+                        function loadedHandler(){
+                            if(CKobject.getObjectById('ckvideo').getType()){
+                                //说明使用html5播放器
+                                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
+                            }else{
+                                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+                            }
+                        }
+                        function timeHandler(t){
+                            var total = CKobject.getObjectById('ckvideo').getStatus();
+                            if(t>-1){
+                                addLearnLog(t,total);
+                                //Kobject.getObjectById('ckvideo').removeListener('time','timeHandler');
+                            }
+                        }
+                        '<php>}</php>'
+                        var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:"transparent"};
+                        var video=["{$video_address}"];
+                        CKobject.embed('__ROOT__/player/ckplayer/ckplayer.swf','vplayer','ckvideo','100%','100%',false,flashvars,video,params);
+
+                        var lastAddtime = "{$learn_record.time}";
+                        function addLearnLog(timespan,total){
+                            var t = parseInt(timespan);
+                            var totaltime = parseInt(total.totalTime);
+                            if(t && t>lastAddtime && (t % 4 == 0)){
+                                lastAddtime = t;
+                                $.ajax({
+                                    type: "POST",
+                                    url:"{:U('classroom/Video/updateLearn')}",
+                                    data:{time:t,vid:<php>echo $_GET['id'];</php>,sid:<php>echo $_GET['s_id'];</php>,totaltime:totaltime},
+                                    dataType:"json",
+                                    success:function(){
+                                    }
+                                });
+
+                            }
+                        }
+                    </script>
+                </if>
+            <php>}else if($video_type == 2){</php>
+                <!--<script>
+                    audiojs.events.ready(function() {
+                        audiojs.createAll();
+                    });
+                </script>
+                <div id="mplayer" class="video_box"><audio src="{$video_address}" preload="auto"></audio></div>-->
+                <div id="mplayer" class="learn-box">
+                    <div id="aplayer" class="aplayer"></div>
+                </div>
+                <script src="__APP__/APlayer.min.js"></script>
+                <link rel="stylesheet" href="__APP__/APlayer.min.css" />
+                <script>
+                    var ap = new APlayer({
+                        element: document.getElementById('aplayer'),
+                        narrow: false,
+                        autoplay: false,
+                        showlrc: false,
+                        music: {
+                            title: "{$video_title}",
+                            author: "{:getUsername($teacher_id)}",
+                            url: "{$video_address}",
+                            pic: "{:getCover($cover,920,500)}"
+                        }
+                    });
+                    ap.init();
+                </script>
+            <php>}else if($video_type == 3){</php>
+                <div id="tplayer" class="video_box">{$video_address}</div>
+            <php>}else if($video_type == 4){</php>
+                <div id="dplayer" class="learn-box"> <iframe id="showdoc" src="__THEME__/js/pdfjs/web/viewer.html?file={$video_address}" width="100%" height="300" allowfullscreen="true"></iframe> </div>
+            <php>}</php>
+        </div>
+    </div>
+
+    <div class="classbot">
+        <div class="classmain-hd classmain-ul">
+            <ul>
+                <li class="on"><a href="javascript:;">简介</a></li>
+                <li><a href="javascript:;">目录</a></li>
+                <!--<li><a href="javascript:;">提问</a></li>-->
+                <!--<li><a href="javascript:;">笔记</a></li>-->
+                <!--<li><a href="javascript:;">点评</a></li>-->
+            </ul>
+        </div>
+        <div class="classmain-bd">
+            <div class="classmain_con">
+                <div class="classitem">
+                    <div class="classtit">课程详情</div>
+                    <div class="classcon" style="font-size: 12px;">{$data['video_intro']}</div>
+                </div>
+
+                <php>if($mhmData){</php>
+                    <div class="classitem">
+                        <div class="classtit">机构信息</div>
+                        <div class="classcon">
+                            <dl class="class_jg_dl">
+                                <dt><a href="javascript:;"><img src="{$mhmData['logo']}" alt=""></a></dt>
+                                <dd>
+                                    <h3>
+                                        <a href="javascript:;">{$mhmData['title']}<!--<span class="icon-star"></span>--></a>
+                                        <div class="class_jg_btn">
+                                            <!--<a href="{$mhmData.domain}">进入机构</a>-->
+                                            <php>if($mhmData['state']['following']){</php>
+                                            <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, false)">已关注</a>
+                                            <php>}else{</php>
+                                            <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, true)">+关注</a>
+                                            <php>}</php>
+                                        </div>
+                                    </h3>
+                                    <ul class="class_jg_ul">
+                                        <li>好评度：{$mhmData['favorable_rate']}</li>
+                                        <li>课程数：{$mhmData['count']}</li>
+                                    </ul>
+                                    <div class="class_jg_txt">{$mhmData['info']}</div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                <php>}</php>
+
+                <php>if($data['user']){</php>
+                <li class="classitem" style="border:0">
+                    <div class="classtit">讲师信息</div>
+                    <li class="classcon">
+                        <dl class="class_js_dl">
+                            <dt><a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}"><img src="{:cutImg($data['user']['head_id'],266,170)}" alt=""></a></dt>
+                            <dd>
+                                <h3>
+                                    <a href="javascript:;">{$data.user.name}</a>
+                                    <div class="class_jg_btn">
+                                        <!--<a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">查看讲师</a>-->
+                                        <php>if($data['user']['fans_state']){</php>
+                                        <a href="">已关注</a>
+                                        <php>}else{</php>
+                                        <a href="javascript:;" onclick="followyou(this,{$data['user']['uid']},{$data['user']['id']})">+关注</a>
+                                        <php>}</php>
+                                    </div>
+                                </h3>
+                                <div class="class_jg_ul" style="line-height: 12px;">
+                                    <li>课程数：{$video_count}</li>
+                                    <li class="info" style="margin-left:10px;">学生数：{$follow}</li>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <php>}</php>
+                
+                <div class="classitem">
+                    <div class="classtit">他们也关注了</div>
+                    <div class="classcon">
+                        <ul class="class_mb_ul">
+                            <volist name="source" id="vol">
+                                <li>
+                                    <!--<a href="{:U('classroom/UserShow/index',array('uid'=>$vol['uid']))}">-->
+                                    <img src="{$vol['user']['avatar_big']}" alt="{$vol['user']['uname']}">
+                                    <p>{$vol['user']['uname']}</p>
+                                    <!--</a>-->
+                                </li>
+                            </volist>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="classmain-bd" style="display: none;">
+            <div class="classmain_con">
+                <volist name="menu" id="vo">
+                    <dl class="class_directory">
+                        <dt>{:limitNumber($vo['title'], 15)}</dt>
+                        <php>if($vo['child']){</php>
+                        <volist name="vo.child" id="vo1">
+                            <dd>
+                                <a href="{:U('classroom/Video/watch','id='.$vo1['vid'].'&s_id='.$vo1['id'])}">
+                                    <php>if($vo1['is_free'] == 1){</php>
+                                    <em style="background: #ff8a0c;">试听</em>
+                                    <php>}else if($video['is_charge'] == 1){</php>
+                                    <em style="background: #39b75d;" >免费</em>
+                                    <php>}</php>
+                                    <span>{:limitNumber($vo1['title'], 10)}</span>
+                                    <php>if($vo1['video_type'] == 1 || $vo1['video_type'] == 2){</php>
+                                        <span><i class="icon-01"></i></span>
+                                    <php>}</php>
+                                </a>
+                            </dd>
+                        </volist>
+                        <php>}</php>
+                    </dl>
+                </volist>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        '<php>if($is_free==0 && $isBuyVideo==false && $free==0 && $video_type>1){</php>'
+        $("#mplayer,#tplayer,#dplayer").remove();
+        $(".vedioPlay-msg").css("display", "block");
+        '<php>}</php>'
+    });
+    //导航选择卡
+    $(".classmain-ul li").click(function(){
+        $(this).addClass("on").siblings().removeClass("on");
+        var index = $(this).index();
+        $(".classmain-bd").hide().eq(index).show();
+    });
+
+    function setFollow(uid, follow){
+        action = follow?'doFollowMhm':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:uid}, function(data){
+            if(data.status){
+                alert('操作成功');
+                setTimeout('window.location.reload()', 1000);
+            }else{
+                alert(data.info);
+            }
+        }, 'json');
+    }
+    //关注讲师
+    function followyou(cate,uid,id){
+        if(uid<=0){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+uid+"&tid="+id,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    alert(data.info);
+                    return;
+                }else{
+                    setTimeout('window.location.reload()', 1000);
+                }
+
+            }
+        });
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

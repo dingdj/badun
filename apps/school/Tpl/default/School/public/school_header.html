@@ -1,0 +1,204 @@
+<include file="__THEME__/public_header" />
+<style>
+    .bd ul li{background-position: 100% !important;}
+    .study-navigation{
+        margin-bottom: 0;
+    }
+    .content {
+        background-color: #f0f0f2;
+        padding:30px 0;
+    }
+    .center_left li {
+        line-height: 20px;
+    }
+    .look-home .on a{
+        color:#00bed4
+    }
+    .center_ul li a{
+        line-height:47px;
+        height: 47px;;
+    }
+    .center_ul li.on a {
+        border-top: 0;
+        border-bottom: 3px solid #00BED4;
+    }
+    .green1 li, .red1 li {
+        margin: 0 22px
+    }
+    .jgitembox{
+        margin:30px 0 0;
+        min-width:870px;
+        width:870px;
+        background-color: #fff;
+        border-radius: 4px;
+        overflow: hidden;;
+    }
+    .user-con-title h2{
+        float: left;
+        margin-left:20px;
+    }
+    .user-con-title a{
+        width: auto;
+        float: right;
+        height: auto;
+        border-radius: 0;
+        margin-right:20px;
+        color:#00BED4;
+    }
+    .green1 a{
+        margin-right:0;
+        padding: 10px 0px 8px;
+    }
+    .jglist{
+        float: left;
+        width:870px;
+    }
+    .user-con-title{
+        border-bottom: 1px solid #dddede;
+    }
+    .fl {
+        float: right;
+    }
+    .fr {
+        float: left;
+    }
+    .itembox{
+        background-color: #fff;
+        margin-top:30px;
+        border-radius: 4px;
+        overflow: hidden;
+        width: 870px;
+        min-width: 870px;
+        padding:0;
+    }
+    .user-imglist li{
+        margin:30px 0 30px 30px;
+    }
+    .left-all,.user-imglist,.center_right {
+        width: 1170px;
+    }
+    .user-con-title button{
+        border: 0;
+        border-bottom: 3px solid transparent;
+        background-color: transparent;
+        height:46px;
+        padding:0 10px;
+        margin:0 15px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .user-con-title button span{
+        float: right;
+        padding:0 5px;
+    }
+    .i01{
+        display: block;
+        width: 10px;
+        height: 10px;
+        background-color: #333;
+        background: url(http://link.51el3.com/addons/theme/stv1/_static_new/icon/icon.png);
+        background-position: 322px 359px;
+    }
+    .i02{
+        display: block;
+        width: 10px;
+        height: 10px;
+        background-color: #333;
+        background: url(http://link.51el3.com/addons/theme/stv1/_static_new/icon/icon.png);
+        background-position: 332px 359px;
+    }
+    .user-con-title .on{
+        border-bottom: 3px solid #00BED4;
+    }
+    .banner-box{
+        background: url({:getCover($ad_list[0]['banner'],1920,320)}) center 0px / cover no-repeat;
+    }
+</style>
+
+<!--header end-->
+
+<!--background-->
+<div class="mechanism-box <if condition='$ad_list neq 0'>banner-box</if>">
+    <div class="mechanism-head-portrait">
+        <img src="{$school['logo']}" height="140px">
+    </div>
+    <h5>{$school.title}</h5>
+</div>
+
+<!--public_nav-->
+<div class="study-navigation">
+    <div class="wrap">
+        <ul class="look-home">
+            <li <php>if(ACTION_NAME=="index"){echo "class='on'";}</php>><a href="{$school['domain']}">首页</a></li>
+            <li <php>if(ACTION_NAME=="course"){echo "class='on'";}</php>>
+                <if condition="$school['doadmin']">
+                    <a href="javascript:;" class="video_list">课程</a>
+                    <else/>
+                    <a href="{:U('school/School/course',array('id'=>$mhm_id))}">课程</a>
+                </if>
+            </li>
+            <li <php>if(ACTION_NAME=="album"){echo "class='on'";}</php>>
+                <if condition="$school['doadmin']">
+                    <a href="javascript:;" class="album_list">套餐</a>
+                    <else/>
+                    <a href="{:U('school/School/album',array('id'=>$mhm_id))}">套餐</a>
+                </if>
+            </li>
+            <li <php>if(ACTION_NAME=="live"){echo "class='on'";}</php>>
+                <if condition="$school['doadmin']">
+                    <a href="javascript:;" class="live_list">直播</a>
+                    <else/>
+                    <a href="{:U('school/School/live',array('id'=>$mhm_id))}">直播</a>
+                </if>
+            </li>
+            <li <php>if(ACTION_NAME=="teacher_index"){echo "class='on'";}</php>>
+                <if condition="$school['doadmin']">
+                    <a href="javascript:;" class="teacher_list">讲师</a>
+                    <else/>
+                    <a href="{:U('school/School/teacher_index',array('id'=>$mhm_id))}">讲师</a>
+                </if>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .agen{    width: 1200px;  height:90px;  margin: 0 auto;  margin-top: -90px;  position: relative;  background: linear-gradient(to top,rgba(0,0,0,.6),transparent);  filter: progid:DXImageTransform.Microsoft.gradient(enabled='true', startColorstr='#00000000', endColorstr='#99000000');min-width: 1200px;}
+    .agen img{width: 150px;  height: 150px;  margin-left: 20px;  background-color: #fff;  position: absolute;  top: -6px;  box-shadow: 0 0 1px 1px #ececec;  z-index: 2;}
+    .agency-head-main {  padding-bottom: 16px;  margin-left: 190px;  }
+    .ag-title {  width: 960px;  }
+    .ag-title-main {  max-width: 680px;  font-size: 28px;  color: #f1f4f6;  float: left;  }
+    .icon-agency-level.level--4 {  background-position: -165px -149px;  }
+    .ag-title-lv {  float: left;  margin: 9px 4px 0 19px;  }
+    .icon-agency-level {  display: inline-block;  vertical-align: middle;  background: url(//8.url.cn/edu/lego_modules/edu-ui/0.0.1/img/bg/c-sprite.03b8ca01.png#unsprite) no-repeat 1px -150px;  width: 72px;  height: 26px;  }
+    .ag-info {  margin-top: 4px;  font-size: 14px;  color: #fff;  }
+    .ag-info-split {  margin: 0 10px -1px;  display: inline-block;  height: 13px;  border-left: 1px solid #fff;  }
+    .ag-info-des {  max-width: 500px;  display: inline-block;  margin-bottom: -5px;  font-size: 14px;  color: #fff;  }
+    .ag-info-btn {  display: inline-block;  width: 89px;  height: 26px;  line-height: 26px;  text-align: center;  border-radius: 3px;  border: 1px solid #fff;  font-size: 14px;  color: #fff;  }
+    .agency-wrap-mod {  position: relative;  margin: 0 auto;  border-bottom: 1px solid #e5e5e5;  width: 1200px;  text-align: center;  height: 50px;  }
+    .inner-center {  box-sizing: border-box;  width: 1200px;  }
+    .agency-tab__ul {  display: inline-block;  }
+    .agency-tab__li_current {  border-bottom: 3px solid #00BED4;  }
+    .agency-tab__li {  display: inline-block;  padding: 13px 44px;  }
+    .agency-tab__li h2 {  font-size: 16px;  color: #333;  }
+    .gg{float: left;width: 100%;min-width: 1200px;}
+    .ngg{margin-top: 98px;}
+</style>
+
+<script>
+    $(function() {
+        var domain = '{$school.domain}';
+        $(".video_list").click(function () {
+            location.href = domain + '/video_list.html';
+        });
+        $(".live_list").click(function () {
+            location.href = domain + '/live_list.html';
+        });
+        $(".album_list").click(function () {
+            location.href = domain + '/album_list.html';
+        });
+        $(".teacher_list").click(function () {
+            location.href = domain + '/teacher_list.html';
+        });
+    });
+</script>

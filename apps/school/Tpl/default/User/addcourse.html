@@ -1,0 +1,295 @@
+<include file="__THEME__/public_header" />
+<!--分类筛选使用的jquery1.7.1不兼容，故使用jquery  主要用于课程直播分类筛选-->
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+<div<include file="../User/_top" />
+<div id="content cbg">
+
+    <div class="wrap position-rt">
+        <!--左-->
+        <include file="../User/_left" />
+        <include file="__THEME__/swfupload" />
+        <div class="user-con fl user-pbottom">
+            <div class="center_right_tit">
+                <ul>
+                    <li><a href="{:U('school/User/schoolVideo')}">我上传的课程</a></li>
+                    <li class="on"><a onclick="navClick(this,'uploadvideo')" href="javascript:;">章节管理</a></li>
+                </ul>
+            </div>
+            <div class="uploadvideo">
+                <form method="POST" action="{:U('school/User/addcourse')}" class="infobox" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+                    <div class="form2">
+                        <volist name ="data"  id ="vo" >
+                            <dl>
+                                <dt><span>*</span>章节名称：</dt>
+                                <dd>
+                                    <input type="text" class="inp01" name="video_title"  id="{$vo.zy_video_section_id}"    value="{$vo.title}">
+                                    <input type="button" value="增加课时"    class ="addcc"   onclick = addcourse("{$vo.zy_video_section_id}") />
+                                    <input type="button" value="删除章节"    name = "{$vo.zy_video_section_id}"   onclick = delchapter("{$vo.zy_video_section_id}") />
+                                    <input type="button" value="修改章节"    name = "{$vo.zy_video_section_id}"   onclick = editchapter("{$vo.zy_video_section_id}") />
+                                </dd>
+                            </dl>
+                            <volist name ="vo.video_section"  id ="section" >
+                                <dl>
+                                    <dt><span>*</span>课时名称：</dt>
+                                    <dd>
+                                        <input type="text" class="inp01" name="video_title" id="{$section.zy_video_section_id}"  value="{$section.title}">
+                                        <input type="button" value="删除课时"    name = "{$section.zy_video_section_id}"   onclick = delchapter(this.name) />
+                                        <input type="button" value="修改课时"    name = "{$section.zy_video_section_id}"   onclick = editchapter("{$section.zy_video_section_id}") />
+                                    </dd>
+                                </dl>
+                            </volist>
+                        </volist>
+
+                        <php>if($issection == 1){</php>
+                        <dl style="height: 62px;">
+                            <dt><span>*</span>新增课时：</dt>
+                            <dd>
+                                <input type ="hidden" class="inp01" placeholder="请填写课时名称" id="course" name ="couretitle"/>
+                                <input type ="hidden" id="coursepid" name ="courepid" />
+                            </dd>
+                        </dl>
+                            <php>if($id && empty($qiniu_key)){</php>
+                            <dl id="video_upload">
+                                <dt><span>*</span>上传视频：</dt>
+                                <dd>
+                                    <php>if($upload_room == 0){</php>
+                                    {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp4,flv,f4v'))}
+                                    <php>}else{</php>
+                                    <div class="swfupload-box" style="margin-left:0px;width:350px;">
+                                        <div>一次只能上传一个视频文件！<br/>支持流行视频格式flv，f4v，mp4</div>
+                                        <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+                                            <div class="fieldset flash" id="fsUploadProgress">
+                                            </div>
+
+                                            <div style="margin-top:15px;">
+                                                <div style="width:auto;float:left;">
+                                                    <span id="spanButtonPlaceHolder" ></span>
+                                                </div>
+                                                <div>
+                                                    <input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px; width:70px;background-color:#f0f0f0;color:#535353;" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <php>}</php>
+                                </dd>
+                            </dl>
+
+                            <!-- <li id="video_upload">
+                                    <label class="label1"  class="lineD" id="video_upload_d"><em>*</em>上传视频：</label>
+                                    <php>if($upload_room == 0){</php>
+                                    {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp4,flv,f4v'))}
+                                    <php>}else{</php>
+                                    <div class="swfupload-box" style="margin-left:130px;width:350px;">
+                                        <div>一次只能上传一个视频文件！<br/>支持流行视频格式flv，f4v，mp4</div>
+                                        <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+                                            <div class="fieldset flash" id="fsUploadProgress">
+                                            </div>
+
+                                            <div style="margin-top:15px;">
+                                                <div style="width:auto;float:left;">
+                                                    <span id="spanButtonPlaceHolder" ></span>
+                                                </div>
+                                                <div>
+                                                    <input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px; width:70px;background-color:#f0f0f0;color:#535353;" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <php>}</php>
+                                </li>-->
+                            <php>}</php>
+                            <php>} </php>
+                            <dl>
+                                <dt><span>*</span>新增章节：</dt>
+                                <dd>
+                                    <input type="text" class="inp01" name="chaptertitle" placeholder="请填写章节名称" id="chapters" class="head_search upload_input_a" >
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dd>
+                                    <input type="hidden" name="id" value="{$id}" />
+                                    <input id="videokey" name="videokey" type="hidden" value="{$qiniu_key}">
+                                    <input name="video_address" type="hidden" value="{$video_address}">
+                                    <input  class="btn"  type="submit"  style="line-height: 0;" value="保 存">
+                                </dd>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function j_validateCallback(form,call,callback) {
+        var $form = $(form);
+        if(typeof call != 'undefined' && call instanceof Function){
+            $i = call($form);
+            if(!$i){
+                return false;
+            }
+        }
+        var _submitFn = function(){
+            $.ajax({
+                type: form.method || 'POST',
+                url:$form.attr("action"),
+                data:$form.serializeArray(),
+                dataType:"json",
+                cache: false,
+                success: function(xMLHttpRequest, textStatus, errorThrown){
+                    if(typeof callback != 'undefined' && callback instanceof Function){
+                        callback($form,xMLHttpRequest);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    ui.error("请写填写内容!");
+                }
+            });
+        }
+        _submitFn();
+        return false;
+    }
+
+    function checkForm(form){
+        return true;
+
+    }
+    function post_callback(_form,data){
+        if(data.status != undefined){
+            if(data.status == '0'){
+                ui.error(data.info);
+            } else {
+                ui.success(data.info);
+                window.location.href = U('school/User/schoolVideo')+"&tabHash=index";
+            }
+        }
+    }
+    //删除视频
+    function deletevideo(key){
+        if(''==key){
+            ui.error("视频不存在！");
+            return ;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('school/AdminVideo/deletevideo')}",
+            data:{videokey:key},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    ui.error(data.info);
+                } else {
+                    $("#videokey").val("");//设置videokey为空
+                    $("#video_upload_d").css("display","block");//显示上传框
+                    $("#form_submit").attr('disabled',"true");//设置上传按钮为禁用
+                    ui.success(data.info);
+                }
+
+            },
+            error: function(xhr, ajaxOptions, thrownError){
+                ui.error("未知错误!");
+
+            }
+        });
+
+    }
+
+    function callback(data){
+        $("#"+data.input_id+"_cover").remove();
+        $("#image_"+data.input_id).append(
+                '<div id='+data.input_id+'_cover>'
+                +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+                +'</div>'
+        ).find('input:file').val('');
+        $("#"+data.input_id+"_ids").val(data.attach_id);
+    }
+    function filecallback(data){
+        $("#old_coursefile_ids").remove();
+        $("#coursefile_ids").val(data.attach_id);
+    }
+    $('#is_tlimit').change(function(){
+        var che = $("#is_tlimit").attr("checked");
+        if(che){
+            $("#is_tlimit").val(1);
+            $("#form_limit_discount,#form_starttime,#form_endtime").show();
+            $("#limit_discount,#starttime,#endtime").removeAttr("readonly");
+        } else {
+            $("#form_limit_discount,#form_starttime,#form_endtime").hide();
+            $("#form_limit_discount,#form_starttime,#endtime").attr("readonly","readonly");
+            $("#limit_discount,#starttime,#endtime").val('');
+            $("#is_tlimit").val(0);
+        }
+    });
+
+
+    function addcouresection(id) {
+
+        var addcour = document.getElementById("course");
+        var chapters = document.getElementById("chapters");
+        var video_upload = document.getElementById("video_upload");
+        var coursepid = document.getElementById("coursepid");
+        if (addcour.type == "text") {
+            addcour.setAttribute('type', "hidden");//输入框的id
+
+        }
+        else {
+            addcour.setAttribute('type', "text");//输入框的id
+
+
+            coursepid.value = id;
+
+        }
+    }
+
+
+    function addcourse(id) {
+
+        var addcour = document.getElementById("course");
+        var video_upload = document.getElementById("video_upload");
+        var coursepid = document.getElementById("coursepid");
+        if (addcour.type == "text") {
+            addcour.setAttribute('type', "hidden");//输入框的id
+
+        }
+        else {
+            addcour.setAttribute('type', "text");//输入框的id
+
+            coursepid.value = id;
+
+        }
+    }
+
+    function delchapter(name) {
+        $.ajax({
+            type: "POST",
+            url:"{:U('school/User/delchapter')}",
+            data:"id="+name,
+            dataType:"json",
+            success:function(data){
+                callback = "location.href = location.href";
+                ui.success("删除成功");
+                setTimeout(callback,1000);
+            }
+        });
+    }
+
+
+    function editchapter(idnumber) {
+         content = $("#"+idnumber).val();
+        $.ajax({
+            type: "POST",
+            url:"{:U('school/User/editchapter')}",
+            data:"id="+idnumber+'&content='+content,
+            dataType:"json",
+            success:function(data){
+                callback = "location.href = location.href";
+                ui.success("修改成功");
+                setTimeout(callback,1000);
+            }
+        });
+    }
+
+
+
+</script>
+<include file="__THEME__/public_footer" />

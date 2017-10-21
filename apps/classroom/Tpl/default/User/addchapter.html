@@ -1,0 +1,73 @@
+
+<style type="text/css">
+  #show_icon img {width:100px;height:100px;}
+  .pop-area .l{width:auto;}
+  .pop-area .r{margin:0;}
+  .pop-area .r span{padding:5px 10px;background-color: #2E4C8C;color:#FFF;margin-right:10px;cursor: pointer;}
+  .pop-area .r span.on{background-color: #1D325F;}
+  .bottom{margin-bottom:20px;}
+  .list tr{cursor: pointer;}
+  .boxy-modal-blackout{position: fixed;}
+</style>
+<link href="__THEME__/css/admincourse.css" rel="stylesheet" type="text/css">
+<dl class="pop-area">
+
+ 
+  <div class="list">
+
+
+  </div>
+
+  <div class="list bottom" id="list">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tbody></tbody>
+    </table>
+
+  </div>
+<input type ="hidden" id ="starttime"  value ={$starttime}>
+
+
+  <dt><span></span>请输入新增章节名称：</dt><input type="text"    id = "chaptertertitle"  name = "{$section.zy_video_section_id}"   />
+  <input type="hidden"   id = "chapterterid" value = "{$chaptertitle}"  />
+
+
+
+
+  <dd>
+    <input  type="button"  class="btn_w ml10" onclick="addchapter()" value="确定" />
+    <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="退出" />
+  </dd>
+  <div class="clear"></div>
+</dl>
+
+<script>
+  function addchapter()
+  {
+   var chaptertitle = $('#chaptertertitle').val();
+   var id = $('#chapterterid').val();
+
+    $.ajax({
+      type: "POST",
+      url:"{:U('classroom/User/addcourse')}",
+      data:"id="+id+'&chaptertitle='+chaptertitle,
+      dataType:"json",
+      success:function(data){
+        if(data.status == 1){
+          ui.success("添加成功");
+        }else{
+          ui.error("添加失败");
+          return false;
+        }
+        callback = "location.href = location.href";
+        setTimeout(callback,1000);
+      },
+      error: function(){
+        ui.error("未知错误!");
+      }
+    });
+  }
+
+
+
+
+</script>

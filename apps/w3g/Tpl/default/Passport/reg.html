@@ -1,0 +1,163 @@
+<include file="../Public/_header" />
+<!--container-->
+<div class="container"> 
+    <div class="login_box">
+    	<h3><a href="{:U('w3g/Passport/login')}">登录</a></h3>
+        <ul class="login_hd">
+        	<li class="on">手机注册</li>
+            <li>邮箱注册</li>
+        </ul>
+        <form class="login_bd db">
+        	<div class="login_item"><input class="login_ip" type="text" id="prphone" placeholder="请输入手机号码"></div>
+            <div class="login_item"><input class="login_ip" type="password" id="prpassword" placeholder="请输入6-12位密码"></div>
+            <div class="login_item"><input class="login_ip login_ewm" id="prverify" type="text" placeholder="请输入验证码"><a class="login_yzm" href="javascript:;" onclick="getPhoneVerify()">发送验证码</a></div>
+            <p><label><input checked type="checkbox">同意《Eduline用户服务条款》</label></p>
+            <a class="login_btn" href="javascript:;" onclick="reg_phone();">注册</a>
+        </form>
+         <form class="login_bd">
+            <input class="login_ip" type="text" placeholder="请输入邮箱" id="repemail" >
+            <input class="login_ip" type="password" placeholder="请输入6-12位密码" id="pwd" >
+            <p><label><input checked type="checkbox">同意《Eduline用户服务条款》</label></p>
+            <a class="login_btn" href="javascript:;" onclick="reg_email();">注册</a>
+        </form>
+    </div>
+</div>
+<script>
+//邮箱注册
+function reg_email(){
+    var email=$.trim($("#repemail").val());//获取用户手机号
+    var pwd=$.trim($("#pwd").val());//获取用户手机号
+    if(!email.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
+        alert("对不起，email不正确！");
+        return;
+    }
+    if(pwd=="" ||pwd.length<6 || pwd.length>20){
+         alert('对不起，密码长度不正确!');
+         return;
+    }
+    $.ajax({
+        type: "POST",
+        url:"{:U('w3g/Passport/ajaxReg')}",
+        data:"login="+email+"&password="+pwd+"&type=1",
+        dataType:"text",
+        success:function(data){
+            if(isNaN(data)){
+                alert(data);
+            }else{
+                alert("注册成功");
+              window.location.href="{:U('w3g/Passport/login')}";
+            }
+        }
+    });
+}
+//手机注册
+function reg_phone(){
+    user=$.trim($("#prphone").val());//获取用户手机号
+    verify=$.trim($("#prverify").val());//获取手机验证码
+    password=$.trim($("#prpassword").val());//获取密码
+    //检查手机号格式
+    if(!user.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+         alert('对不起，请填写正确的手机号!');
+         return;
+    }
+    //检查密码
+    if(password=="" ||password.length<6 || password.length>20){
+         alert('对不起，密码长度不正确!');
+         return;
+    }
+    //检查验证码
+    if(verify=="" ||verify.length!=6){
+         alert('对不起，手机验证码长度不正确!');
+         return;
+    }
+    //验证手机
+    $.ajax({
+        type: "POST",
+        url:"{:U('w3g/Passport/clickPhoneVer')}",
+        data:"phone="+user+"&verify="+verify,
+        dataType:"text",
+        success:function(data){
+             if(isNaN(data)){
+                 alert(data);  
+                 return;
+            }else{
+                $.ajax({
+                    type: "POST",
+                    url:"{:U('w3g/Passport/ajaxReg')}",
+                    data:"login="+user+"&password="+password+"&verify="+verify+"&type=2",
+                    dataType:"text",
+                    success:function(data){
+                        if(isNaN(data)){
+                            alert(data);
+                        }else{
+                            alert("注册成功");
+                          window.location.href="{:U('w3g/Passport/login')}";
+                        }
+                    }
+                });
+            }
+           
+        }
+    }); 
+}
+function getPhoneVerify(){
+    user=$.trim($("#prphone").val());//获取用户手机号
+    //检查手机号格式
+    if(!user.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+         alert('对不起，请填写正确的手机号!');
+         return;
+    }else{
+        //验证此手机是否已被注册
+        $.ajax({
+            type: "POST",
+            url:"{:U('w3g/Passport/clickPhone')}",
+            data:"phone="+user,
+            dataType:"text",
+            success:function(data){
+                if(data==0){
+                     alert('对不起，此手机已被注册，请更换!');
+                     return;
+                }else{
+                    alert(data);
+                    phoneVerify();
+                }
+               
+            }
+        }); 
+    }
+    var phoneVerify=function(){
+        //获取手机验证码
+        $.ajax({
+            type: "POST",
+            url:"{:U('w3g/Passport/getVerify')}",
+            data:"phone="+user,
+            dataType:"json",
+            success:function(data){
+                if(isNaN(data)){
+                    alert(data);
+                    return;
+                }else{
+                    alert(data);
+                    timerc = 60;
+                    dtime();
+                    return;
+                }
+            }
+        }); 
+    }
+}
+//临时处理方法
+var timerc; 
+function dctime(){
+    if(timerc > 1){ 
+        timerc=timerc-1; 
+        $("#dctime").text(timerc);
+        setTimeout("dctime()", 1000); //设置1000毫秒以后执行一次本函数
+    }else{
+        $('.width97').css("display","none");
+        $('.width80').removeAttr("style");
+    }
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

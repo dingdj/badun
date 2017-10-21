@@ -1,0 +1,126 @@
+<include file="__THEME__/public_header" />
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div id="content cbg" style="background-color: #f0f0f2">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <ul>
+                    <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/live')}">购买的直播</a></li>
+                    <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/live',['tab'=>1])}">收藏的直播</a></li>
+                </ul>
+            </div>
+            <div class="center_right_con">
+                <if condition="$_GET['tab'] eq null">
+                <div class="content-card">
+                    <ul class="user-imglist">
+                        <if condition="$data eq null">
+                            <li style="border: none;box-shadow: none;">您还没有相关直播。。</li>
+                            <else/>
+                            <foreach name="data" item="l" key='k'>
+                                <li>
+                                    <a href="{:U('live/Index/view',array('id'=>$l['live_id']))}" class="img"><img src="{:getCover($l['cover'] , 248,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('live/Index/view',array('id'=>$l['live_id']))}">{$l.video_title}</a></h3>
+                                        <p><a href="{$l.domain}">{$l.mhm_title}</a></p>
+                                        <span><strong>¥{$l.money}</strong><small>{$l.order_count}人在学</small></span>
+                                        <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.oid},'buy')">删除</a></div>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$listData['html']}
+                        </div>
+                    </div>
+                </div>
+                <else/>
+                <div class="content-card">
+                    <ul class="user-imglist">
+                        <if condition="$merge_live_data eq null">
+                            <li style="border: none;box-shadow: none;">您还没收藏直播。。</li>
+                            <else/>
+                            <foreach name="merge_live_data" item="l" key='k'>
+                                <li>
+                                    <a href="{:U('live/Index/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 248,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('live/Index/view',array('id'=>$l['id']))}">{$l.video_title}</a></h3>
+                                        <p><a href="{$l.domain}">{$l.mhm_title}</a></p>
+                                        <span><strong>¥{$l.money}</strong><small>{$l.order_count}人在学</small></span>
+                                        <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.cid},'col')">删除</a></div>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </ul>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$live_data['html']}
+                        </div>
+                    </div>
+                </div>
+                </if>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/live')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+//    $(".content-card:first").show();
+//    $(".center_right_tit li").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".content-card").hide();
+//        $(".content-card").eq(tit_li).show();
+//    });
+/**
+ * 删除课程方法
+ * @param id
+ */
+function dellive(cate,id,btnclick){
+    var id=id;
+    url="{:U('classroom/Album/delalbum')}";
+    //删除我购买的套餐
+    if(btnclick=="buy"){
+        fdata="type=3&rtype=1&id="+id;
+    }else if(btnclick=="col"){
+        fdata="type=1&rtype=2&id="+id;
+    }
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:fdata,
+        dataType:"json",
+        success:function(data){
+           if(data.status==1){
+               $(cate).parent().parent().parent().fadeOut();
+               window.location.href = window.location.href;
+           }
+        }
+    });
+}
+
+</script>
+<include file="__THEME__/public_footer" />

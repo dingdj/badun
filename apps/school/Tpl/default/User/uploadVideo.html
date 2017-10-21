@@ -1,0 +1,245 @@
+<include file="__THEME__/public_header" />
+<!--分类筛选使用的jquery1.7.1不兼容，故使用jquery  主要用于课程直播分类筛选-->
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+<include file="../User/_top" />
+<div id="content cbg">
+<div class="wrap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+    <div class="user-con fl user-pbottom">
+        <div class="center_right_tit">
+          <ul>
+            <li><a href="{:U('school/User/schoolVideo')}">我上传的课程</a></li>
+            <li class="on"><a onclick="navClick(this,'uploadvideo')" href="javascript:;">上传录播课程</a></li>
+          </ul>
+        </div>
+        <div class="uploadvideo">
+            <form method="POST" action="{:U('school/User/doAddVideo')}" class="infobox" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+                <div class="form2">
+                    <dl>
+                        <dt><span>*</span>课程名称：</dt>
+                        <dd>
+                            <input type="text" class="inp01" name="video_title" id="form_video_title" class="head_search upload_input_a" >
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>课程分类：</dt>
+                        <dd style="width: 450px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 121px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
+                            {:W('CategoryLevel',array('table'=>'zy_currency_category','id'=>'video_level','default'=>$fullcategorypaths ))}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>课程介绍：</dt>
+                        <dd>
+                          {:W('Editor',array('contentName'=>'video_intro','value'=>$video_intro,'width'=>'99%','height'=>'350'))}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>课程标签：</dt>
+                        <dd>
+                            <input type="text" class="inp01" name="video_tag" id="form_video_tag" class="head_search upload_input_a" >
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>价格：</dt>
+                        <dd>
+                            <input type="text"  class="inp01" name="v_price" id="form_v_price">
+                        </dd>
+                    </dl>
+                    <!-- <dl>
+                        <dt><span>*</span>参加限时打折：</dt>
+                        <dd>
+                            <input type="checkbox"  name="is_tlimit" id="is_tlimit" value="1" >&nbsp;勾选参加限时打折
+                        </dd>
+                    </dl>
+                    <dl id="form_limit_discount" style="display:none;">
+                        <dt><span>*</span>限时折扣：</dt>
+                        <dd>
+                            <input type="text"  class="inp01" name="limit_discount" value="0" id="limit_discount" >&nbsp;默认为原价
+                        </dd>
+                    </dl>
+                    <dl id="form_starttime" style="display:none;">
+                        <dt><span>*</span>限时打折开始时间：</dt>
+                        <dd>
+                          <input type="text"  class="inp01" name="starttime" id="starttime"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                        </dd>
+                    </dl>
+                    <dl id="form_endtime" style="display:none;">
+                        <dt><span>*</span>限时打折结束时间：</dt>
+                        <dd>
+                          <input type="text"  class="inp01" name="endtime" id="endtime"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                        </dd>
+                    </dl> -->
+                    <dl>
+                        <dt><span>*</span>上架时间：</dt>
+                        <dd>
+                          <input type="text"  class="inp01" name="listingtime" id="listingtime" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>下架时间：</dt>
+                        <dd>
+                          <input type="text"  class="inp01" name="uctime" id="uctime" onfocus="core.rcalendar(this,'full');" readonly="readonly" >
+                        </dd>
+                    </dl>
+                    <dl id="image_cover">
+                        <dt><span>*</span>封面上传：</dt>
+                        <dd>
+                          {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：520px*320px
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>课件上传：</dt>
+                        <dd>
+                          {:W('Upload',array('callback'=>'callback','uploadType'=>'file','limit'=>1,'inputname'=>'videofile','urlquery'=>'input_id=videofile'))}
+                          <php>if($cover){</php>
+                              <div id="small_cover">
+                                  <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$videofile}" />
+                                  <input type="hidden" name="videofile_ids" data="videofile_ids" value="{$videofile_ids}" />
+                              </div>
+                          <php>}</php>
+                        </dd>
+                    </dl>
+                    
+                      <!-- <li>
+                          <label class="label1" <php>if($_GET['id']&&!empty($qiniu_key)){</php>style="display:none"<php>}</php> class="lineD" id="video_upload_d"><em>*</em>上传视频：</label>
+                          <php>if($upload_room == 0){</php> 
+                              {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'mp4,flv,f4v'))}
+                          <php>}else{</php>
+                              <div class="swfupload-box" style="margin-left:130px;width:350px;">
+                                  <div> 一次只能上传一个视频文件！<br/> 支持流行视频格式flv，f4v，mp4</div>
+                                    <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+                                        <div class="fieldset flash" id="fsUploadProgress"></div>
+                                        <div style="margin-top:15px;">
+                                            <div style="width:auto;float:left;">
+                                              <span id="spanButtonPlaceHolder" ></span>
+                                            </div>
+                                            <div>
+                                              <input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px; width:70px;background-color:#f0f0f0;color:#535353;" />
+                                            </div>
+                                        </div>
+                                    </form>
+                              </div>
+                          <php>}</php>
+                      </li> -->
+                      <dl>
+                        <dd>
+                        <input id="videokey" name="videokey" type="hidden" value="{$qiniu_key}"> 
+                        <input  class="btn"  type="submit"  style="line-height: 0;" value="保 存">
+                      	</dd>
+                    </dl>
+                </div>   
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+  function j_validateCallback(form,call,callback) {
+    var $form = $(form);
+    if(typeof call != 'undefined' && call instanceof Function){    
+      $i = call($form);
+      if(!$i){
+        return false;
+      }
+    }
+    var _submitFn = function(){
+      $.ajax({
+        type: form.method || 'POST',
+        url:$form.attr("action"),
+        data:$form.serializeArray(),
+        dataType:"json",
+        cache: false,
+        success: function(xMLHttpRequest, textStatus, errorThrown){
+          if(typeof callback != 'undefined' && callback instanceof Function){   
+            callback($form,xMLHttpRequest);
+          }  
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+      });
+    }
+    _submitFn();
+    return false;
+  }
+  function checkForm(form){
+    $("textarea[name='video_intro']").html(E.getData());
+    return true;
+  }
+  function post_callback(_form,data){
+    if(data.status != undefined){
+      if(data.status == '0'){
+        ui.error(data.info);
+      } else {
+        ui.success(data.info);
+        window.location.href = U('school/User/schoolVideo')+"&tabHash=index";
+      }
+    }
+  }
+  //删除视频
+  function deletevideo(key){
+    if(''==key){
+      ui.error("视频不存在！");
+      return ;
+    }
+    $.ajax({
+      type: 'POST',
+      url:"{:U('school/AdminVideo/deletevideo')}",
+      data:{videokey:key},
+      dataType:"json",
+      cache: false,
+      success: function(data){
+        if(data.status == '0'){
+          ui.error(data.info);
+        } else {
+          $("#videokey").val("");//设置videokey为空
+          $("#video_upload_d").css("display","block");//显示上传框
+          $("#form_submit").attr('disabled',"true");//设置上传按钮为禁用
+          ui.success(data.info);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError){
+        ui.error("未知错误!");
+      }
+    });
+  }
+  function callback(data){
+    $("#"+data.input_id+"_cover").remove();
+    $("#image_"+data.input_id).append(
+      '<div id='+data.input_id+'_cover>'
+      +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+      +'</div>'
+    ).find('input:file').val('');
+    $("#"+data.input_id+"_ids").val(data.attach_id);
+  }
+  function filecallback(data){
+    $("#old_coursefile_ids").remove();
+    $("#coursefile_ids").val(data.attach_id);
+  }
+  $('#is_tlimit').change(function(){
+      var che = $("#is_tlimit").attr("checked");
+      if(che){
+        $("#form_limit_discount,#form_starttime,#form_endtime").show();
+        $("#limit_discount,#starttime,#endtime").removeAttr("readonly");
+      } else {
+        $("#form_limit_discount,#form_starttime,#form_endtime").hide();
+        $("#form_limit_discount,#form_starttime,#endtime").attr("readonly","readonly");
+        $("#limit_discount,#starttime,#endtime").val('');
+      }
+  });
+  </script>
+
+<include file="__THEME__/public_footer" />

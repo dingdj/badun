@@ -1,0 +1,152 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<style>
+    .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
+</style>
+<div class="maskbox"></div>
+<div class="body">
+    <ul class="selectul">
+        <li class="r01" name="list_dl" style="width: 50%">
+            <div class="hd"><switch name="sort_type"><case value="1">精华</case><case value="2">最热</case><case value="price_up">积分最低</case><case value="price_down">积分最高</case><default/>综合排序</switch><i></i></div>
+            <div class="bd">
+                <dl>
+                    <dd <eq name="sort_type" value="">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="">综合排序</a></dd>
+                    <dd <eq name="sort_type" value="1">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="1">精华</a></dd>
+                    <dd <eq name="sort_type" value="2">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="2">最热</a></dd>
+                    <dd <eq name="sort_type" value="price_up">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="price_up">积分最低</a></dd>
+                    <dd <eq name="sort_type" value="price_down">class="active"</eq>><a href="javascript:;" class="screen" data-type="sort_type" data-value="price_down">积分最高</a></dd>
+                </dl>
+            </div>
+        </li>
+        <li class="r02 border_sx" name="list_dl" style="width: 50%">
+            <div class="hd"><php>if($cateId){</php>{:msubstr(t($title),0,10,'utf-8',true)}<php>}else{</php>全部<php>}</php><i></i></div>
+            <div class="bd">
+                <dl>
+                    <dd class="clearfix n1">
+                        <div class="item <eq name='cateId' value=''>active</eq>"><a href="{:U('mall/Goods/index')}"  id="cate0">全部</a></div>
+                        <volist name="good_category" id="vo">
+                            <div class="item <eq name='vo.goods_category_id' value='$cateId'>active</eq>"><a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.goods_category_id}" >{$vo.title}</a></div>
+                        </volist>
+                    </dd>
+                    <dd class="n2">
+                        <volist name="category_two" id="vo">
+                            <div class="item <eq name='vo.goods_category_id' value='$cate_id'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.goods_category_id}" >{$vo.title}</a></div>
+                        </volist>
+                    </dd>
+                    <dd class="n3">
+                        <volist name="category_three" id="vo">
+                            <div class="item <eq name='vo.goods_category_id' value='$cate_ids'>active</eq>"><a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.goods_category_id}" >{$vo.title}</a></div>
+                        </volist>
+                    </dd>
+
+                </dl>
+            </div>
+        </li>
+        <li class="r03" name="list_dl" style="display: none">
+            <div class="hd">筛选<i></i></div>
+            <div class="bd">
+                <dl>
+                    <dt>积分区间</dt>
+                    <dd name="group-list">
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="1">checked</eq>" data-type="lower" data-value="1">不限<span class="icon-ck"></span></a>
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="1,49">checked</eq>" data-type="lower" data-value="1,49">¥50以下<span class="icon-ck"></span></a>
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="50,100">checked</eq>" data-type="lower" data-value="50,100">¥50-100<span class="icon-ck"></span></a>
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="100,500">checked</eq>" data-type="lower" data-value="100,500">¥100-500<span class="icon-ck"></span></a>
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="500,1000">checked</eq>" data-type="lower" data-value="500,1000">¥500-1000<span class="icon-ck"></span></a>
+                        <a href="javascript:;" class="screen <eq name="Think.get.lower" value="1000,">checked</eq>" data-type="lower" data-value="1000,1000000">¥1000以上<span class="icon-ck"></span></a>
+                    </dd>
+                </dl>
+            </div>
+        </li>
+    </ul>
+    <php>if($cateId){</php>
+    <div class="searchdiv">在“<span>{:msubstr(t($title),0,16,'utf-8',true)}</span>”分类下，找到{$data.count|default=0}商品</div>
+    <php>}</php>
+    <div class="itembox">
+        <div class="itemboxcon">
+            <div id="picScroll01" class="picScroll">
+                <div class="bd">
+                    <if condition="$listData">
+                        <ul class="malllist">
+                            <volist name="listData" id="vo">
+                                <li style="width: 100%">
+                                    <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">
+                                    <img src="{:cutImg($vo['cover_ids'],190,100)}" class="lazyloading" alt="{$vo.title}" />
+                                    <h3>{$vo.title}</h3>
+                                    <p>{$vo.info|msubstr=0,10, 'utf-8',true}</p>
+                                    <div class="info">
+                                        <div class="num"><span>{$vo.price}</span>积分&nbsp;&nbsp;&nbsp;&nbsp;<span>{$vo.fare}</span>运费</div>
+                                    </div>
+                                    <div class="places">剩余<span>{$vo.stock}</span>名额</div>
+                                    </a>
+                                </li>
+                            </volist>
+                        </ul>
+                        <else/>
+                        <span style="font-size: 14px;padding: 10px;">暂无此商品。。</span>
+                    </if>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $(".hd").click(function(){
+            if($(".maskbox").css("display")=="none") {
+                $(".maskbox").css({"display": "block"});
+            }else{
+                $(".maskbox").css({"display": "none"});
+            }
+        });
+
+        //同步请求
+        $(".screen").click(function(){
+            var _this = this;
+            var totalPages = "{$data.totalPages}";
+            var type = $(_this).data("type"),
+                    value = $(_this).data("value"),
+                    baseUrl = "{:U('mall/Goods/index')}";
+            if(type == 'p'){
+                value = $("input[name='pageNum']").val();
+                if(value > totalPages){
+                    value = totalPages;
+                }
+            }
+            window.location.href = getRequestUrl(type,value,baseUrl);
+        });
+        function getRequestUrl(field,value,baseUrl){
+            //匹配是否有该参数
+            var reg = new RegExp("(^|&)" + field + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            //已经存在参数
+            var in_params = false;
+            if (r != null){
+                in_params = true;
+            }
+            //获取参数部分
+            var url = window.location.search;
+            var replaceReg = new RegExp(field+'=[^&]+','g');
+            if(value){
+                //合法参数传递方式
+                if(in_params){
+                    url = url.replace(replaceReg,field+'='+value);
+                }else{
+                    if(url.indexOf("?") != -1){
+                        url += '&'+field+'='+value;
+                    }else{
+                        url += '?'+field+'='+value;
+                    }
+                }
+
+            }else{
+                //如果value不存在,移除该参数
+                url = url.replace(replaceReg,'');
+            }
+            url = url.replace(/&{2,}/,'&').replace(/&$/,'');
+            return baseUrl ? baseUrl+url: document.domain + url;
+        }
+    });
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

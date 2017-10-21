@@ -1,0 +1,148 @@
+<include file="public/school_header" />
+
+<div class="jgitembox jgc" style="margin-top: 80px;">
+    <div class="wrap">
+        <div class="jgtitlle">
+            <div>
+                <h2>讲师详情</h2>
+                <p>Teacher Details</p>
+            </div>
+        </div>
+        <div class="itemcon">
+            <ul class="teacherlist">
+                <volist name="listData" id="vo">
+                    <li>
+                        <div class="teacher-photo"><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['head_id'],180,180)}" class="lazyloading" alt="{$vo.name}"></a></div>
+                        <div class="teacher-info">
+                            <div><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">{$vo.name}</a><php>if($vo['teacher_title_cover']){</php><img src="{$vo.teacher_title_cover}" width="19px" height="19px" alt="{$vo.teacher_title_category}"><php>}</php></div>
+                            <div class="intro">{:limitNumber($vo['inro'],30)}</div>
+                            <div class="info">
+                                <div class="score">
+                                    <if condition="$vo['star'] GT 0 "> <i class="icon-star"></i>
+                                    <else /><i class="icon-star_no"></i></if>
+                                    <if condition="$vo['star'] GT 1 "> <i class="icon-star"></i>
+                                    <else /><i class="icon-star_no"></i></if>
+                                    <if condition="$vo['star'] GT 2 "> <i class="icon-star"></i>
+                                    <else /><i class="icon-star_no"></i></if>
+                                    <if condition="$vo['star'] GT 3 "> <i class="icon-star"></i>
+                                    <else /><i class="icon-star_no"></i></if>
+                                    <if condition="$vo['star'] GT 4 "> <i class="icon-star"></i>
+                                    <else /><i class="icon-star_no"></i></if>
+                                </div>
+                                <div class="review">({$vo.review_count})人&nbsp;&nbsp;</div>
+                                <div class="address">|&nbsp;&nbsp;<i class="icon-address"></i>{$vo.Teacher_areas}</div>
+                                <div class="follow">|&nbsp;&nbsp;{$vo.follow_count}人关注</div>
+                                <div class="video">|&nbsp;&nbsp;{$vo.video_count}门课程</div>
+                            </div>
+                            <div class="tag">
+                                <span>{$vo.teacher_age}年教龄</span>
+                                <span>{$vo.title}</span>
+                                <php>foreach($vo['label'] as $k=>$v){</php>
+                                <php>if($k < 4){</php><span>{$v}</span><php>}</php>
+                                <php>}</php>
+                                <span>{:limitNumber($vo['teach_evaluation'],15)}</span>
+                            </div>
+
+                            <div class="list">热门课程：
+                                <php>if($vo['video']){</php>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['video']['id']))}">{:getShort($vo['video']['video_title'],15)}</a>&nbsp;&nbsp;
+                                    <span>播放{$vo['video']['video_order_count']}</span>次&nbsp;&nbsp;
+
+                                    <php>if($vo['video']['t_price'] == 0){</php><span style="color:green ;">免费</span>
+                                    <php>}else{</php><span>￥{$vo['video']['t_price']}</span>元<php>}</php>
+                                <php>}else{</php>
+                                    <span> 无</span>
+                                <php>}</php>
+                            <a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="more">进入讲师主页</a>
+                            </div>
+                            <php>if($vo['collection'] > 0){</php>
+                              <a href="javascript:;" onClick="collectTeacher(this,0,{$vo['id']})" class="sc on"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
+                            <php>}else{</php>
+                              <a href="javascript:;" onClick="collectTeacher(this,1,{$vo['id']})" class="sc"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
+                            <php>}</php>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+            <php>if($data['totalPages'] > 1){</php>
+            <div class="page">
+                <div class="pagebox">
+                    {$data.html}
+                    <div class="pagediv">
+                        <span>共<p id="pageTotal" style="display: inline-block;">{$data.totalPages}</p>页,去第</span>
+                        <input type="text" name="pageNum" id="pageNum" > <span>页</span>
+                        <a class="goto gotoPage" href="javascript:;">确定</a>
+                    </div>
+                </div>
+            </div>
+            <php>}</php>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+    var domain = '{$school.domain}';
+    var school_id = '{$school.school_id}';
+
+    if(domain){
+        var url = domain+'/teacher_list.html';
+    }else{
+        var url = "{:U('school/School/teacher_list')}"+"&id="+school_id;
+    }
+
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        var value = $(this).attr('p');
+        if(domain){
+            location.href = url+"?p="+value;
+        }else{
+            location.href = url+"&p="+value;
+        }
+    });
+    //同步请求
+    $(".goto").click(function(){
+        var totalPages = "{$data.totalPages}";
+        var value = $("input[name='pageNum']").val();
+
+        if(parseInt(value) > parseInt(totalPages)){
+            value = totalPages;
+        }
+        if(domain){
+            location.href = url+"?p="+value;
+        }else{
+            location.href = url+"&p="+value;
+        }
+    });
+ });
+    //收藏讲师
+    function collectTeacher(cate,type,tid){
+        if(UID<=0){
+            reg_login();
+            return false;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Teacher/collect')}",
+            data:{type:type,source_id:tid,uid:UID},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    notes(data.info,'failure');
+                    window.location.reload();
+                } else {
+                    notes(data.info,'');
+                    window.location.reload();
+                }
+            },
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

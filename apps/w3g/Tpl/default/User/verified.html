@@ -1,0 +1,134 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+<div style="margin:15px;">此功能暂不开放，请访问pc版！</div>
+
+    <!-- <div class="teacher_type">
+    <form id="renzhengform" method="post" action="" onsubmit="return false;">
+        <input type="hidden" name="vtype" value="{$verifyInfo['usergroup_id']}" id="vtype">
+    	<div class="item_box">
+			<dl class="management_dl">
+                <dt><span>*</span>当前状态</dt>
+                <dd>{$status}</dd>
+			</dl>
+			<dl class="management_dl">
+                <dt><span>*</span>认证类型</dt>
+                <dd>
+                    <volist name='auType' id='rs'>
+                        <input type="radio" style="float:left;margin-top:15px;" value="{$rs.user_group_id}" name="usergroup_id" onclick='changeText({$rs.user_group_id})' class="usergroup_id" id="renzhenglx_{$rs.user_group_id}" <php>if(($verifyInfo['usergroup_id']=="" &&  $vo['user_group_id']==5) || $vo['user_group_id']==$verifyInfo['usergroup_id']){</php>checked="checked"<php>}</php> >
+                        <label for="renzhenglx_{$rs.user_group_id}">&nbsp;{$rs.user_group_name}</label>
+                    </volist>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>认证分类</dt>
+                <dd>
+                	<select name="user_verified_category_id" id="user_verified_category_id">
+                        <option value="0">请选择认证分类</option>
+                        <volist name='verified_category' id='val'>
+                            <option value="{$val.user_verified_category_id}">{$val.title}</option>
+                        </volist>
+                    </select>
+                </dd>
+            </dl>
+			<dl class="management_dl">
+                <dt><span>*</span>真实姓名</dt>
+                <dd><input class="management_input" type="text" name="realname" id="realname" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['realname']}"<php>}</php>></dd>
+            </dl>
+			<dl class="management_dl">
+                <dt><span>*</span>身份证号</dt>
+                <dd><input class="management_input" type="text" name="idcard" id="idcard" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['idcard']}"<php>}</php>></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span></span>个人地址</dt>
+                <dd><input class="management_input" type="text" name="address" id="address" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['address']}"<php>}</php>></dd>
+            </dl>
+            
+            <dl class="management_dl">
+                <dt><span>*</span>联系电话</dt>
+                <dd><input class="management_input" type="text" name="phone" id="phone" <?php echo $phone?' readonly value="'.$phone.'"':'';?> ></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>认证理由</dt>
+                <dd><textarea name="reason" id="reason"><php>if($verifyInfo['verified'] !== ""){</php>{$verifyInfo['reason']|format}<php>}</php></textarea></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>认证附件</dt>
+                <dd>
+                	{:W('Upload',array('inputname'=>'attach','attachIds'=>$verifyInfo['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}                   
+                    <p class="management_dis">认证本人手持身份证照片，证件所有信息清晰可见，手持证件人的五官清晰可见。</p>
+                    <p class="management_dis">教师认证必须上传教师资格证等其相关证明 </p>
+                </dd>
+            </dl>
+            <input  class="user-management_btn" onclick="saveVerify();" type="submit" value="保 存">
+        </div>
+    </div>
+    </form> -->
+</div>
+<script>
+
+$('#renzhengform input:file').click(function(){
+    $('#renzhengform input:file').val('');
+});
+var setInfo3 = '{:U(APP_NAME."/".MODULE_NAME."/".ACTION_NAME, array("tab"=>3))}';
+var delverify = function(){
+    if(confirm('确定要注销认证吗？')){
+        $.post(U('public/Account/delverify'),{},function(txt){
+            if(txt == 1){
+                alert('注销成功');
+                setTimeout(function(){
+                    window.location = setInfo3;
+                },'2000');
+            }else{
+                alert('注销失败');
+            }
+        });
+    }
+};
+var saveVerify = function(){
+    var vtype = $('input.usergroup_id:checked').val();
+      if(!vtype){
+          alert('请选择认证类型');
+      }
+    if($("#user_verified_category_id").val()==0){
+      notes('请选择认证分类', 'failure');
+      return false;
+    }
+    var company = $('#company').val();
+    var realname = $('#realname').val();
+    var idcard = $('#idcard').val();
+    var phone = $('#phone').val();
+    var reason = $('#reason').val();
+    var verifiedCategory = $('#verifiedCategory').val();
+    var attach_ids = $('#attach_ids').val();
+      if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(realname))){
+          alert('请输入正确的真实姓名');
+      }
+      if(!/^[\dxX]{15,18}$/.test(idcard)){
+          alert('请输入正确的身份号码');
+      }
+      if(!/^[\d\-]{7,11}$/.test(phone)){
+          alert('请输入联系电话');
+      }
+      if(!reason){
+          alert('请输入认证理由');
+      }
+      var other_data_ids = $('#other_data_ids').val();
+
+      var data = $('#renzhengform').serialize();
+      $.post(U('public/Account/doAuthenticate'),data,function(msg){
+          if(msg == 1){
+            alert('申请成功，请等待审核');
+            setTimeout(function(){
+                window.location = setInfo3;
+            },'2000');
+          }else{
+            alert(msg);
+          }
+          
+      });
+    }
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

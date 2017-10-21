@@ -1,0 +1,54 @@
+<include file="__THEME__/admin_header" />
+<div id="container" class="so_main">
+	<div class="page_tit">
+		数据看板
+	</div>
+
+<div class="form2">
+  <!-- START TAB框 -->
+  
+  <div class="tit_tab">
+    <ul>
+    <li><a href="{:U('school/AdminStatistics/showDataCount',array('type'=>'today'))}" <eq name='type' value='today'> class = "on"</eq>>今日新增</a></li>
+    <li><a href="{:U('school/AdminStatistics/showDataCount',array('type'=>'all'))}" <eq name='type' value='all'> class = "on"</eq>>总计</a></li>
+    <li>
+    <form method ='GET' action="{:U('school/AdminStatistics/showDataCount')}">
+    <input type="hidden" name='app' value='school'>
+    <input type="hidden" name='mod' value='AdminStatistics'>
+    <input type="hidden" name='act' value='showDataCount'>
+    </form>
+    </li>
+    </ul>
+  </div>
+  
+  <!-- END TAB框 -->
+</div>
+
+  
+  <!-- START LIST -->
+  <div class="list" id='list' style="clear:both;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th>订单数</th>
+    <th class="line_l">学员数</th>
+    <th class="line_l">课程数</th>
+    <th class="line_l">评论数</th>
+    <th class="line_l">课程提问数</th>
+  </tr>
+  <php>if(empty($list)){</php>
+    <tr><td colspan='100' align="center">{:L('SSC_NO_RELATE_DATA')}</td></tr>
+  <php>}else{</php>
+    <tr overstyle="on" >
+    <td class="day">{$list.order}</td>
+      <td class="user">{$list.user}</td>
+    <td class="pageviews">{$list.video}</td>
+    <td class="average">{$list.review}</td>
+    <td class="mostUser">{$list.question}</td>
+    </tr>
+  <php>}</php>
+
+  </table>
+  </div>
+ </div>
+
+<include file="__THEME__/admin_footer" />

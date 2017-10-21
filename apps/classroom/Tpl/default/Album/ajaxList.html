@@ -1,0 +1,126 @@
+<volist name="list.data" id="vo">
+    <li>
+        <div class="info">
+            <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
+                <input type="hidden" value="{$vo['id']}" name="vid" />
+                <input type="hidden" value="zy_album" name="check_type" />
+                <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                <input type="hidden" id="money" value="{$vo['price']}" name="money" />
+            </form>
+            <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],530,260)}" alt=""></a>
+            <i class="taoke_bg"></i>
+            <div class="txt">
+                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[套餐]  {:msubstr($vo['album_title'],0,20)}</a></h3>
+                <p>{:msubstr($vo['album_intro'],0,50)}</p>
+                <div class="price">
+                    <span class="c1">套餐价格：</span>
+                    <span class="c2"><em>¥</em> {$vo['price']}</span>
+                    <span class="c3">原价：¥ {$vo['oPrice']}</span>
+                </div>
+                <div class="intro">
+                    <div class="fl">讲师：
+                    <volist name="vo.teachers" id="tvo">
+                    <span>{$tvo['name']}</span>
+                    </volist>
+                    </div>
+                </div>
+                <div class="intro">
+                    <div class="fl">播放：<span>28次</span></div>
+                    <div class="fl">评论数：<span>{$vo['comment_count']}次</span></div>
+                    <div class="fl">购买数：<span>{$vo['order_count']}次</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="group">
+            <ul class="leftlist">
+            <volist name="vo.video" id="val">
+                <li <if condition="$key eq (count($vo['video']) - 1)"> style="background: none;"</if> >
+                    <if condition="$val['type'] eq 2">
+                    <a href=" {:U('live/Index/view',array('id'=>$val['id']))}">
+                    <else />
+                    <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                    </if>
+                    <img src="{:getCover($val['cover'],94,70)}" alt="{$val['video_title']}">
+                    </a>
+                    <p>{:msubstr($val['video_title'],0,10)}</p>
+                </li>
+            </volist>
+            </ul>
+            <div class="rightbox">
+                <div class="rightbox-item">共有 <php>echo count($vo['video']);</php> 门课程组合</div>
+                <div class="rightbox-item">套餐价格：<span class="price">¥ <em>{$vo['price']}</em></span></div>
+                <div class="rightbox-item">原价：<span class="del">¥{$vo['oPrice']}</span></div>
+                <div class="rightbox-item">立即节省：  ¥{$vo['disPrice']}</div>
+                <div class="rightbox-item">
+                <php>if($vo['price'] < 0 ){</php>
+                <a href="javascript:;">免费套餐</a>
+                <php>}else{</php>
+                <eq name="vo.isBuy" value="0">
+                    <a href="javascript:;" class="charge_video">立即购买</a>
+                <else />
+                    <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">已购买</a>
+                </eq>
+                <php>}</php>
+                </div>
+            </div>
+        </div>
+        <div class="bot">
+            <ul>
+                <li>课程数：<php>echo count($vo['video']);</php>个</li>
+                <li>套餐价格： <span>¥{$vo['price']}</span></li>
+                <li>
+                <gt name="vo.isCollect" value="0">
+                <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="0">取消收藏</a>
+                <else />
+                <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="1">收藏套餐</a>
+                </gt>
+                
+                </li>
+            </ul>
+        </div>
+    </li>
+</volist>
+<script type="text/javascript">
+//购买操作
+  $('a.charge_video').on('click',function () {
+      if(uid<=0){
+          reg_login();
+          return false;
+      }
+      var form  = $(this).parents('.group').siblings('.info').find('.pay_form');
+      var vid = form.find('input:hidden[name="vid"]').val();
+      var vtype = form.find('input:hidden[name="check_type"]').val();
+
+      if(!vid || !vtype){
+          ui.error('参数错误');
+          return false;
+      }
+
+      var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+      var money = form.find('input:hidden[name="money"]').val();
+      if(money <= 0){
+          ui.error('该课程不需要您购买');
+          return false;
+      }
+      if(rechange_base>0 && money%rechange_base != 0){
+          if(rechange_base == 1){
+              ui.error('购买金额必须为整数');
+          }else{
+              ui.error('购买金额必须为'+rechange_base+'的倍数');
+          }
+          return false;
+      }
+
+      $.post(U("classroom/PayVideo/checkPay"),form.serialize(),function(data){
+          if(data.status == 1){
+              window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+          } else if(data.status == 9){
+              ui.error(data.info);
+              window.location.reload();
+          } else {
+              ui.error(data.info);
+              return false;
+          }
+      },'json');
+  });
+  </script>

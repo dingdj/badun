@@ -1,0 +1,29 @@
+<volist name="group.data" id="vo">
+    <ul class="communitylist">
+
+
+            <li>
+                <div class="pic">
+                    <a href="{:U('group/Index/view',array('gid'=>$vo['id']))}">
+                       <img src="{:logo_path_to_url($vo['logo'])}" alt="{$vo.name}">
+                    </a>
+
+                    <php>	if($vo['groupstatus'] == 0)  { </php>	<a class="join" href="javascript:;"   onclick =joingroups("{$vo['id']}");>加入小组</a>
+                    <php>  } else  {</php>   <a class="join"  ;>你已加入</a>  <php>}</php>
+
+                </div>
+                <h3><a href="{:U('group/Index/view',array('gid'=>$vo['id']))}">{$vo.name}</a></h3>
+                <div class="tag">
+                    <i class="icon-c20 icon-tag"></i>
+                    <volist name = "$vo.tagname"  id ="name">
+                        <span>{$name}</span>
+                    </volist>
+                </div>
+                <div class="desc">小组简介：{$vo.intro}</div>
+                <div class="num">
+                    <span class="fr">帖子：{$vo.threadcount}</span>
+                    <span>成员：{$vo.membercount}</span>
+                </div>
+            </li>
+    </ul>
+</volist>

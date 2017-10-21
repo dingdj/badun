@@ -1,0 +1,152 @@
+<include file="__THEME__/public_header" />
+
+<div class="content cf2">
+	<div class="wrap">
+    	<!--左-->
+	    <include file="../User/_left" />
+	    <!--右-->
+        <div class="jgpage_right">
+        	<div class="jgpage_right_tit mb50">独立财务账户</div>
+            <div class="jgpage_right_con showEdit" style="<php>if($data){</php>display: none;<php>}</php>">
+                <div class="text"><a href="javascript:;" class="retFinance">返回账户列表</a></a></div>
+            	<div class="txt">您可以填写并提交独立财务账户申请，我们的工作人员将在收到申请的15个工作日内审核您的申请并及时反馈，请耐心等待。</div>
+                <div class="jgbox">
+                <form id="renzhengform" method="POST" action="" name="detail_form" onsubmit="return false;">
+                <php>if(!$verified || $verified['status'] != 0){</php>
+                	<div class="jgformitem">
+                    	<label><span>*</span>选择开户行:</label>
+                        <select name="accounttype" id="accounttype" style="width:210px ;">
+	                        <option value="">-选择银行-</option>
+	                        <?php foreach($banks as $bank):?>
+	                        <option<?php echo $data['accounttype']==$bank?' selected="selected"':''?> value="{$bank}">{$bank}</option>
+	                        <?php endforeach;?>
+	                    </select>
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span>*</span>对公账号:</label>
+                        <input class="jg_input" placeholder="请输入对公账号"  name="account" id="account" value="{$data.account}" type="text" >
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span>*</span>账户开户人:</label>
+                        <input class="jg_input" placeholder="请输入对公账户开户人" name="accountmaster" id="accountmaster" type="text" value="{$data.accountmaster}">
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span>*</span>联系电话:</label>
+                        <input class="jg_input" placeholder="请输入联系电话" name="tel_num" id="tel_num" type="text" value="{$data.tel_num}" >
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span></span>申请理由:</label>
+                        <textarea class="jg_textarea" placeholder="奋进的高三生活~~~" id="reason" name="reason"></textarea>
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span>*</span>认证附件:</label>
+                    	<div class="jgf_filed">
+					        {:W('Upload',array('inputname'=>'attach','attachIds'=>$verified['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+					    </div>
+                        <p>申请独立财务账户需提交一下材料：</p>
+                        <p>营业执照、税务登记证、组织机构代码、对公账号相关信息、机构法人身份证复印件</p>
+                    </div>
+                    <div class="jgformitem">
+                        <a class="jg_btn" href="javascript:;" onclick="saveFinance();">提交申请</a>
+                    </div>
+                <php>}else{</php>
+                		<div class="jgformitem">
+	                    	<label><span>*</span>选择开户行:</label>
+	                        {$verified.accounttype}
+		                </div>
+		                <div class="jgformitem">
+		                	<label><span>*</span>对公账号:</label>
+		                    {$verified.account}
+		                </div>
+		                <div class="jgformitem">
+		                	<label><span>*</span>对公账户开户人:</label>
+		                    {$verified.accountmaster}
+		                </div>
+		                <div class="jgformitem">
+		                	<label><span>*</span>联系电话:</label>
+		                    {$verified.tel_num}
+		                </div>
+		                <div class="jgformitem">
+		                	<label><span></span>申请理由:</label>
+		                    {$verified.reason}
+		                </div>
+		                <div class="jgformitem">
+		                	<label><span>*</span>认证附件:</label>
+		                	<php>if($verified['attachment']){</php>{$verified['attachment']}<php>}else{</php>无<php>}</php>
+		                </div>
+		                <div class="jgformitem">
+		                    <input  class="jg_btn"  type="submit" style="background: #ccc;width: 200px;" value="已申请,请等待审核">
+		                </div>
+                	<php>}</php>
+                </from>
+                </div>
+            </div>
+            <div class="cent_r_box pb40 clearfix hideEidt" style="<php>if(!$data){</php>display: none;<php>}</php>">
+                <div class="box_block">
+                    <table class="table_ye" cellpadding="0" cellspacing="1" bordercolor="#dddddd"border="1" width="100%">
+                    <thead>
+                    <tr><td width="16%">银行卡</td>
+                        <td width="36%">卡号</td>
+                        <td width="16%">持卡人姓名</td>
+                        <td width="16%">联系方式</td>
+                        <td width="16%">操作</td>
+                    </tr></thead>
+                    <tbody><tr>
+                        <td><?php echo $data['accounttype']?></td>
+                        <td><?php echo $data['account']?></td>
+                        <td><?php echo $data['accountmaster']?></td>
+                        <td><?php echo $data['tel_num']?></td>
+                        <td><a href="javascript:;" class="editFinance"><if condition="$data">修改<else/>添加</if></a></td>
+                    </tr>
+                    </tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+  $(".editFinance").click(function(){  
+      $(".showEdit").show();
+      $(".hideEidt").hide(); 
+  });
+  $(".retFinance").click(function(){  
+      $(".hideEidt").show();
+      $(".showEdit").hide();
+  });
+})
+function saveFinance(){
+	var accounttype = $('#accounttype').val();
+    var account = $('#account').val();
+    var accountmaster = $('#accountmaster').val();
+    var tel_num = $('#tel_num').val();
+    var reason = $('#reason').val();
+    var attach_ids = $('#attach_ids').val();
+	if(!accounttype){notes('请选择开户银行', 'failure');return false;}
+	if(!account){notes('请输入对公账号', 'failure');return false;}
+	if(!/^\d{16,19}$/.test(account)){notes('对公账号格式错误', 'failure');return false;}
+
+	if(!accountmaster){notes('请输入账号开户人', 'failure');return false;}
+	if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(accountmaster))){notes('账号开户人格式错误', 'failure');return false;}
+
+	if(!tel_num){notes('请输入联系电话', 'failure');return false;}
+	if(!/^[\d\-]{7,11}$/.test(tel_num)){notes('联系电话格式错误', 'failure');return false;}
+
+	if(!reason){notes('请输入申请理由', 'failure');return false;}
+	if(!attach_ids){notes('请选择申请附件', 'failure');return false;}
+
+  	var data = $('#renzhengform').serialize();
+  	$.post(U('school/User/doFinance'),data,function(msg){
+  	if(msg){
+    	notes('申请成功，请等待审核', 'success');
+		setTimeout(function(){
+		window.location .reload();
+		},'1000');
+ 	}else{
+    	notes(msg, 'failure');
+		return false;
+  	}
+  	});
+}
+</script>
+<include file="__THEME__/public_footer" />

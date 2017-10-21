@@ -1,0 +1,98 @@
+<include file="__THEME__/_header" />
+<meta http-equiv="X-UA-Compatible" content="IE=7, IE=9">
+<style>
+.loginhead{height:115px;}
+.loginhead .logo{height:100px;}
+</style>
+<div class="header">
+    <div class="loginhead">
+        <div class="wrap">
+            <php>if($register_type == 'open'):</php>
+            <php>endif;</php>
+            <div class="fr" style="margin-top: 10px;font-size: 14px;">没有账号？<a href="{:U('public/Passport/reg')}" style="margin-left: 15px;padding-left: 15px;border-left: solid 1px #a0a0a0;">注册</a></div>
+            <div class="logo"><a href="/" title="{$site['site_keyword']}在线教育系统"><img style="margin: 4px 0px;" src="{$site.logo_head}" width="150" height="65"/></a></div>
+        </div>
+    </div>
+</div>
+<!--header end-->
+
+<div class="content">
+    <div class="wrap">
+        <div class="logincontent">
+            <div class="loginleft">
+                {:Addons::hook('show_ad_space', array('place'=>'home_login'))}
+            </div>
+            <div class="loginright">
+                <h3>欢迎登录</h3>
+                <form id="ajax_login_form" method="POST" action="{:U('public/Passport/doLogin')}">
+                    <div class="item">
+                        <input id="account_input" name="login_email" type="text" class="inp" autocomplete="off" placeholder="请输入{$site['site_keyword']}账号/手机/邮箱" />
+                    </div>
+                    <div class="item">
+                        <input id="pwd_input" name="login_password" type="password" class="inp" autocomplete="off" placeholder="请输入登录密码" />
+                    </div>
+                    <div class="item">
+                        <label class="check">
+                            <a class="auto left" event-node="login_remember" href="javascript:;">
+                            <span class="check-ok" style="margin: 0;">
+                            <input type="checkbox" class="auto left" name="login_remember" event-node="login_remember" />
+                            </span>记住我</a>
+                        </label>
+                    </div>
+                    <div class="item"><a href="javascript:;" onclick="check_login();" class="btn">登录</a></div>
+                    <div class="line"><span>or</span></div>
+                    <div class="item">
+                        <php>if(Addons::requireHooks('login_input_footer') && Addons::hook('login_input_footer')):</php>
+                        {:Addons::hook('login_input_footer')}
+                        <php>endif;</php>
+                    </div>
+                    <div class="item tr"><a href="{:U('home/Repwd/index')}">忘记密码？</a><span>|</span><a href="{:U('public/Passport/reg')}">注册新账号</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--itembox end-->
+
+<div class="login-footer" style="margin-bottom:0;">
+    <ul>
+        <li><a href="/">{$site['site_keyword']}首页</a></li>
+        <volist name="pageCategory" id="vo" offset="0" length="5">
+            <li>|</li>
+            <li>
+                <a target="_blank" href="{$vo['url']}">{$key}</a>
+            </li>
+        </volist>
+        <li>|</li>
+        <li><span>{:t($site['site_footer']);}.</span></li>
+    </ul>
+</div>
+
+<eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+</eq>
+<script src="__APP__/login.js" type="text/javascript"></script>
+<script type="text/javascript">
+    function check_login() {
+        if($('#account_input').val() == ''){
+            ui.error('登录名或登录账号不能为空');
+        }
+        if($('#pwd_input').val() == ''){
+            ui.error('登录密码不能为空');
+        }
+        $.post(U('public/Passport/doLogin'),$('#ajax_login_form').serialize(),function(data){
+            if(data.status == 1){
+                ui.success(data.info);
+                window.location.href = data.data;
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    }
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13) {
+            check_login();
+        }
+    });
+</script>

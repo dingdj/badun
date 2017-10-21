@@ -1,0 +1,12 @@
+<div class="jgpage_left">
+    <dl>
+        <dt>消息管理</dt>
+        <dd <php>if((MODULE_NAME=="Message" && ACTION_NAME=="index") || ACTION_NAME=="detail"){echo "class='active'";}</php> ><a href="{:U('public/Message/index')}">我的私信</a></dd>
+        <dd  <php>if(MODULE_NAME=="Message" && ACTION_NAME=="comment"){echo "class='active'";}</php>>
+        <a href="{:U('public/Message/comment')}">收到的评论</a>
+        </dd>
+        <dd  <php>if(MODULE_NAME=="Message" && ACTION_NAME=="notify"){echo "class='active'";}</php>>
+        <a href="{:U('public/Message/notify')}">系统消息</a>
+        </dd>
+    </dl>
+</div>

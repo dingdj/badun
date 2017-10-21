@@ -1,0 +1,248 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<link href="__THEMENEW__/css/swiper.min.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/integral.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/integral_media.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="__THEMENEW__/js/index.js"></script>
+<script type="text/javascript" src="__THEMENEW__/js/swiper.min.js"></script>
+<script type="text/javascript" src="__THEMENEW__/js/jquery.SuperSlide.2.1.1.js"></script>
+
+<div class="min-height-wrap">
+    <!-- PC端 -->
+    <div class="main">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <volist name="ad_list" id="vo">
+                    <div class="swiper-slide">
+                        <a target="_blank" href="{$vo.bannerurl}">
+                            <img src="{:getCover($vo['banner'],970,484)}" width="970" height="484" class="lazyloading"/>
+                        </a>
+                    </div>
+                </volist>
+            </div>
+            <!-- 分页器 -->
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <div class="information-box">
+            <div class="potrait">
+                <div class="information-box-img"></div>
+                <span style="margin:0 0 0 7px">hi 你好！</span>
+                <span style="margin-left:66px;margin-top:-60px;">欢迎来到{$site['site_keyword']}在线网校</span>
+            </div>
+            <div class="vip">
+                <a href="#">领取学币抵钱</a>
+                <span>或</span>
+                <a href="#">去会员俱乐部</a>
+            </div>
+            <div class="login">
+                <span id="loginmar"><a href="#">登录</a></span>
+                <span><a href="#">注册</a></span>
+            </div>
+            <div class="open">
+                <a href="#">开网校</a>
+            </div>
+            <div class="news-other">
+                <span id="noqeer">公告</span>
+                <span>新闻</span>
+            </div>
+            <div class="news-other-content">
+                北京晨报现场新闻（记者 郭丹）昌平区立汤路与太平庄中二街交叉路口处两个报刊亭前，贴着“煎饼果子”、“牛肉板面”等大字招牌，俨然变成一间“小吃铺”。
+            </div>
+            <div class="news-other-content hide">
+                市级有关部门，各区（市）县委宣传部、文广新部门，高新区发展策划局、社会事业局，天府新区成都党工委办公室，各相关文化企事业单位：
+            </div>
+            <div class="distinguish">
+            </div>
+            <div class="or-code">
+                <div class="download">
+                    <img src="__THEMENEW__/image/erweima.png">
+                </div>
+                <span></span>
+                <div class="browse">
+                    <img src="__THEMENEW__/image/erweima.png">
+                </div>
+            </div>
+            <div class="esxplain">
+                <p>手机App下载</p>
+                <p>手机版浏览</p>
+            </div>
+            <div class="information-bottom"></div>
+        </div>
+    </div>
+    <div class="banner-box">
+        <div class="ma-box">
+            <div class="banner">
+                <ul>
+                    <php>if($ad_list){</php>
+                    <volist name="ad_list" id="vo">
+                        <li>
+                            <a target="_blank" href="{$vo.bannerurl}">
+                                <img src="{:getCover($vo['banner'],970,484)}" width="970" height="484" class="lazyloading"/>
+                            </a>
+                        </li>
+                    </volist>
+                    <php>}else{</php>
+                    <li><img src="__THEMENEW__/image/mall_default_banner.png" width="970" height="484" class="lazyloading" /></li>
+                    <php>}</php>
+                </ul>
+            </div>
+
+            <!-- 个人中心 -->
+            <div class="information-box">
+                <div class="distinguish"></div>
+                <div class="potrait">
+                    <if condition="$_SESSION['mid']">
+                        <div class="information-box-img" style="background: none">
+                            <a target="_blank" title="{:getUserName($_SESSION['mid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="otherHead" style="height: 64px;width: 64px;float: left;position: inherit;" >
+                                <img class="lazyloading" src="{:getUserFace($user['uid'],'b')}" style="border-radius: 50%;height: 64px;width: 64px;margin-top: -1px;">
+                            </a></div>
+                        <else/>
+                        <div class="information-box-img"></div>
+                    </if>
+                </div>
+                <div class="welcome">
+                    <span>hi 您好！</span>
+                    <span class="top1">欢迎来到{$site['site_keyword']}在线教育云平台！</span>
+                </div>
+                <div class="login">
+                    <if condition="$_SESSION['mid']">
+                        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">主页</a>
+                        <a href="{:U('classroom/User/setInfo')}">设置</a>
+                        <else/>
+                        <a href="{:U('public/Passport/login_g')}">登录</a>
+                        <a href="{:U('public/Passport/reg')}">注册</a>
+                    </if>
+                </div>
+                <div class="distinguish top2"></div>
+                <div class="notice">
+                        <span><i></i>学院公告
+                            <div class="notice-txet">
+                                {$new_suggest}
+                            </div>
+                        </span>
+                </div>
+                <div class="distinguish"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 兑换排行榜 -->
+    <div class="integral-box">
+        <div class="integral">
+            <div class="integral-name">
+                <h4>兑换排行榜</h4>
+                <div class="integral-ma">
+                    <a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多
+                        <span></span>
+                    </a>
+                </div>
+                <div class="integral-hoice">
+                    <volist name="ranking_list" id="vo" key="k">
+                        <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">
+                        <div class="integral-num">
+                            <img src="{$vo.cover}" class="lazyloading" />
+                            <span>{:msubstr(t($vo['title']),0,16,'utf-8',true)}</span>
+                            <i>库存{$vo.stock}份</i><small>{$vo.price}<i class="fonc">积分</i></small>
+                        </div>
+                        </a>
+                    </volist>
+                </div>
+                <div class="added"><a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多</a></div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <foreach name="good_category" item="l" key="k">
+        <!-- 商品第一层 -->
+        <div class="goods-box">
+            <div class="goods">
+                <div class="goods-name">{$l.cate_name}
+                    <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}" class="mor">更多<i></i></a>
+                    <div class="goods-exhibition">
+                        <foreach name="l.data_list" item="vo" >
+                            <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+                                <div class="exhibition-img">
+                                    <img src="{:getCover($vo['cover_ids'],285,122)}">
+                                </div>
+                                <div class="goods-per">
+                                    <h3>{$vo.title|msubstr=0,6,'utf-8',true}</h3>
+                                    <span><i>{$vo.price}<small>积分</small></i><small>运费<i>{$vo.fare}</i>积分</small></span>
+                                    <small class="places">剩余{$vo.stock}名额</small>
+                                </div>
+                            </a>
+                        </foreach>
+                    </div>
+                </div>
+                <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">
+                    <img src="{:getCover($l['middle_ids'],300,454)}" class="gooks-imgs">
+                </a>
+            </div>
+        </div>
+        <div class="added">
+            <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">更多</a>
+        </div>
+        <hr/>
+    </foreach>
+</div>
+<script>
+    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
+        $(window).load(function () {
+            var goods =  $(".goods-exhibition a").siblings();
+            for(var i=0;i<goods.length;i++){
+                if((i+1)%2==0){
+                    goods.eq(i).css("float","right");
+                }
+            }
+
+            $(".swiper-slide").removeClass("swiper-no-swiping");
+        });
+
+        $(".modular").on("click",function(){
+            $(".win").show();
+            $(".window-box").animate({marginLeft:"0"});
+        });
+
+        $(".win").on("click",function(){
+            $(".window-box").animate({marginLeft:'-70%'});
+            $(".win").hide();
+        });
+    }
+</script>
+<script>
+    var url="{:U('mall/Index/getRankingList')}";
+    var p = 1;
+    $(function(){
+        var totalPages = parseInt('{$ranking.totalPages}');
+        $(".next").click(function(){
+            if(p < totalPages){
+                p = p+1;
+                ajaxReturn();
+            }
+        });
+        $(".prev").click(function(){
+            if(p > 1){
+                p = p-1;
+                ajaxReturn();
+            }
+        });
+    });
+    //查看更多
+    function ajaxReturn() {
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {p:p},
+            dataType: "json",
+            success: function (data) {
+                if(data.data){
+                    $(".ranking_list").html('');
+                    $(".ranking_list").append(data.data);
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

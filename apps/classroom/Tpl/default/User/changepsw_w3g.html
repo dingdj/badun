@@ -1,0 +1,84 @@
+<include file="__THEME__/public_header_twolevel" />
+
+
+<!--header-->
+<!--container-->
+<div class="content">
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>修改密码</div>
+    </div>
+    <div class="body">
+
+		<div class="centerbox">
+            <form class="infobox"   id="infobox">
+            <dl class="centerdl">
+            	<dt>旧密码</dt>
+                <dd>
+                    <input class="inp01" type="password" id="oldpassword" rel="请输入原密码" name="oldpassword">
+                </dd>
+            </dl>
+            <dl class="centerdl">
+            	<dt>新密码</dt>
+                <dd>
+                    <input class="inp01" type="password" id="newpassword" rel="请输入确认密码" name="password">
+                </dd>
+            </dl>
+            <dl class="centerdl">
+            	<dt>重复密码</dt>
+                <dd>
+                    <input class="inp01" type="password" id="renewpassword" rel="请输入确认密码" name="repassword">
+                </dd>
+            </dl>
+            <p class="centerdl_txt">密码由6~12位字母、数字、字符组成，区分大小写</p>
+            <a class="centerbtn" id="edit-password" onclick = "changepawd()" >提交</a>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+   function changepawd()
+   {
+
+       var pwddata = $('#infobox').serialize();
+
+       var oldpassword    = $("#oldpassword").val();
+       var newpassword    =  $('#newpassword').val();
+       var renewpassword    =  $('#renewpassword').val();
+
+        if(!oldpassword){
+            alert('原密码必须输入', 'failure');
+            return false;
+        }
+        if(newpassword.length < 6 ||newpassword.length > 15){
+            alert('新密码为6-15个字符', 'failure');
+
+            return false;
+        }
+        if(/^\d+$/.test(newpassword)){
+            alert('密码不能为纯数字', 'failure');
+            return false;
+        }
+        if(newpassword != renewpassword){
+            alert('密码输入不一致', 'failure');
+            return false;
+        }
+        $.post(U('public/Account/doModifyPassword'), pwddata, function(data){
+            if(data.status){
+//                form.find('input:password').val('');
+                alert(data.info);
+            }else{
+                alert(data.info);
+            }
+        }, 'json');
+//        return false;
+       setTimeout(function(){
+           window.location.href = "{:U('classroom/Index/index')}";
+       },'2000');
+    }
+    </script>
+
+<include file="__THEME__/public_footer_twolevel" />

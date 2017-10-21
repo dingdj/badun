@@ -1,0 +1,133 @@
+<dl class="pop-area">
+    <dt class="mb10" style="overflow:hidden;*zoom:1;"><div class="l">用户组名称：</div><div class="r"><input type="text" placeholder="用户组名称" id="user_group_name" value="{$category['user_group_name']}" class="s-txt" style="width:245px;"></div></dt>
+
+    <div class="l">用户组图标：</div>
+    <div class="r" style="margin: 0 40px 0 100px;">
+        <volist name="icons" id="cis">
+            <if condition="$category['user_group_icon'] eq null">
+                <label><input type="radio" <if condition="$key eq -1">checked="checked" </if> name="user_group_icon" value="{$key}">{$cis}</label>
+                <else/>
+                <label><input type="radio" <if condition="$key eq $category['user_group_icon']">checked="checked" </if> name="user_group_icon" value="{$key}">{$cis}</label>
+            </if>
+        </volist>
+          <p style="color: #7d7d7d;line-height: 20px;margin: 0;padding: 0;">可自由上传图标到addons/theme/stv1/_stastic/image/usergroup，选无则表示该用户组没有图标</p>
+    </div>
+
+    <if condition="$pid neq 1">
+        <div class="l">是否为认证组：</div>
+        <div class="r">
+            <input type="radio" <if condition="$category['is_authenticate'] eq 1">checked="checked"</if> name="is_authenticate" value="1">是
+            <input type="radio" <if condition="$category['is_authenticate'] eq 0">checked="checked"</if> name="is_authenticate" value="0">否
+        </div>
+    </if>
+
+    <if condition="$pid eq 4">
+        <div class="l">机构/子公司：</div>
+        <div class="r">
+            <select id="uid">
+                <option value="0">请选择</option>
+                <volist name="all_school" id="asl">
+                    <option value="{$key}" <php>if($mhm_id == $key){</php>selected="selected"<php>}</php>>{$asl}</option>
+                </volist>
+            </select>
+        </div>
+    </if>
+
+    <dd>
+        <php>if(isset($category)):</php>
+        <input type="button" class="btn_b" onclick="upTreeCategory()" value="确定" />
+        <php>else:</php>
+        <input type="button" class="btn_b" onclick="addTreeCategory()" value="确定" />
+        <php>endif;</php>
+        <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
+    </dd>
+    <div class="clear"></div>
+</dl>
+
+<script type="text/javascript">
+/**
+ * 添加用户组操作
+ * @return void
+ */
+var addTreeCategory = function()
+{
+    var user_group_name = $.trim($('#user_group_name').val());
+    var user_group_icon = $("input[name='user_group_icon']:checked").val();
+    var is_authenticate = $("input[name='is_authenticate']:checked").val();
+    var uid             = $("#uid").val();
+    var pid             = "{$pid}";
+    var limit           = "{$limit}";
+    var m_uid           = "{$m_uid}";
+
+    if(user_group_name == '') {
+        ui.error('请输入用户组名称');
+        return false;
+    }
+    if(limit>0 && getLength(user_group_name)>limit){
+      ui.error('用户组名称不能超过'+limit+'个字');
+      return false;
+    }
+
+    var data = {user_group_name:user_group_name,user_group_icon:user_group_icon,is_authenticate:is_authenticate,pid:pid,m_uid:m_uid,uid:uid};
+
+    // 提交添加
+    $.post(U('admin/UserGroup/addUsergroup'), data, function(e) {
+        if(e.status == 1) {
+            ui.success(e.info);
+            setTimeout(function() {
+                location.href = location.href;
+            }, 1500);
+            ui.box.close();
+        } else {
+            ui.error(e.info);
+            return false;
+        }
+    }, 'json');
+};
+/**
+ * 编辑用户组操作
+ * @return void
+ */
+var upTreeCategory = function()
+{
+    var user_group_name = $.trim($('#user_group_name').val());
+    var user_group_icon = $("input[name='user_group_icon']:checked").val();;
+    var is_authenticate = $("input[name='is_authenticate']:checked").val();;
+    var id              = "{$category['user_group_id']}";
+    var pid             = "{$pid}";
+    var limit           = "{$limit}";
+    var m_uid           = "{$m_uid}";
+
+    if(user_group_name == '') {
+        ui.error('请输入用户组名称');
+        return false;
+    }
+    if(limit>0 && getLength(user_group_name)>limit){
+        ui.error('用户组名称不能超过'+limit+'个字');
+        return false;
+    }
+
+    var data = {user_group_id:id,user_group_name:user_group_name,user_group_icon:user_group_icon,is_authenticate:is_authenticate,pid:pid,m_uid:m_uid};
+
+    // 判断用户组名称是否有变化
+    /*  if(title == "{$category['title']}") {
+        ui.error('用户组名称无变化，未提交修改');
+        ui.box.close();
+        return false;
+      }*/
+
+  // 提交添加
+    $.post(U('admin/UserGroup/addUsergroup'), data, function(e) {
+        if(e.status == 1) {
+            ui.success(e.info);
+            setTimeout(function() {
+                location.href = location.href;
+            }, 1500);
+            ui.box.close();
+        } else {
+            ui.error(e.info);
+            return false;
+        }
+    }, 'json');
+};
+</script>

@@ -1,0 +1,251 @@
+        <!--header end  background:url(centerbg.jpg) center center no-repeat;-->
+        <style>
+            /*个人主页、首页*/
+            .centerbox{
+                height:200px;
+            }
+            .center_right_tit div a.on {
+                border-color: #00BED4;!important;
+                color: #00BED4;!important;
+                background-color: #fff;!important;
+            }
+            .center_right_tit div a {
+                height: 54px;!important;
+                padding: 0 25px;!important;
+                font-size: 16px;!important;
+                line-height: 54px;!important;
+                display: block;!important;
+                float: left;!important;
+            }
+            .center_right_tit div a:hover,.center_right_tit li a:hover {
+                border-color: #00BED4;!important;
+                color: #00BED4;!important;
+                background-color: #fff;!important;
+            }
+            .center_left li.on a {
+                background-color: #00BED4!important;!important;
+                color: white!important;!important;
+            }
+            .center-info h3 span img{
+                border: none;
+            }
+            .sr-bdimgshare-black .bdimgshare-bg,.bdimgshare-content{
+                display: none;
+            }
+            .center_left .top li{
+                border-top:none;
+                line-height: normal;
+            }
+            .center-info .name {
+                font-size: 20px;
+                line-height: 34px;
+            }
+            .content {
+                padding:0;
+                background-color: #f0f0f2;
+            }
+            .center-info{
+                text-align: left;
+                float: left;
+                margin-top: 38px;
+            }
+            .center-info img{
+                float: left;
+                margin-right: 20px;
+                width: 120px;
+                height: 120px;
+            }
+            .center-info-txt{
+                float: left;
+            }
+            .center-info h3 {
+                margin-top: 30px;
+            }
+            .center_right_tit div a{
+                height: 50px;
+                line-height:50px;
+                float: right;
+            }
+            .user-con-title a{
+                width: 65px;
+            }
+            .look-home .on a{
+                color:#00BED4;
+            }
+            .bdshare-button-style1-24 a, .bdshare-button-style1-24 .bds_more{
+                margin: 6px;
+            }
+            .user-imglist .act{
+                float: left;
+                width: 100%;
+            }
+            .bdshare-button-style1-24 a, .bdshare-button-style1-24 .bds_more{
+                margin: 6px;
+            }
+            /*我的回答字体*/
+            .detailmeg{
+                font-size: 14px;
+                float: right;
+                width: 766px;
+            }
+        </style>
+        <if condition="$isteacher">
+            <style>
+                .center-type .box{
+                    width: 33%;
+                }
+                a.bg:hover{cursor: pointer}
+            </style>
+        </if>
+        <form id="user_img_forms" action="{:U('classroom/User/doAddUserAttach')}" method="POST" enctype="multipart/form-data">
+            <if condition="$user['background_id']">
+                <div class="centerbox" style="background:url({:getAttachUrlByAttachId($user['background_id'])}) center center no-repeat;background-size: cover;">
+                    <else/>
+                    <div class="centerbox" style="background:url(__APP__/image/centerbg.jpg) center center no-repeat;" id="cover_yulan">
+            </if>
+
+            <div class="wrap">
+                <!--<div class="place">个人中心<span>&gt;</span>
+                    <if condition="($user_show_type eq 'user') OR ($is_me)">
+                        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的主页</a>
+                        <else/>
+                        <a href="{:U('classroom/UserShow/index',array('uid'=>$userid))}">TA的主页</a>
+                    </if>
+                </div>-->
+                <div class="center-info">
+                    <img src="{:getUserFace($user['uid'],'b')}">
+                    <div class="center-info-txt">
+                        <h3>
+                            <span class="name">{:strip_tags(getUserSpace($user['uid']))}</span>
+                        </h3>
+                        <p>{:limitNumber($user['intro'],46)}</p>
+                    </div>
+                </div>
+                <div class="_right-box-all">
+                    <div class="act">
+                        <div class="fr zhuang-left">
+                            <a class="fx" href="javascript:;">
+                                <i class="icon-fx"></i>
+                            </a>
+                            <div class="_share_my_firends">
+                                <div class="_share_all_channel">
+                                    <i class="side-ills-fell"></i>
+                                    <p>分享到：</p>
+                                    <div class="bdsharebuttonbox">
+                                        <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+
+                                        <!--<script>window._bd_share_config={"common":{"bdSnsKey":{"tqq":"http://share.baidu.com/code#"},"bdText":"","bdMini":"2","bdMiniList":["tsina","weixin","qzone","sqq","renren","copy"],"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{},"image":{"viewList":["tsina","weixin","qzone","sqq"],"viewText":"分享到：","viewSize":"0"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <if condition="$is_me">
+                            <div class="fr zhuang-right">
+                                <a class="bg" href="javascript:;">
+                                    <i class="icon-bg"></i>更改背景
+                                    <input type="file" name="cover" id="cover" class="b bg-img"  value="更改背景" title="更改背景" onchange="handleFiles(this)" style="opacity: 0;width: 96px;height: 28px;margin: 0 0 0 -86px;position: absolute;" >
+                                </a>
+                            </div>
+                        </if>
+                    </div>
+                    <div class="top-information">
+                        <ul>
+                            <li><p>{$tmp[$uid]['following']|default=0}</p><span>关注</span></li>
+                            <li><p>{$tmp[$uid]['follower']|default=0}</p><span>粉丝</span></li>
+                            <li><p>{$credit['credit']['score']['value']|default=0}</p><span>积分</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </form>
+    <style>
+        .center_left dl{
+            padding-bottom: 0px;
+        }
+    </style>
+    <div class="content cbg">
+        <div class="study-navigation">
+            <div class="wrap">
+                <ul class="look-home">
+                    <li <php>if(ACTION_NAME=="index"){echo "class='on'";}</php>><a href="{:U('classroom/User/index')}">首页</a></li>
+                    <li <php>if(ACTION_NAME=="video"){echo "class='on'";}</php>><a href="{:U('classroom/Home/video')}">课程</a></li>
+                    <!--<li <php>if(ACTION_NAME=="crow"){echo "class='on'";}</php>><a href="{:U('classroom/Home/crow')}">众筹</a></li>-->
+                    <li <php>if(ACTION_NAME=="live"){echo "class='on'";}</php>><a href="{:U('classroom/Home/live')}">直播</a></li>
+                    <li <php>if(ACTION_NAME=="album"){echo "class='on'";}</php>><a href="{:U('classroom/Home/album')}">套餐</a></li>
+                    <li <php>if(ACTION_NAME=="share"){echo "class='on'";}</php>><a href="{:U('classroom/Home/share')}">分享</a></li>
+                    <li <php>if(ACTION_NAME=="group"){echo "class='on'";}</php>><a href="{:U('classroom/Home/group')}">小组</a></li>
+                    <li <php>if(ACTION_NAME=="course"){echo "class='on'";}</php>><a href="{:U('classroom/Home/course')}">约课</a></li>
+                    <li   id ="wendalist" <php>if(ACTION_NAME=="wenda"){echo "class='on'";}</php>><a href="{:U('classroom/Home/wenda')}">问答</a></li>
+                    <div class="more-option-study">
+                        <p>更多</p><i></i>
+                        <div class="more-option-study-content">
+                            <li   id ="wentiliston" <php>if(ACTION_NAME=="wenti" || $_GET['act'] == 'getwentilist') {echo "class='on'";}</php>><a href="{:U('classroom/Home/wenti')}">提问</a></li>
+                            <li id ="review"<php>if(ACTION_NAME=="review"){echo "class='on'";}</php>><a href="{:U('classroom/Home/review')}">点评</a></li>
+                            <li   id ="note" <php>if(ACTION_NAME=="note"){echo "class='on'";}</php>><a href="{:U('classroom/Home/note')}">笔记</a></li>
+                            <li <php>if(ACTION_NAME=="follow"){echo "class='on'";}</php>><a href="{:U('classroom/Home/follow')}">关注</a></li>
+                            <li  id ="collect" <php>if(ACTION_NAME=="collect"){echo "class='on'";}</php>><a href="{:U('classroom/Home/collect')}">收藏</a></li>
+                            <li <php>if(ACTION_NAME=="learn"){echo "class='on'";}</php>><a href="{:U('classroom/Home/learn')}">学习记录</a></li>
+
+                            <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+                            <li <php>if(ACTION_NAME=="teacher_course"){echo "class='on'";}</php> ><a href="{:U('classroom/Home/teacher_course')}">约课管理</a></li>
+                            <li  id ="letuploadvideo"  <php>if(ACTION_NAME=="teacherVideo"){echo "class='on'";}</php> ><a href="{:U('classroom/User/teacherVideo')}">我的授课</a></li>
+                            <php>}</php>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+        </div>
+        <div class="wrap">
+            <script type="text/javascript">
+                //勿删 何兴斌
+//                window.onload=function(){
+//                    var view_main_nav = document.getElementById('view_main_nav');
+//
+//                    window.onscroll = function(){
+//                        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+//
+//                        if(scrollTop <= 563){
+//                            $('#view_main_nav').removeAttr("style");
+//                        }else if(scrollTop > view_main_nav.offsetTop && scrollTop <= 563){
+//                            $('#view_main_nav').removeAttr("style");
+//                        }else if(scrollTop > view_main_nav.offsetTop){
+//                            $('#view_main_nav').attr("style","position: fixed;top: 0;z-index: 9;background: #fff;");
+//                        }else{
+//                            $('#view_main_nav').removeAttr("style");
+//                        }
+//                    }
+//                };
+
+                //    $('.wrap .box a').click(function () {
+                //        $('body,html').animate({scrollTop:563},200);
+                //    });
+
+                window.URL = window.URL || window.webkitURL;
+                var fileElem = document.getElementById("cover");
+                function handleFiles(obj) {
+                    var files = obj.files, img = new Image();
+                    if(window.URL){
+//            style="background:url(centerbg.jpg) center center no-repeat;"
+                        $('#cover_yulan').attr('style',"background:url("+window.URL.createObjectURL(files[0])+") center center no-repeat");
+                    }else if(window.FileReader){
+                        //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+                        var reader = new FileReader();
+                        $('#cover_yulan').attr('style',"background:url("+this.result+") center center no-repeat");
+                    }else{
+                        //ie
+                        obj.select();
+                        obj.blur();
+                        var nfile = document.selection.createRange().text;
+                        document.selection.empty();
+                        img.src = nfile;
+                        $('#cover_yulan').attr('style',"background:url("+nfile+") center center no-repeat");
+                        //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+                    }
+                    $('#user_img_forms').submit();
+                }
+            </script>

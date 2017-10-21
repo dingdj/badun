@@ -1,0 +1,313 @@
+<include file="__THEME__/public_header" />
+<script src="__THEME__/js/jquery-migrate-1.2.1.js"></script>
+
+<div class="content cf2">
+    <div class="wrap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+    <!--中 -->
+
+    <div class="jgpage_right">
+        <div class="user-con-title">
+            <input type ="hidden"   id= "orderby"  value ="0" />
+            <a href="javascript:;" class="onactive" >并发量订单</a>
+        </div>
+
+        <div class="center_right_con">
+
+            <table class="adrtable" width="100%" border="0">
+                <colgroup width="17%;"></colgroup>
+                <colgroup width="20%;"></colgroup>
+                <colgroup width="13%;"></colgroup>
+                <colgroup width="12%;"></colgroup>
+                <colgroup width="12%;"></colgroup>
+                <colgroup width="12%;"></colgroup>
+                <colgroup width="14%;"></colgroup>
+                <thead>
+                <tr>
+                    <td></td>
+                    <td>商品信息</td>
+                    <td>数量</td>
+                    <td>实付金额</td>
+                    <td><div class="or_btn"   name="slt-list" >
+                        <a class="or_lin" href="javascript:;"  class="btn-default" >订单状态<i class="icon-sj"></i></a>
+                        <ul class="or_box" style="display: none;">
+                            <li data-value="全部" class="on"   onclick = order("0")><a href="#">全部</a></li>
+                            <li data-value="已支付"  onclick =order("3")><a href="#">已支付</a></li>
+                            <li data-value="未支付"   onclick = order("1")><a href="#">未支付</a></li>
+                        </ul>
+                    </div></td>
+                </tr>
+                </thead>
+            </table>
+            <div>
+                <ul class="user-wenda"></ul>
+                <div class="page">
+                    <div class="pagebox">
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var p = 1;
+    var url="{:U('school/User/getOrderlist')}";
+    $(function(){
+        //异步加载我的订单
+        $.ajax({
+            type:"GET",
+            url:url,
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    });
+    //请求事件
+    function ajaxBang(type,orderby){
+        orderby = $('#orderby').val();
+         type = $('#ordertype').val();
+        $.ajax({
+            type: "GET",
+            url:"{:U('school/User/getOrderlist')}",
+            data:"p="+p+"&type="+type+"&orderby="+orderby,
+            dataType:"json",
+            success:function(data){
+                $(".user-wenda").html("");
+
+                appendHtml(data,type);
+//                callback && callback();
+            }
+        });
+    }
+
+
+
+    //综合排序
+    function order($orderby){
+        $('#orderby').val($orderby);
+        $(".classlist").html("");
+        orderby = $orderby;
+        p=1;
+        ajaxBang('','',orderby);
+    }
+
+
+    //头部点击事件
+    function navClick(cate,type){
+        $("#orderlist").addClass("on");
+      $('#ordertype').val(type);
+        $(".user-wenda").html("");
+        type = type;
+        $("li").removeClass("on");
+        $(cate).parent("li").addClass("on");
+        $('#orderlist').addClass("on");
+        p=1;
+        ajaxBang(url,type);
+    }
+
+
+    //点击查看更多事件
+    function fallBang(cate){
+        var rtype=$(cate).attr("id");
+        ajaxBang(url,rtype);
+    }
+
+    //追加html
+    function appendHtml(data){
+        $(".user-wenda").html("");
+        if(data.data!=""){
+            $(".user-wenda").append(data.data);
+            /*if(data.nowPage+1>data.totalPages){
+             return;
+             }else{
+             var html="<div class=\"more1\" ><a href=\"javascript:void(0)\" id=\"getList\">查看更多</a></div>"
+             $(".classlist").append(html);
+             p=data.nowPage+1;//下一页
+             }*/
+//            data.html+='<div class="pagediv">';
+//            data.html+='  <span>共<p id="pageTotal" style="display: inline-block;">'+data.totalPages+'</p>页,去第</span>';
+//            data.html+='<input type="text" name="pageNum"  id ="pageNum">';
+//            data.html+=' <span>页</span>';
+//            data.html+=' <a class="goto" href="javascript:;"onclick="gotoPage();">确定</a>';
+//            data.html+='  </div>';
+            $(".pagebox").html(data.html);
+            $("#nowPage").html(data.nowPage+'/'+data.totalPages);
+            setPageBoxClick(data.totalPages);
+        }else{
+            $(".user-wenda").append("<script>对不起,暂无评价<\/script>");
+        }
+    }
+
+
+    $(".prevPage").click(function(){
+        p = p - 1;
+        if(p <= 0){
+            p = 1;
+        }
+        ajaxBang();
+    });
+    $(".nextPage").click(function(){
+         total = parseInt($("#pageTotal").text());
+        p = p + 1;
+        if(p >= total)
+        {
+            p = total;
+        }
+        ajaxBang();
+    });
+
+    function  delorder(ids) {
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+        if (confirm("你确定要删除这个订单？")) {
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/Home/delorder')}",
+                data: "ids=" + ids + "&type=" + type + "&orderby=" + orderby,
+                dataType: "json",
+                success: function (data) {
+                    if(data.status == 1){
+                        ui.success(data.info);
+                        location.reload();
+                    }else{
+                        ui.error(data.info);
+                    }
+                }
+            });
+        }
+    }
+
+    function  delCancel(ids) {
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+        if (confirm("你确定要取消这个订单？")) {
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/Home/delCancel')}",
+                data: "ids=" + ids + "&type=" + type + "&orderby=" + orderby,
+                dataType: "json",
+                success: function (data) {
+                    if(data.status == 1){
+                        ui.success(data.info);
+                        location.reload();
+                    }else{
+                        ui.error(data.info);
+                    }
+                }
+            });
+        }
+    }
+
+    function  withdraw(ids) {
+        orderby = $('#orderby').val();
+        type = $('#ordertype').val();
+
+        if (confirm("你确定要取消申请退款？")) {
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/Home/withdraw')}",
+                data: "ids=" + ids + "&type=" + type + "&orderby=" + orderby,
+                dataType: "json",
+                success: function (data) {
+                    if(data.status == 1){
+                        ui.success(data.info);
+                        location.reload();
+                    }else{
+                        ui.error(data.info);
+                    }
+                }
+            });
+        }
+    }
+
+    function  applyForRefund(ids) {
+        type = $('#ordertype').val();
+        ui.box.load(U('classroom/Home/applyForRefundBox') + '&id=' + ids + '&type=' + type, '申请退款理由');
+
+        return false;
+    }
+
+
+
+    //追加html
+    function getNowPage(url,name){
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = url.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
+    //加载分页
+    function setPageBoxClick(totalPages){
+        $(".pagebox a").on('click',function(e){
+            p = getNowPage($(this).attr('href'),'p');
+            if(p > totalPages){
+                return false;
+            }
+            $(".ind-teacher").html("");
+            var e = event || window.event
+            if (e.stopPropagation) {
+                e.stopPropagation()
+            } else{
+                e.cancelBubble = true;
+            };
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }else{
+                e.returnValue = false;
+            }
+            ajaxBang();
+        });
+    }
+
+
+    function gotoPage() {
+        $(".pagediv a").on('click',function(e){
+            p = $("input[name='pageNum']").val();
+            var total = parseInt($("#pageTotal").text());
+            if(p > total){
+                alert('超过最大页数！');
+                return;
+            }
+            var e = event || window.event
+            if (e.stopPropagation) {
+                e.stopPropagation()
+            } else{
+                e.cancelBubble = true;
+            };
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }else{
+                e.returnValue = false;
+            }
+
+            ajaxBang();
+        });
+    };
+
+
+
+
+    $(document).on('click','[name="slt-list"] .or_lin',function(){
+        $(this).parent().addClass('focus');
+        $(this).parent().find('.or_box').css('display','block');
+        return false;
+    });
+
+    $(document).on('click','[name="slt-list"] .or_box li',function(){
+        var val = $(this).attr('data-value');
+        $(this).addClass('on').siblings().removeClass('on');
+        $(this).parent().siblings('.or_lin').find('.txt').text(val);
+        $(this).parent().css('display','none');
+        $(this).parent().parent().removeClass('focus');
+        return false;
+    });
+
+
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

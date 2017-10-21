@@ -1,0 +1,21 @@
+<include file="public/school_header" />
+
+<div class="jgitembox jgc"style="margin-top: 80px;">
+    <div class="wrap">
+        <div class="jgtitlle">
+            <div>
+                <h2>关于我们</h2>
+                <p>About Us</p>
+            </div>
+        </div>
+        <div class="itemcon" style="margin: 50px;">
+            <if condition="$school['about_us']">
+                {$school.about_us}
+                <else/>
+                <p style="font-size: 15px;">暂时没有信息</p>
+            </if>
+        </div>
+    </div>
+</div>
+
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,160 @@
+<?php
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+$spark_config = array(
+'charset' => 'utf-8',
+'user_id' => $ccvideo_config['cc_userid'],                       //CC视频用户id
+'key'     => $ccvideo_config['cc_apikey'],                        //CC视频用户key
+);
+$spark_config['notify_url'] = 'http://' . $_SERVER['HTTP_HOST'] . '/api/cc/notify.php';
+?>
+
+<script type="text/javascript" src = "__THEME__/js/ccuploader/js/swfobject.js"></script>
+<link rel="stylesheet" href="__THEME__/js/swfupload/css/style.css">
+
+<script type="text/javascript">
+    // 加载上传flash ------------- start
+    var swfobj = new SWFObject('__THEME__/js/ccuploader/uploader.swf', 'uploadswf', '80', '25', '8');
+    swfobj.addVariable("progress_interval", 1);	//	上传进度通知间隔时长（单位：s）
+    var notify_url = "<?php echo 'http://'.$_SERVER['HTTP_HOST'].'/api/cc/notify.php';?>";
+    swfobj.addVariable("notify_url", notify_url);	//	上传视频后回调接口
+    swfobj.addParam('allowFullscreen', 'true');
+    swfobj.addParam('allowScriptAccess', 'always');
+    swfobj.addParam('wmode', 'transparent');
+    swfobj.write('swfDiv');
+    // 加载上传flash ------------- end
+
+    //加载全局变量
+    var cc_videoid      = '';
+    var videofilename   = '';
+    var cc_title        = '';
+
+    //-------------------
+    //调用者：flash
+    //功能：选中上传文件，获取文件名函数
+    //时间：2010-12-22
+    //说明：用户可以加入相应逻辑
+    //-------------------
+    function on_spark_selected_file(filename) {
+        document.getElementById("videofile").value = filename;
+    }
+    //-------------------
+    //调用者：flash
+    //功能：验证上传是否正常进行函数
+    //时间：2010-12-22
+    //说明：用户可以加入相应逻辑
+    //-------------------
+
+    function on_spark_upload_validated(status, videoid) {
+        if (status == "OK") {
+            document.getElementById("videoid_cc").value = videoid;
+            document.getElementById("videokey").value = videoid;
+            cc_videoid = videoid;
+//            document.getElementById("videoidshow").innerHTML = videoid;
+        } else if (status == "NETWORK_ERROR") {
+            alert("网络错误");
+        } else {
+            alert("api错误码：" + status);
+        }
+    }
+
+    //-------------------
+    //调用者：flash
+    //功能：通知上传进度函数
+    //时间：2010-12-22
+    //说明：用户可以加入相应逻辑
+    //-------------------
+    function on_spark_upload_progress(progress) {
+        var uploadProgress = document.getElementById("progress_cc");
+        var uploadProgressBar = document.getElementById("progress_bar_cc");
+        uploadProgressBar.style.width = progress + "%";
+        if (progress == -1) {
+            uploadProgress.innerHTML = "上传出错：" + progress;
+        } else if (progress == 100) {
+            uploadProgress.innerHTML = "进度：100% 上传完成";
+        } else {
+            uploadProgress.innerHTML = "进度：" + progress + "%";
+        }
+    }
+
+    function positionUploadSWF() {
+        document.getElementById("swfDiv").style.width = document
+                .getElementById("btn_width").style.width;
+        document.getElementById("swfDiv").style.height = document
+                .getElementById("btn_width").style.height;
+    }
+    function submitCCVideo() {
+        var videofile = document.getElementById("videofile").value;
+        videofilename = videofile;
+        var videoid_cc = document.getElementById("videoid_cc").value;
+        var title = encodeURIComponent(document.getElementById("cc_title").value, "utf-8");
+        cc_title = title;
+        if(videofile != ''){
+            document.getElementById("fsUploadProgressCC").style.display="block";
+        }else{
+            alert('请选择要上传的文件');
+            return false;
+        }
+        if(videoid_cc != ''){
+            alert('您正在上传的文件队列过多.\n您最多选择一个文件.');
+        }
+
+        var tag = encodeURIComponent(document.getElementById("tag").value, "utf-8");
+        var description = encodeURIComponent(document.getElementById("description").value, "utf-8");
+        document.getElementById("cc_file_name").innerHTML = videofile;
+
+        var url = "<?php echo 'http://'.$_SERVER['HTTP_HOST'].'/api/cc/getuploadurl.php';?>"+"?title=" + title + "&tag=" + tag
+                + "&description=" + description;
+        var req = getAjax();
+        req.open("GET", url, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4) {
+                if (req.status == 200) {
+                    var re = req.responseText;//获取返回的内容
+                    document.getElementById("uploadswf").start_upload(re); //	调用flash上传函数
+//                    document.getElementById("request_params").innerHTML = re;
+                }
+            }
+        };
+        req.send(null);
+    }
+    function delCCVideo(){
+        if(confirm("确定取消上传？")){
+            $.post("{:U('classroom/AdminVideo/delCCVideo')}", {cc_videoid:cc_videoid,videofilename:videofilename,out_title:cc_title}, function (e) {
+                console.log(e);
+                if(e.status == 1){
+                    document.getElementById("fsUploadProgressCC").style.display="none";
+                    document.getElementById("cc_file_name").innerHTML = '';
+                    document.getElementById("progress_cc").innerHTML = '';
+                    var uploadProgressBar = document.getElementById("progress_bar_cc");
+                    uploadProgressBar.style.width = "0%";
+                    alert(e.info);
+                    window.location.reload();
+                }else{
+                    alert(e.info);
+                }
+            }, 'json');
+        }
+    }
+    function getAjax() {
+        var oHttpReq = null;
+
+        if (window.XMLHttpRequest) {
+            oHttpReq = new XMLHttpRequest;
+            if (oHttpReq.overrideMimeType) {
+                oHttpReq.overrideMimeType("text/xml");
+            }
+        } else if (window.ActiveXObject) {
+            try {
+                oHttpReq = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                oHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        } else if (window.createRequest) {
+            oHttpReq = window.createRequest();
+        } else {
+            oHttpReq = new XMLHttpRequest();
+        }
+
+        return oHttpReq;
+    }
+</script>

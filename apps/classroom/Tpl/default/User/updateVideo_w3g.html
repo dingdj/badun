@@ -1,0 +1,150 @@
+<include file="__THEME__/public_header_w3g" />
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+
+
+
+
+
+
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>我的课程</div>
+    </div>
+    <div class="body">
+        <ul class="classlistnav">
+            <li><a href="{:U('classroom/User/teacherVideo')}">我上传的课程</a></li>
+            <li class="on"><a onclick="navClick(this,'updatevideo')" href="javascript:;">修改录播课程</a></li>
+        </ul>
+
+
+<div class="content">
+
+          <form method="POST" action="{:U('classroom/User/doAddVideo')}" class="infobox" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+             <div class="form2">
+                 <input type = "hidden"  name ="id" id ="thisid"   value ="{$id}">
+
+                 <div class="jgzlbox">
+              <dl>
+                  <dt><font color="red"> * </font>课程名称：</dt>
+                <dd>
+                    <input type="text" name="video_title" id="video_title"  value="{$data.video_title}">
+                </dd>
+              </dl>
+              <dl>
+                  <dt><font color="red"> * </font>课程分类：</dt>
+                <dd style="width: 450px;">
+                    <style>
+                        .content  .jgzlbox  select {
+                            min-width: 70px;
+                            border-radius: 4px;
+                            border: solid 1px #b6c7d6;
+                            line-height: 34px;
+                        }
+                    </style>
+                    <php>$fullcategorypaths = trim($data['fullcategorypath'] , ',');</php>
+                    {:W('CategoryLevel',array('table'=>'zy_currency_category','id'=>'video_level','default'=>$fullcategorypaths ))}
+                </dd>
+              </dl>
+
+                 <dl class="lineD" id="dl_video_binfo">
+                     <dt><font color="red"> * </font>课程简介：</dt>
+                     <dd>
+                         <textarea name="video_binfo" id="video_binfo" rows="10" cols="54">{$data.video_binfo}</textarea>
+                     </dd>
+                 </dl>
+                     </div>
+
+
+
+                 <dl class="lineD" id="dl_video">
+                  <div>   <dt><font color="red"> * </font>课程详情：</dt></div>
+                     <dd>
+                         {:W('Editor',array('contentName'=>'video_intro','value'=>$data['video_intro'],'width'=>'98%','height'=>'350'))}
+                     </dd>
+                 </dl>
+
+                 <div class="jgzlbox">
+                 <dl>
+                     <dt><span>*</span>课程标签：</dt>
+                     <dd>
+                         <input type="text" class="inp01" name="video_tag" id="video_tag" class="head_search upload_input_a"  value = "{$data.str_tag}" >
+
+                     </dd>
+                 </dl>
+              <dl>
+                  <dt><span>*</span>原价：</dt>
+                  <dd>
+                      <input type="text"  id="v_price" name="v_price" value="{$data.v_price}">
+                  </dd>
+              </dl>
+                 <dl>
+                     <dt><span>*</span>销售价：</dt>
+                     <dd>
+                         <input type="text"  id="t_price" name="t_price" value="{$data.t_price}" >
+                     </dd>
+                 </dl>
+
+                 <dl>
+                     <dt><span>*</span>上架时间：</dt>
+                     <dd>
+                         <input name="listingtime"  id ="listingtime" type="text" value="<php>if($data.listingtime){</php>{:date("Y-m-d H:i:s", $data['listingtime'])}<php>}</php>" class="inp01" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                     </dd>
+                 </dl>
+                 <dl>
+                     <dt><span>*</span>下架时间：</dt>
+                     <dd>
+                         <input name="uctime" type="text"  id ="uctime"  value="<php>if($data.uctime){</php>{:date("Y-m-d H:i:s", $data['uctime'])}<php>}</php>" class="inp01" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                     </dd>
+                 </dl>
+
+</div>
+
+              <dl>
+                <dd>
+                <input id="videokey" name="videokey" type="hidden" value="{$qiniu_key}"> 
+                <!--<input  class="btn"  type="submit"  style="line-height: 0;" value="保 存">-->
+                </dd>
+              </dl>
+            </div>
+              <a   style = "width: 80%;height: 50px; margin: 10px auto;line-height: 50px;color: #fff;font-size: 18px; background-color: #2b92f9;text-align: center;display: block; border-radius: 4px;" href="javascript:;"  onclick = "subeditvideo(this)">保 存</a>
+          </form>
+        </div>
+      </div>
+
+<script type="text/javascript">
+
+
+    function subeditvideo(sbt)
+    {
+
+      var video_title = $('#video_title').val();
+      var video_binfo = $('#video_binfo').val();
+      var video_intro = $('#video_intro').val();
+      var video_tag = $('#video_tag').val();
+      var v_price = $('#v_price').val();
+      var t_price = $('#t_price').val();
+      var listingtime = $('#listingtime').val();
+      var uctime = $('#uctime').val();
+      var thisid = $('#thisid').val();
+        var form  = $(sbt).parents('form');
+        var video_levelhidden = form.find('#video_levelhidden').val();
+        $.ajax({
+            type: "POST",
+            url: "{:U('classroom/User/doAddVideo')}",
+            data: "video_title="+video_title+"&video_binfo="+video_binfo+"&video_intro="+video_intro+"&video_tag="+video_tag+"&v_price="+v_price+"&t_price="+t_price+"&listingtime="+listingtime+"&uctime="+uctime+"&video_levelhidden="+video_levelhidden+"&id="+thisid,
+            dataType: "json",
+            success: function (e) {
+                if (e.status == 1) {
+                    alert(e.info);
+                    window.location.reload();
+                } else {
+                    alert(e.info);
+                }
+            }
+        });
+
+    }
+
+
+  </script>
+<include file="__THEME__/public_footer_w3g" />

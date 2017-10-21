@@ -1,0 +1,84 @@
+<include file="../Public/_header" />
+<div class="nav-s">
+    <div class="nav_tit">全部分类<span class="icon-sj"></span></div>
+    <ul class="nav_ul">
+        <li class="active"><a href="javascript:;" onclick="cateBang(this,0)">全部考试</a></li>
+        <volist name="selCate" id="vo">
+            <li><a href="javascript:;" onclick="cateBang(this,{$vo.exam_category_id})">{$vo.exam_category_name}</a></li>
+        </volist>
+    </ul>
+</div>
+<!--container-->
+<div class="container"> 
+    <div class="item_box">
+        <ul class="test-list"> </ul>
+    </div>
+</div>
+<script>
+    //页面加载完毕执行
+    $(function(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/exam/getList')}",
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+      //页面中间最低高度
+        var headHeight = $('.header-worap').height();
+        var footHeight = $('.footer-worap').height();
+        var miniHeight = (parseInt($(document).height()-headHeight-footHeight))
+        $('.worap').css({"min-height":(miniHeight-60)+'px'});
+    });
+    //请求事件
+    function ajaxBang(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/exam/getList')}",
+            data:"p="+p+"&cateId="+cateId,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".more").remove();
+        if(data.data!=""){
+            $(".test-list").append(data.data);
+            if(data.nowPage+1>data.totalPages){
+                return;
+            }else{
+                p=data.nowPage+1;//下一页
+            }
+        }else{
+            $(".test-list").append("<script>对不起，暂无此考试分类信息T_T<\/script>");
+        }
+    }
+    //分类点击
+    function cateBang(cate,id){
+        $(".nav_ul").css("display","none");
+        $(".test-list").html("");
+        $("li").removeClass("active");
+        if($(cate).attr("id")=="sona"){
+            $(cate).parent().parent().addClass("active");
+        }else{
+            $(cate).parent().addClass("active");
+        }
+        cateId=id;
+        p=1;
+        ajaxBang();
+    }
+    // $(document).ready(function(){
+    //     $(window).scroll(function(){
+    //         if($(document).scrollTop()>=$(document).height()-$(window).height()){
+    //             ajaxBang();
+    //         }
+    //     })
+    // })
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

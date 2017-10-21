@@ -1,0 +1,163 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+
+            <div class="center_right_tit">
+                <ul>
+                    <ul>
+                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/wenda')}">我的问题</a></li>
+                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/wenda',['tab'=>1])}">我的回答</a></li>
+                    </ul>
+                </ul>
+            </div>
+
+            <div class="center_right_con">
+                <if condition="$_GET['tab'] eq null">
+                <div class="content-card">
+                    <ul class="comment_list">
+                        <if condition="$wendadata['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关问题。。</li>
+                            <else/>
+                            <volist name="wendadata['data']" id="vo">
+                                <li class="li">
+                                    <!--<div class="pic">-->
+                                        <!--<a target="_blank" title="{:getUserName($vo['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}" class="otherHead" ><img class="lazyloading" src="{:getUserFace($vo['uid'],'m')}"></a>-->
+                                    <!--</div>-->
+                                    <!--<div class="name"><a href="#">提问：</a></div>-->
+                                    <div class="text"><a target="_blank" href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:getShort(t($vo['wd_description']) , 50)}</a></div>
+                                    <php>if(!empty($vo['duid'])){</php>
+                                    <!--<div class="firendreply"> <a  title="Sunflower" class="firendHead" ><img class="lazyloading" src="{:getUserFace($vo['duid'],'s')}"></a>-->
+                                    <div class="lzreply"> <span><a title="{:getUserName($vo['duid'])}">{:getUserName($vo['duid'])}</a> 回答:</span> <em>{:limitNumber($vo['description'],150)}</em> </div>
+                                    <php>}</php>
+                                    <div class="info">时间：{$vo['ctime']|friendlyDate}
+                                        <php>if($wenda!="meque"){</php>
+
+                                        <php>if(!empty($vo['commentid'])){</php>
+                                        <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该回答吗？');return false;" callback="delWendacomment({$vo['commentid']})"  ><i></i>删除</a>
+                                        <php>}  else {</php>
+                                        <a href="javascript:;" class="fr" onclick="ui.confirm(this,'确定要删除该问答吗？');return false;" callback="delWenda({$vo['id']})"  ><i class="shanxhu-ico"></i>删除</a>
+                                        <a href="{:U('wenda/Index/editWenda',array('wid'=>$vo['id']))}" ><i class="bianji-ico"></i>编辑</a>
+                                        <php>} </php>
+
+
+                                        <php>}</php>
+                                    </div>
+                                </li>
+                            </volist>
+                        </if>
+                    </ul>
+                    <if condition="$wendadata['data']">
+                        <div class="page">
+                            <div class="pagebox">
+                                {$wendadata['html']}
+                            </div>
+                        </div>
+                    </if>
+                </div>
+                <else/>
+                <div class="content-card">
+                    <ul class="comment_list">
+                        <if condition="$andata['data'] eq null">
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关回答。。</li>
+                            <else/>
+                            <volist name="andata['data']" id="vo">
+                                <li class="li">
+                                    <div class="text"></div>
+                                    <php>if(!empty($vo['duid'])){</php>
+                                    <!--<div class="firendreply"> <a  title="Sunflower" class="firendHead" ><img class="lazyloading" src="{:getUserFace($vo['duid'],'s')}"></a>-->
+                                    <div class="lzreply"> <span>我回答：<a target="_blank" href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:getShort(t($vo['wd_description']) , 50)}</a></span> <em>{:limitNumber($vo['description'],150)}</em> </div>
+                                    <php>}</php>
+                                    <div class="info">时间：{$vo['ctime']|friendlyDate}
+                                        <php>if($wenda!="meque"){</php>
+                                        <php>if(!empty($vo['commentid'])){</php>
+                                        <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该回答吗？');return false;" callback="delWendacomment({$vo['commentid']})"  ><i></i>删除</a>
+                                        <php>}  else {</php>
+                                        <a href="{:U('wenda/Index/editWenda',array('wid'=>$vo['id']))}" class="fr"><i class="bianji-ico"></i>编辑</a>
+                                        <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该问答吗？');return false;" callback="delWenda({$vo['id']})"  ><i></i>删除</a>
+                                        <php>} </php>
+
+
+                                        <php>}</php>
+                                    </div>
+                                </li>
+                            </volist>
+                        </if>
+                    </ul>
+                    <if condition="$andata['data']">
+                        <div class="page">
+                            <div class="pagebox">
+                                {$andata['html']}
+                            </div>
+                        </div>
+                    </if>
+                </div>
+                </if>
+            </div>
+
+        </div>
+
+        <!--right-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/wenda')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+
+//    $(".content-card:first").show();
+//    $(".center_right_tit li").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".content-card").hide();
+//        $(".content-card").eq(tit_li).show();
+//    });
+
+    //删除问答
+    function delWenda(id){
+        var id=id;
+
+        $.post("{:U('wenda/Index/delWenda')}", {id:id}, function(res){
+            if(res==200){
+                location.reload();
+            }else{
+                notes('对不起，删除失败请重试!','failure');
+            }
+        });
+    }
+
+
+    //删除问答评价
+    function delWendacomment(id){
+        var id=id;
+
+        $.post("{:U('wenda/Index/delWendacomment')}", {id:id}, function(res){
+            if(res==200){
+                location.reload();
+            }else{
+                notes('对不起，删除失败请重试!','failure');
+            }
+        });
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

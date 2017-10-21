@@ -1,0 +1,29 @@
+<div class="bot">
+	<div class="tit">每日一签</div>
+	<div class="con sign">
+		<div class="txt">已连续签到<span id="check_in_num"><?php echo $con_num ;?><em>天</em></span></div>
+        <a  id="check_in_click"  style="{$ischeck?'background:#999;':''}"{$ischeck?'':' onclick="checkIn()"'} >
+            <?php echo $ischeck ? '已连续签到' . $con_num . '天':'签到赚积分';?>
+        </a>
+	</div>
+</div>
+
+<script type="text/javascript">
+function checkIn(){
+	if($('#check_in_click').parent().attr('locked')){
+		return false;
+	}
+	$.post(U('widget/CheckIn/check_in') , {} , function (res){
+		if ( res ){
+			$('#check_in_click')
+			.text('已连续签到'+res+'天');
+			$('#check_in_num')
+			.html(res+'<em>天</em>');
+            $('#check_in_click')
+			.css({background:'#999'})
+			.attr('locked', 'yes');
+			setCreditScore && setCreditScore(parseInt(res)*5);
+		}
+	});
+}
+</script>

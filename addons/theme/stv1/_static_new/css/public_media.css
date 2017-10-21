@@ -1,0 +1,77 @@
+@charset "utf-8";
+@media screen and (max-width: 700px){
+	.win {
+	    width: 100%;
+	    height: 100%;
+	    position: fixed;
+	    z-index: 200;
+	    display: none;
+	    background-color: #000;
+	    opacity: 0.3;
+	    float: right;
+	}
+	.window-box {
+	    width: 70%;
+	    height: 100%;
+	    background-color: #444443;
+	    float: left;
+	    position: fixed;
+	    z-index: 300;
+	    margin-left: -70%;
+	}
+	.win-bor {
+	    display: block;
+	    width: 70%;
+	    height: 100%;
+	    margin: auto;
+	}
+	.input-box {
+	    width: 100%;
+	    height: 30px;
+	    background-color: #fff;
+	    border-radius: 50px;
+	    margin-top: 90px;
+	    float: left;
+	}
+	.input-box span {
+	    display: block;
+	    width: 25px;
+	    height: 25px;
+	    float: right;
+	    margin: 3px 6% 0 2%;
+	    background: url(../icon/icon_h5.png);
+	    background-position: -152px 44px;
+	    padding: inherit;
+	}
+	.input-box input {
+	    display: block;
+	    width: 71%;
+	    height: 21px;
+	    float: right;
+	    margin: 5px 0 0 0;
+	    border: none;
+	    outline: 0;
+	    font-size: 13px;
+	}
+	.dic-box {
+	    width: 100%;
+	    float: left;
+	    border-bottom: 1px solid #BEBEBE;
+	    margin-top: 25px;
+	    overflow: hidden;
+	}
+	.direct {
+	    width: 156%;
+	    height: 56px;
+	    float: left;
+	    margin: 0 25% 0 0;
+	}
+	.direct li {
+	    float: left;
+	    margin: 0 16% 0 0;
+	}
+	.direct a {
+	    color: #BEBEBE;
+	    font-size: 13px;
+	}
+}

@@ -1,0 +1,287 @@
+﻿<include file="__THEME__/admin_header" />
+
+<div id="container" class="so_main">
+    <div class="page_tit">{$pageTitle}</div>
+
+    <php>if(!empty($pageTab)):</php>
+    <div class="tit_tab">
+        <ul>
+            <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+            <volist name='pageTab' id='t'>
+                <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+            </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+
+    <form method="POST" action="{:U('classroom/AdminVideo/addVideoLib')}" id="detail_form" name="detail_form" >
+        <input type="hidden" name="systemdata_list" value="EntityCard_Admin" class="s-txt">
+        <input type="hidden" name="systemdata_key" value="addCoupon" class="s-txt">
+        <input type="hidden" name="pageTitle" value="{$pageTitle}" class="s-txt">
+        <input type="hidden" name="id" value="{$id}" />
+        <div class="form2">
+
+            <dl class="lineD" >
+            <dt><font color="red"> * </font>机构：</dt>
+            <dd>
+                <select id="form_school" name="school">
+                    <foreach name="school" item="school" key="k">
+                        <option value="{$k}" <eq name="coupon.sid" value="$k">selected="selected"</eq>>{$school}</option>
+                    </foreach>
+                </select>
+                <input type="hidden" name="mhm_id" value="{$coupon.sid}" />
+            </dd>
+            </dl>
+
+            <dl class="lineD">
+                <dt><font color="red"> * </font>课程类型：</dt>
+                <dd>
+                    <if condition="$coupon['video_type']">
+                        <label><input type="radio" name="video_type" value="1" <eq name="coupon.video_type" value="1">checked="checked"</eq>>点播 </label>
+                        <label><input type="radio" name="video_type" value="2" <eq name="coupon.video_type" value="2">checked="checked"</eq>>直播 </label>
+                        <label><input type="radio" name="video_type" value="3" <eq name="coupon.video_type" value="3">checked="checked"</eq>>套餐 </label>
+                        <else/>
+                        <label><input type="radio" name="video_type" value="1" checked="checked">点播 </label>
+                        <label><input type="radio" name="video_type" value="2" >直播 </label>
+                        <label><input type="radio" name="video_type" value="3" >套餐 </label>
+                    </if>
+                </dd>
+            </dl>
+
+            <dl class="lineD videoInfo" >
+                <dt><font color="red"> * </font><sapn>点播</sapn>：</dt>
+                <dd>
+                    <select id="form_video" name="video">
+                        <if condition="$video">
+                            <option value="{$video.id}" >{$video.title}</option>
+                            <else/>
+                            <option>请选择</option>
+                        </if>
+                    </select>
+                    <input type="hidden" name="video_id" value="{$video.id}" />
+                </dd>
+            </dl>
+
+            <!--<dl class="lineD">
+            <dt><font color="red"> * </font>卡券类型：</dt>
+            <dd>
+                <if condition="$coupon['coupon_type']">
+                    <label><input type="radio" name="coupon_type" value="1" <eq name="coupon.coupon_type" value="1">checked="checked"</eq>>优惠券 </label>
+                    <label><input type="radio" name="coupon_type" value="2" <eq name="coupon.coupon_type" value="2">checked="checked"</eq>>打折卡 </label>
+                    <else/>
+                    <label><input type="radio" name="coupon_type" value="1" checked="checked">优惠券 </label>
+                    <label><input type="radio" name="coupon_type" value="2" >打折卡 </label>
+                </if>
+            </dd>
+            </dl>-->
+
+            <!--<div class="coupon_type1">
+                <dl class="lineD">
+                    <dt><font color="red"> * </font>满可使用：</dt>
+                    <dd>
+                        <input name="maxprice" id="form_maxprice" type="text" value="{$coupon.maxprice}"  class="s-txt" style='width:200px'>
+                    </dd>
+                </dl>
+
+                <dl class="lineD">
+                    <dt><font color="red"> * </font>立减价格：</dt>
+                    <dd>
+                        <input name="price" id="form_price" type="text" value="{$coupon.price}"  class="s-txt" style='width:200px'>
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="coupon_type2" style="display: none;">
+                <dl class="lineD">
+                    <dt><font color="red"> * </font>折扣：</dt>
+                    <dd>
+                        <input name="discount" id="form_discount" type="text" value="{$coupon.discount}"  class="s-txt" style='width:200px' onkeyup="clearNoNum(this)"   onkeydown="clearNoNum(this)">
+                    </dd>
+                </dl>
+            </div>-->
+
+            <dl class="lineD">
+                <dt><font color="red"> * </font>有效期（天）：</dt>
+                <dd>
+                    <input name="exp_date" id="form_exp_date" type="text" value="{$coupon.exp_date}"  class="s-txt" style='width:200px'>
+                </dd>
+            </dl>
+
+            <dl class="lineD">
+                <dt><font color="red"> * </font>终止时间：</dt>
+                <dd>
+                    <input name="end_time" type="text" class="text" id="form_end_time" value='{$coupon.end_time}' onfocus="core.rcalendar(this,'full');" readonly="readonly" style="width:200px;" class="s-txt"/>
+                </dd>
+            </dl>
+
+            <dl class="lineD">
+                <dt><font color="red"> * </font>批量生成卡数量：</dt>
+                <dd>
+                    <input name="counts" id="form_counts" type="text" value="{$coupon.counts}"  class="s-txt" style='width:200px'>
+                    <p>不填生成一条</p>
+                </dd>
+            </dl>
+
+            <div class="page_btm">
+                <input type="button" class="btn_b" value="保存" onclick="saveCoupon();" id="form_submit">
+            </div>
+        </div>
+
+    </form>
+</div>
+<script type="text/javascript">
+    $(function(){
+        var coupon = '{$coupon}';
+        if(!coupon){
+            var id = $("#form_school option:first").val();
+            var type = $(":radio[name='video_type'][checked]").val();
+            ajaxReturn(type,id);
+        }
+
+        $(":radio[name='coupon_type']").click(function(){
+            var v = $(this).val();
+            if(v == 2) {
+                $('.coupon_type1').css('display','none');
+                $('.coupon_type2').css('display','block');
+            } else {
+                $('.coupon_type2').css('display','none');
+                $('.coupon_type1').css('display','block');
+            }
+        });
+        //加载课程数据
+        $('#form_school').change(function() {
+            var id = $(this).val();
+            var type = $(":radio[name='video_type'][checked]").val();
+            $("input[name='mhm_id']").val(id);
+            ajaxReturn(type,id);
+        });
+        $(":radio[name='video_type']").click(function() {
+            var id = $("input[name='mhm_id']").val();
+            if(!id){
+                id = $("#form_school option:first").val();
+            }
+            var type = $(this).val();
+            var text = $(this).parent().text();
+            $(".videoInfo dt").children('sapn').text(text);
+            ajaxReturn(type,id);
+        });
+        $('#form_video').change(function() {
+            var id = $(this).val();
+            $("input[name='video_id']").val(id);
+        });
+    });
+    function ajaxReturn(type,id){
+        $.ajax({
+            type:'POST',
+            url:"{:U('classroom/AdminEntityCard/getVideoInfoList')}",
+            data:{video_type:type,mhm_id:id},
+            dataType:'json',
+            success:function(res){
+                if (typeof res != 'object') {
+                    var res = eval('(' + res + ')');
+                }
+                var addHtml = '<option>请选择</option>';
+                $("#form_video").html('');
+                if (res.status == 1) {
+                    $.each(res.data,function(i,n){
+                        addHtml += '<option value="'+i+'" >';
+                        addHtml += n+'</option>';
+                    });
+                    $("#form_video").append(addHtml);
+                }else{
+                    addHtml += '<option value="0" >';
+                    addHtml += "暂时没有数据"+'</option>';
+                    $("#form_video").append(addHtml);
+                }
+            }
+        });
+    }
+
+    function saveCoupon(){
+        var id = $("input[name='id']").val();
+        var mhm_id = $("input[name='mhm_id']").val();
+        if(!mhm_id){
+            mhm_id = $("#form_school option:first").val();
+        }
+        var video_type  = $(":radio[name='video_type'][checked]").val();
+        var video_id    = $("input[name='video_id']").val();
+//        var coupon_type = $(":radio[name='coupon_type'][checked]").val();
+//        var maxprice    = $("#form_maxprice").val();
+//        var price       = $("#form_price").val();
+//        var discount    = $("#form_discount").val();
+        var exp_date    = $("#form_exp_date").val();
+        var end_time    = $("#form_end_time").val();
+        var counts      = $("#form_counts").val();
+
+        var text = $(".videoInfo dt").children('sapn').text();
+        if(!mhm_id){
+            ui.error("请选择机构");
+            return false;
+        }
+        if(!video_type){
+            ui.error("请选择课程类型!");
+            return false;
+        }
+        if(video_id<= 0){
+            ui.error("请选择"+text+"!");
+            return false;
+        }
+        /*if(!coupon_type){
+            ui.error("请选择卡券类型!");
+            return false;
+        }else if(coupon_type == 1){
+            if(!maxprice){
+                ui.error("请输入满减价格!");
+                return false;
+            }
+            if(!price){
+                ui.error("请输入立减价格!");
+                return false;
+            }
+        }else{
+            var re = /^(([\d])(\.\d{1,2}|\.{0}))$/;
+            if(!discount){
+                ui.error("请输入折扣!");
+                return false;
+            }else if(!(re.test(discount))){
+                ui.error("折扣数必须小于10!");
+                return false;
+            }
+        }*/
+        if(!exp_date){
+            ui.error("请输入有效期!");
+            return false;
+        }
+        if(!end_time){
+            ui.error("请输入终止时间!");
+            return false;
+        }
+
+        $.ajax({
+            type:'POST',
+            url:"{:U('classroom/AdminEntityCard/doAddCoupon')}",
+            data:{id:id,mhm_id:mhm_id,video_type:video_type,video_id:video_id,exp_date:exp_date,end_time:end_time,counts:counts},
+            dataType:'json',
+            success:function(msg){
+                if(msg.status == 1){
+                    ui.success(msg.info);
+                    setTimeout(function(){
+                        location.href = U('classroom/AdminEntityCard/index')+'&tabHash=index';
+                    },'1500');
+                }else{
+                    ui.error(msg.info);
+                    return false;
+                }
+            }
+        });
+    }
+
+    function clearNoNum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+        obj.value = obj.value.replace(/^\./g,""); //验证第一个字符是数字而不是
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+    }
+</script>
+<include file="__THEME__/admin_footer" />

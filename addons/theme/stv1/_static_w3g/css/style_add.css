@@ -1,0 +1,221 @@
+@charset "UTF-8";
+/* CSS Document */
+li.border_sx .bd .n2,li.border_sx .bd .n3{border-bottom: 1px solid #c8d0d8;}
+em{font-style:normal}
+img {max-width: 100%}
+.new_tags{margin: 5px 0;font-size: 14px;color: #666;}
+/*列表页面加载底部*/
+.loadding{-webkit-box-sizing: border-box;box-sizing: border-box;outline: 0;-webkit-tap-highlight-color: transparent;border-bottom: 1px solid #cbcdd0;}
+.loadding div{width: 100%;float:left;-webkit-box-sizing: border-box;box-sizing: border-box;outline: 0;-webkit-tap-highlight-color: transparent;text-align: center;margin: 0 auto;margin-bottom: -18px;font-size: 14px;color: #999;}
+.footer{margin-top: 10px;}
+/*��ʦ����-���*/
+.classtit .fr {
+    margin-right:4%;
+    color: #666;
+    font-size: 14px
+}
+.classcon .teacher-classlist li {
+    margin-bottom: 10px;
+}
+.classcon .teacher-classlist i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    background: url(../../_static/icon/play.png) center center no-repeat;
+}
+.classcon h2 {
+    margin-bottom: 15px;
+    font-size: 21px;
+    color: #424344;
+    text-align: center;
+}
+.classcon .artInfo {
+     height: 30px;
+     padding-bottom: 10px;
+     margin-bottom: 30px;
+     line-height: 30px;
+     color: #898a8b;
+     font-size: 14px;
+     border-bottom: solid 1px #dddede;
+ }
+.classcon .question-page {
+    font-size: 14px;
+    line-height: 24px;
+    color: #424344;
+    margin-bottom: 10px;
+}
+
+/*个人中心---充值(3g)*/
+.centerbox .teacher_bd {
+    padding: 15px 10px;
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 24px;
+    display:none;
+}
+
+.centerbox .teacher_bd.db {
+    display:block;
+}
+.centerbox .teacher_bd h3{
+    color:#2b92f9;
+    font-size:15px;
+}
+.teacher_bd li{
+    color:#333;
+    font-size:14px;
+    line-height:24px;
+}
+
+.pay_dl{
+    overflow:hidden;
+}
+.pay_dl dt{
+    margin-bottom:5px;
+    font-size:16px;
+    color:#333;
+    line-height:40px;
+}
+.pay_dl dd{
+    margin-bottom:5px;
+    overflow:hidden;
+    padding-left:10%;
+    line-height:40px;
+}
+.pay_dl dd label{
+    float:left;
+    width:44%;
+    margin:0 6% 15px 0;
+    font-size:24px;
+    line-height:60px;
+    text-align:center;
+    color:#fff;
+    background-color:#b5b5b5;
+}
+[name^="group-lis"],[name*="group-lis"] {
+    margin-bottom:-15px;
+}
+.pay_dl dd label img{
+    width:100%;
+    height:100%;
+    border:solid 2px #ccc;
+}
+.pay_dl dd label.selected{
+    background-color:#2b92f9;
+}
+.pay_dl dd label.selected img{
+    border-color:#2b92f9;
+}
+.pay_dl dd input{
+    float:left;
+    width:80%;
+    height:40px;
+    padding:0 4px;
+    margin-right:5px;
+    border:solid 1px #e5e5e5;
+}
+.pay_dl dd p{
+    padding:10px 0 10px;
+    color:#da3e3e;
+    font-size:16px;
+}
+.pay_dl dt input{
+    margin:0 4px 0 0;
+    display:inline-block;
+}
+.pay_dl dt a{
+    display:inline;
+}
+.pay_dl .pay_dt,.pay_dl .pay_dt a{
+    color:#2b92f9;
+}
+.teacher_bd .pay_btn {
+    width: 80%;
+    height: 50px;
+    margin: 10px auto;
+    line-height: 50px;
+    color: #fff;
+    font-size: 18px;
+    background-color: #2b92f9;
+    text-align:center;
+    display: block;
+    border-radius: 4px;
+}
+
+/*公共头部下拉*/
+.overbox {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    display: none;
+}
+.topmenu{
+    position: absolute;
+    right:0;
+    top:60px;
+    z-index:9999;
+    overflow:hidden;
+    background-color:#000;
+    display:none;
+    opacity:0.6;
+}
+.topmenu li{
+    width:100px;
+    height:40px;
+    line-height:40px;
+    text-align:center;
+}
+.topmenu li a{
+    color:#FFF;
+    font-size:14px;
+}
+/*个人中心*/
+.teacher_nav_box#show{
+    width: 80px;
+    padding: 5px
+}
+.teacher_nav_box#show dl{
+    text-align: center;
+}
+.teacher_nav_box#show dl dd{
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+}
+
+/*财富充值*/
+.centerbox .pay_dl .btn_je_box label a {
+    color: #fff;
+}
+.centerbox .pay_dl label img {
+    background: #fff;
+}
+
+/* 找回密码*/
+.loginbox .mmbox a.yzmbtn {
+    float: right;
+}
+.loginbox .mmbox a.yzmbtn img {
+    width: 100%;
+    height: 100%;
+}
+.Mailbox{width:740px; padding:50px; }
+.Mailbox h1{ width:100%; height:32px; line-height:32px; color:#000; font-size:20px; font-family: inherit; color:#66AEDE;padding:0 0 0 50px; }
+.Mailbox .again-box{padding:0 0 0 50px; width:70%; height:auto; line-height:33px;}
+.Mailbox .again{width:96px; height:33px; display:block; line-height:33px; color:#999999; font-size:12px; text-align: center; color:#FFF;background:#C7C7C7; margin:0; padding:0;}
+.Mailbox p{ line-height:60px; padding:0 0 0 50px;color:#333;text-align: inherit;font-size: 14px;}
+
+/*邮箱注册*/
+.loginbox .login-bd .yzm-3g {
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 0;
+}

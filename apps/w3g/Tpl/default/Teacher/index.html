@@ -1,0 +1,94 @@
+<include file="../Public/_header" />
+<!--container-->
+<div class="nav-s">
+    <div class="nav_tit">全部讲师<span class="icon-sj"></span></div>
+    <ul class="nav_ul">
+        <li>
+            <div class="item">
+                <div class="left">教师性别：</div>
+                <div class="right group-list" name="group-list">
+                    <label class="selected" onclick="sexBang(0);"><span></span>全部</label>
+                    <label onclick="sexBang(1);"><span></span>男</label>
+                    <label onclick="sexBang(2);"><span></span>女</label>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="item">
+                <div class="left">上课时间：</div>
+                <div class="right group-list" name="group-list">
+                    <label class="selected" onclick="weekBang(0);"><span></span>全部</label>
+                    <volist name="teacher_schedule" id="vo">
+                        <label onclick="weekBang({$vo.id});"><span></span>{$vo.title}</label>
+                    </volist>
+                </div>
+            </div>
+        </li>
+        <div class="nav-s_btn">
+            <input type="hidden" id="sex" value="0" style="border:1px solid red;">
+            <input type="hidden" id="reservation" value="0" style="border:1px solid red;">
+            <a href="javascript:selectCondition();">确定</a>
+        </div>
+    </ul>
+</div>
+<!--container-->
+<div class="container"> 
+    <div class="item_box classroom">
+        <ul class="ind-teacher">
+            
+        </ul>
+    </div>
+</div>
+<script>
+    //页面加载完毕执行
+    $(function(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/Teacher/getList')}",
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    });
+    //请求事件
+    function ajaxBang(){
+        alert(reservation);
+        alert(sex);
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/Teacher/getList')}",
+            data:"p="+p+"&reservation="+reservation+"&sex="+sex,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".ind-teacher").append(data.data);
+        if(data.nowPage+1>data.totalPages){
+            return;
+        }else{
+            p=data.nowPage+1;//下一页
+        }
+    }
+    function selectCondition(){
+        p=1;
+        var reservation=$("#reservation").val();
+        var sex=$("#sex").val();
+        $(".nav_ul").css("display","none");
+        $(".ind-teacher").html("");
+        ajaxBang();
+    }
+    function sexBang(val){
+        $("#sex").val(val);
+    }
+    function weekBang(num){
+        $("#reservation").val(num);
+    }
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

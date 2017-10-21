@@ -1,0 +1,51 @@
+<dl class="form-set form-contact">
+  <dd>
+    <div class="form-tt"><font color="red"> * </font>认证资料：</div>
+    <div class="form-row">
+        <textarea rows="4" cols="50" name="info" id="info">{$info}</textarea>
+    </div>
+  </dd>
+  <if condition="$usergroupId eq 3">
+      <dd>
+          <div class="form-tt"><font color="red"> * </font>选择机构：</div>
+          <div class="form-row">
+              <select id="school">
+                  <foreach name="school" item="v" key="k">
+                      <option value="{$k}">{$v}</option>
+                  </foreach>
+              </select>
+          </div>
+      </dd>
+  </if>
+  <!-- <dt>认证资料：<textarea rows="4" cols="50" name="info" id="info">{$info}</textarea></dt> -->
+  <input type="hidden" name="vid" value="{$id}" id="vid">
+  <input type="hidden" name="status" value="{$status}" id="status">
+  <dd style="text-align:center;margin:15px 0 0 ">
+
+        <input type="button" class="btn_b" onclick="doEditVerifyInfo()" value="确定" />
+
+        <input type="button" class="btn_w ml10" onclick="cancel()" value="取消" />
+  </dd>
+  <div class="clear"></div>
+</dl>
+
+<script type="text/javascript">
+// 通过认证
+function doEditVerifyInfo() {
+	var info = $('#info').val();
+    var school = $('#school').val();
+    if(getLength(info) < 1){
+        ui.error("认证资料内容不能为空");
+        return false;
+    }
+    var id = $('#vid').val();
+    var status = $('#status').val();
+    $.post(U('admin/User/saveVerify'),{id:id,status:status,info:info,school:school},function(msg){
+            admin.ajaxReload(msg);
+        },'json');
+};
+// 关闭弹窗
+function cancel() {
+	ui.box.close();
+}
+</script>

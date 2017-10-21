@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="__THEME__/js/fulljquery.min.js"></script>
+    <script src="__THEME__/js/fulljquery-ui.custom.min.js"></script>
+    <script src="__THEME__/js/fullcalendar.min.js"></script>
+    <link href="__THEME__/css/fullcalendar.css" rel="stylesheet" type="text/css">
+
+
+    <script>
+
+        $(document).ready(function() {
+
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    right: 'month, agendaWeek'
+                },
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                eventClick: function (date, allDay, jsEvent, view) {
+                    $(this).css('background', 'green');
+                },
+
+              events:  '{:U("classroom/ArrangeCourse/data")}' ,
+
+            });
+
+        });
+
+    </script>
+
+
+
+    <style>
+
+        body {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+        }
+
+        #calendar {
+            width: 900px;
+            margin: 0 auto;
+
+        }
+
+    </style>
+</head>
+<body>
+<div id='calendar'></div>
+</body>
+</html>

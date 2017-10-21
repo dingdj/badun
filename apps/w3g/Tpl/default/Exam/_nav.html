@@ -1,0 +1,24 @@
+<div id="focus" class="focus">
+    <div class="hd">
+        <ul></ul>
+    </div>
+    <div class="bd">
+        <ul>
+            <li><a href="#"><img _src="__APP__/images/b1.jpg" src="icon/blank.png" /></a></li>
+            <li><a href="#"><img _src="__APP__/images/b2.jpg" src="icon/blank.png"/></a></li>
+            <li><a href="#"><img _src="__APP__/images/b3.jpg" src="icon/blank.png"/></a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+  TouchSlide({ 
+      slideCell:"#focus",
+      titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+      mainCell:".bd ul", 
+      effect:"leftLoop",
+      interTime:"4000", 
+      autoPlay:true,//自动播放
+      autoPage:true, //自动分页
+      switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+  });
+</script>

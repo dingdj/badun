@@ -1,0 +1,81 @@
+
+<script>
+    var p="{$p}";//定义页码
+    var orderBy="{$orderBy}";//定义排序
+    /**
+     * 赞
+     * @param cate
+     * @param id
+     */
+    function addyong(cate,id){
+        if(MID==0){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Teacher/addyong')}",
+            data:"id="+id,
+            dataType:"text",
+            success:function(data){
+                if(data==200){
+                    var text=parseInt($(cate).next().text());
+                    text=(text+1);
+                    $(cate).next().text(text);
+                    $(cate).children("i.qa-icon").removeClass().addClass("qa-iconhover");
+                }else{
+                    return;
+                }
+            }
+        });
+    }
+
+</script>
+<php>if($listData){</php>
+
+<div class="list">
+<volist name="listData" id="vo">
+
+        <div class="item">
+            <dl>
+                <dt>
+                    <a  target="_blank"  event-node="face_card" uid="{$vo['uid']}"  alt="头像" width="60" height="60"   href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}">
+                        <img width="40" height="40" src="{:getUserFace($vo['uid'],'m')}">
+                    </a>
+                <div class="user-name">{:getUserName($vo['uid'])}</div>
+                </dt>
+            </dl>
+            <div class="comment">
+                <div class="score-info">
+                    <div class="score">
+                      <php>for($i=0;$i<$vo['star'];$i++){ </php>
+                        <i class="icon-star"></i>
+                           <php>}</php>
+                        <php>for($i=5;$i>$vo['star'];$i--){ </php>
+                        <i class="icon-star_no"></i>
+                        <php>}</php>
+                    </div>
+                </div>
+                <div class="con">{$vo.review_description}</div>
+                <div class="order-info">
+                    <span>{$vo.oid}</span>
+                    <span>视频课程</span>
+                    <span></span>
+                    <span>{$vo.tname}</span>
+                    <!--<span class="date">{:getDateDiffer($cl['ctime'])}</span>-->
+                    <span class="date">{:getDateDiffer($vo['ctime'])}</span>
+                    <div class="feedback" style="padding-right: 22px;">
+                        <b class="link btn-support"   href="javascript:;" onclick="addyong(this,{$vo.id})">有用</b>
+                        <span> {$vo['yong']}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</volist>
+    </div>
+
+
+<php>}else{</php>
+<span>暂无此分类课程~</span>
+<php>}</php>

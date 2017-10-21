@@ -1,0 +1,46 @@
+<style type="text/css">
+    .content_wx {width:80%;margin:200px auto;}
+    .content_wx .hide_box{z-index:999;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;}
+    .content_wx .shang_box img{border:none;border-width:0;}
+    .content_wx .dashang{display:block;width:100px;margin:5px auto;height:25px;line-height:25px;padding:10px;background-color:#E74851;color:#fff;text-align:center;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;transition: all 0.3s;}
+    .content_wx .dashang:hover{opacity:0.8;padding:15px;font-size:18px;}
+    .content_wx .shang_close{float:right;display:inline-block;}
+    .content_wx .shang_payimg{width:220px;padding:10px;margin:0 auto;border-radius:3px;height:220px;}
+    .content_wx .shang_payimg img{display:block;text-align:center;width:220px;height:220px;}
+    .content_wx .shang_info{clear:both;}
+	.content_wx .shang_info p,.shang_info a{color:#C3C3C3;text-align:center;font-size:12px;text-decoration:none;line-height:2em;}
+</style>
+<if condition="$is_wap">
+    <style type="text/css">
+        .content_wx .shang_box{width:300px;height:300px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:9999;left:59%;top:50%;margin-left: -177px;margin-top: -177px;border:1px dotted #dedede;}
+    </style>
+<else/>
+    <style type="text/css">
+    .content_wx .shang_box{width:300px;height:300px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:9999;left:59%;top:50%;margin-left:-280px;margin-top:-280px;border:1px dotted #dedede;}
+    </style>
+</if>
+<div class="content_wx">
+<div class="hide_box"></div>
+<div class="shang_box">
+	<a class="shang_close" href="javascript:void(0)" onClick="dashangToggle()" title="关闭">关闭</a>
+	<div class="shang_payimg">
+		<img src="/api/pay/wxpay/qrcode.php?data={$url}" />
+	</div>
+	<div class="shang_info">
+		<p>打开<span id="shang_pay_txt">微信</span>扫一扫，即可进行扫码支付哦</p>
+	</div> 
+</div>
+</div>
+<!--<script type="text/javascript">-->
+<!--//$(function(){-->
+<!--//    $(".hide_box").fadeToggle();-->
+<!--//	$(".shang_box").fadeToggle();-->
+<!--//});-->
+<!--//function dashangToggle(){-->
+<!--//    $(".hide_box").fadeToggle();-->
+<!--//    $(".shang_box").fadeToggle();-->
+<!--//    try{-->
+<!--//        clearInterval(s);-->
+<!--//    }catch(e){}-->
+<!--//}-->
+<!--</script>-->

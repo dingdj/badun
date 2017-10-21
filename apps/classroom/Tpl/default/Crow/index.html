@@ -1,0 +1,129 @@
+<include file="__THEME__/public_header" />
+
+<div class="content">
+    <div class="wrap">
+        <div class="class_left">
+            <div class="content-place">
+                <ul>
+                    <li><a href="{:U('classroom/Crow/index')}">全部众筹</a></li>
+                </ul>
+            </div>
+            <div class="search-wrap">
+                <dl class="search-dl">
+                    <dt class="J_all">全部分类</dt>
+                    <dd>
+                    <volist name="category" id="vo">
+                        <a <eq name="cid" value="$vo['zy_currency_category_id']"> class="active" </eq> href="{:U('classroom/Crow/index',array('cid'=>$vo['zy_currency_category_id'],'sort'=>$sort))}">{$vo.title}</a>
+                    </volist>
+                    </dd>
+                </dl>
+            </div>
+            <div class="search-wrap">
+                <ul class="search-ul">
+                    <li class="fir"><a href="{:U('classroom/Crow/index',array('cid'=>$cid))}">综合排序</a></li>
+                    <li <eq name="sort" value="sort"> class="active" </eq> >
+                    <a href="{:U('classroom/Crow/index',array('cid'=>$cid,'sort'=>'recommend'))}">精华</a>
+                    </li>
+                    <li <eq name="sort" value="collect_count"> class="active" </eq>>
+                    <a href="{:U('classroom/Crow/index',array('cid'=>$cid,'sort'=>'collect_count'))}">最热</a>
+                    </li>
+                    <li <eq name="sort" value="ctime"> class="active" </eq>>
+                    <a href="{:U('classroom/Crow/index',array('cid'=>$cid,'sort'=>'ctime'))}">最新</a>
+                    </li>
+                </ul>
+            </div>
+            <ul class="raise-list">
+            <volist name="list.data" id="vo">
+                <li>
+                    <a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],280,150)}" alt="" /></a>
+                    <h3><a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}">《{$vo['title']}》众筹</a></h3>
+                    <div class="item"><i class="icon-tim"></i>{$vo['stime']|date="Y.m.d",###} - {$vo['etime']|date="Y.m.d",###}</div>
+                    <div class="item"><i class="icon-pri"></i>¥{$vo['price']}</div>
+                    <div class="act">
+                        <div class="sc fl">
+                        <php>if($vo['iscollect']){</php>
+                            <a class="had" href="javascript:;" title="取消收藏" data-type="0" onclick="collectCrow(this,{$vo['id']})">
+                            <i class="icon-01"></i>取消</a>
+                        <php>}else{</php>
+                            <a href="javascript:;" title="收藏" data-type="1" onclick="collectCrow(this,{$vo['id']})">
+                            <i class="icon-01"></i>收藏</a>
+                        <php>}</php>
+                        </div>
+                        <div class="bm fl">
+                        <php>if($vo['isCrow']){</php>
+                            <a class="had" href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}">
+                            <i class="icon-02"></i>报名（{$vo['num']}人参加）</a>
+                        <php>}else{</php>
+                            <a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}">
+                            <i class="icon-02"></i>报名（{$vo['num']}人参加）</a>
+                        <php>}</php>
+                        </div>
+                    </div>
+                </li>
+            </volist>
+            </ul>
+            <div class="page">
+                <div class="pagebox">
+                    {$list.html}
+                </div>
+            </div>
+        </div>
+        <div class="jg_right">
+            <div class="jg_rightitem">
+                <h3 class="jg_rightitem_tit"><em></em>推荐众筹</h3>
+                <ul class="testrightlist">
+                <volist name="recomList" id="vo">
+                    <li><a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}">{$vo['title']}</a></li>
+                </volist>
+                </ul>
+                <if condition="$_SESSION['mid'] eq ''">
+                <a class="fb_btn" href="javascript:;" onClick="login_box();" >发布众筹</a>
+                <else />
+                <a class="fb_btn" href="{:U('classroom/Crow/addCrow')}">发布众筹</a>
+                </if>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+var uid = '{$uid}';
+//收藏众筹
+function collectCrow(obj,id){
+    if(uid<=0){
+      ui.error("请先登录");
+      return;
+    }
+    var type = $(obj).attr('data-type');
+    $.ajax({
+      type: 'POST',
+      url:"{:U('classroom/Public/collect')}",
+      data:{type:type,sctype:6,source_id:id},
+      dataType:"json",
+      cache: false,
+      success: function(data){
+          if(data.status == '0'){
+              notes(data.info,'failure');
+          } else {
+              notes(data.info,'');
+              //$(cate).removeClass().addClass("wenda-gz-Toggle");
+              if(type == 1){ //收藏
+                  $(obj).addClass('had').html('<i class="icon-01"></i>取消').attr('title','取消收藏');
+                  $(obj).attr('data-type',0);
+              }else{
+                  $(obj).removeClass('had').html('<i class="icon-01"></i>收藏').attr('title','收藏');
+                  $(obj).attr('data-type',1);
+              }
+
+          }
+      },
+    });
+}
+
+$(function(){
+	$('.J_all').click(function(){
+		window.location.href="{:U('classroom/Crow/index')}";
+	});
+});
+</script>
+<include file="__THEME__/public_footer" />

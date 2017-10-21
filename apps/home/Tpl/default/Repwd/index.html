@@ -1,0 +1,286 @@
+<include file="__THEME__/_header"/>
+
+<div class="header">
+    <div class="loginhead">
+        <div class="wrap">
+            <php>if($register_type == 'open'):</php>
+            <php>endif;</php>
+            <div class="fr" style="margin-top: 10px;font-size: 14px;">已有账号？<a href="{:U('public/Passport/login_g')}"
+                                                                              style="margin-left: 15px;padding-left: 15px;border-left: solid 1px #a0a0a0;">登录</a>
+            </div>
+            <div class="logo"><a href="/" title="{$site['site_keyword']}在线教育系统"><img style="margin: 4px 0px;"
+                                                                                     src="{$site.logo_head}" width="150"
+                                                                                     height="65"/></a></div>
+        </div>
+    </div>
+</div>
+<!--header end-->
+
+<script>
+    var REPOHNE_VAR = "{:U('home/Repwd/getVrifi')}";
+    var REPWDHANDLE = "{:U('home/Repwd/repwdhandle')}";
+    var REPWDEMAIL = "{:U('public/Passport/doFindPasswordByEmail')}";
+    var OKEMAILADD = "{:U('public/Passport/okemailadd')}";
+    //更换验证码
+    function changeverifys() {
+        var date = new Date();
+        var ttime = date.getTime();
+        var url = "__ROOT__/public/captcha.php";
+        $('#verifyimgs').attr('src', url + '?' + ttime);
+
+    }
+    ;
+
+</script>
+<!--main-->
+<div class="content">
+    <div class="wrap">
+        <div class="logincontent">
+            <div class="title"><em></em>找回密码</div>
+
+            <ul class="loginstep">
+                <li class="on first">
+                    <span>1</span>
+                    <div>验证账号</div>
+                </li>
+                <li><p><em></em><em></em><em></em></p></li>
+                <li class="second">
+                    <span>2</span>
+                    <div>重置密码</div>
+                </li>
+                <li><p><em></em><em></em><em></em></p></li>
+                <li class="third">
+                    <span>3</span>
+                    <div>完成</div>
+                </li>
+            </ul>
+            <form class="loginform phone">
+                <div class="verify">
+                    <dl>
+                        <dd>
+                            <!--<div style="margin-left:-100px; font-size:14px;">您的账号已绑定手机183****4020，您可以通过短信验证码找回密码</div>-->
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>手机:</dt>
+                        <dd>
+                            <input class="inp" type="text" maxlength="11" id="rephoneval" placeholder="请输入注册时填写的手机号">
+                            <p class="p" id="tsrephone"></p>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>验证码:</dt>
+                        <dd>
+                            <input class="inp" style="width:145px;" type="text" id="repverval" maxlength="6"
+                                   placeholder="请输入收到的验证码">
+                            <a class="yzm" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
+                            <p class="width97" style="display:none;"><a id="dctime"></a>秒后重新发送</p>
+                            <p class="p" id="tsrephonever"></p>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <a class="btn" href="javascript:;" onclick="okPhonecode(this)">下一步</a>
+                            <p style="text-align:center;">或使用<a href="javascript:;" id="showEmail">邮箱验证</a></p>
+                        </dd>
+                    </dl>
+                </div>
+
+
+                <div class="reset" style="display: none;">
+                    <dl>
+                        <dt><span>*</span>新密码:</dt>
+                        <dd>
+                            <input class="inp" id="ppwd" maxlength="30" type="password" placeholder="请输入新密码，6-20个字符">
+                            <p class="p" id="tsrephonepwd"></p>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>确认密码:</dt>
+                        <dd>
+                            <input class="inp" id="ppwds" type="password" maxlength="30" placeholder="重复密码">
+                            <p class="p" id="tsrephonepwds"></p>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <a class="btn" href="javascript:;" onclick="okPhonepwd(this)">下一步</a>
+                        </dd>
+                    </dl>
+                </div>
+
+
+                <div class="completebox" style="display: none;">
+                    <h3>密码找回成功！</h3>
+                    <a href="{:U('public/Passport/login_g')}">点此返回登录页面</a>
+                </div>
+            </form>
+
+
+            <form class="loginform email" style="display: none;">
+                <dl>
+                    <dd>
+                        <!--<div style="margin-left:-100px; font-size:14px;">您的账号已绑定邮箱admin@****com，您可以通过邮箱找回密码</div>-->
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>用户邮箱:</dt>
+                    <dd>
+                        <input class="inp" id="repemail" maxlength="30" type="text" placeholder="请输入注册时用的邮箱">
+                        <p class="p" id="repmsgemail"></p>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>验证码:</dt>
+                    <dd>
+                        <input type="text" id="repcode" style="width:190px;" maxlength="6" class="inp"
+                               placeholder="请输入右侧验证码"/>
+                        <div class="yam"><img class="width108" id="verifyimgs" onclick="changeverifys()" title="点击刷新"
+                                              src="__ROOT__/public/captcha.php"></div>
+                        <p class="p" id="repmsgcode"></p>
+                    </dd>
+                </dl>
+                <dl>
+                    <dd>
+                        <a class="btn" href="javascript:;" onclick="repEmailNext(this)">下一步</a>
+                        <p style="text-align:center;">或使用<a href="javascript:;" id="showPhone">手机验证</a></p>
+                    </dd>
+                </dl>
+            </form>
+            <div class="completebox" style="display: none;">
+                <img src="__THEME__/icon/ok.png" alt=""/>
+                <p>验证信息已成功发至您的邮箱，请登录邮箱完成操作</p>
+                <a href="{:U('home/Repwd/index')}">点此返回登录页面</a>
+            </div>
+            <!-- <div class="login-Cipher" >
+              <div class="teb">&nbsp;&nbsp;<a href="javascript:;" onclick="repEmail(this)">邮箱验证</a></div>
+              <div id="repEmail" style="display: block;" class="login-Cipher">
+              <ul class="login-Cipher-ul" >
+                <li>
+                  <label>用户邮箱: </label>
+                  <input class="regsiter-width" id="repemail" maxlength="30" type="text" placeholder="请输入注册时用的邮箱">
+                  <p class="p" id="repmsgemail"></p>
+                </li>
+                <li>
+                  <label>验&nbsp;证&nbsp;码:</label>
+                  <input  type="text" id="repcode" maxlength="6" class="regsiter-width"  placeholder="请输入右侧验证码"  />
+                  <div class="yam"><img class="width108" id="verifyimgs" onclick="changeverifys()" title="点击刷新" src="__ROOT__/public/captcha.php"></a></div>
+                  <p class="p" id="repmsgcode"></p>
+                </li>
+              </ul>
+              <input name="" class="regsiter-xy-submit" onclick="repEmailNext(this)" value="下 一 步"/>
+              </div>
+            </div>
+            <div id="repPhone">
+              <li>
+                <label class="label">手机号码:</label>
+                <input class="regsiter-width" type="text" maxlength="11" id="rephoneval" placeholder="请输入注册时填写的手机号">
+                <p class="p" id="tsrephone"></p>
+              </li>
+               <li>
+                <label class="label">验&nbsp;证&nbsp;码::</label>
+                <input class="width130 regsiter-width" type="text" id="repverval" maxlength="6"   placeholder="请输入收到的验证码">
+                <a class="width80" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a><span class="width97"  style="display:none" ><a id="dctime"></a>重新发送</span>
+                <p class="p" id="tsrephonever"></p> </li>
+              <li>
+                <label class="label">新&nbsp;密&nbsp;码:</label>
+                <input class="regsiter-width" id="ppwd" maxlength="30"  type="password" placeholder="请输入新密码，6-20个字符">
+                <p class="p" id="tsrephonepwd"></p>
+              </li>
+              <li>
+                <label class="label">确认密码:</label>
+                <input class="regsiter-width" id="ppwds" type="password" maxlength="30" placeholder="重复密码">
+                <p class="p" id="tsrephonepwds" ></p>
+              </li>
+                  </ul>
+
+            <input name="" onclick="okPhonepwd(this)" class="regsiter-xy-submit"  type="button" value="确定"/>
+            </div>-->
+        </div>
+    </div>
+</div>
+
+<div class="login-footer" style="margin-bottom:0;">
+    <ul>
+        <li><a href="/">{$site['site_keyword']}首页</a></li>
+        <volist name="pageCategory" id="vo" offset="0" length="5">
+            <li>|</li>
+            <li>
+                <a target="_blank" href="{$vo['url']}">{$key}</a>
+            </li>
+        </volist>
+        <li>|</li>
+        <li><span>{:t($site['site_footer']);}.</span></li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#showEmail").click(function () {
+            $(".phone").hide();
+            $(".email").show();
+        });
+        $("#showPhone").click(function () {
+            $(".email").hide();
+            $(".phone").show();
+        });
+    });
+    function okPhonecode() {
+        phone = $('#rephoneval').val();
+        code = $('#repverval').val();
+        $.ajax({
+            type: "POST",
+            url: "{:U('home/Repwd/repwdhandle')}",
+            data: "phone=" + phone + "&code=" + code,
+            dataType: "json",
+            success: function (data) {
+                var data = getResponseData(data);
+                if (data.status == '1') {
+                    $(".second").addClass("on");
+                    $(".verify").css("display", "none");
+                    $(".reset").css("display", "block");
+                    $("#phonecode").val(code);
+                }
+                else {
+                    ui.error(data.info);
+                }
+            }
+
+        });
+    }
+
+
+    function okPhonepwd() {
+        phone = $('#rephoneval').val();
+        code = $('#repverval').val();
+        pwd = $('#ppwd').val();
+        pwds = $('#ppwds').val();
+        if (pwd != pwds) {
+            ui.error("新密码与确认密码请保持一致");
+        }
+        if (!pwd) {
+            ui.error("请输入新密码！");
+        }
+        if (!pwds) {
+            ui.error("请输入确认密码！");
+        }
+        $.ajax({
+            type: "POST",
+            url: "{:U('home/Repwd/repwdhandle')}",
+            data: "phone=" + phone + "&code=" + code + "&pwd=" + pwd + "&repwd=" + pwds,
+            dataType: "json",
+            success: function (data) {
+                var data = getResponseData(data);
+                if (data.status == '1') {
+                    $(".third").addClass("on");
+                    $(".reset").css("display", "none");
+                    $(".completebox").css("display", "block");
+                }
+                else {
+                    ui.error(data.info);
+                }
+            }
+
+        });
+    }
+</script>

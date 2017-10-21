@@ -1,0 +1,23 @@
+<foreach name="data.data" item="l" key='k'>
+    <li>
+        <div class="pic"><a  href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img class="lazyloading"  src="{:getUserFace($l['uid'],'m')}"></a></div>
+        <div class="name">
+            <div class="star">
+                评分：
+                <php>for($i=0;$i<$l['star'];$i++){ </php>
+                <span></span>
+                <php>}</php>
+                <php>for($i=5;$i>$l['star'];$i--){ </php>
+                <span class="no"></span>
+                <php>}</php>
+            </div>
+            <php>if($l['type']==1){</php>
+            <a   href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">源自：{:limitNumber($l['title'],8)}</a>
+            <php>}else{</php>
+            <a   href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">源自：{:limitNumber($l['title'],8)}</a>
+            <php>}</php>
+        </div>
+        <div class="text">{$l.review_description}</div>
+        <div class="info"><a href="javascript:;"><span class="icon-zan"></span>{$l.yong}</a><a href="javascript:;"><span class="icon-pl"></span>{$l.review_comment_count}</a>时间：{$l.ctime|date="Y/m/d H:i",###}</div>
+    </li>
+</foreach>

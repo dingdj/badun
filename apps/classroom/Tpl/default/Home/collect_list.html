@@ -1,0 +1,59 @@
+<php>if($data){</php>
+
+    <foreach name="data" item="l" key='k'>
+        <php>if($type == 'me'){</php>
+
+            <li>
+                <div class="name">
+
+
+                    <a   href="{:U('classroom/Topic/view',array('id'=>$l['source_id']))}">{$l.topictitle|msubstr=0,28,'utf-8',true}</a>
+
+                </div>
+                <div class="text"> <a   href="{:U('classroom/Topic/view',array('id'=>$l['source_id']))}">{$l.topicdesc|msubstr=0,60,'utf-8',true} </a></div>
+
+                <div class="info"><a href="#"><span class="icon-pl"></span>{$l.commentcount}</a>时间：{$l.ctime|date="Y/m/d H:i",###}</div>
+            </li>
+
+        <php>}else if($type == 'school'){</php>
+            <li>
+                <div class="pic">
+                    <a href="{$l.domain}">
+                        <img class="lazyloading" src="{:getCover($l['logo'],60,60)}">
+                    </a>
+                </div>
+                <div class="name">
+
+                    <a   href="{$l.domain}">{$l.title}</a>
+
+                </div>
+                <div class="text"> <a   href="{$l.domain}">{$l.info} </a></div>
+
+                <div class="info">
+                    <a href="javascript:;" onclick="ui.confirm(this,'确定要取消收藏机构吗？');return false;" callback="delCollect({$l['collection_id']},'school')" >取消收藏</a>
+                    时间：{$l.ctime|date="Y/m/d H:i",###}
+                </div>
+            </li>
+        <php>}else{</php>
+            <li>
+                <div class="pic">
+                    <a href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">
+                        <img class="lazyloading" src="{:getCover($l['head_id'],60,60)}">
+                    </a>
+                </div>
+                <div class="name">
+
+                    <a   href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">{$l.name}</a>
+                    头衔: <a>{$l.title}</a>
+
+                </div>
+                <div class="text"> <a   href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}">{$l.inro} </a></div>
+
+                <div class="info">
+                    <a href="javascript:;" onclick="ui.confirm(this,'确定要取消收藏讲师吗？');return false;" callback="delCollect({$l['collection_id']},'zy_teacher')" >取消收藏</a>
+                    时间：{$l.ctime|date="Y/m/d H:i",###}
+                </div>
+            </li>
+        <php>}</php>
+    </foreach>
+<php>}</php>

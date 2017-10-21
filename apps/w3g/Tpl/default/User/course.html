@@ -1,0 +1,93 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <div class="teacher_type">
+        <ul class="teacher_hd">
+             <li class="on" onclick="navClick('getbuycourselist')">已预约的课程</li>
+            <li onclick="navClick('getisdelcourselist')">已完成的课程</li>
+        </ul>
+        <div class="teacher_bd db">
+            <ul class="album-list">
+            </ul>
+        </div>
+        <div class="teacher_bd">
+            <ul class="album-list">
+                <li><a href="#">
+                    <div class="info">
+                        <dl>
+                            <dt>英语六级</dt>
+                            <dd>老师 Spencer</dd>
+                            <dd>电话号码：32434653</dd>
+                            <dd>授课方式：线上授课</dd>
+                            <dd>价格：<span>100</span>/小时  共<span>529</span>人购买</dd>
+                        </dl>
+                        <div class="txt">课程介绍：为全校非英语专业研究生一年级学生所开设的课程，旨在系统了解并掌握英语写作规范……</div>
+                    </div>
+                </a></li>
+            </ul>
+        </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+    var url="{:U('w3g/User/getbuycourselist')}";
+    $(function(){
+        //异步加载我购买的课程
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    })
+    //追加html
+    function appendHtml(data){
+        $(".album-list").append(data.data);
+        if(data.nowPage+1>data.totalPages){
+            return;
+        }else{
+            p=data.nowPage+1;//下一页
+        }
+    }
+    //头部点击事件
+    function navClick(type){
+        $(".album-list").html("");
+        if(type=="getbuycourselist"){
+            is_del=0;
+        }else{
+            is_del=1;
+        }
+        p=1;
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p=1&is_del="+is_del,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    // $(document).ready(function(){
+    //     $(window).scroll(function(){
+    //         if($(document).scrollTop()>=$(document).height()-$(window).height()){
+    //             //异步加载我购买的课程
+    //             $.ajax({
+    //                 type: "POST",
+    //                 url:url,
+    //                 data:"p="+p,
+    //                 dataType:"json",
+    //                 success:function(data){
+    //                     appendHtml(data);
+    //                 }
+    //             });
+    //         }
+    //     })
+    // })
+</script> 
+<!--footer-->
+<include file="../Public/_footer" />

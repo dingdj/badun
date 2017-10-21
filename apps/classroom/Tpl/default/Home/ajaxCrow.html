@@ -1,0 +1,6 @@
+<volist name="data" id="vo">
+    <li>
+        <a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}" class="img"><img src="{:getCover($vo['cover'] , 266,138)}" class="lazyloading" ></a>
+        <h3><span class="fr">¥{$vo.price}</span><a href="{:U('classroom/Crow/view',array('id'=>$vo['id']))}">{$vo.title}</a></h3>
+    </li>
+</volist>

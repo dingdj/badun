@@ -1,0 +1,155 @@
+        <style type="text/css">
+            .user-rVisitor{
+                width: 290px;
+                background-color: #fff;
+                border-radius: 4px;
+                overflow: hidden;
+                padding-bottom: 20px;
+            }
+            .main-sidebar-title{
+                margin: 0;
+                padding: 0 20px;
+            }
+            .space-visitors{
+                width:100%;
+            }
+            .space-visitors li{
+                width:30.33%;
+                height:auto;
+                border:0;
+                float: left;
+                padding:0;
+                margin:0;
+                text-align: center;
+                margin-top:8px;
+            }
+            .space-visitors .avatar{
+                width:56px;
+                height:56px;
+                display: inline-block;
+                border-radius:50%;
+                overflow: hidden;
+                position: relative;
+            }
+            .space-visitors .avatar img{
+                width:56px;
+                min-height:56px;
+            }
+            .space-visitors .nickname {
+                display: block;
+            }
+        </style>
+
+        <div class="center_left">
+            <div class="top">
+                <?php $credits = getUserCredit($userid);?>
+                <?php $tmp = getFollowCount(array($userid));?>
+                <ul>
+                    <li><p>{$videocont}</p><span>课程</span></li>
+                    <li><p>{$gcount}</p><span>小组</span></li>
+                    <li><p>{$note}</p><span>笔记</span></li>
+                    <!--<li><p>{$user['credit_user']}</p><span>积分</span></li>
+                    <li><p>{$twcont}</p><span>提问</span></li>-->
+                    <li><p>{$tmp[$uid]['follower']}</p><span>粉丝</span></li>
+                </ul>
+
+                <!--<ul>
+                    <li><p>{$note}</p><span>笔记</span></li>
+                    <li><p>{$wdcont}</p><span>问答</span></li>
+                    <li><p>{$commcont}</p><span>回答</span></li>
+                    <li><p>{$gcount}</p><span>小组</span></li>
+                </ul>-->
+            </div>
+
+            <div class="my-data-ul">
+                <ul>
+                    <li><h5>昵称：</h5><small>{$user['uname']}</small></li>
+                    <li><h5>性别：</h5><small>{$user['sex'] ==1 ? 男 : 女}</small></li>
+                    <li><h5>地区：</h5><small>{$user['location']}</small></li>
+                    <li><h5>个性签名：</h5><small><if condition="$user['intro']">{$user.intro}<else/>TA不懒，什么都没留下。。</if></small></li>
+                </ul>
+            </div>
+
+            <!--<if condition="!$is_me">
+                <div class="bot" style="margin-bottom: 10px;">
+                    <div class="tit">您还可以</div>
+                    <div class="con sign">
+                        <if condition="$isfollow">
+                            <a class="gz" href="">已关注对方</a>
+                            <else/>
+                            <a class="gz" href="javascript:;" onclick="followyou(this,{$userid})" >关注TA</a>
+                        </if>
+                        <a onclick="ui.sendmessage({$userid}, 0)" href="javascript:void(0)" event-node="postMsg" class="sx" style="margin-left: 10px;">发私信</a>
+                    </div>
+                </div>
+            </if>-->
+            <!--<div class="bot">
+                <div class="tit">最近访客<a class="fr" href="#">更多></a></div>
+                <div class="con">
+                    <ul class="visitor-list">
+                        <volist name="vrlist" id="vl" offset="0" length="10">
+                            <li>
+                                <a href="{:U('classroom/UserShow/index',array('uid'=>$vl['uid']))}">
+                                    <img src="{:getUserFace($vl['uid'],'m')}">
+                                </a>
+                                <h3>
+                                    <a title="{:getUserName($vl['uid'])}" target="_blank" href="{:U('classroom/UserShow/index',array('uid'=>$vl['uid']))}">{:getUserName($vl['uid'])}</a>
+                                </h3>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>-->
+
+            <!--最近访客-->
+            <div class="user-rVisitor back fl">
+                <div class="main-sidebar-title">
+                    <div class="tit">
+                        <h5>最近访客</h5>
+                        <!--<a class="fr" href="#">更多></a>-->
+                    </div>
+                </div>
+                <ul class="space-visitors">
+                    <foreach name="vrlist" item="vl">
+                        <li>
+                            <a title="{:getUserName($vl['uid'])}"  event-node="face_card" uid="{$vl['uid']}" show="no" class="avatar" target="_blank" href="{:U('classroom/UserShow/index',array('uid'=>$vl['uid']))}">
+                                <img width="40" height="40" src="{:getUserFace($vl['uid'],'m')}">
+                            </a>
+                            <a title="{:getUserName($vl['uid'])}" class="nickname" target="_blank" href="{:U('classroom/UserShow/index',array('uid'=>$vl['uid']))}">{:getUserName($vl['uid'])}</a>
+                            <php>if(!empty($vl['userinfo']['profession'])){</php>
+                            <php>}else{</php>
+                            <php>}</php>
+                        </li>
+                    </foreach>
+
+                </ul>
+            </div>
+        </div>
+
+        <script>
+            function followyou(cate,uid){
+                if(MID=='0'){
+                    reg_login();
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url:"{:U('classroom/Public/followyou')}",
+                    data:"fid="+uid,
+                    dataType:"json",
+                    success:function(data){
+                        if(data.status=='0'){
+                            notes(data.info,'failure');
+                            return;
+                        }else{
+                            $(cate).text("已关注对方");
+                        }
+
+                    }
+                });
+            }
+
+            $(".my-data-ul li:first").css("border","0");
+        </script>
+    </div>
+</div>

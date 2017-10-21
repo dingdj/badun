@@ -1,0 +1,108 @@
+<include file="__THEME__/public_header"/>
+<link href="__APP__/css/teacher.css" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+    .ico_top, .ico_btm {
+        background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;
+        height: 14px;
+        width: 12px;
+    }
+
+    .ico_top, .ico_btm {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ico_top {
+        background-position: -12px 0;
+    }
+
+    .ico_btm {
+        background-position: -24px 0;
+    }
+
+    .ico_top:hover {
+        background-position: 0 0;
+    }
+
+    .ico_btm:hover {
+        background-position: -35px 0;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .position-rt-float{
+        width:248px;
+    }
+    .user-imglist li .img{
+        height: 138px;
+    }
+    .user-imglist .position-rt{
+        width:248px;
+        height: 138px;
+    }
+    .user-imglist li h2{
+        padding: 0 20px;
+    }
+    .user-con-title .on{
+        color:#00BED4;
+    }
+</style>
+
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting"/>
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>0))}">我的教师信息</a>
+                    <a href="javascript:void(0);" class="on" >文章详情</a>
+                </div>
+            </div>
+
+            <div class="Manage_all">
+                <div class="question-box" style="overflow: inherit;padding: 20px;">
+                    <h2 style="text-align: center;">{$art_title|msubstr=0,20,'utf-8',true}</h2>
+                    <dl>
+                        <dd>
+                            <a href="javascript:;" onclick="delTeacher({$id},'文章','article')"><i class="delete" style="margin: 9px 10px 0 0;"></i><span>删除</span></a>&nbsp;
+                            <a href="{:U('classroom/User/updateArticle',array('id'=>$id))}" class="fr"><i class="bianji-ico" style="margin: 2px 10px 0 0;"></i>编辑</a>
+                        </dd>
+                        <dt>发布于：{$ctime|date="Y年m月d日 H:i",###}&nbsp;&nbsp;点赞量: {$praise}&nbsp;&nbsp; </dt>
+                    </dl>
+                    <div class="question-page">
+                        {$article}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //删除 讲师文章
+    function delTeacher(id,type,category){
+        var id=id;
+        if(confirm("确定要删除该"+type+"吗？")){
+            $.post("{:U('classroom/User/delTeacherInfo')}",{id:id,category:category}, function(res){
+                if(res==200){
+                    notes('删除成功','success');
+                    location.href=U('classroom/User/teacherDeatil');
+                    $("body").animate({scrollTop:$(".header").height()});
+                }else{
+                    notes('对不起，删除失败请重试!','failure');
+                }
+            });
+        }
+    }
+</script>
+<include file="__THEME__/public_footer"/>

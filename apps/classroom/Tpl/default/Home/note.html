@@ -1,0 +1,59 @@
+<include file="__THEME__/public_header" />
+<style>
+    .center_right_con .comment_list {
+        padding: 0 25px 25px; 
+    }
+    .comment_list li {
+        padding-top: 10px;
+    }
+</style>
+<include file="../User/public/_top" />
+<div class="content cbg">
+    <div class="wrap">
+        <!--中 -->
+        <div class="center_right">
+            <div class="center_right_tit">
+                <h5>我的笔记</h5>
+                <!-- <a  href="javascript:;" onclick="navClick(this,'collect')">我收藏的问题</a> --></div>
+            <div class="center_right_con">
+
+                <!--问答内容-->
+                <ul class="comment_list">
+                    <if condition="$notedata['data'] eq null">
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关笔记。。</li>
+                        <else/>
+                        <foreach name="notedata['data']" item="l" key='k'>
+                            <li>
+                                <!--<div class="pic"><a  href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img class="lazyloading"  src="{:getUserFace($l['uid'],'m')}"></a></div>-->
+                                <div class="name">
+
+                                    <php>if($l['type']==1){</php>
+                                    <a   href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">笔记：{$l.note_title}&nbsp;(<?php if($l["is_open"]==1){ ?>公开<?php }else{ ?><font style="color:#2388c0;">私密</font><?php } ?>)</a>
+                                    <php>}else{</php>
+                                    <a   href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">笔记：{$l.note_title}&nbsp;(<?php if($l["is_open"]==1){ ?>公开<?php }else{ ?><font style="color:#2388c0;">私密</font><?php } ?>)</a>
+                                    <php>}</php>
+                                </div>
+                                <div class="text"> {:limitNumber($l['note_description'],150)} </div>
+
+                                <div class="info"><a href="#"><span class="icon-zan"></span>{$l.note_help_count}</a><a href="#"><span class="icon-pl"></span>{$l.qcount}</a>时间：{$l.ctime|friendlyDate}
+
+                            </li>
+                        </foreach>
+                    </if>
+                </ul>
+                <if condition="$notedata['data']">
+                <div class="page">
+                    <div class="pagebox">
+                        {$notedata['html']}
+                    </div>
+                </div>
+                </if>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<!--footer-->
+<include file="__THEME__/public_footer" />

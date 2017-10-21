@@ -1,0 +1,134 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<div class="body">
+    <div id="slideBox" class="slideBox">
+        <div class="bd">
+            <ul>
+                <php>if($ad_list == ''){</php>
+                <li><a href="javascript:;"><img src="__THEME__/images/banner4.jpg" /></a></li>
+                <li><a href="javascript:;"><img src="__THEME__/images/banner4.jpg"/></a></li>
+                <li><a href="javascript:;"><img src="__THEME__/images/banner4.jpg"/></a></li>
+                <php>}else{</php>
+                <foreach name="ad_list" item="ad">
+                    <li><a href="{$ad['bannerurl']}"><img src="{:cutImg($ad['banner'],640,329)}"/></a></li>
+                </foreach>
+                <php>}</php>
+            </ul>
+        </div>
+        <div class="hd">
+            <ul style="float: right;margin-right: 20px;"></ul>
+        </div>
+    </div>
+    <script type="text/javascript">
+        TouchSlide({
+            slideCell:"#slideBox",
+            titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+            mainCell:".bd ul",
+            effect:"leftLoop",
+            autoPage:true,//自动分页
+            autoPlay:true //自动播放
+        });
+    </script>
+    <div class="teachertop" style="position: initial;">
+        <div class="inst-pic">
+            <img src="{:getCover($school['logo_id'],150,150)}" alt="" />
+        </div>
+        <div class="tit">
+            <h3>{$school.title}</h3>
+        </div>
+        <ul class="lousas" style="margin-top: 20px;">
+            <li>{$user_count}人<br>学生数</li>
+            <li>{$school.star}个<br>评价</li>
+            <li style="border-right: solid 1px #dddede;">{$school.visit_num}人<br>浏览</li>
+        </ul>
+    </div>
+    <div class="teachermain-hd bgw" style="text-align: center;border-bottom: 1px solid #e5e5e5;">
+        <ul>
+            <li><a href="{$school.domain}">主页</a></li>
+            <li><a href="{$school.domain}">关于我们</a></li>
+        </ul>
+    </div>
+    <div class="schoolInfo">
+        <div class="institem bgw">
+            <div class="insttitlle">
+                <div>
+                    <h2>课程详情</h2>
+                    <p>Class Details</p>
+                </div>
+            </div>
+        </div>
+        <div class="itemboxcon">
+            <ul class="list02">
+                <volist name="listData" id="val">
+                    <li>
+                        <div class="pic">
+                            <if condition="$val['type'] eq 2">
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                            </if>
+                            <img src="{:getCover($val['cover'],218,130)}" alt=""></a>
+                            <div class="txt">{:limitNumber($val['video_title'],10)}</div>
+                        </div>
+                        <h3>
+                            <if condition="$val['type'] eq 2">
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                            </if>
+                            {:limitNumber($val['video_binfo'],30)}</a>
+
+                        </h3>
+                        <div class="info">
+                            <div class="fl">{$val['tea_name']}</div>
+                            <if condition="$val['type'] eq 1">
+                                <span style="margin-left: 25%;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;">点播</span>
+                                <else/>
+                                <span style="margin-left: 25%;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;">直播</span>
+                            </if>
+                            <php>if($val['is_charge'] == 1  || $val['mzprice']['price'] == 0 ){</php>
+                            <div class="fr green">免费</div>
+                            <php>}else{</php>
+                            <div class="fr red">￥{$val['mzprice']['price']}</div>
+                            <php>}</php>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+    <div class="schoolInfo" style="display: none;">
+        <div class="itemboxcon" style="margin: 15px 15px 50px;font-size: 14px;">
+            <if condition="$school['about_us']">
+                {$school.about_us}
+                <else/>
+                <p style="font-size: 15px;">暂时没有信息</p>
+            </if>
+        </div>
+    </div>
+</div>
+
+<php>if($listData){</php>
+<div class="loadding">
+    <if condition="$data['nowPage'] eq $data['totalPages']">
+        <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+    </if>
+</div>
+<a class="backtop"></a>
+<php>}</php>
+
+<script>
+    $(function(){
+        $(".choice").click(function(){
+            $(this).addClass('on').siblings().removeClass('on');
+            var index = $(this).index();
+            $(".schoolInfo").hide().eq(index).show();
+        });
+        $(".change").click(function(){
+            $(this).addClass('on').siblings().removeClass('on');
+            var index = $(this).index();
+            $(".coupon").hide().eq(index).show();
+        });
+    });
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

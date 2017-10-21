@@ -1,0 +1,334 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+  .s-txt {width:200px;}
+  .code-textarea {width:500px;height:200px;}
+  .pic-main {margin:0 0 0 0;width: 1050px;}
+  .pic-main ul {width:1050px;list-style:none;}
+  li{list-style-type:none;}
+  .pic-main li {float:left;width:270px;height:33px;line-height:33px}
+
+  .pic-size {height:150px;width:200px;}
+  .ico-top, .ico-btm {background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;height:14px;width:12px;}
+  .ico-top, .ico-btm {display: inline-block;vertical-align: middle;}
+  .ico-top {background-position: -12px 0;}
+  .ico-btm {background-position: -24px 0;}
+  .ico-top:hover {background-position: 0 0;}
+  .ico-btm:hover {background-position: -35px 0;}
+
+  .ico-close-small {
+    background: url("__THEME__/image/del.png") no-repeat 0 0;width:18px;height:18px;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: 0;
+    background-position: 0 -26px;
+    width: 9px;
+    height: 8px;
+    cursor: pointer;
+    *vertical-align:3px;
+    _vertical-align:4px;
+  }
+  a.ico-close-small:hover {
+    background-position: 0 -82px;
+    width: 9px;
+    height: 8px;
+    cursor: pointer;
+    *vertical-align:3px;
+    _vertical-align:4px;
+  }
+  .ml8 {
+    margin-left: 8px;
+  }
+  .addPic {line-height: 36px;color: #fff;background-color: #00BED4;border: solid 1px #00BED4;border-radius: 4px;}
+  .btn_b {width: 200px;height: 38px;color: #fff;background-color: #00BED4;text-align: center;border: solid 1px #00BED4;border-radius: 3px;}
+</style>
+
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="../User/_left" />
+        <!--右-->
+        <div class="jgpage_right">
+            <div class="jgpage_right_tit mb50">背景图管理</div>
+            <form method="post" action="{:U('school/User/doEditAdSpace')}" enctype="multipart/form-data" autocomplete="off" model-node='ad_post'>
+                <div class="form2">
+                    <dl class="lineD" id="pic_form" style="display:block;">
+                        <dt></dt>
+                        <dd style="overflow:hidden;*zoom:1;">
+                            <div class="pic-main left" id="div_pic_list">
+                                <!--<div>
+                                    <ul>
+                                        <li>图片地址</li>
+                                        <li>链接地址</li>
+                                        <li>操作</li>
+                                    </ul>
+                                </div>-->
+                                <php>if(empty($data['content'])):</php>
+                                <div class="div_pic_1">
+                                    <ul>
+                                        <li style="height:200px;">
+                                            <form enctype="multipart/form-data" style="display:inline;padding:0;margin:0;border:0">
+                                              <input type="file" name="attach" onchange="upload(1, this)" urlquery="attach_type=ad_image&upload_type=image&thumb=1" />
+                                              <div id="show_1"></div>
+                                            </form>
+                                            <input type="hidden" name="banner[]" id="form_1" value="" />
+                                        </li>
+                                        <!--<li style="height:200px;"><input type="text" name="bannerurl[]" class="s-txt" /></li>
+                                        <li style="height:200px;"><a class="ico-top" href="javascript:;" onclick="movePic(1, 'up')"></a><a class="ico-btm ml8" href="javascript:;" onclick="movePic(1, 'down')"></a><a class="ico-close-small ml8" href="javascript:;" onclick="closePic(1)"></a></li>-->
+                                    </ul>
+                                </div>
+                                <php>else:</php>
+                                <volist name="data.content" id="vo">
+                                    <div class="div_pic_{$i}">
+                                        <ul>
+                                            <li style="height:200px;">
+                                                <form enctype="multipart/form-data" style="display:inline;padding:0;margin:0;border:0">
+                                                  <input type="file" name="attach{$i}" onchange="upload({$i}, this)" urlquery="attach_type=ad_image&upload_type=image&thumb=1" />
+                                                  <div id="show_{$i}"><img class="pic-size" src="{$vo.bannerpic}"></div>
+                                                </form>
+                                                <input type="hidden" name="banner[]" id="form_{$i}" value="{$vo.banner}" />
+                                            </li>
+                                            <!--<li style="height:200px;"><input type="text" name="bannerurl[]" class="s-txt" value="{$vo.bannerurl}" /></li>
+                                            <li style="height:200px;"><a class="ico-top" href="javascript:;" onclick="movePic({$i}, 'up')"></a><a class="ico-btm ml8" href="javascript:;" onclick="movePic({$i}, 'down')"></a><a class="ico-close-small ml8" href="javascript:;" onclick="closePic({$i})"></a></li>-->
+                                        </ul>
+                                    </div>
+                                </volist>
+                                <php>endif;</php>
+                            </div>
+                           <!-- <a href="javascript:;" onclick="addPic()" class="addPic">添加</a>-->
+                        </dd>
+                    </dl>
+                    <eq name="AdSpaceAction" value="doEditAdSpace">
+                        <input type="hidden" name="ad_id" value="{$data['ad_id']}" />
+                        <input type="hidden" name="jumpUrl" value="{:Addons::adminPage('config')}" />
+                    </eq>
+                    <div class="page_btm">
+                        <input type="submit" value="保 存" class="btn_b" event-node="submit_btn"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var upload = function(type,obj){
+        if("undefined"  != typeof(core.uploadFile)){
+            core.uploadFile.filehash = new Array();
+        }
+        core.plugInit('uploadFile',obj,function(data){
+            $('.input-content').remove();
+            $('#show_'+type).html('<img class="pic-size" src="'+data.src+'">');
+            $('#form_'+type).val(data.attach_id);
+        },'image');
+    };
+
+  /**
+   * 异步提交表单
+   * @param object form 表单DOM对象
+   * @return void
+   */
+  var ajaxSubmit = function(form) {
+    var args = M.getModelArgs(form);
+    M.getJS(THEME_URL + '/js/jquery.form.js', function() {
+      var options = {
+        dataType: "json",
+        success: function(txt) {
+          if(1 == txt.status) {
+            if("function" ===  typeof form.callback) {
+              form.callback(txt);
+            } else {
+              if("string" == typeof(args.callback)) {
+                eval(args.callback+'()');
+              } else {
+                ui.success(txt.info);
+              }
+            }
+          } else {
+            ui.error(txt.info);
+          }
+        }
+      };
+      $(form).ajaxSubmit(options);
+    });
+  };
+
+  /**
+   * 处理ajax返回数据之后的刷新操作
+   */
+  var ajaxReload = function(obj,callback){
+    if("undefined" == typeof(callback)){
+      callback = "location.href = location.href";
+    }else{
+      callback = 'eval('+callback+')';
+    }
+    if(obj.status == 1){
+      ui.success(obj.data);
+      setTimeout(callback,1500);
+    }else{
+      ui.error(obj.data);
+    }
+  };
+
+  M.addEventFns({
+    submit_btn: {
+      click: function(){
+        // 验证内容数据正确性
+        var displayType = 0;
+        if($('input[name="display_type"]').length == 1) {
+          displayType = parseInt($('input[name="display_type"]').val());
+        } else {
+          $('input[name="display_type"]').each(function(i, n) {
+            if($(this).attr('checked')) {
+              displayType = parseInt($(this).val());
+            }
+          });
+        }
+        switch(displayType) {
+          case 1:
+            if($.trim(E.getData()) == '') {
+              ui.error('HTML内容不能为空');
+              return false;
+            }
+            break;
+          case 2:
+            if($.trim($('textarea[name="code_form"]').val()) == '') {
+              ui.error('代码内容不能为空');
+              return false;
+            }
+            break;
+          case 3:
+            var status = true;
+            $('#div_pic_list').find('input').each(function(i, n) {
+              if($(this).attr('name') == 'banner[]' || $(this).attr('name') == 'bannerurl[]') {
+                if($.trim($(this).val()) == '') {
+                  status = false;
+                  return false;
+                }
+              }
+            });
+            if($('#div_pic_list > div').length < 2) {
+              status = false;
+            }
+            if(!status) {
+              ui.error('轮播内容不能为空');
+              return false;
+            }
+            break;
+        }
+        return true;
+      }
+    }
+
+  });
+
+
+  /**
+   * 显示类型相关表单内容
+   * @param string type 表单类型，html/code/pic
+   * @return void
+   */
+  var showDisplayType = function(type)
+  {
+    switch(type) {
+      case 'html':
+        $('#html_form').show();
+        $('#code_form').hide();
+        $('#pic_form').hide();
+        break;
+      case 'code':
+        $('#html_form').hide();
+        $('#code_form').show();
+        $('#pic_form').hide();
+        break;
+      case 'pic':
+        $('#html_form').hide();
+        $('#code_form').hide();
+        $('#pic_form').show();
+        break;
+    }
+    return false;
+  }
+
+
+  var clickNum = $('#div_pic_list').children('div').length - 1;
+  /**
+   * 添加轮循图片输入表单
+   * @return void
+   */
+  var addPic = function()
+  {
+    var $pic = $('#div_pic_list');
+    var max = 48;
+    if($pic.children('div').length > max) {
+      alert('最多只能添加'+max+'张图片');
+      return false;
+    }
+    clickNum++;
+    var divId = clickNum;
+    var html = '<div class="div_pic_'+divId+'">\
+              <li style="height:200px;">\
+                <form enctype="multipart/form-data" style="display:inline;padding:0;margin:0;border:0">\
+                <input type="file" name="attach" onchange="upload('+divId+', this)" urlquery="attach_type=ad_image&upload_type=image&thumb=1" />\
+                <div id="show_'+divId+'"></div>\
+                </form>\
+                <input type="hidden" name="banner[]" id="form_'+divId+'" value="" />\
+              </li>\
+              <li style="height:200px;"><input type="text" name="bannerurl[]" class="s-txt" /></li>\
+              <li style="height:200px;"><a class="ico-top" href="javascript:;" onclick="movePic('+divId+',\'up\')"></a><a class="ico-btm ml8" href="javascript:;" onclick="movePic('+divId+',\'down\')"></a><a class="ico-close-small ml8" href="javascript:;" onclick="closePic('+divId+')"></a></li>\
+              </div>';
+    $pic.append(html);
+    return false;
+  };
+  /**
+   * 删除轮循图片输入表单
+   * @param integer divId 表单ID
+   * @return void
+   */
+  var closePic = function(divId)
+  {
+    $divPic = $('.div_pic_'+divId);
+    $divPic.remove();
+  };
+  /**
+   * 移动轮循图片输入表单
+   * @param integer divId 表单ID
+   * @param string type 移动类型，up or down
+   * @return void
+   */
+  var movePic = function(divId, type)
+  {
+    $divPic = $('.div_pic_'+divId);
+    var divLen = parseInt($divPic.prevAll('div').length);
+    switch(type) {
+      case 'up':
+        divLen != 1 && $('#div_pic_list').children('div').eq(divLen - 1).before($divPic);
+        break;
+      case 'down':
+        divLen != 5 && $('#div_pic_list').children('div').eq(divLen + 1).after($divPic);
+        break;
+    }
+    return false;
+  };
+  /**
+   * 轮循图片上传图片
+   * @param object obj 点击DOM对象
+   * @return void
+   */
+  var uploadPic = function(obj, divId)
+  {
+    var urlquery = $(obj).attr('urlquery');
+    core.loadFile(THEME_URL+'/js/jquery.form.js', function() {
+      var parentForm = document.createElement('form');
+      parentForm.method = 'post';
+      parentForm.action = U('widget/Upload/save')+'&'+urlquery;
+      $(parentForm).html($(obj).clone());
+      $(parentForm).ajaxSubmit({
+        dataType: 'json',
+        success: function(res) {
+          $('#banner_hidden_'+divId).val(res.data.attach_id);
+        }
+      });
+    });
+  };
+</script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,16 @@
+<if condition="$data">
+    <foreach name="data" item="l">
+        <li>
+            <div class="position-rt">
+                <div class="position-rt-float">
+           <php> if($pc)  { </php>  <span class="position-rt-float-a" style="margin: 5px;"><a href="{:U('live/Index/live_teacher',array('id'=>$l['id']))}" target="_blank" class="al">开始讲课</a></span> <php> }</php></php>
+                    <!--<span class="position-rt-float-b" onclick="dellive(this,'{$l.id}')">删除</span>-->
+                </div>
+                <a href="{:U('live/Index/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 222,144)}"> </a> </div>
+            <h2><a href="{:U('live/Index/view',array('id'=>$l['id']))}">{$l.video_title}</a></h2>
+            <!--<div class="user-imglistbt" style="width: auto;padding: 10px 0;float: right;"><a href="{$l.url}" target="_blank">开始讲课</a></div>-->
+        </li>
+    </foreach>
+    <else/>
+    <li style="border: none;box-shadow: none;margin: 30px 0px 50px 30px;">您还没有直播课程。。</li>
+</if>

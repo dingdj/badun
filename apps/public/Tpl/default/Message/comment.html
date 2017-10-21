@@ -1,0 +1,67 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+    .content {
+        background-color: #f2f2f2;
+        padding:30px 0;
+    }
+</style>
+
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="left" />
+        <!--中 -->
+        <div class="jgpage_right fl">
+           <!--  <div class="user-con-title"> <h5>全部评论</h5></div> -->
+            <!--后台私信-->
+            <ul class="user-wenda">
+                <foreach name="data.data" item="l">
+                <li class="li">
+                    <div class="discusslist"> <a target="_blank" title="{:getUserName($l['uid'])}" class="otherHead" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img width="40" height="40" src="{:getUserFace($l['uid'])}"></a>
+                        <div class="detailmeg">
+                            <div class="report">
+                                <div class="mynote"><a title="{:getUserName($l['uid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}">{:getUserName($l['uid'])}:</a></div>
+                                <p class="mynote"><a target="_blank" href="{$l.url}">{$l.to_comment}</a> </p>
+                            </div>
+                            <!--原文-->
+                            <p class="user-pltxt"><a href="{$l.url}" class="f9"><span class="f3">{$l.app_name}</span>{$l.info}</a></p>
+
+                            <div class="fbtime">时间：<span>{$l['ctime']|friendlyDate}</span>
+                                <php>if($l['is_read']==0){</php> <img src="__THEME__/image/icon_new.gif" />   <php>}</php>
+                                <span class="fr">
+                        <a href="{$l.url}" class=" font12 f228">查看</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" onclick="ui.confirm(this,'确定要删除本条信息？');return false;" callback="delComsg({$l.id})" class=" font12 f228">删除</a></span></div>
+                        </div>
+                    </div>
+                </li>
+                </foreach>
+            </ul>
+
+            <!--分页-->
+            <div class="sabrosus">{$data.html}</div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function delComsg(id){
+        $.ajax({
+            type: "POST",
+            url:"{:U('public/Message/delComsg')}",
+            data:"id="+id,
+            dataType:"text",
+            success:function(data){
+                if(data==200){
+                    notes('删除成功！','success');
+                    location.reload();
+                }else{
+                    notes('对不起，删除失败请重试!','failure');
+                }
+
+            }
+        });
+
+    }
+
+</script>
+<include file="__THEME__/public_footer" /> 

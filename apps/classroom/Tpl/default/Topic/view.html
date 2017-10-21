@@ -1,0 +1,190 @@
+<include file="__THEME__/public_header" />
+<link  href="__APP__/css/group.css" rel="stylesheet" type="text/css"/>
+
+<div class="content">
+	<div class="wrap">
+        <div class="class_left">
+            <div class="content-place">
+                <ul>
+                    <li><a href="/">首页</a><span>&gt;</span><a href="{:U('classroom/topic')}">资讯</a><span>&gt;</span><span>{$data.title}</span></li>
+                </ul>
+            </div>
+
+        	<div class="question-box"   style="overflow:visible;">
+                	<h2>{$data.title}</h2>
+                    <dl>
+                    	<dd>
+                            <div class="fx fr zhuang-left" style="position: relative;" ><a  href="javascript:;"> <i class="icon-02"></i></a>分享
+
+
+
+
+
+                                <div class="_share_my_firends" >
+                                    <div class="_share_all_channel">
+                                        <i class="side-ills-fell"></i>
+                                        <p  style="padding-top: 4px; text-indent: 10px;">分享到：</p>
+                                        <div class="bdsharebuttonbox"  data-tag="share_1">
+                                            <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                            <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>
+                                            <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>
+                                            <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>
+                                            <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>
+                                        </div>
+                                        <script>
+                                            var share_url = "";
+                                            window._bd_share_config={"common":{
+                                                bdUrl:share_url,
+                                                bdText:"",
+                                                bdMini:"2",
+                                                bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],
+                                                bdPic:"",
+                                                bdSize:"24"
+                                            },
+                                                share:{},
+                                                image:{"viewList":["tsina","weixin","qzone","sqq"],
+                                                    viewText:"分享到：","viewSize":"0"}};
+                                            with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+
+                                        </script>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                            </div>
+
+                            <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
+                            <a  href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank">
+
+                            <php>if($collect > 0){</php>
+                            <div class="sc fr"><a href="javascript:;"onClick="collectVideo(this,{$lid},0)"><i class="icon-04"></i>已收藏（{$video_collect_count}人气）</a></div>
+                            <php>}else{</php>
+                            <div class="sc fr"><a href="javascript:;"onClick="collectVideo(this,{$lid},1)"><i class="icon-01"></i>收藏（{$video_collect_count}人气）</a></div>
+                            <php>}</php>
+
+                        </dd>
+                        <dt>&nbsp;&nbsp;{$data.uname}&nbsp;&nbsp;发表于：{$data.dateline|friendlyDate=###}&nbsp;&nbsp;浏览量: {$data.readcount}&nbsp;&nbsp;来源: {$data.from}</dt>
+                    </dl>
+                     <div class="question-page">
+			           <span class="color99">摘要：</span>{$data.desc}
+			        </div>
+                    <div class="question-page">
+                        {$data.text}
+                    </div>
+
+                    <div class="page-question">
+                        <div class="fl"><a href="{:U('classroom/Topic/view',array('id'=>$up['id']))}">上一篇：{$up.title|msubstr=0,14,'utf-8',true}</a></div>
+                       <php> if( $down['title'] )  {</php><div class="fr"><a href="{:U('classroom/Topic/view',array('id'=>$down['id']))}">下一篇：{$down.title|msubstr=0,14,'utf-8',true} </a></div> <php>}  else {</php>
+                      <div class="fr">下一篇：没有了</div>     <php>} </php>
+                    </div>
+            </div>
+
+            <div class="reply feed_list">
+                {:W('Comment',array('tpl'=>'detail', 'switch'=>$switch,'table'=>'zy_topic', 'row_id'=>$data[id], 'canrepost'=>'0', 'cancomment'=>1, 'cancomment_old'=>0, 'showlist'=>1, 'limit'=>'20', 'order'=>'DESC'))}
+            </div>
+
+        </div>
+        <div class="jg_right">
+            <div class="gr_rightitem">
+                <h3 class="gr_rightitem_tit">推荐资讯</h3>
+                <ul class="dotlist">
+                    {:W('Topicread',array('limit'=>5))}
+                </ul>
+            </div>
+            <div class="gr_rightitem">
+                <h3 class="gr_rightitem_tit">大家关注</h3>
+                <ul class="focuslist">
+                    <volist name="recData" id="vo">
+                    <li>
+                        <a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['image'],220,110)}" class="lazyloading"/></a>
+                        <h3><a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}">{$vo.title}</a></h3>
+                    </li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<include file="__THEME__/public_footer" />
+<script>
+    //收藏课程
+    function collectVideo(cate,vid,type){
+        if(UID=='0'){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Public/collect')}",
+            data:{type:type,sctype:9,source_id:vid,is_video:4},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    notes(data.info,'failure');
+                } else {
+                    notes(data.info,'');
+//                $(cate).removeClass().addClass("wenda-gz-Toggle");
+                    setTimeout('window.location.reload()', 500);
+                }
+            },
+        });
+    }
+    var id = '{$mid}';
+
+
+
+
+    </script>
+
+<style>
+
+    .zhuang-left:hover ._share_my_firends{display: block;}
+    ._share_my_firends {
+        height: 62px;
+        position: absolute;
+        right: 44px;
+        bottom: 3px;
+        width: 168px;
+        top: -2px;
+        left: 0;
+        display: none;
+        margin-top: 20px
+    }
+
+    ._share_all_channel {
+        margin-top: 13px;
+        width: 155px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(83,87,88,.2);
+        margin-top: 10px;
+    }
+
+
+    .side-ills-fell {
+        width: 0!important;
+        position: absolute;
+        height: 0!important;
+        top: 5px;
+        left: 11px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 5px solid #FFF;
+    }
+
+</style>

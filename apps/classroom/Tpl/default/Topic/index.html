@@ -1,0 +1,92 @@
+<include file="__THEME__/public_header" />
+
+<!--content start-->
+<div class="content">
+    <div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/">首页</a><span>&gt;</span>
+                    <a href="{:U('classroom/Topic/index')}">资讯</a>
+                    <if condition="$cateId">
+                        <span>&gt;</span>
+                        <a href="{:U('classroom/Topic/index',['cate'=>$cate_id_str])}" data-cate_id="0" class="select_cate">{$title}</a>
+                    </if>
+                </li>
+            </ul>
+        </div>
+
+        <div class="classmain">
+            <div class="search-box">
+                <dl class="card-body">
+                    <dd class="clearfix">
+                        <ul class="select-list" style="width: 780px;">
+                            <li class="<if condition="$_GET['cate'] eq ''">selected</if>"><a href="{:U('classroom/Topic/index')}"  id="cate0">全部</a></li>
+                            <volist name="cate" id="vo">
+                                <li class="<if condition="$_GET['cate'] eq $vo['zy_topic_category_id']">selected</if>">
+                                <a href="{:U('classroom/Topic/index',['cate'=>$vo['zy_topic_category_id']])}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                                </li>
+                            </volist>
+                        </ul>
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="classmain_con">
+                <ul class="new-list">
+                    <php>if($topic_data['data']){</php>
+                    <volist name="topic_data.data" id="vo">
+                        <li>
+                            <div class="pic">
+                                <a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}">
+                                    <img src="{:getCover($vo['image'],250,150)}" class="lazyloading">
+                                </a>
+                            </div>
+                            <h3><a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}">{$vo.title|getShort=###,'21'}</a></h3>
+                            <p>{$vo.desc|getShort=###,'85','...'}</p>
+                            <dl class="info">
+                                <dd class="fr">{$vo.readcount}阅读</dd>
+                                <dd class="fl">{$vo.dateline|friendlyDate}</dd>
+                            </dl>
+                        </li>
+                    </volist>
+                    <php>}else{</php>
+                    <span>没有相关资讯。。</span>
+                    <php>}</php>
+                </ul>
+                <div class="page">
+                    <div class="pagebox">
+                        {$topic_data['html']}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="classside">
+            <div class="classsideitem">
+                <h3 class="classsidetit"><em></em>推荐资讯</h3>
+                <div class="classsidecon">
+                    <ul class="dotlist">
+                        {:W('Topicread',array('limit'=>5))}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.goto').click(function () {
+        if($('#goto_page').val()){
+            if('{$_GET["cate"]}' != 0 && $('#goto_page').val() != 0 ){
+                window.location.href = "{:U('classroom/Topic/index',['cate'=>$_GET['cate']])}&p="+$('#goto_page').val();
+            }else if($('#goto_page').val()){
+                window.location.href = "{:U('classroom/Topic/index')}?p="+$('#goto_page').val();
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    });
+</script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,98 @@
+<include file="../Public/_header" />
+<div class="nav-s">
+    <div class="nav_tit">全部直播<span class="icon-sj"></span></div>
+    <ul class="nav_ul">
+        <li class="active"><a href="javascript:;" onclick="cateBang(this,0)">全部直播</a></li>
+        <volist name="cate" id="vo">
+            <if condition="$vo['childlist']">
+                <li>
+                    <dl>
+                        <dt><a href="javascript:;" onclick="cateBang(this,{$vo.zy_video_category_id})">{$vo.title}</a></dt>
+                        <volist name="vo['childlist']" id="l">
+                            <dd><a href="javascript:;" onclick="cateBang(this,{$l.zy_video_category_id})">{$l.title}</a></dd>
+                        </volist>
+                    </dl>
+                </li>
+            <else/>
+                <li><a href="javascript:;" onclick="cateBang(this,{$vo.zy_video_category_id})">{$vo.title}</a></li>
+            </if>
+        </volist>
+    </ul>
+</div>
+<!--container-->
+<div class="container"> 
+    <div class="item_box">
+        <ul class="album-list"></ul>
+    </div>
+</div>
+<script>
+    //页面加载完毕执行
+    $(function(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/Live/getList')}",
+            data:"p=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+      //页面中间最低高度
+        var headHeight = $('.header-worap').height();
+        var footHeight = $('.footer-worap').height();
+        var miniHeight = (parseInt($(document).height()-headHeight-footHeight))
+        $('.worap').css({"min-height":(miniHeight-60)+'px'});
+    });
+    //请求事件
+    function ajaxBang(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('w3g/Live/getList')}",
+            data:"p="+p+"&cateId="+cateId+"&tagId="+tagId,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        if(data.data!=""){
+            $(".album-list").append(data.data);
+            if(data.nowPage+1>data.totalPages){
+                return;
+            }else{
+                p=data.nowPage+1;//下一页
+
+            }
+        }else{
+            $(".album-list").append("<script>对不起，暂无此分类直播T_T<\/script>");
+        }
+    }
+    //查看更多点击事件
+    $("#getList").live("click",
+            function(){
+                ajaxBang();
+            }
+    );
+    //分类点击
+    function cateBang(cate,id){
+        $(".album-list").html("");
+        $(".nav_ul").css("display","none");
+        $(cate).parent('li').addClass('active').siblings('li').removeClass('active');
+        cateId=id;
+        p=1;
+        ajaxBang();
+    }
+    
+    function mouseups(cate){
+        var left=$(cate).offset().left;
+        $(cate).find(".content-nav-child").css("display","block");
+    }
+    function mouseouts(cate){
+        $(cate).find(".content-nav-child").css("display","none");
+    }
+
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

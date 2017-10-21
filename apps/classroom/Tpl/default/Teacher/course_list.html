@@ -1,0 +1,40 @@
+<neq name="course.data" value="">
+	<form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
+
+
+<volist name="course.data" id="l">
+<li class="item">
+	<php>if($l['type'] == 1){</php><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}"><php>}else{</php><a href="{:U('classroom/Live/view',array('id'=>$l['id']))}"><php>}</php>
+	<img src="{:getCover($l['cover'],175,100)}" width="175px" height="100px" alt="{$l.video_title}"></a>
+	<div class="info">
+		<div class="new-title">
+			<php>if($l['type'] == 1){</php><a class="title" href="{:U('classroom/Video/view',array('id'=>$l['id']))}">
+			<php>}else{</php><a class="title" href="{:U('classroom/Live/view',array('id'=>$l['id']))}"><php>}</php>
+			{$l.video_title}</a>
+		</div>
+		<ul class="course-info">
+		<li>课时长度：{$l.section_num}课时</li>
+		<li>班级人数：{$l.video_order_count}人</li>
+		<li>上架时间：<span>{:date("Y-m-d H:i",$l['listingtime'])}</span></li>
+		<li>上课方式：在线授课（支持手机观看）</li>
+		</ul>
+		<div class="button-box">
+			<div class="price">课程总价：  <php>  if( $l['price']  == 0 ||  $l['is_charge'] == 1)  {</php>  <span   style = "color : #56b02a;"> 免费</span>   <php>  } else {</php>  <span>￥ {$l['price']}</span> <php>}</php>    </div>
+			<div > <span   style = "color : #f63;"    id ="charge_video"  onclick = "buycoursevideo({$l['id']},{$l['price']})"> 立即购买 </span>   </div>
+		</div>
+
+	</div>
+</li>
+</volist>
+		</form>
+<else />
+暂无数据
+</neq>
+
+
+
+
+
+
+
+

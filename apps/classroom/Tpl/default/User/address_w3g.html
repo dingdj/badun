@@ -1,0 +1,150 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+
+
+    <!--<div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>管理收货地址</div>
+    </div>-->
+
+    <div class="body">
+
+        <div class="content">
+            <div class="header2">
+                <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+                <div>新增收货地址</div>
+                <if condition="($data['usedCounts'] lt 10) OR ($_GET['id'] gt 0)">
+                    <form class="addressbox" id="addressbox" method="POST" action="" onsubmit="return false;">
+
+                <a href="javascript:;" class="save"   onclick="saveAddress()" >保存</button></a>
+
+            </div>
+            <div class="body">
+                <div class="jgzlbox">
+                    <dl>
+                        <dt>收货人</dt>
+                        <dd>
+                            <input class="inp01" name="name" id="name" type="text" value="{$address['name']}" >
+                            <input class="inp01" name="id"  id="address_id" type="hidden" value="{$address['id']}" >
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>联系电话</dt>
+                        <dd>
+                            <input class="inp01" name="phone" id="phone" type="text" value="{$address['phone']}" >
+                        </dd>
+                    </dl>
+                    <dl class="sj">
+                        <dt>所在地区</dt>
+                        <dd style="width: 100%;">
+                            <style>
+                                select{width: 30%;}
+                            </style>
+                            {:W('Area',array('curPro'=>$address['province'],'curCity'=>$address['city'],'area'=>$address['area'],'city_names'=>$address['location'],'tpl'=>'zyCardArea'))}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>详细地址</dt>
+                        <dd>
+                            <textarea class="tex01" name="address"  id="address" rows="10" cols="80">{$address['address']}</textarea>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="jgzlbox">
+                    <dl>
+                        <dt>设为默认地址</dt>
+                        <dd><input class="checkbox" type="checkbox" <eq name="address.is_default" value="1">checked</eq> ></dd>
+                    </dl>
+                </div>
+            </div>
+            </form>
+        </div>
+
+        <div class="adressbox">
+
+            <volist name="data['data']" id="vo">
+
+            <dl>
+            	<dt>
+                	<div class="top">
+                    	<div class="num">{$vo.phone}</div>
+                		<div class="name">{$vo.name}</div>
+                    </div>
+                    <div class="bot">{$vo.location}</div>
+                </dt>
+                <dd>
+                	<label><input type="checkbox" disabled <eq name="vo.is_default" value="1">checked</eq>>默认地址</label>
+                    <a   href="javascript:;"  onclick ="delAddress(this,{$vo['id']})"><i class="icon-02"  ></i>删除</a>
+                    <a href="{:U('classroom/User/address',array('id'=>$vo['id']))}" ><i class="icon-01"></i>编辑</a>
+                </dd>
+            </dl>
+
+        </volist>
+        </div>
+
+
+    </div>
+    <script>
+        $(function(){
+            $(".header").hide();
+        });
+
+        function delAddress(obj,id) {
+
+            if (!confirm('确定要删除此收货地址吗？')) {
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "{:U('classroom/User/delAddress')}",
+                data: "id=" + id,
+                dataType: "json",
+                success: function (e) {
+                    if (e.status == 1) {
+                        alert(e.info);
+                        window.location.reload();
+                    } else {
+                        alert(e.info);
+                    }
+                }
+            });
+        }
+
+        function saveAddress(){
+            var address = $('#address').val();
+            var name = $('#name').val();
+            var phone = $('#phone').val();
+            var province = $('select#province option:selected').val();
+            var city = $('select#city option:selected').val();
+
+            if(province<=0||city<=0){
+                alert('请先选择地区');
+                return false;
+            }
+            if(!address){alert('请输入详细地址');return false;}
+
+            if(!name){alert('请输入收货人姓名');return false;}
+
+            if(!phone){alert('请输入联系电话');return false;}
+            if(!/^[\d\-]{7,11}$/.test(phone)){
+                alert('请输入正确的联系电话');
+                return false;
+            }
+
+            var data = $('#addressbox').serialize();
+            var is_default = $(".checkbox").is(':checked') ? 1:0;
+            var id = $('#address_id').val();
+            $.post(U('classroom/User/updateAddress'), data+"&is_default="+is_default+"&id="+id , function(data){
+                if(data.status){
+                    alert(data.info);
+                    setTimeout("location.href=U('classroom/User/address')", 1500);
+                }else{
+                    alert(data.info);
+                }
+            }, 'json');
+        }
+
+
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

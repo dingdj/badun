@@ -1,0 +1,68 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <div class="header2">
+    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<div>我的优惠券</div>
+    </div>
+    <div class="body">
+        <ul class="cardlistnav">
+            <li><a href="{:U('classroom/User/discount')}">打折</a></li>
+            <li class="on"><a href="{:U('classroom/User/vipCard')}">会员</a></li>
+            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
+            <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+        </ul>
+        <ul class="card3list">
+            <if condition="$data">
+                <volist name="data" id="vo">
+                    <li <switch name="vo.status"><case value= "1|2|-1" >class="stamp03"</case><default />class="stamp01"</switch>>
+                        <div class="left">
+                            <div class="top">
+                                <h3 <php>if($vo['status'] != 0){</php>style="color: #dddddd;"<php>}</php>>{$vo.vip_date}天<span class="vip">{$vo.vip_grade}</span></h3>
+                            </div>
+                            <p>卡券编号&nbsp;:&nbsp;{$vo.code}</p>
+                            <p>发卡单位&nbsp;:&nbsp;{$vo.school_title}</p>
+                            <p>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                        </div>
+                        <div class="right">
+                            <switch name="vo.status">
+                                <case value="1|2"><a href="javascript:;">已<br>使<br>用</a></case>
+                                <case value="-1"><a href="javascript:;">已<br>过<br>期</a></case>
+                                <default/>
+                                <a href="javascript:;" onclick="doExchange({$vo.coupon_id})">立<br>即<br>使<br>用</a>
+                            </switch>
+                        </div>
+                    </li>
+                </volist>
+                <else/>
+                <div style="font-size: 15px;padding: 20px;margin-top: 8px;">您暂未获得会员卡~</div>
+            </if>
+        </ul>
+    </div>
+
+<script>
+    $(function() {
+        $(".header").hide();
+    });
+    //使用卡券
+    function doExchange(id){
+        $.ajax({
+            type:"GET",
+            url:"{:U('classroom/User/doExchange')}",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                if(data.status == 1){
+                    alert(data.info);
+                    setTimeout(function(){
+                        location.href = data.referer;
+                    },1500);
+                }else{
+                    alert(data.info);
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

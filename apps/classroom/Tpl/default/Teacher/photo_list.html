@@ -1,0 +1,213 @@
+<include file="__THEME__/public_header" />
+<!--ckplayer  -->
+<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
+<include file="Teacher:top" />
+<div class="content adjust">
+    <div class="wrap">
+    <include file="Teacher:left" />
+        <div class="teacher-content" style="width:900px;">
+            <div class="teacher-course-border" >
+                <div class="user-wenda hideWatch" style="font-size: 15px;" ><a href="{:U('classroom/Teacher/style',array('id'=>$data['id']))}" class="fr" >返回相册首页</a></div>
+            <ul class="user-imglist hideWatch" >
+                <foreach name="photos_deatil" item="l">
+                    <php>if($l['type'] == 1){</php>
+                        <li>
+                            <div class="position-rt">
+                                <a class="img"><img src="{:getCover($l['resource'], 266,138)}" class="lazyloading"></a>
+                            </div>
+                            <h2><a>{$l.title}</a></h2>
+                        </li>
+                    <php>}else if($l['type'] == 2){ </php>
+                        <li>
+                            <div class="position-rt user-imglist">
+                                <a href="javascript:void(0);" data-id="{$l['pic_id']}"  class="img opeanVideo"><img src="{:getCover($l['cover'], 266,148)}" class="lazyloading"><i></i></a>
+                                </div>
+                            <h2><a>{$l.title}</a></h2>
+                        </li>
+                    <php>}</php>
+                </foreach>
+            </ul>
+            <div class="g-mn2c m-courselb showWatch" style="display: none;">
+            <div id="video_play1" class="m-courselearn">
+                <div class="video-top">
+                    <div class="video-top-con">
+                        <a class="cl-pre" id="j-prev" href="#"></a>
+                        <h2>{$photos_title}</h2>
+                        <a class="cl-next" id="j-next" href="#"></a>
+                    </div>
+                    <div class="video-top-r" style="padding: 12px 15px;">
+                    <a href="javascript:void(0);" class="closeVideo"><i class="video-fh"></i><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;返回相册列表<span></a>
+                    </div>
+                </div>
+                <!-- zhangr - start - video -->
+                <div class="learn-box" id="video_stop"></div>
+                <div id="vplayer" class="learn-box" style=" height: 650px;"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="__THEME__/js/ccuploader/js/swfobject.js"></script>
+<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
+<script type="text/javascript">
+$(function(){
+  $(".opeanVideo").click(function(){  
+      $(".showWatch").show();
+      watch($(this));
+      $(".hideWatch").hide(); 
+  });
+  $(".closeVideo").click(function(){  
+      $(".hideWatch").show();
+      $(".showWatch").hide();
+      CKobject.getObjectById('ckvideo').videoClear();
+      //$(".showWatch").html(''); 
+  });
+})
+    
+//加载视频
+function watch(_this) {
+    var id = _this.data('id');
+    if (!id) return false;
+    $.post("{:U('classroom/Teacher/getVideoAddress')}", {pic_id: id}, function (data) {
+        var data = jQuery.parseJSON(data);
+        if (data.status == '1') {
+            if (data.data.video_type == 1) {
+                loadCkVideo(data.data.address);
+            } else if (data.data.video_type == 4) {
+                loadCCVideo(data.data);
+            }
+        } else {
+            notes(data.message);
+        }
+    });
+}
+
+//ckplayer播放器
+function loadCkVideo(video_address){
+    var flashvars={
+        f:video_address,
+        c:0,
+        p:1,
+        loaded:'loadedHandler'
+    };
+
+    function loadedHandler(){
+        if(CKobject.getObjectById('ckvideo').getType()){
+            //说明使用html5播放器
+            CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
+        }else{
+            CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+        }
+    }
+    var ispause=false;
+    var test_time=60;
+    function timeHandler(t){
+        if (!ispause && t>test_time){
+            ispause=true;
+            CKobject.getObjectById('ckvideo').videoPause();
+            $("#vplayer").remove();
+
+            $(".vedioPlay-msg").css("display","block");
+        }
+    }
+    var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:"transparent"};
+    var video=[video_address];
+    CKobject.embed('__ROOT__/player/ckplayer/ckplayer.swf','vplayer','ckvideo','900','600',false,flashvars,video,params);
+}
+
+//CC播放器
+function loadCCVideo(photo_data){
+    //	功能：创建播放器flash，需传递所需参数，具体参数请参考api文档
+    var swfobj = new SWFObject('http://union.bokecc.com/flash/player.swf', 'playerswf', '100%', '90%', '8');
+    swfobj.addVariable( "userid" , photo_data.address.cc_userid);	//	partnerID,用户id
+    swfobj.addVariable( "videoid" , photo_data.videokey);	//	spark_videoid,视频所拥有的 api id
+    swfobj.addVariable( "mode" , "api");	//	mode, 注意：必须填写，否则无法播放
+    swfobj.addVariable( "autostart" , "true");	//	开始自动播放，true/false
+    swfobj.addVariable( "jscontrol" , "false");	//	开启js控制播放器，true/false
+
+    swfobj.addParam('allowFullscreen','true');
+    swfobj.addParam('allowScriptAccess','always');
+    swfobj.addParam('wmode','transparent');
+    swfobj.write('vplayer');
+
+    //	-------------------
+    //	调用者：flash
+    //	功能：播放器加载完毕时所调用函数
+    //	时间：2014-04-18
+    //	说明：用户可以加入相应逻辑
+    //	-------------------
+    function on_spark_player_ready() {
+        //alert("播放器加载完毕");
+    }
+
+    //	-------------------
+    //	调用者：flash
+    //	功能：播放器开始播放时所调用函数
+    //	时间：2014-04-18
+    //	说明：用户可以加入相应逻辑
+    //	-------------------
+    function on_spark_player_start() {
+        //alert('开始播放');
+    }
+
+    //	-------------------
+    //	调用者：flash
+    //	功能：播放器暂停时所调用函数
+    //	时间：2014-04-18
+    //	说明：用户可以加入相应逻辑
+    //	-------------------
+    function on_spark_player_pause() {
+        //alert('暂停播放');
+    }
+
+    //	-------------------
+    //	调用者：flash
+    //	功能：播放器暂停后，继续播放时所调用函数
+    //	时间：2014-04-18
+    //	说明：用户可以加入相应逻辑
+    //	-------------------
+    function on_spark_player_resume() {
+        //alert('暂停后继续播放');
+    }
+
+    //	-------------------
+    //	调用者：flash
+    //	功能：播放器播放停止时所调用函数
+    //	时间：2014-04-18
+    //	说明：用户可以加入相应逻辑
+    //	-------------------
+    function on_spark_player_stop() {
+        //alert('播放停止');
+    }
+    function player_play() { //	调用播放器开始播放函数
+        document.getElementById("playerswf").spark_player_start();
+    }
+    function player_pause() { //	调用播放器暂停函数
+        document.getElementById("playerswf").spark_player_pause();
+    }
+    function player_resume() { //	调用播放器恢复播放函数
+        document.getElementById("playerswf").spark_player_resume();
+    }
+}
+
+//删除 讲师相册
+function delTeacherPhoto(id,type){
+    var id=id;
+    if(confirm("确定要删除该"+type+"吗？")){
+        $.post("{:U('classroom/User/delTeacherPhoto')}",{id:id}, function(res){
+          if(res==200){
+                notes('删除成功');
+                 location.reload();
+                 $("body").animate({scrollTop:$(".header").height()});
+         }else{
+             notes('对不起，删除失败请重试!','failure');
+         }
+        });
+    }
+}
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />
+
+
+        

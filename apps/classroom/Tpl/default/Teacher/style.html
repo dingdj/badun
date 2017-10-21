@@ -1,0 +1,42 @@
+<!--header-->
+<include file="__THEME__/public_header" />
+<!--header end-->
+
+<!--top-->
+<include file="./top" />
+<!--top end-->
+
+<!--content-->
+<div class="content adjust">
+	<div class="wrap">
+    <!--left-->
+    <include file="./left" />
+    <!--left end-->
+
+        <div class="teacher-content">
+			<div class="teacher-course-border" >
+                <php>if(!$photos){</php>
+                <div class="article-list" style="height: 70px;line-height: 70px;margin-left: 40px;">
+                    <p>该讲师未上传任何照片和视频</p>
+                </div>
+                <php>}else{</php>
+                <div class="hideWatch showPhoto">
+                    <ul class="media-list">
+                        <volist name="photos" id="vo">
+                        <li>
+                            <div class="portrait">
+                            <img src="{$vo.cover}" alt="">
+                            <a href="{:U('classroom/Teacher/getPhotoList',array('id'=>$data['id'],'photo_id'=>$vo['id']))}" ></a>
+                            </div>
+                            <span class="caption">{$vo.title}</span>
+                        </li>
+                        </volist>
+                    </ul>
+                </div>
+                <php>}</php>
+            </div> 
+        </div>
+    </div>
+</div>
+<!--footer-->
+<include file="__THEME__/public_footer" />

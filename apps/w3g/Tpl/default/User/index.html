@@ -1,0 +1,52 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <div class="managementbox_info">
+        <img src="{:getUserFace($user['uid'],'b')}">
+        <h3>{:strip_tags(getUserSpace($user['uid']),'<img>')}</h3>
+        <a href="{:U('w3g/Passport/logout')}">退出登录</a>
+        <p>余额：{$balance}学币</p>
+    </div>
+    <ul class="man_list">
+        <li><a href="#">
+            <span class="icon-man01"></span>
+            <p>课程：{$videocont}</p>
+        </a></li>
+        <li><a href="#">
+            <span class="icon-man02"></span>
+            <p>回答：{$commcont}</p>
+        </a></li>
+        <li><a href="#">
+            <span class="icon-man03"></span>
+            <p>笔记：{$note}</p>
+        </a></li>
+        <li><a href="#">
+            <span class="icon-man04"></span>
+            <p>学分：{$credits['credit']['score']['value']}</p>
+        </a></li>
+        <li><a href="#">
+            <span class="icon-man05"></span>
+            <p>提问：{$twcont}</p>
+        </a></li>
+        <li><a href="#">
+            <span class="icon-man06"></span>
+            <p>粉丝：{$tmp[$uid]['follower']}</p>
+        </a></li>
+    </ul>
+    <div class="man_sign">
+    </div>
+</div>
+<script type="text/javascript">
+function setCreditScore(num){
+    if(!num) return ;
+
+    setTimeout(function(){
+        var val = parseInt($('#setCreditScore').text());
+        $('#setCreditScore').text(val+num);
+    }, 2000);
+    
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

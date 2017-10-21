@@ -1,0 +1,512 @@
+<include file="__THEME__/public_header_onelevel" />
+<link href="__THEMENEW__/css/public_ipad.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/index.css" rel="stylesheet" type="text/css">
+<link href="__THEMENEW__/css/media.css" rel="stylesheet" type="text/css">
+
+    <style>
+        .header_sider_ulbox{display: block !important;border-left:none !important;}
+    </style>
+    <!--main start-->
+    <div class="main">
+        <div class="categorypes">
+            <div class="information-box">
+                <if condition="$_SESSION['mid']">
+                    <div class="potrait">
+                        <div class="information-box-img">
+                            <a target="_blank" title="{:getUserName($_SESSION['mid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="otherHead" style="position: inherit;height: 64px;width: 64px;float: left;margin-right: 20px;" >
+                                <img class="lazyloading" src="{:getUserFace($user['uid'],'b')}" style="border-radius: 50%;height: 64px;width: 64px;margin-top: -1px;"></a>
+                        </div>
+                        <span style="margin:0 0 0 7px">hi 您好！ {$my_uname|msubstr=0,12,'utf-8',true}</span>
+                        <span style="margin-left:66px;margin-top:-60px;">欢迎来到{$site['site_keyword']}在线网校</span>
+                    </div>
+                    <div class="vip">
+                        <a href="{:U('classroom/User/setInfo')}">领取积分兑商品</a>
+                        <span>或</span>
+                        <a href="{:U('group/Index/index')}">去会员俱乐部</a>
+                    </div>
+                    <div class="login">
+                        <span id="loginmar"><a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">主页</a></span>
+                        <span><a href="{:U('classroom/User/setInfo')}">设置</a></span>
+                    </div>
+                    <div class="open">
+                        <if condition="$is_school">
+                            <if condition="$school_info">
+                                <a href="{:U('school/School/index',array('id'=>$school_info['id'],'doadmin'=>$school_info['doadmin']))}">我的网校</a>
+                                <else/>
+                                <a href="{:U('school/User/setInfo')}">开网校</a>
+                            </if>
+                            <else/>
+                            <a href="{:U('school/User/setInfo')}">开网校</a>
+                        </if>
+                    </div>
+                    <else/>
+                    <div class="potrait">
+                        <div class="information-box-img"></div>
+                        <span style="margin:0 0 0 7px">hi 您好！</span>
+                        <span style="margin-left:66px;margin-top:-60px;">欢迎来到{$site['site_keyword']}在线网校</span>
+                    </div>
+                    <div class="vip">
+                        <a href="javascript:;" onClick="login_box();">领取学币抵钱</a>
+                        <span>或</span>
+                        <a href="{:U('group/Index/index')}">去会员俱乐部</a>
+                    </div>
+                    <div class="login">
+                        <span id="loginmar"><a href="{:U('public/Passport/login_g')}">登录</a></span>
+                        <span><a href="{:U('public/Passport/reg')}">注册</a></span>
+                    </div>
+                    <div class="open">
+                        <a  href="javascript:;" onclick="login_box();">开网校</a>
+                    </div>
+                </if>
+            
+                <div class="news-other">
+                    <span id="noqeer">公告</span>
+                    <span>新闻</span>
+                </div>
+                <div class="news-other-content">
+                    {$tdatacate['suggest']['content']|msubstr=0,58,'utf-8',true}
+                </div>
+                <div class="news-other-content hide">
+                    {$tdatacate['topic']['desc']|msubstr=0,58,'utf-8',true}
+                </div>
+                <div class="distinguish">
+                </div>
+                <div class="or-code">
+                    <div class="download">
+                        <img src="{:getCover($site['wb_qrcode'],70,71)}" width="70" height="71">
+                    </div>
+                    <span></span>
+                    <div class="browse">
+                        <img src="{:getCover($site['wx_qrcode'],70,71)}" width="70" height="71">
+                    </div>
+                </div>
+                <div class="esxplain">
+                    <p>扫描关注官方<span style="color: #FB7D30">微博</span></p>
+                    <p>扫描关注官方<span style="color: #8BDA64">微信</span></p>
+                </div>
+                <div class="information-bottom">
+                </div>
+            </div>
+        </div>
+
+       <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <volist name="ad_list" id="adlt">
+                   <div class="swiper-slide">
+                        <a href="{$adlt['bannerurl']}" title="{$adlt['banner_title']}">
+                            <img class="m-lazyload" data-src="{:getCover($adlt['banner'],1980,498)}" src="{:getCover($adlt['banner'],1980,498)}" alt="{$adlt['banner_title']}" >
+                        </a>
+                    </div>
+               </volist>
+            </div>
+            <!-- 分页器 -->
+            <div class="swiper-pagination"></div>
+            
+            <!-- 导航按钮 -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+
+        <!--  -->
+    </div>
+    <!--main end-->
+
+    <!--books start-->
+    <div class="books">
+        <div class="preschool">
+            <div class="preschool-box">
+                <volist name="limit_list" id="llt" offset="0" length="6">
+                    <if condition="$llt['type'] eq 2">
+                        <a href="{:U('live/Index/view',array('id'=>$llt['id']))}" class="bg0{$key+1}" <if condition="$key+1 gt 3"> id="hidden"</if> >
+                        <else/>
+                        <a href="{:U('classroom/Video/view',array('id'=>$llt['id']))}" class="bg0{$key+1}" <if condition="$key+1 gt 3"> id="hidden"</if> >
+                    </if>
+                    <div class="preschool-box-img">
+                        <img src="{:getCover($llt['cover'],130,130)}">
+                    </div>
+                    <div class="preschool-name-box">
+                        {$llt.video_title|msubstr=0,11,'utf-8',true}
+                    </div>
+                    <div class="inform hidden">
+                        <div class="inform-name-box">
+                            {$llt.video_title|msubstr=0,11,'utf-8',true}
+                        </div>
+                        <div class="inform-content">
+                            {$llt.video_intro|msubstr=0,58,'utf-8',true|default="暂无相关课程信息。。"}
+                        </div>
+                        <div class="inform-foot">进入课程>></div>
+                    </div>
+                    </a>
+                </volist>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <!--books end-->
+
+    <!--video floor start-->
+    <foreach name="cate_and_video" item="cvc">
+        <!--video floor{$key} start-->
+        <div class="books-box">
+            <div class="child-books" id="bookwid">
+                <div class="child-name hidden">{$cvc['title']}
+                    <div class="cla-founs">
+                        <div class="child-ma">
+                            <a href="{:U('classroom/Video/index',array('cateId'=>$cvc['id']))}" class="yensen" target="_blank">更多<div class="more-icon hidden"></div></a>
+                        </div>
+                        <ul class="child-classify" name="select-list">
+                            <li>推荐</li>
+                            <volist name="cvc.child" id ="ccd" offset="0" length="9">
+                                <li>{$ccd['title']}</li>
+                            </volist>
+                            <li>最新</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="select">
+                <div class="books-select">
+                    <div class="hot-books hidden">
+                        <a href="{:U('classroom/Video/index',array('cateId'=>$cvc['id']))}" target="_blank">
+                            <img src="{:getCover($cvc['middle_ids'],285,480)}">
+                        </a>
+                    </div>
+                    <div name="select-box">
+                        <div class="compostion-books-box">
+                        <volist name="cvc.re.re_cate_data" id ="crrcda" offset="0" length="6">
+                                <if condition="$crrcda['type'] eq 2">
+                                    <a href="{:U('live/Index/view',array('id'=>$crrcda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$crrcda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                </if>
+                                    <div class="start-date-img">
+                                        <img src="{:getCover($crrcda['cover'],269,164)}" alt="{$crrcda['video_title']}">
+                                        <div class="start-date">
+                                            {$crrcda['listingtime']|friendlyDate} 开课
+                                        </div>
+                                    </div>
+                                    <div class="start-name-box">
+                                        <div class="start-name">{$crrcda['video_title']|msubstr=0,25,'utf-8',true}</div>
+                                        <div class="start-price-box">
+                                            <if condition="($crrcda['is_charge'] eq 0) AND ($crrcda['money_data']['price'] neq 0)">
+                                                <span>¥ {$crrcda['money_data']['price']}</span>
+                                                <else/>
+                                                <span style="color: #56b02a">免费</span>
+                                            </if>
+                                            <p>{$crrcda['mhmName']}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                        </volist>
+                        </div>
+
+                        <volist name="cvc.child" id ="ccd" offset="0" length="9">
+                            <div class="compostion-books-box" <if condition="$key+1 eq 1">id="coms"<else/>id="books"</if> >
+                                <volist name="ccd.cate_data" id ="ccda" offset="0" length="6">
+                                <if condition="$ccda['type'] eq 2">
+                                    <a href="{:U('live/Index/view',array('id'=>$ccda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$ccda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                </if>
+                                <div class="start-date-img">
+                                    <img src="{:getCover($ccda['cover'],269,164)}" alt="{$ccda['video_title']}">
+                                    <div class="start-date">
+                                        {$crrcda['listingtime']|friendlyDate} 开课
+                                    </div>
+                                </div>
+                                <div class="start-name-box">
+                                    <div class="start-name">{$ccda['video_title']|msubstr=0,25,'utf-8',true}</div>
+                                    <div class="start-price-box">
+                                        <if condition="($ccda['is_charge'] eq 0) AND ($ccda['money_data']['price'] neq 0)">
+                                            <span>¥ {$ccda['money_data']['price']}</span>
+                                            <else/>
+                                            <span style="color: #56b02a">免费</span>
+                                        </if>
+                                        <p>{$ccda['mhmName']}</p>
+                                    </div>
+                                </div>
+                                </a>
+                                </volist>
+                            </div>
+                        </volist>
+
+                        <div class="compostion-books-box" id="books">
+                            <volist name="cvc.new.new_cate_data" id ="cnncda" offset="0" length="6">
+                                <if condition="$cnncda['type'] eq 2">
+                                    <a href="{:U('live/Index/view',array('id'=>$cnncda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$cnncda['id']))}" <if condition="$key+1 gt 4">id="hidden"</if> >
+                                </if>
+                                <div class="start-date-img">
+                                    <img src="{:getCover($cnncda['cover'],269,164)}" alt="{$cnncda['video_title']}">
+                                    <div class="start-date">
+                                        {$crrcda['listingtime']|friendlyDate} 开课
+                                    </div>
+                                </div>
+                                <div class="start-name-box">
+                                    <div class="start-name">{$cnncda['video_title']|msubstr=0,25,'utf-8',true}</div>
+                                    <div class="start-price-box">
+                                        <if condition="($cnncda['is_charge'] eq 0) AND ($cnncda['money_data']['price'] neq 0)">
+                                            <span>¥ {$cnncda['money_data']['price']}</span>
+                                            <else/>
+                                            <span style="color: #56b02a">免费</span>
+                                        </if>
+                                        <p>{$cnncda['mhmName']}</p>
+                                    </div>
+                                </div>
+                                </a>
+                            </volist>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="added hide">
+                <a href="{:U('classroom/Video/index',array('cateId'=>$cvc['id']))}">更多</a>
+            </div>
+        </div>
+        <!-- h5 hr -->
+        <div class="hr hiiden"></div>
+        <!--video floor{$key} end-->
+    </foreach>
+    <!--video floor end-->
+
+    <!--teacher start-->
+    <div class="customer">
+        <div class="custome-box">
+            <div class="recommend">
+                <div class="recommend-icon-box">
+                    <div class="recommend-icon"></div>
+                    <p>推荐名师</p>
+                </div>
+                <div class="child-ma">
+                    <a href="#" target="_blank">更多<div class="more-icon hidden"></div></a>
+                </div>
+            </div>
+            <div class="teacher-img-box">
+                <volist name="beTeacher" id="btr" offset="0" length="6">
+                    <a href="{:U('classroom/Teacher/view',array('id'=>$btr['id']))}" <if condition="$key+1 eq 1"> id="pos"</if> <if condition="$key+1 gt 5"> id="hidden" style="margin:0 15px 0 0;"</if> >
+                    <img class="teacher" src="{:getCover($btr['head_id'],170,170)}">
+                    <img src="__THEMENEW__/icon/circle.png" class="teacher-describe">
+                    <div class="teacher-txt">
+                        <div class="teacher-name">{$btr['name']}</div>
+                        <p>{:limitNumber($btr['inro'],3)}</p>
+                    </div>
+                    </a>
+                </volist>
+            </div>
+            <div class="added hide">
+                <a href="{:U('classroom/Teacher/index')}">更多</a>
+            </div>
+            <!-- <div class="hr hide"></div> -->
+            <div class="recommend  hidden mar">
+                <div class="recommend-icon-box">
+                    <div class="teach-icon"></div>
+                    <p>入住机构</p>
+                </div>
+                <div class="child-ma">
+                    <a href="#" target="_blank">更多<div class="more-icon hidden"></div></a>
+                </div>
+            </div>
+            <div class="picScroll-left hiddens">
+                <a class="next"></a>
+                <a class="prev"></a>
+                <div class="bd">
+                    <ul class="picList">
+                        <volist name="check_in_mechanism" id="cim" offset="0" length="30">
+                            <li>
+                                <a href="{:U('school/School/index',array('id'=>$cim['id'],'doadmin'=>$cim['doadmin']))}" title="{$cim['title']}">
+                                    <img src="{:getCover($cim['logo'],156,156)}" alt="{$cim['title']}" width="156" height="156" />
+                                </a>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        <div class="added hide">
+            <a href="{:U('school/Index/index')}">更多</a>
+        </div>
+        <div class="hr-line hide"></div>
+    </div>
+    <!--teacher end-->
+
+    <div class="footer">
+        <div class="footer-box">
+            <div class="recommend">
+                <div class="recommend-icon-box">
+                    <div class="pane-icon"></div>
+                    <p>平台流程</p>
+                </div>
+            </div>
+            <div class="flow-chart-box">
+                <div class="flow-chart">
+                    <a href="javascript:;" class="flow-chart-icon-box">
+                        <div class="flow-chart-icon"></div>
+                        <div class="flow-chart-name">1.搜索老师</div>
+                    </a>
+                    <div class="flow-chart-text">
+                        <div class="flow-padding hide"></div>
+                        老师治学严谨，要求严格，能深入了解学生的学习和生活状况，循循善诱，平易近人;注意启发和调动学生的积极性，课堂气氛较为活跃;上课例题丰富，不厌其烦，细心讲解，使学生有所收获;半数认真工整.
+                    </div>
+                </div>
+                <div class="flow-chart">
+                    <a href="javascript:;" class="flow-chart-icon-box">
+                        <div class="shop-icon"></div>
+                        <div class="flow-chart-name">2.购买课时</div>
+                    </a>
+                    <div class="flow-chart-text">
+                        <div class="flow-padding hide"></div>
+                        老师治学严谨，要求严格，能深入了解学生的学习和生活状况，循循善诱，平易近人;注意启发和调动学生的积极性，课堂气氛较为活跃;上课例题丰富，不厌其烦，细心讲解，使学生有所收获;半数认真工整.
+                    </div>
+                </div>
+                <div class="flow-chart">
+                    <a href="javascript:;" class="flow-chart-icon-box">
+                        <div class="date-icon"></div>
+                        <div class="flow-chart-name">3.约课上课</div>
+                    </a>
+                    <div class="flow-chart-text">
+                        <div class="flow-padding hide"></div>
+                        老师治学严谨，要求严格，能深入了解学生的学习和生活状况，循循善诱，平易近人;注意启发和调动学生的积极性，课堂气氛较为活跃;上课例题丰富，不厌其烦，细心讲解，使学生有所收获;半数认真工整.
+                    </div>
+                </div>
+                <div class="flow-chart">
+                    <a href="javascript:;" class="flow-chart-icon-box">
+                        <div class="cur-icon"></div>
+                        <div class="flow-chart-name">4.课程评价</div>
+                    </a>
+                    <div class="flow-chart-text">
+                        <div class="flow-padding hide"></div>
+                        老师治学严谨，要求严格，能深入了解学生的学习和生活状况，循循善诱，平易近人;注意启发和调动学生的积极性，课堂气氛较为活跃;上课例题丰富，不厌其烦，细心讲解，使学生有所收获;半数认真工整.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="siderleft">
+        <ul>
+            <volist name="cate_and_video" id ="cvc" offset="0" length="7">
+                <li class="item">
+                    <a class="num" href="javascript:;">{$key+1}F</a>
+                    <a class="word" href="javascript:;">{$cvc['title']|msubstr=0,7,'utf-8',true}</a>
+                </li>
+            </volist>
+            <li>
+                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes"><i class="icon-01"></i></a>
+            </li>
+            <li class="backtop last">
+                <a href="javascript:;"><i class="icon-03"></i></a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $(function(){
+            $(window).scroll(function(){
+                // 获得窗口滚动上去的距离
+                var ling = $(document).scrollTop();
+                // 在标题栏显示滚动的距离
+//                document.title = ling;
+                // 如果滚动距离大于810的时候让滚动框出来
+                if(ling>779){
+                    $('.siderleft').show();
+                }
+                if(779<ling && ling<1360){
+                    $('.siderleft ul li').removeClass('current').eq(0).addClass('current');
+                }else if(ling<1860){
+                    $('.siderleft ul li').removeClass('current').eq(1).addClass('current');
+                }else if(ling<2310){
+                    $('.siderleft ul li').removeClass('current').eq(2).addClass('current');
+                }else if(ling<2950){
+                    $('.siderleft ul li').removeClass('current').eq(3).addClass('current');
+                }else if(ling<3640){
+                    $('.siderleft ul li').removeClass('current').eq(4).addClass('current');
+                }else if(ling<3960){
+                    $('.siderleft ul li').removeClass('current').eq(5).addClass('current');
+                }else if(ling<4360){
+                    $('.siderleft ul li').removeClass('current').eq(6).addClass('current');
+                }
+
+                if(ling>4480 || ling<879){
+                    $('.siderleft').hide();
+                }
+
+            });
+        });
+
+        $(function(){
+            $('.siderleft ul li').hover(function(){
+                $(this).addClass('on');
+            },function(){
+                $(this).removeClass('on');
+            });
+            $('.siderleft ul li').click(function(){
+                $('.siderleft ul li.item').removeClass('current').eq($(this).index()).addClass('current');
+            });
+            $('.siderleft ul li').eq(0).click(function(){ $('body,html').animate({scrollTop:879},300); return false;});
+            $('.siderleft ul li').eq(1).click(function(){ $('body,html').animate({scrollTop:1443},300); return false;});
+            $('.siderleft ul li').eq(2).click(function(){ $('body,html').animate({scrollTop:2007},300); return false;});
+            $('.siderleft ul li').eq(3).click(function(){ $('body,html').animate({scrollTop:2570},300); return false;});
+            $('.siderleft ul li').eq(4).click(function(){ $('body,html').animate({scrollTop:3134},300); return false;});
+            $('.siderleft ul li').eq(5).click(function(){ $('body,html').animate({scrollTop:3698},300); return false;});
+            $('.siderleft ul li').eq(6).click(function(){ $('body,html').animate({scrollTop:4262},300); return false;});
+        });
+    </script>
+
+    <script>
+        if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
+            $(window).load(function () {
+                $(".swiper-slide").removeClass("swiper-no-swiping"); 
+                $(".child-classify a:first").css("color","#2AC6DC");
+                $(".books-select:first").show();
+
+                var costion = $(".compostion-books-box a").siblings();
+                for(var i=0;i<costion.length;i++){
+                    if((i+1)%2==0){
+                        costion.eq(i).css("float","right");
+                    }
+                }
+
+                $(".modular").on("click",function(){
+                    $(".win").show();
+                    $(".window-box").animate({marginLeft:"0"});
+                });
+
+                $(".win").on("click",function(){
+                    $(".window-box").animate({marginLeft:'-70%'});
+                    $(".win").hide();
+                });
+
+                $(".child-classify").on("swipe",function(){
+                    $(".child-classify").animate({marginLeft:"+=-50px"},200);
+                });
+
+                $(".users").on("click",function(){
+                    $(".login").toggle(300);
+                });
+
+                $(".win-bor a").on("click",function(){
+                    var wi = $(".win-bor a").siblings();
+                    wi.css("color","#BEBEBE");
+                    $(this).css("color","#00bdd6");
+                });
+
+                $(".books-box .compostion-books-box:first").css("display","block");
+                $(".books-box .compostion-books-box:last").on("mouseover",function(){
+                    $(".books-box .compostion-books-box:last").removeClass("classify-cla");
+                });
+
+                 clearInterval(timer);
+            });
+        }
+        
+        var browser=navigator.appName 
+        var b_version=navigator.appVersion 
+        var version=b_version.split(";"); 
+        var trim_Version=version[1].replace(/[ ]/g,""); 
+        if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE8.0"){ 
+            $(".child-classify li").css("float","left");
+        }
+    </script>
+
+<include file="__THEME__/public_footer_onelevel" />

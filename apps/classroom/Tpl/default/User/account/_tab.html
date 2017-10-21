@@ -1,0 +1,20 @@
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<a {$tab==0 ?' class="on"':''} href="{:U('classroom/User/account')}">积分余额</a>
+<a {$tab==6 ?' class="on"':''} href="{:U('classroom/User/account', array('tab'=>6))}">积分流水记录</a>
+<a {$tab==5 ?' class="on"':''} href="{:U('classroom/User/account', array('tab'=>5))}">积分充值记录</a>
+<a {$tab==2 ?' class="on"':''} href="{:U('classroom/User/account', array('tab'=>2))}">积分支付记录</a>

@@ -1,0 +1,21 @@
+*{padding:0;margin:0;font-family:"Microsoft YaHei"；}
+a{text-decoration:none}
+li{list-style:none}
+h5{font-weight:400}
+.search-bodyer{float:left;width:90%;margin:17px 5% 0}
+.goods-eac-box{float:left;width:105%}
+.eac-per-ens{background-color:#EFEFEF}
+.aingstoit{width:22%;height:36px;line-height:36px;float:left;border-right:1px solid #E6E9EA;position:relative}
+.aingstoit:hover span{display:block}
+.aingstoit:hover i{transform:rotate(20deg)}
+.aingstoit span{float:left;width:100%;display:none;position:absolute}
+.aingstoit span a{display:block;width:150%;font-size:14px;color:#fff;background-color:rgba(0,0,0,.5);display:block;text-align:center;line-height:26px}
+.aingstoit p{float:left;color:#484848;font-size:14px;padding:0 8%}
+.aingstoit i{color:#484848;font-size:14px}
+.eac-per-ens input{float:left;width:59%;outline:0;font-size:14px;margin-top:9px;background:0 0;border:0;padding:0 10px}
+.eac-per-ens{float:left;width:80%;border-radius:4px}
+.goods-eac-box button{float:left;width:20%;color:#888;border:0;outline:0;font-size:14px;line-height:36px;background:0 0}
+.icon-quxiao{color:#BFBFBF;margin:10px 2%;float:right;font-size:14px;display:none}
+.headlines h5{color:#A0A0A0;font-size:14px;width:100%;float:left;border-bottom:1px solid #F1F1F1;line-height:30px;margin-top:10px}
+.headlines li{float:left;line-height:16px;padding:2px 4px;border:1px solid #F1F1F1;border-radius:3px;margin-left:5%;margin-top:10px}
+.headlines li a{font-size:14px;color:#7C7B7A}

@@ -1,0 +1,338 @@
+<include file="__THEME__/public_header" />
+<link href="__APP__/css/mount.css" rel="stylesheet" type="text/css" />
+
+<div class="mask" style="display: none;"></div>
+<div class="message_prompt_box" style="display: none;">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>申请挂载该课程</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info"></span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn shou_mount" style="color: #fff;background: rgb(101, 173, 221);">确　定</a>
+        <a class="quer_btn close_btn">取　消</a>
+    </div>
+</div>
+<div class="bannerwrap" style="height: auto;">
+    <div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/">首页</a><span>&gt;</span>
+                    <a href="{:U('classroom/Mount/index')}">销课</a>
+                </li>
+            </ul>
+        </div>
+        <div class="content-main courseList">
+            <div class="content-head clearfix">
+                <div class="_header">
+                    <div class="head-left clearfix">
+                        <h1>{$site['site_keyword']}挂载课程</h1>
+                        <div>
+                            <!--<a href="http://www.ablesky.com/org/post/detail_60210" target="_blank">什么是挂载课程？</a>-->
+                            <!--<a href="http://www.ablesky.com/org/post/detail_60651" target="_blank">挂载课程准入规则</a>-->
+                        </div>
+                    </div>
+                    <div class="head-right clearfix">
+                        <a href="{:U('classroom/Mount/albumIndex')}" class="order-course">点我有更多套餐</a>
+                        <div class="search-wrap">
+                            <input type="text" class="search-key" placeholder="课程名称">
+                        </div>
+                        <a href="javascript:;" class="search-btn" style="margin-right: 13px;height: 21px;">搜索</a>
+                    </div>
+                </div>
+            </div>
+            <div class="detial_cw clearfix">
+                <div class="left_dcw">
+                    <ul class="category_list">
+                        <li class="all_link all_link_cl" data-id="">
+                            <div class="text_cl">全部分类</div>
+                        </li>
+                        <volist name="mount_currency_category" id="cay">
+                            <li class="topic_name_cl">
+                                <div class="text_cl"> <span class="bluebar"></span> <span>{:msubstr(t($cay['title']),0,10,'utf-8',true)}</span> </div>
+                            </li>
+                            <volist name="cay.child" id="cchd">
+                                <li class="second_category_cl">
+                                    <ul class="sec_list_cl">
+                                        <li class="sec_item_cl link_cl level_1" mount_cid="{$cchd.id}" data-parent="{$cay.title}" data-parent1="{$cchd.title}">
+                                            <div class="text_cl">
+                                                <!-- <span class="bluebar"></span> -->
+                                                <span class="itemname">{:msubstr(t($cchd['title']),0,10,'utf-8',true)}</span> <span class="itemcount">{$cchd.video_count}</span> <span class="categ-expand"></span> </div>
+                                        </li>
+                                        <volist name="cchd.child" id="chdcld">
+                                            <li class="second_category_cl level_2">
+                                                <ul class="third_list_cl">
+                                                    <li class="third_item_cl menu level_3" mount_cid="{$chdcld.id}" data-parent1="{$cchd.title}" data-parent2="{$chdcld.title}">
+                                                        <div class="text_cl"> <span class="itemname">{:msubstr(t($chdcld['title']),0,10,'utf-8',true)}</span> <span class="itemcount">{$chdcld.video_count}</span> </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </volist>
+                                    </ul>
+                                </li>
+                            </volist>
+                        </volist>
+                    </ul>
+                </div>
+                <div class="right_dcw">
+                    <div class="sort-wrap clearfix">
+                        <div class="category-nav">
+                            <a href="{:U('classroom/Mount')}">全部课程</a>
+                            <a href="javascript:;" class="all_course"></a><span class="all_course_span"> &gt;</span>
+                            <a href="javascript:;" class="second_item"></a><span class="second_item_span">&gt;</span>
+                            <a href="javascript:;" class="third_item"></a>
+                        </div>
+                        <ul class="sort-right clearfix">
+                            <li class="sort-first mount_type_li selected" data-type="default">综合</li>
+                            <li class="sort-first mount_type_li " data-type="quality">精品</li>
+                            <li class="sort-first mount_type_li " data-type="time">最新</li>
+                            <style>
+                                .sort-second:hover .price{display: block;}
+                            </style>
+                            <li class="sort-second" data-dir="desc">
+                                <div class="show-sort">　价格排序　<i class="asc"></i><i class="desc"></i></div>
+                                <ul class="menu clearfix price">
+                                    <li class="mount_type_price" data-dir="asc" data-type="price_asc">价格从低到高</li>
+                                    <li class="mount_type_price" data-dir="desc" data-type="price_desc">价格从高到低</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="content_cl">
+                        <div id="J_course_cl_wrapper" class="dataTables_wrapper change_mount_tbody" role="grid">
+                            <table id="J_course_cl" class="dataTable" aria-describedby="J_course_cl_info" style="width: 960px;">
+                                <thead>
+                                <tr role="row">
+                                    <th class="sorting_disabled text-center" tabindex="0" rowspan="1" colspan="1" style="width: 48px;"><span></span></th>
+                                    <th class="sorting_disabled text-left text-width" tabindex="0" rowspan="1" colspan="1" style="width: 670px;"><span></span></th>
+                                    <th class="sorting_disabled text-center text-padding" tabindex="0" rowspan="1" colspan="1" style="width: 242px;"><span></span></th>
+                                </tr>
+                                </thead>
+                                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                <volist name="mount_data['data']" id="mda">
+                                    <tr class="odd">
+                                        <td class="text-center"><div class="item-left">
+                                            <!--<span class="s-checkbox show" data-id="20959"></span>-->
+                                        </div></td>
+                                        <td class="text-left text-width">
+                                            <div class="item clearfix">
+                                                <div class="item-content">
+                                                    <ul class="course-content-to clearfix">
+                                                        <li class="img-wrap">
+                                                            <if condition="$mda['type'] eq 1">
+                                                                <a href="{:U('classroom/Video/view',array('id'=>$mda['id']))}" target="_blank">
+                                                                    <else/>
+                                                                    <a href="{:U('live/Index/view',array('id'=>$mda['id']))}" target="_blank">
+                                                            </if>
+                                                            <img src="{:getCover($mda['cover'],219,122)}" alt="{$fll['video_title']}" class="lazyloading" width="219" height="122">
+                                                            </a>
+                                                            <div class="course-detail"><span class="course-count">课件数：{$mda.sectionNum}</span><span class="course-length">{:msubstr(t($mda['school_title']),0,6,'utf-8',true)}</span></div>
+                                                        </li>
+                                                        <li class="course-info">
+                                                            <div class="title-wrap clearfix">
+                                                                <if condition="$mda['type'] eq 1">
+                                                                    <a href="{:U('classroom/Video/view',array('id'=>$mda['id']))}" target="_blank">
+                                                                        <else/>
+                                                                        <a href="{:U('live/Index/view',array('id'=>$mda['id']))}" target="_blank">
+                                                                </if>
+                                                                {$mda.video_title}</a>
+                                                                <if condition="$mda['type'] eq 1">
+                                                                    <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
+                                                                    <else/>
+                                                                    <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
+                                                                </if>
+                                                            </div>
+                                                            <div class="introduce">{$mda.video_binfo}</div>
+                                                            <div class="bottom-wrap clearfix">
+                                                                <div class="teacher"><b>讲师</b><a href="{:U('classroom/Teacher/view',array('id'=>$mda['teacher_id']))}" style="margin-left:6px;" target="_blank">{$mda.teacher_name}</a></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center text-padding"><div class="item-right">
+                                            <div style="height: 84px;padding-top: 33px;">
+                                                <p class="price-count clearfix">
+                                                    <p style="">售价：</p>
+                                                    <span style="color: #fb7d30;font-weight: 700;margin-bottom: 7px;white-space: nowrap;overflow: hidden;">￥{$mda.t_price}</span>
+                                                    <!--<span style="margin:0 2px;">至</span>-->
+                                                    <!--<span class="price right" title="0">￥0</span>-->
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <if condition="$mda['mount_status']">
+                                                    <if condition="$mda['mount_status'] eq 1">
+                                                        <a class="ac-course" href="javascript:;" style="    background: rgba(101, 103, 101, 0.59);">已申请待审核</a>
+                                                    </if>
+                                                    <if condition="$mda['mount_status'] eq 2">
+                                                        <a class="ok-course" href="javascript:;" style="background: rgba(0, 140, 0, 0.59);">已成功加入</a>
+                                                    </if>
+                                                    <else/>
+                                                    <a class="add-course" href="javascript:;" data-id="{$mda['id']}" data_price="{$mda['mount_price']}">加入我的网校</a>
+                                                </if>
+                                            </div>
+                                        </div></td>
+                                    </tr>
+                                </volist>
+                                </tbody>
+                            </table>
+                            <!--<div id="J_course_cl_processing" class="dataTables_processing" style="visibility: hidden; top: 40px;"><span class="loadingTip">内容正在加载，请稍等...</span></div>-->
+                            <div class="ui-bbar clearfix" style="display: block;">
+                                <div class="pagebox" style="float: right;">
+                                    {$mount_data.html}
+                                <!--<div class="pagediv">-->
+                                    <!--<span>共{$mount_data.totalPages}页，去第</span>-->
+                                    <!--<input type="text" id="goto_page">-->
+                                    <!--<span>页</span>-->
+                                    <!--<a class="goto" href="javascript:;">确定</a>-->
+                                <!--</div>-->
+                                </div>
+                                <div class="dataTables-total">共{$mount_data.count}条</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="mount_cate">
+<input type="hidden" id="mount_map">
+<input type="hidden" id="mount_order">
+<script>
+    var uid = '{$uid}';
+
+    $('.category_list li.level_1').click(function () {
+        $('.second_item').html($(this).attr('data-parent1'));
+        $('.all_course_span').show();
+        $('.second_item_span').hide();
+        $('.third_item').html('');
+        $('.all_course').html('/'+$(this).attr('data-parent'));
+        $('li').removeClass('current_cl');
+        $('.level_3').removeClass('third_current_cl');
+        $(this).addClass('current_cl');
+        $('li').nextAll('.level_2').hide();
+        $(this).nextAll('.level_2').show();
+    });
+    $('.category_list li.level_3').click(function () {
+        $('.second_item_span').show();
+        $('.second_item').html($(this).attr('data-parent1'));
+        $('.third_item').html($(this).attr('data-parent2'));
+        $('li').removeClass('third_current_cl');
+        $(this).addClass('third_current_cl');
+    });
+    $('.category_list ul.sec_list_cl li.level_1,.category_list ul.third_list_cl li.level_3').click(function () {
+        $('#mount_cate').val($(this).attr('mount_cid'));
+    });
+    $('.mount_type_price').click(function () {
+        var mount_type = $(this).attr('data-type');
+        if(mount_type == 'price_asc' || mount_type == 'price_desc'){
+            $(this).hide();
+            $(this).siblings().show();
+            $('.show-sort').html($(this).html()+'<i class="asc"></i><i class="desc"></i>');
+            $('#mount_order').val(mount_type);
+        }
+    });
+    $('.mount_type_li').click(function () {
+        var mount_type = $(this).attr('data-type');
+        if(mount_type != 'price_asc' || mount_type != 'price_desc'){
+            $('.mount_type_li').removeClass('selected');
+            $(this).addClass('selected');
+            $('#mount_map').val(mount_type);
+        }
+    });
+
+    var mount_cid = 0;
+    var mount_order = '';
+    var mount_map = '';
+    var search_key = '';
+    var p = 0;
+
+    $('.pagebox a').click(function () {
+        $(this).removeAttr('href');
+        p = $(this).attr('p');
+        $('body,html').animate({scrollTop:0},300);
+    });
+
+    $('.category_list ul.sec_list_cl li.level_1,.category_list ul.third_list_cl li.level_3,.mount_type_li,.mount_type_price,.search-btn,.pagebox a').click(function () {
+        mount_cid = $('#mount_cate').val();
+        mount_order = $('#mount_order').val();
+        mount_map = $('#mount_map').val();
+        search_key = $('.search-key').val();
+
+        ajaxHtml();
+    });
+
+    function ajaxHtml(){
+        console.log("p="+p+"&mount_cid="+mount_cid+"&mount_map="+mount_map+"&mount_order="+mount_order+"&search_key="+search_key);
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Mount/change_mount')}",
+            data:"p="+p+"&mount_cid="+mount_cid+"&mount_map="+mount_map+"&mount_order="+mount_order+"&search_key="+search_key,
+            dataType:"json",
+            success:function(data){
+                $(".change_mount_tbody").html("");
+                if(data.data==""){
+                    $(".change_mount_tbody").append('<table id="J_course_cl" class="dataTable" aria-describedby="J_course_cl_info" style="width: 960px;"><thead><tr role="row"><th class="sorting_disabled text-center" tabindex="0" rowspan="1" colspan="1" style="width: 48px;"><span></span></th><th class="sorting_disabled text-left text-width" tabindex="0" rowspan="1" colspan="1" style="width: 670px;"><span></span></th><th class="sorting_disabled text-center text-padding" tabindex="0" rowspan="1" colspan="1" style="width: 242px;"><span></span></th></tr></thead><tbody role="alert" aria-live="polite" aria-relevant="all" class="change_mount_tbody"><tr class="odd"><td valign="top" colspan="3" class="dataTables_empty"><div id="J_emptyInit">暂无相关课程</div></td></tr></tbody></table>');
+                }else{
+                    $(".change_mount_tbody").append(data.data);
+                }
+            }
+        });
+    }
+
+    $('.add-course').click(function () {
+        $('.shou_mount').attr('onclick',"shou_mount("+$(this).attr('data-id')+")");
+//        $('span.tips_info').html("确定申请该课程到您的机构销售，销售成功您将约获得<span style='color:red;'>￥"+$(this).attr('data_price')+"/笔订单</span>的盈利！");
+        $('span.tips_info').html("确定申请该课程到您的机构销售");
+        $('.message_prompt_box').show();
+        $('.mask').show();
+    });
+    $('.w-close a,.close_btn').click(function () {
+        $('.message_prompt_box').hide();
+        $('.mask').hide();
+    });
+
+    function shou_mount(mount_id) {
+        if(uid<=0){
+            $('.message_prompt_box').hide();
+            $('.mask').hide();
+            reg_login();
+            return false;
+        }
+        if(!mount_id){
+            ui.error("参数错误");
+            return false;
+        }
+        $.post("{:U('classroom/Mount/doMount')}", {mount_id:mount_id}, function (e) {
+            if(e.status == 1){
+                ui.success(e.info);
+                $('.message_prompt_box,.mask').hide();
+
+                mount_cid = $('#mount_cate').val();
+                mount_order = $('#mount_order').val();
+                mount_map = $('#mount_map').val();
+                search_key = $('.search-key').val();
+
+                ajaxHtml();
+            }else{
+                ui.error(e.info);
+            }
+        }, 'json');
+    }
+//    $('.second_item').click(function () {
+//        $('.level_3 ').hide();
+//    });
+//    $('.all_course').click(function () {
+//        $(this).html('全部课程');
+////        $(this).nextAll().hide();
+//        $('.level_1 ').removeClass('current_cl');
+//        $('.level_3 ').hide();
+//    });
+</script>
+<include file="__THEME__/public_footer" />

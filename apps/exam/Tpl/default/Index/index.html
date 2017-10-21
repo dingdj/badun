@@ -1,0 +1,60 @@
+<include file="__THEME__/public_header" />
+<style>
+    .btn{background: #02C1D0;}
+    .search-box .card-body .subs{
+        width: 1118px;
+    }
+</style>
+<!--content start-->
+<div class="content">
+	<div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/">首页</a><span>&gt;</span>
+                    <a href="{:U('exam/Index/index')}">考试</a>
+				</li>
+            </ul>
+        </div>
+        <div class="search-box">
+            <dl class="card-body">
+                <dd class="clearfix">
+                    {$selcate}
+                </dd>
+            </dl>
+        </div>
+        <div class="content-con">
+        	<div class="content-main">
+                <ul class="test-list">
+                    {$list.data}
+                </ul>
+                <div class="page">
+                    <div class="pagebox">
+                        {$list.html}
+                    </div>
+                </div>
+            </div>
+            <div class="content-sider">
+                <div class="page-tit">
+                    <div class="page-tit-box"><div class="fl">学习分析</div></div>
+                </div>
+                <php> if($data) {</php>
+                <ul class="sider-test">
+                	<volist name="data" id="vo" lenth='5'>
+	                	<li>
+	                        <div class="tit"><a href="{:U('exam/UserExam/exam_info','exam_id='.$vo['user_exam'].'&paper_id='.$vo['user_paper'].'&user_exam_number='.$vo['user_exam_number'])}"><b>{$vo.exam_name|getShort=###,'12',''}</b></a></div>
+	                        <div class="txt"><i class="icon-can"></i>{$vo.user_sum} 人参加</div>
+	                    </li>
+                    </volist>
+                    <php>if( count($data) > 5) {</php>
+                    	<li><div class="tit"><a href="{:U('exam/UserExam/index')}">查看更多</a></div></li>
+                    <php>}</php>
+                </ul>
+                <php>}else{</php>
+                	<div class="tjread">您还没有学习分析哦。。</div>
+                <php>}</php>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="__THEME__/public_footer" />

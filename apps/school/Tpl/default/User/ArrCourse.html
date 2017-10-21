@@ -1,0 +1,77 @@
+<include file="__THEME__/public_header" />
+<style>
+    header .service-box a:hover,.logo a:hover,.course-content a:hover, .wrap a:hover,.jgpage_left dd a:hover,.jgpage_right p a:hover
+    ,.about a:hover,.credit a:hover
+    {color: #00BED4 !important;text-decoration: none !important;}
+    .active a:hover{color: #fff !important;}
+    .direction a:hover{text-decoration: none;}
+    header .service-box a,.credit a{color: #717171 !important;}
+    .logo a{color: #9d9d9d !important;}
+    .course-content a{color: #fff !important;}
+    .wrap a{color: #00bed4 !important;}
+    .jgpage_left dd a {color: #666 !important;}
+    .jgpage_right p a{color: #717171 !important;}
+    .about a{color: #434343 !important;}
+    #calendar { width: 800px;margin: 0 auto;}
+    .fc-agenda-slots tr:hover{background: rgba(0, 190, 212, 0.11);}
+</style>
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="../User/_left" />
+        <!--右-->
+        <div class="jgpage_right">
+            <div class="jgpage_right_tit mb50">我的排课</div>
+
+            <div class="jgpage_right_con">
+
+            <!--<script src="__THEME__/js/fulljquery.min.js"></script>-->
+            <script src="__THEME__/js/jquery-migrate-1.2.1.js"></script>
+    <script src="__THEME__/js/fulljquery-ui.custom.min.js"></script>
+    <script src="__THEME__/js/fullcalendar.min.js"></script>
+    <link href="__THEME__/css/fullcalendar.css" rel="stylesheet" type="text/css">
+    <link href="__THEME__/css/admin.css" rel="stylesheet" type="text/css">
+
+
+    <script>
+
+        $(document).ready(function() {
+
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    right: 'month, agendaWeek'
+                },
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+
+                eventClick: function (calEvent, allDay, jsEvent, view) {
+                    $(this).css('background', 'green').siblings().css('background', 'white');
+                     d = new Date(calEvent.start);
+                     eventtime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + '0'+d.getMinutes() + ':' + '0'+d.getSeconds();
+                    ui.box.load(U('school/User/getlivelist')+'&eventtime='+eventtime);
+                    return false;
+
+                            },
+
+                events:  '{:U("school/User/ArrCoursedata")}' ,
+
+            });
+
+        });
+
+    </script>
+
+            <div id='calendar'>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<include file="__THEME__/public_footer_onelevel" />

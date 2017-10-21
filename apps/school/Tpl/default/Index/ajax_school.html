@@ -1,0 +1,20 @@
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+	<li><a href="{$vo.domain}">
+		<img src="{:getCover($vo['logo'],180,180)}" alt="{$vo.title}" />
+		<h3>{$vo.title}</h3>
+		<p>{$vo['new_str_tag']}</p>
+		<div class="text">{$vo['info']}</div>
+		<div class="info">
+			<i class="icon-01"></i>
+			<span>{$vo.location}</span>
+			<span>|</span>
+			<span>{$vo.counts}门课程</span>
+			<span>|</span>
+			<span>{$vo.learn_count}次学习</span>
+			<span>|</span>
+			<span>好评度{$vo.favorable_rate}</span>
+		</div>
+	</a></li>
+</volist>
+<php>}</php>

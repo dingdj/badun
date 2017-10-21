@@ -1,0 +1,31 @@
+<include file="__THEME__/public_header" />
+<style>
+    .content {
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+</style>
+<div class="content cf2">
+  <div class="wrap">
+      <div class="jgpage_left">
+        <dl>
+            <dt><i class="icon-bz"></i>帮助中心</dt>
+            <foreach name="single_list" item="val">
+              <dd <php>if($data['id'] == $val['id']){</php>class="active"<php>}</php>>
+                 <a href="{:U('public/Single/info',array('id'=>$val['id']))}"><span>{$val.title}</span></a>
+              </dd>
+            </foreach>
+        </dl>
+      </div>
+      <div class="jgpage_right">
+          <div class="jgpage_right_tit mb30">{$data.title}</div>
+          <div class="dateline">
+          </div>
+          <div class="jgpage_right_con">
+              {$data.text}
+          </div>
+      </div>
+  </div>
+</div>
+
+<include file="__THEME__/public_footer" />

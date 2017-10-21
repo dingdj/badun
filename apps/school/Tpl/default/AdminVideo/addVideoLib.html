@@ -1,0 +1,229 @@
+<include file="__THEME__/admin_header" />
+<include file="__THEME__/swfupload" />
+	<div id="container" class="so_main">
+    <div class="page_tit">上传视频</div>
+
+    <php>if(!empty($pageTab)):</php>
+	    <div class="tit_tab">
+	        <ul>
+	        <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+		        <volist name='pageTab' id='t'>
+		            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+		        </volist>
+	        </ul>
+	    </div>
+    <php>endif;</php>
+
+    <form method="POST" action="{:U('school/AdminVideo/addVideoLib')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+    	<input type="hidden" name="systemdata_list" value="video_Admin" class="s-txt">
+    	<input type="hidden" name="systemdata_key" value="addVideo" class="s-txt">
+    	<input type="hidden" name="pageTitle" value="添加视频" class="s-txt">
+    	<input type="hidden" name="id" value="{$id}" />
+    	<div class="form2">
+    		
+    		<dl class="lineD" >
+		      	<dt><font color="red"> * </font>视频名称：</dt> 
+		      	<dd>
+		      		<input name="title" type="text" value="{$title}" class="s-txt">
+		    	</dd>
+		    </dl>
+
+    		<dl class="lineD" <php>if($_GET['id']){</php>style="display:none"<php>}</php> >
+		      	<dt>类型：</dt>
+		      	<dd>
+					<label><input type="radio" name="type" value="1" checked="checked">视频 </label>
+					<label><input type="radio" name="type" value="2"  >音频 </label>
+					<label><input type="radio" name="type" value="3"  >文本 </label>
+					<label><input type="radio" name="type" value="4"  >文档 </label>
+					<br/>
+					<p>如果是文档文件，请将上传空间配置为“本地”</p>
+		    	</dd>
+		    </dl>
+
+            <if condition="$upload_room eq 0">
+                <dl class="lineD" id="duration">
+                    <dt>时长：</dt>
+                    <dd>
+                        <input name="duration" type="text" value="{$duration}" class="s-txt">
+                        <br/>
+                        <p>格式为00:00:00</p>
+                    </dd>
+                </dl>
+            </if>
+
+            <dl <php>if($_GET['id']){</php>style="display:none"<php>}</php> class="lineD" id="video">
+		    	<dt><font color="red"> * </font>上传视频：</dt>
+		    	<dd>
+                    <div id="video">
+                        <php>if($upload_room == 0){</php>
+                            {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'flv,f4v,mp4,mp3,pdf,wp,sword,excel,ppt,png,jpg,gif,bmp,xls,xlsx,doc,docx,pptx,txt'))}
+                        <php>}else if($upload_room == 4){</php>
+                            <div class="swfupload-box">
+								<p>点击“浏览”按钮，选择您要上传的文件后，</p>
+								<p>再确认提交上传，系统将自动上传并在完成后提示您。</p>
+
+								<form id="addvform" name="addvform" action="" method="get" onsubmit="alert('提交视频');">
+									<input id="cc_title" disabled="disabled" name="cc_title" value="{$filename}" type="hidden"/>
+									<input id="tag" name="tag" disabled="disabled" value="{$site['site_keyword']}{$filename}" type="hidden"/>
+									<textarea id="description" name="description" rows="5" cols="30" disabled="disabled" style="display: none;">跟我学视频简介{$filename}</textarea>
+									<input id="videoid_cc" name="videoid" type="hidden" value="" disabled="disabled"/>
+
+										<span style="float:left;">
+											<input  name="videofile" id="videofile" disabled="disabled" type="text" style="height: 15px;"/>
+										</span>
+									<div style="float:left; position:relative; width:80px; height:25px;">
+										<div id="swfDiv" style="width:80px;height:25px;position:absolute;z-index:2;"></div>
+										<input type="button" value="浏览"	id="btn_width_cc" style="width:80px;height:25px;position:absolute;z-index:1;" />
+									</div><br><br>
+									<p>一次只能上传一个视频文件！</p>
+									<p>支持流行视频格式flv，f4v，mp4</p>
+
+									<div class="fieldset flash" id="fsUploadProgressCC" style="display:none;">
+										<div class="progressWrapper">
+											<div class="progressContainer green">
+												<a class="progressCancel" href="#" style="visibility: hidden;"> </a>
+												<div class="progressName" id="cc_file_name"></div>
+												<div class="progressBarStatus" id="progress_cc"></div>
+												<div class="progressBarInProgress" id="progress_bar_cc"></div>
+											</div>
+										</div>
+									</div><br>
+
+									<div >
+										<input type="button" value="提交上传" onclick="submitCCVideo();" style="width: 100px;height: 29px;background: #fff;font-weight: bold;">
+										<input type="button" value="取消上传" onclick="delCCVideo();" style="margin-left: 5px; font-size: 8pt; height: 29px;">
+									</div>
+								</form>
+							</div>
+                        <include file="__THEME__/ccuploader" />
+                        <php>}else{</php>
+                            <div class="swfupload-box">
+                                <p>点击“浏览”按钮，选择您要上传的文件后，系统将自动上传并在完成后提示您。</p>
+                                <p>一次只能上传一个视频文件！</p>
+                                <p>支持流行视频格式flv，f4v，mp4</p>
+                                <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
+                                    <div class="fieldset flash" id="fsUploadProgress"></div>
+                                    <div style="margin-top:15px;">
+                                        <div style="width:auto;float:left;"><span id="spanButtonPlaceHolder" ></span></div>
+                                        <input id="btnCancel" type="button" value="取消上传" onclick="testclick();" disabled="disabled" style="margin-left: 5px; font-size: 8pt; height: 29px;" />
+                                    </div>
+                                </form>
+                            </div>
+                            <include file="__THEME__/swfupload" />
+                        <php>}</php>
+                    </div>
+		    	</dd>
+		    </dl>
+
+            <dl id="doc" style="display: none;">
+                <dt><font color="red"> * </font>上传文件</dt>
+                <dd>
+                    {:W('Editor',array('width'=>'90%','contentName'=>'content'))}
+                </dd>
+            </dl>
+
+		    <input id="videokey" name="videokey" type="hidden" value="{$videokey}">
+		    <input name="video_address" type="hidden" value="{$video_path}">
+		    
+		    <div class="page_btm">
+			<input type="submit" class="btn_b" value="保存" id="form_submit">
+    	</div>
+    	</div>
+    	
+    	
+    </form>
+    <script type="text/javascript">
+		$(function(){
+			$(":radio").click(function(){
+				var v = $(this).val();
+				if(v == 3) {
+					$('#video').css('display','none');
+					$('#doc').css('display','block');
+                    $('#duration').css('display','none');
+                } else {
+                    if(v == 4) {
+                        $('#doc').css('display','none');
+                        $('#video').css('display','block');
+                        $('#duration').css('display','none');
+                    } else {
+                        $('#doc').css('display','none');
+                        $('#video').css('display','block');
+                        $('#duration').css('display','block');
+                    }
+				}
+			});
+		});
+		
+		function j_validateCallback(form,call,callback) {
+			var $form = $(form);
+			if(typeof call != 'undefined' && call instanceof Function){    
+				$i = call($form);
+				if(!$i){
+					return false;
+				}
+			}
+			var _submitFn = function(){
+				$.ajax({
+					type: form.method || 'POST',
+					url:$form.attr("action"),
+					data:$form.serializeArray(),
+					dataType:"json",
+					cache: false,
+					success: function(xMLHttpRequest, textStatus, errorThrown){
+						if(typeof callback != 'undefined' && callback instanceof Function){   
+							callback($form,xMLHttpRequest);
+						}  
+					},
+					error: function(xhr, ajaxOptions, thrownError){
+						ui.error("未知错误!");
+					}
+				});
+			}
+			_submitFn();
+			return false;
+		}
+		
+		function checkForm(form){
+			var type = form.find('input:radio[name="type"]:checked').val();
+			var config = parseInt('{$upload_room}');
+			if( (type == 4 || type == 3 )&& config != 0){
+				ui.error("请将上传空间配置为“本地”");
+				return false;
+			}
+			var title = form.find('input[name="title"]').val();
+			if('' == title){
+				ui.error("视频名称不能为空");
+				return false;
+			}
+			return true;
+			
+		}
+		function post_callback(_form,data){
+			if(data.status != undefined){
+				if(data.status == '0'){
+					ui.error(data.info);
+				} else {
+					ui.success(data.info);
+					window.location.href = U('school/AdminVideo/videoLib')+"&tabHash=videoLib";
+				}
+			}
+		}
+		
+    	function callback(data){
+    		
+    		$("#"+data.input_id+"").remove();
+    		$("#image_"+data.input_id).append(
+    			'<div id='+data.input_id+'>'
+    			+'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+    			+'</div>'
+    		).find('input:file').val('');
+    		$("#"+data.input_id+"_ids").val(data.attach_id);
+    	}
+    	function filecallback(data){
+    		$("#old_coursefile_ids").remove();
+    		$("#coursefile_ids").val(data.attach_id);
+    	}
+    	
+		
+	</script>
+<include file="__THEME__/admin_footer" />

@@ -1,0 +1,33 @@
+  <volist name="data" id="vo">
+    <li>
+        <div class="pic"><a href="#"><img src="{$vo['uidInfo']['avatar_middle']}" class="lazyloading"></a></div>
+        <div class="name"><a href="#">{$vo['uidInfo']['uname']}</a></div>
+        <div class="text">{$vo['to_comment']}</div>
+        <div class="info">
+            <a href="javascrip:;" class="js-zan" data-id="{$vo['id']}" data-type="{$vo['is_zan']}" title="{$vo['zan_title']}">
+            <span class="icon-zan"></span>
+            <span class="zan-num">{$vo['zan_num']}</span>
+            </a>
+            <a href="javascrip:;" class="showComment" title="评论"><span class="icon-pl"></span><php>echo count($vo['child']);</php></a>
+            {$vo['ctime']}
+        </div>
+        <ul class="children" style="display:none;">
+        <volist name="vo.child" id="val">
+            <li>
+                <div class="pic"><a href="javascript:;"><img src="{$val['uidInfo']['avatar_middle']}" class="lazyloading"></a></div>
+                <div class="name"><a href="javascript:;">{$val['uidInfo']['uname']} 说：</a></div>
+                <div class="text"> {$val['to_comment']} </div>
+                <div class="info"><a href="javascript:;" onclick="comment(this,{$vo.id},{$val['uidInfo']['uid']});" data-con="回复 {$val['uidInfo']['uname']}">回复</a>{$val['ctime']}</div>
+            </li>
+        </volist>
+            <li>
+                <div class="pic"><a href="{$user_src}"><img src="{$userface}" class="lazyloading"></a></div>
+                    <input class="fid_{$vo.id}" type="hidden" name="fid" value="{$fid}">
+                    <input class="to_comment_id_{$vo.id}" type="hidden" name="to_comment_id" value="{$vo.id}">
+                    <div class="item pl"><textarea id="text_{$vo.id}" name="reply" cols="" rows="" placeholder="写下你的评论..."></textarea></div>
+                    <div class="item btn"><a href="javascript:;">取消</a><button onclick="doComment(this,{$vo.id});">提交</button></div>
+            </li>
+        
+        </ul>
+    </li>
+    </volist>

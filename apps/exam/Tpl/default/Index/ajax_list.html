@@ -1,0 +1,17 @@
+<script>
+    var p="{$p}";//定义页码
+    var cateId="{$cateId}";//定义分类
+</script>
+<php>if($listData){</php>
+<volist name="listData" id="vo">
+    <li><a href="javascript:;" onclick="selectexam({$vo.exam_id})">
+        <i class="icon-01"></i>
+        <h3>{$vo.exam_name|getShort=###,'12',''}</h3>
+        <div class="info">考试时间：{$vo.exam_begin_time} ~ {$vo.exam_end_time}&nbsp;&nbsp;考试时长：{$vo.exam_total_time}</div>
+    </a>
+        <a class="btn" href="{:U('exam/UserExam/exam_info' , 'exam_id='.$vo['exam_id'].'&paper_id='.$vo['paper_id'])}">查看解析</a>
+    </li>
+</volist>
+<php>}else{</php>
+<span>暂无考试信息</span>
+<php>}</php>

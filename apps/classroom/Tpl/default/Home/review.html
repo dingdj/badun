@@ -1,0 +1,69 @@
+<include file="__THEME__/public_header"/>
+<style>
+    .comment_list li {
+        padding-top: 10px;
+    }
+</style>
+<include file="../User/public/_top"/>
+<div class="content cbg">
+    <div class="wrap">
+        <!--中 -->
+        <div class="center_right">
+            <div class="center_right_tit">
+                <h5>评论</h5>
+            </div>
+            <div class="center_right_con">
+                <!--点评-->
+                <ul class="comment_list">
+                    <if condition="$reviewdata['data']">
+                        <foreach name="reviewdata.data" item="l" key='k'>
+                            <li>
+                                <!--<div class="pic"><a href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img-->
+                                        <!--class="lazyloading" src="{:getUserFace($l['uid'],'m')}"></a></div>-->
+                                <div class="name">
+                                    <div class="star">
+                                        评分：
+                                        <php>for($i=0;$i<$l['star'];$i++){</php>
+                                        <span></span>
+                                        <php>}</php>
+                                        <php>for($i=5;$i>$l['star'];$i--){</php>
+                                        <span class="no"></span>
+                                        <php>}</php>
+                                    </div>
+                                    <php>if($l['type']==1){</php>
+                                    <if condition="$l['video_type'] eq 1">
+                                        <a href="{:U('classroom/Video/view',array('id'=>$l['oid']))}">源自：{$l.title}</a>
+                                        <else/>
+                                        <a href="{:U('live/Index/view',array('id'=>$l['oid']))}">源自：{$l.title}</a>
+                                    </if>
+                                    <php>}else{</php>
+                                    <a href="{:U('classroom/Album/view',array('id'=>$l['oid']))}">源自：{$l.title}</a>
+                                    <php>}</php>
+                                </div>
+                                <div class="text">{$l.review_description}</div>
+                                <div class="info"><a href="javascript:;"><span class="icon-zan"></span>{$l.yong}</a><a
+                                        href="javascript:;"><span class="icon-pl"></span>{$l.review_comment_count}</a>时间：{$l.ctime|friendlyDate}
+                                </div>
+                            </li>
+                        </foreach>
+                        <else/>
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关评论。。</li>
+                    </if>
+                </ul>
+                <if condition="$reviewdata['data']">
+                <div class="page">
+                    <div class="pagebox">
+                        {$reviewdata['html']}
+                    </div>
+                </div>
+                </if>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right"/>
+    </div>
+</div>
+
+<!--footer-->
+<include file="__THEME__/public_footer"/>

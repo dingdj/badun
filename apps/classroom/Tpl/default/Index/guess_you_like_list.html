@@ -1,0 +1,32 @@
+<if condition="$guess_you_like['data'] neq ''">
+    <volist name="guess_you_like['data']" id="gyl" offset="0" length="6">
+        <li>
+            <if condition="$gyl['type'] eq 2">
+                <a href="{:U('live/Index/view',array('id'=>$gyl['id']))}">
+                    <img src="{:getCover($gyl['cover'],159,159)}" alt="{$gyl['video_title']}" class="lazyloading" width="159" style="height: 159px;" />
+                </a>
+                    <else/>
+                <a href="{:U('classroom/Video/view',array('id'=>$gyl['id']))}">
+                    <img src="{:getCover($gyl['cover'],159,159)}" alt="{$gyl['video_title']}" class="lazyloading" width="159" style="height: 159px;" />
+                </a>
+            </if>
+            <h3>
+                <if condition="$gyl['type'] eq 2">
+                    <a href="{:U('live/Index/view',array('id'=>$gyl['id']))}">{$gyl['video_title']|msubstr=0,9,'utf-8',true}</a>
+                    <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
+                    <else/>
+                    <a href="{:U('classroom/Video/view',array('id'=>$gyl['id']))}">{$gyl['video_title']|msubstr=0,9,'utf-8',true}</a>
+                    <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
+                </if>
+            </h3>
+            <if condition="($gyl['is_charge'] eq 0) AND ($gyl['money_data']['price'] neq 0)">
+                <div class="price">￥{$gyl['money_data']['price']}</div>
+                <else/>
+                <div class="price" style="color: #56b02a;">免费</div>
+            </if>
+            <div class="tip">{$gyl['mhmName']|msubstr=0,5,'utf-8',true}</div>
+        </li>
+    </volist>
+    <else/>
+    <li>暂无此类数据~~</li>
+</if>

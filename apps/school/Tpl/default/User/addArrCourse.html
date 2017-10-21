@@ -1,0 +1,898 @@
+<include file="__THEME__/public_header" />
+<style>
+    header .service-box a:hover,.logo a:hover,.course-content a:hover, .wrap a:hover,.jgpage_left dd a:hover,.jgpage_right p a:hover
+        ,.about a:hover,.credit a:hover
+    {color: #00BED4 !important;text-decoration: none !important;}
+    .active a:hover{color: #fff !important;}
+    .direction a:hover{text-decoration: none;}
+    header .service-box a,.credit a{color: #717171 !important;}
+    .logo a{color: #9d9d9d !important;}
+    .course-content a{color: #fff !important;}
+    .wrap a{color: #00bed4 !important;}
+    .jgpage_left dd a {color: #666 !important;}
+    .jgpage_right p a{color: #717171 !important;}
+    .about a{color: #434343 !important;}
+    .fc-agenda-slots tr:hover{background: rgba(0, 190, 212, 0.11);}
+</style>
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="../User/_left" />
+        <!--右-->
+        <div class="jgpage_right">
+            <div class="jgpage_right_tit mb50">添加排课</div>
+
+
+
+            <div class="jgpage_right_con">
+                <script src="__THEME__/js/jquery-migrate-1.2.1.js"></script>
+    <script src="__THEME__/js/fulljquery-ui.custom.min.js"></script>
+    <script src="__THEME__/js/fullcalendar.min.js"></script>
+    <link href="__THEME__/css/fullcalendar.css" rel="stylesheet" type="text/css">
+                <link href="__THEME__/css/admin.css" rel="stylesheet" type="text/css">
+
+
+    <script>
+
+        $(document).ready(function() {
+
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    right: ' agendaWeek'
+                },
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                eventClick: function (calEvent, jsEvent, view) {
+                    var reset=document.getElementById('reset');
+                    var ghtime=document.getElementById('gheventtime');
+                    var zshdtime=document.getElementById('zshdeventtime');
+                    var cctime=document.getElementById('cceventtime');
+                    reset.value  =calEvent.title;
+                    var d = new Date(calEvent.start);
+                    var eventtime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + '0'+d.getMinutes() + ':' + '0'+d.getSeconds();
+                    ghtime.value  =eventtime;
+                    zshdtime.value  =eventtime;
+                    cctime.value  =eventtime;
+             //       view.css('background', 'green');
+                    $(this).css('background', 'green').siblings().css('background', 'white');
+                    ui.box.load(U('school/User/getdiscprice')+'&eventtime='+eventtime);
+                    return false;
+                },
+
+
+                events:  '{:U("school/User/addArrCoursedata")}' ,
+
+            });
+
+        });
+
+    </script>
+
+
+
+    <style>
+
+        #calendar {
+            width: 800px;
+            margin: 0 auto;
+
+        }
+
+    </style>
+
+            <div id='calendar'></div>
+                <div class="jgbox">
+
+            <form action='{:U("school/User/addArrCourse")}'     method="post">
+
+                <div class="jgformitem">
+                    <label><span>*</span>请选择课程:</label>
+                    <dd style="width: 450px;">
+                        <style>
+                            select {
+                                margin-right: 15px !important;
+                                height: 40px;
+                                width: 200px !important;
+                                border-radius: 4px;
+                                border: solid 1px #b6c7d6;
+                                line-height: 34px;
+                                padding: 0;
+                            }
+                        </style>
+                        <select name="live_id" id="live_id"   onchange = "selectvideo()">
+
+                            <foreach name="video_title" item="vo" key="k">
+                                <option <eq name="live_id" >selected="selected"</eq>value="{$vo.id}"  live_type = "{$vo.live_type}">{$vo.video_title}</option>
+                            </foreach>
+
+                            <option selected value="">请选择</option>
+                        </select>
+                </div>
+
+
+                <div class="jgformitem">
+                    <label><span>*</span>请选择主讲人:</label>
+                    <dd style="width: 450px;">
+                        <style>
+                            select {
+                                margin-right: 15px !important;
+                                height: 40px;
+                                width: 200px !important;
+                                border-radius: 4px;
+                                border: solid 1px #b6c7d6;
+                                line-height: 34px;
+                                padding: 0;
+                            }
+                        </style>
+                        <select name="speaker_id" id="speaker_id">
+                            <foreach name="teacher" item="vo" key="k">
+                                <option <eq name="speaker_id" value="{$k}">selected="selected"</eq>value="{$k}">{$vo}</option>
+                            </foreach>
+                        </select>
+                </div>
+
+
+           <div   id = "ghtype"   style="display: none;" >
+
+
+               <div class="jgformitem">
+                   <label><span>*</span>排课名称:</label><input type ="text"  class="jg_input"  id ="ghtitle" name="ghtitle"/>
+               </div>
+
+                <div class="jgformitem">
+                    <label><span>*</span>是否支持手机端:</label>
+                    <dd style="width: 450px;">
+                        <style>
+                            select {
+                                margin-right: 15px !important;
+                                height: 40px;
+                                width: 200px !important;
+                                border-radius: 4px;
+                                border: solid 1px #b6c7d6;
+                                line-height: 34px;
+                                padding: 0;
+                            }
+                        </style>
+                        <select name="supportMobile" id="supportMobile">
+                            <foreach name="supportMobile" item="vo" key="k">
+                                <option <eq name="supportMobile" value="{$k}">selected="selected"</eq>value="{$k}">{$vo}</option>
+                            </foreach>
+                        </select>
+                </div>
+
+
+                <div class="jgformitem">
+                    <label><span>*</span>直播模式:</label>
+                    <dd style="width: 450px;">
+                        <style>
+                            select {
+                                margin-right: 15px !important;
+                                height: 40px;
+                                width: 200px !important;
+                                border-radius: 4px;
+                                border: solid 1px #b6c7d6;
+                                line-height: 34px;
+                                padding: 0;
+                            }
+                        </style>
+                        <select name="ghliveMode" id="ghliveMode">
+                            <foreach name="ghliveMode" item="vo" key="k">
+                                <option <eq name="ghliveMode" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                            </foreach>
+                        </select>
+                </div>
+
+
+                <div class="jgformitem">
+                    <label><span>*</span>讲师账户:</label><input type ="text"  class="jg_input" name="account"  id ="ghtaccount"/>
+                </div>
+                <div class="jgformitem">
+                    <label><span>*</span>讲师密码:</label><input type ="password"  class="jg_input"  name="passwd"  id ="ghtpasswd"/>
+                </div>
+
+
+                <div class="jgformitem">
+                <label><span>*</span>当前选中排课时间:</label><input  id ="gheventtime" name="start"  readonly="readonly"  style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                    </div>
+
+                <div class="jgformitem">
+                <label><span>*</span>申请并发:</label> <input type ="text"  class="jg_input"   id = "ghmaxmannums" name="ghmaxmannums"/>
+                    </div>
+                <div class="jgformitem">
+                <label><span></span>课时简介:</label><input type ="text"    class="jg_input"  name = "ghintroduce"   id = "ghintroduce" />
+                    </div>
+                <div class="jgformitem">
+            <input type="hidden" style="display:none"  id = "reset" name = "reset"/>
+                    </div>
+
+
+               <div class="jgformitem">
+                   <div  class="jg_btn"   onclick = "subgharrcourse()"   />提交</div>
+               </div>
+
+               </div>
+
+
+
+
+
+
+                <div id = "zshdtype"   style="display: none;" >
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>排课名称:</label><input type ="text"  class="jg_input"  id ="zshdtitle" name="zshdtitle"/>
+                    </div>
+                    <div class="jgformitem">
+                        <label><span>*</span>当前选中排课时间:</label><input  id ="zshdeventtime"   class = "eventtime"  name="start"  readonly="readonly"  style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>申请并发:</label> <input type ="text"  class="jg_input"   id = "zshdmaxmannums" name="zshdmaxmannums"/>
+                    </div>
+
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>直播模式:</label>
+                        <dd style="width: 460px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="zshduiMode" id="zshduiMode">
+                                <foreach name="zshduiMode" item="vo" key="k">
+                                    <option <eq name="zshduiMode" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>支持手机端:</label>
+                        <dd style="width: 450px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="zshdclientJoin" id="zshdclientJoin">
+                                <foreach name="zshdclientJoin" item="vo" key="k">
+                                    <option <eq name="zshdclientJoin" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>支持WEB端:</label>
+                        <dd style="width: 450px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="zshdwebJoin" id="zshdwebJoin">
+                                <foreach name="zshdwebJoin" item="vo" key="k">
+                                    <option <eq name="zshdwebJoin" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>讲师口令:</label><input type ="text"  class="jg_input" name="zshdteacherToken"   id = "zshdteacherToken"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>助教口令:</label><input type ="text"  class="jg_input" name="zshdassistantToken"  id ="zshdassistantToken"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>学生端口令:</label><input type ="text"  class="jg_input" name="zshdstudentClientToken"  id = "zshdstudentClientToken"/>
+                    </div>
+
+                    <div class="jgformitem">
+                        <label><span>*</span>WEB端学生口令:</label><input type ="text"  class="jg_input" name="zshdstudentToken"  id = "zshdstudentToken"/>
+                    </div>
+                    <div class="jgformitem">
+                        <label><span>*</span>课程简介:</label><input type ="textarea"  class="jg_input" name="zshddescription"   id = "zshddescription"/>
+                    </div>
+                    <div class="jgformitem">
+                        <label><span>*</span>课程安排信息:</label><input type ="textarea"  class="jg_input" name="zshdscheduleInfo"   id ="zshdscheduleInfo" />
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <div  class="jg_btn"   onclick = "subzshdarrcourse()"   />提交</div>
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+
+                <div id = "cctype"   style="display: none;" >
+
+
+
+                    <div class="jgformitem">
+                        <label><span></span>排课名称:</label><input type ="text"    class="jg_input"  name = "cctitle"   id = "cctitle"/>
+                    </div>
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>当前选中排课时间:</label><input  id ="cceventtime" class = "eventtime" name="start"  readonly="readonly"  style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>申请并发:</label> <input type ="text"  class="jg_input"   id = "ccmaxmannums" name="ccmaxmannums"/>
+                    </div>
+
+                    <div class="jgformitem">
+                        <label><span>*</span>直播模式:</label>
+                        <dd style="width: 460px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="ccuiMode" id="ccuiMode">
+                                <foreach name="ccuiMode" item="vo" key="k">
+                                    <option <eq name="ccuiMode" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+                    <div class="jgformitem">
+                        <label><span>*</span>支持手机端:</label>
+                        <dd style="width: 450px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="ccclientJoin" id="ccclientJoin">
+                                <foreach name="ccclientJoin" item="vo" key="k">
+                                    <option <eq name="ccclientJoin" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>支持WEB端:</label>
+                        <dd style="width: 450px;">
+                            <style>
+                                select {
+                                    margin-right: 15px !important;
+                                    height: 40px;
+                                    width: 200px !important;
+                                    border-radius: 4px;
+                                    border: solid 1px #b6c7d6;
+                                    line-height: 34px;
+                                    padding: 0;
+                                }
+                            </style>
+                            <select name="ccwebJoin" id="ccwebJoin">
+                                <foreach name="ccwebJoin" item="vo" key="k">
+                                    <option <eq name="ccwebJoin" value="{$k}">selected="selected"</eq>value="{$k}" >{$vo}</option>
+                                </foreach>
+                            </select>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>讲师口令:</label><input type ="text"  class="jg_input" name="ccteacherToken"  id ="ccteacherToken"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>助教口令:</label><input type ="text"  class="jg_input" name="assistantToken"  id = "ccassistantToken"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <label><span>*</span>学生端口令:</label><input type ="text"  class="jg_input" name="studentClientToken"   id ="ccstudentClientToken" />
+                    </div>
+
+                    <div class="jgformitem">
+                        <label><span>*</span>课程简介:</label><input type ="textarea"  class="jg_input" name="ccdescription"   id = "ccdescription"/>
+                    </div>
+
+
+                    <div class="jgformitem">
+                        <div  class="jg_btn"   onclick = "subccarrcourse()"   />提交</div>
+                    </div>
+
+                </div>
+
+
+
+                </form>
+            </div>
+            </div>
+            <p><a href="javascript:;"  onclick = "buyonehourcon()" >账户并发不够，购买单小时并发试试</a></span>
+            <p><a href="javascript:;"  onclick = "buyblue()" >平台并发不够，购买绿色通道试试</a></span>
+        </div>
+</div>
+   </div>
+<script  type = "text/javascript">
+    var live_id ;
+    var speaker_id ;
+    var ghliveMode ;
+    var ghtaccount ;
+    var ghtpasswd ;
+    var ghtitle ;
+    var ghmaxmannums ;
+    var ghintroduce;
+    var gheventtime;
+    var zshdmaxmannums;
+    var zshdclientJoin;
+    var zshdwebJoin;
+    var zshdteacherToken;
+    var zshdassistantToken;
+    var zshdstudentClientToken;
+    var zshdstudentToken;
+    var zshddescription;
+    var zshdeventtime;
+    var zshdscheduleInfo;
+    var cctitle;
+    var cceventtime;
+    var ccmaxmannums;
+    var ccuiMode;
+    var ccclientJoin;
+    var ccwebJoin;
+    var ccteacherToken;
+    var ccassistantToken;
+    var ccstudentClientToken;
+    var ccdescription;
+
+function selectvideo()
+{
+   var  live_type =   $('#live_id').find('option:selected').attr('live_type');
+    if(live_type == 3)
+    {
+        $("#ghtype").css("display","block");
+        $("#zshdtype").css("display","none");
+        $("#cctype").css("display","none");
+    }
+
+    if(live_type == 1)
+    {
+        $("#ghtype").css("display","none");
+        $("#zshdtype").css("display","block");
+        $("#cctype").css("display","none");
+    }
+
+    if(live_type == 4)
+    {
+        $("#ghtype").css("display","none");
+        $("#zshdtype").css("display","none");
+        $("#cctype").css("display","block");
+    }
+}
+
+
+function subgharrcourse ()
+{
+
+    live_id =   $('#live_id').find('option:selected').attr('value');
+    speaker_id =   $('#speaker_id').find('option:selected').attr('value');
+    ghliveMode =   $('#ghliveMode').find('option:selected').attr('value');
+    supportMobile =   $('#supportMobile').find('option:selected').attr('value');
+    ghtaccount =   $('#ghtaccount').attr('value');
+    ghtpasswd =   $('#ghtpasswd').attr('value');
+    ghtitle =   $('#ghtitle').attr('value');
+    ghmaxmannums =   $('#ghmaxmannums').attr('value');
+    ghintroduce =   $('#ghintroduce').attr('value');
+    gheventtime =   $('#gheventtime').attr('value');
+
+
+    if(!live_id)
+    {
+      ui.error('请选择课程');
+        return;
+    }
+
+    if(!speaker_id)
+    {
+        ui.error('请选择讲师');
+        return;
+    }
+
+    if(!ghliveMode)
+    {
+        ui.error('请选择直播模式');
+        return;
+    }
+    if(!ghtaccount)
+    {
+        ui.error('请输入讲师账户');
+        return;
+    }
+    if(!ghtpasswd)
+    {
+        ui.error('请输入讲师密码');
+        return;
+    }
+
+    if(!gheventtime)
+    {
+        ui.error('请选择排课时间');
+        return;
+    }
+    if(!ghmaxmannums)
+    {
+        ui.error('请输入申请并发量');
+        return;
+    }
+
+
+    if (!(/(^[1-9]\d*$)/.test(ghmaxmannums)))
+    {
+        ui.error('并发量必须为正整数');
+        return false;
+    }
+
+    if(!ghintroduce)
+    {
+        ui.error('请输入课时简介');
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url:"{:U('school/User/doaddgh')}",
+        data:"live_id="+live_id+"&speaker_id="+speaker_id+"&ghliveMode="+ghliveMode+"&ghtaccount="+ghtaccount+"&ghtpasswd="+ghtpasswd+"&ghtitle="+ghtitle+"&ghmaxmannums="+ghmaxmannums+"&ghintroduce="+ghintroduce+"&gheventtime="+gheventtime+"&supportMobile="+supportMobile+"&live_type=gh",
+        dataType:"json",
+        success:function(data){
+            if(data.status=='0'){
+                notes(data.info,'failure');
+                return;
+            }else{
+                notes(data.info,'success');
+                window.location.href = window.location.href;
+            }
+
+        }
+    });
+
+
+
+}
+
+
+function subzshdarrcourse ()
+{
+    live_id =   $('#live_id').find('option:selected').attr('value');
+    speaker_id =   $('#speaker_id').find('option:selected').attr('value');
+    zshdeventtime =   $('#zshdeventtime').attr('value');
+    zshdmaxmannums =   $('#zshdmaxmannums').attr('value');
+    zshdtitle =   $('#zshdtitle').attr('value');
+    zshduiMode =   $('#zshduiMode').find('option:selected').attr('value');
+    zshdclientJoin =   $('#zshdclientJoin').find('option:selected').attr('value');
+    zshdwebJoin =   $('#zshdwebJoin').find('option:selected').attr('value');
+    zshdteacherToken =   $('#zshdteacherToken').attr('value');
+    zshdassistantToken =   $('#zshdassistantToken').attr('value');
+    zshdstudentClientToken =   $('#zshdstudentClientToken').attr('value');
+    zshdstudentToken =   $('#zshdstudentToken').attr('value');
+    zshddescription =   $('#zshddescription').attr('value');
+    zshdscheduleInfo =   $('#zshdscheduleInfo').attr('value');
+
+
+    if(!live_id)
+    {
+        ui.error('请选择课程');
+        return;
+    }
+    if(!zshdtitle)
+    {
+        ui.error('请输入排课名称');
+        return;
+    }
+
+    if(!speaker_id)
+    {
+        ui.error('请选择讲师');
+        return;
+    }
+
+    if(!zshdmaxmannums)
+    {
+        ui.error('请输入申请并发量');
+        return;
+    }
+    if (!(/(^[1-9]\d*$)/.test(zshdmaxmannums)))
+    {
+        ui.error('并发量必须为正整数');
+        return false;
+    }
+
+
+
+    if(!zshdeventtime)
+    {
+        ui.error('请选择排课时间');
+        return;
+    }
+
+    if(!zshduiMode)
+    {
+        ui.error('请选择直播模式');
+        return;
+    }
+
+    if(!zshdclientJoin)
+    {
+        ui.error('请输入是否支持手机端');
+        return;
+    }
+
+    if(!zshdwebJoin)
+    {
+        ui.error('请输入是否支持web端');
+        return;
+    }
+    if(!zshdteacherToken)
+    {
+        ui.error('请输入讲师口令');
+        return;
+    }
+    if(!zshdassistantToken)
+    {
+        ui.error('请输入助教口令');
+        return;
+    }
+    if(!zshdstudentClientToken)
+    {
+        ui.error('请输入学生端口口令');
+        return;
+    }
+    if(!zshdstudentToken)
+    {
+        ui.error('请输入WEB端学生口令');
+        return;
+    }
+    if(!zshddescription)
+    {
+        ui.error('请输入课程简介');
+        return;
+    }
+    if(!zshdscheduleInfo)
+    {
+        ui.error('请输入课程安排信息');
+        return;
+    }
+
+
+    $.ajax({
+        type: "POST",
+        url:"{:U('school/User/doaddzshd')}",
+        data:"live_id="+live_id+"&speaker_id="+speaker_id+"&zshdeventtime="+zshdeventtime+"&zshdmaxmannums="+zshdmaxmannums+"&zshdtitle="+zshdtitle+"&zshduiMode="+zshduiMode+"&zshdclientJoin="+zshdclientJoin+"&zshdwebJoin="+zshdwebJoin+"&zshdteacherToken="+zshdteacherToken+"&zshdassistantToken="+zshdassistantToken+"&zshdstudentClientToken="+zshdstudentClientToken+"&zshdstudentToken="
+        +zshdstudentToken+"&zshddescription="+zshddescription+"&zshdscheduleInfo="+zshdscheduleInfo+"&type=zshd",
+        dataType:"json",
+        success:function(data){
+            if(data.status=='0'){
+                notes(data.info,'failure');
+                return;
+            }else{
+                notes(data.info,'success');
+                window.location.href = window.location.href;
+            }
+
+        }
+    });
+
+
+
+}
+
+
+function subccarrcourse ()
+{
+    live_id =   $('#live_id').find('option:selected').attr('value');
+    speaker_id =   $('#speaker_id').find('option:selected').attr('value');
+    cctitle =   $('#cctitle').attr('value');
+    cceventtime =   $('#cceventtime').attr('value');
+    ccmaxmannums =   $('#ccmaxmannums').attr('value');
+    ccuiMode =   $('#ccuiMode').find('option:selected').attr('value');
+    ccclientJoin =   $('#ccclientJoin').find('option:selected').attr('value');
+    ccwebJoin =   $('#ccwebJoin').find('option:selected').attr('value');
+    ccteacherToken =   $('#ccteacherToken').attr('value');
+    ccassistantToken =   $('#ccassistantToken').attr('value');
+    ccstudentClientToken =   $('#ccstudentClientToken').attr('value');
+    ccdescription =   $('#ccdescription').attr('value');
+
+
+    if(!live_id)
+    {
+        ui.error('请选择课程');
+        return;
+    }
+
+    if(!speaker_id)
+    {
+        ui.error('请选择讲师');
+        return;
+    }
+
+    if(!cctitle)
+    {
+        ui.error('请输入排课名称');
+        return;
+    }
+
+    if(!cceventtime)
+    {
+        ui.error('请选择排课时间');
+        return;
+    }
+
+    if(!ccmaxmannums)
+    {
+        ui.error('请输入申请并发量');
+        return;
+    }
+
+    if (!(/(^[1-9]\d*$)/.test(ccmaxmannums)))
+    {
+        ui.error('并发量必须为正整数');
+        return false;
+    }
+
+    if(!ccuiMode)
+    {
+        ui.error('请选择直播模式');
+        return;
+    }
+
+    if(!ccclientJoin)
+    {
+        ui.error('请输入是否支持手机端');
+        return;
+    }
+
+    if(!ccwebJoin)
+    {
+        ui.error('请输入是否支持web端');
+        return;
+    }
+    if(!ccteacherToken)
+    {
+        ui.error('请输入讲师口令');
+        return;
+    }
+
+    if(!/^\d{6,15}$/.test($('#ccteacherToken').val())){
+        ui.error('讲师口令只能为6-15位数字');
+        return;
+    }
+
+    if(!ccassistantToken)
+    {
+        ui.error('请输入助教口令');
+        return;
+    }
+
+    if(!/^\d{6,15}$/.test($('#ccassistantToken').val())){
+        ui.error('助教口令只能为6-15位数字');
+        return;
+    }
+
+    if(!ccstudentClientToken)
+    {
+        ui.error('请输入学生端口令');
+        return;
+    }
+
+    if(!/^\d{6,15}$/.test($('#ccstudentClientToken').val())){
+        ui.error('请输入学生端口令只能为6-15位数字');
+        return;
+    }
+  if(!ccdescription)
+    {
+        ui.error('请输入课时简介');
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url:"{:U('school/User/doaddcc')}",
+        data:"live_id="+live_id+"&speaker_id="+speaker_id+"&cctitle="+cctitle+"&cceventtime="+cceventtime+"&ccmaxmannums="+ccmaxmannums+"&ccuiMode="+ccuiMode+"&ccclientJoin="+ccclientJoin+"&ccclientJoin="+ccclientJoin+"&ccwebJoin="+ccwebJoin+"&ccteacherToken="+ccteacherToken+"&ccassistantToken="+ccassistantToken+"&ccstudentClientToken="
+        +ccstudentClientToken+"&ccdescription="+ccdescription+"&type=cc",
+        dataType:"json",
+        success:function(data){
+            if(data.status=='0'){
+                notes(data.info,'failure');
+            }else{
+                notes(data.info,'success');
+                window.location.href = window.location.href;
+            }
+
+        }
+    });
+}
+
+  function buyblue()
+  {
+
+      var thistime = $('#gheventtime').val();
+      if(!thistime)
+      {
+          ui.error("请选择所需绿色通道时间");
+          return;
+      }
+
+      window.location.href = "{:U('school/User/buybluecon',array('eventtime' => '"+thistime+"'))}";
+
+  }
+
+    function buyonehourcon()
+    {
+
+        var thistime = $('#gheventtime').val();
+        if(!thistime)
+        {
+            ui.error("请选择购买单小时并发的时间");
+            return;
+        }
+
+        window.location.href = "{:U('school/User/buydisccon',array('eventtime' => '"+thistime+"'))}";
+
+    }
+
+</script>
+<include file="__THEME__/public_footer_onelevel" />

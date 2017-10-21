@@ -1,0 +1,20 @@
+<div class="nav-s">
+    <div class="nav_tit">管理中心<span class="icon-sj"></span></div>
+    <ul class="nav_ul">
+        <li class="active"><a href="{:U('w3g/User/index')}">个人资料</a></li>
+        <li><a href="{:U('w3g/User/video')}">课程管理</a></li>
+        <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+        <li><a href="{:U('w3g/User/uploadVideo')}">我上传的课程</a></li>
+        <li><a href="{:U('w3g/User/teacherCourse')}">授权课程</a></li>
+        <li><a href="{:U('w3g/User/teacher')}">教师信息</a></li>
+        <php>}</php>
+        <li><a href="{:U('w3g/User/course')}">约课</a></li>
+        <li><a href="{:U('w3g/User/card')}">绑定银行卡</a></li>
+        <li><a href="{:U('w3g/User/recharge')}">财富管理</a></li>
+        <li><a href="{:U('w3g/User/setInfo')}">基本信息</a></li>
+        <li><a href="{:U('w3g/User/avatar')}">头像设置</a></li>
+        <li><a href="{:U('w3g/User/savePassword')}">修改密码</a></li>
+        <li><a href="{:U('w3g/User/verified')}">申请认证</a></li>
+        <li><a href="{:U('w3g/User/bind')}">账号绑定</a></li>
+    </ul>
+</div>

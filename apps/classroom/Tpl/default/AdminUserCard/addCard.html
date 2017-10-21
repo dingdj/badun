@@ -1,0 +1,140 @@
+<include file="__THEME__/admin_header" />
+<div id="container" class="so_main">
+	<div class="page_tit">
+	{$pageTitle}
+	</div>
+	<div class="tit_tab">
+		<ul>
+			<li><a href="{:U('classroom/AdminUserCard/index',array('tabHash'=>'index'))}">用户卡券列表</a></li>
+			<li><a href="{:U('classroom/AdminUserCard/addCard',array('tabHash'=>'addCard'))}" <php>if($_GET['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>添加用户卡券</a></li>
+		</ul>
+	</div>
+	<div class="form2">
+		<dl class="lineD" id="dl_id">
+			<dt><font color="red"> * </font>用户名：</dt>
+			<dd>
+				{:W('SearchUser', array('uids'=>$userCard['uid'], 'name'=>uid,'follow'=>0, 'max'=>1,'noself'=>0,))}
+			</dd>
+		</dl>
+		<dl class="lineD" id="dl_photo">
+			<dt><font color="red"> * </font>卡券选择：</dt>
+			<dd>
+				<select id="type" name="type" >
+					<option>请选择</option>
+					<option value="1" <eq name="coupon.type" value="1">selected="selected"</eq>>课程优惠券</option>
+					<option value="2" <eq name="coupon.type" value="2">selected="selected"</eq>>打折卡</option>
+					<option value="3" <eq name="coupon.type" value="3">selected="selected"</eq>>会员卡</option>
+					<option value="4" <eq name="coupon.type" value="4">selected="selected"</eq>>充值卡</option>
+				</select>
+				<select id="coupon" name="type">
+					<if condition="$coupon">
+						<option value="{$coupon.id}" >
+							<switch name="coupon.type">
+								<case value="1">{$coupon.price}</case>
+								<case value="2">{$coupon.discount}</case>
+								<case value="3">{$coupon.vip_grade}</case>
+								<case value="4">{$coupon.recharge_price}</case>
+								<default/>
+							</switch>
+						</option>
+						<else/>
+						<option>请选择</option>
+					</if>
+				</select>
+				<select id="code" name="type">
+					<if condition="$coupon">
+						<option value="{$coupon.id}" >{$coupon.code}</option>
+						<else/>
+						<option>请选择</option>
+					</if>
+				</select>
+			</dd>
+		</dl>
+		<div class="page_btm">
+			<input type="text" style="display:none">
+			<input type="submit" class="btn_b" value="保存" onclick="saveCoupon()" >
+		</div>
+	</div>
+
+<include file="__THEME__/admin_footer" />
+<script>
+$(function(){
+	$('#type').change(function(){
+		var type = $(this).val();
+		if(type){
+			$.post(U('classroom/AdminUserCard/getSubCategory'),{type:type},function(res) {
+				if (typeof res != 'object') {
+					var res = eval('(' + res + ')');
+				}
+				$("#coupon").show();
+				$("#code").hide();
+				var addHtml = '<option>请选择</option>';
+				$("#coupon").html('');
+				if (res.status == 1) {
+					$.each(res.data,function(i,n){
+						addHtml += '<option value="'+n+'" >';
+						addHtml += n+'</option>';
+					});
+					$("#coupon").append(addHtml);
+				}else{
+					addHtml += '<option value="0" >';
+					addHtml += "暂时没有可用的卡券"+'</option>';
+					$("#coupon").append(addHtml);
+				}
+			});
+		}
+	});
+	$('#coupon').change(function(){
+		var type = $("#type").val();
+		var coupon = $(this).val();
+		if(coupon){
+			$.post(U('classroom/AdminUserCard/getSubCategory'),{type:type,coupon:coupon},function(res) {
+				if (typeof res != 'object') {
+					var res = eval('(' + res + ')');
+				}
+				if (res.status == 1) {
+					$("#code").show();
+					var addHtml = '<option>请选择</option>';
+					$("#code").html('');
+					$.each(res.data,function(i,n){
+						addHtml += '<option value="'+ n.id+'" >';
+						addHtml += n.code+'</option>';
+					});
+					$("#code").append(addHtml);
+				}
+			});
+		}
+	});
+});
+	function saveCoupon(city_id){
+		var uid = $("input[name='uid']").val();
+		var cid = $("#code").val();
+		var id = "{$Think.get.id}";
+
+		if(!uid){
+			ui.error("请选择用户");
+			return false;
+		}
+		if(cid == 0){
+			ui.error("请选择优惠券!");
+			return false;
+		}
+		$.ajax({
+			type:'POST',
+			url:"{:U('classroom/AdminUserCard/doUserCard')}",
+			data:{id:id,uid:uid,cid:cid},
+			dataType:'json',
+			success:function(msg){
+				if(msg.status == 1){
+					ui.success(msg.info);
+					setTimeout(function(){
+						location.href = U('classroom/AdminUserCard/index')+'&tabHash=index';
+					},'1500');
+				}else{
+					ui.error(msg.info);
+					return false;
+				}
+			}
+		});
+	}
+</script>

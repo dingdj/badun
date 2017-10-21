@@ -1,0 +1,237 @@
+<include file="__THEME__/_header" />
+<style>
+.loginhead{height:115px;}
+.loginhead .logo{height:100px;}
+</style>
+
+<div class="header">
+    <div class="loginhead">
+        <div class="wrap">
+            <php>if($register_type == 'open'):</php>
+            <php>endif;</php>
+            <div class="fr" style="margin-top: 10px;font-size: 14px;">已有账号？<a href="{:U('public/Passport/login_g')}" style="margin-left: 15px;padding-left: 15px;border-left: solid 1px #a0a0a0;">登录</a></div>
+            <div class="logo"><a href="/" title="{$site['site_keyword']}在线教育系统"><img style="margin: 4px 0px;" src="{$site.logo_head}" width="150" height="65"/></a></div>
+        </div>
+    </div>
+</div>
+<!--header end-->
+
+<script>
+var CLICK_VERIFY="{:U('public/Passport/clickVerify')}";
+var CLICK_UNAME="{:U('public/Passport/clickUname')}";
+var CLICK_PHONE="{:U('public/Passport/clickPhone')}";
+var CLICK_PHONEVER="{:U('public/Passport/clickPhoneVer')}";
+var SETUSERFACE="{:U('public/Passport/setUserFace')}";
+var GET_PHONEVERIFY="{:U('public/Passport/getVerify')}";
+
+//更换验证码
+function changeverify(){
+	var date = new Date();
+    var ttime = date.getTime();
+    var url = "__ROOT__/public/captcha.php";
+    $('#verifyimg').attr('src',url+'?'+ttime);
+
+};
+</script>
+
+<div class="content">
+    <div class="wrap">
+        <div class="logincontent reg_set_info">
+            <div class="title"><em></em>注册账号</div>
+            <form class="loginform">
+                <input type="hidden" id="this_mhm_id"  value ="{$this_mhm_id}" />
+                <input type="hidden" id="mount_reg"  value ="{$mount_reg}" />
+                <if condition="($register_type eq 'phone') or ($register_type eq 'all')">
+                    <div id="phoneReg"  style='<if condition="($register_type eq 'phone') or ($register_type eq 'all')">display: block;<else/>display: none;</if>'>
+                        <dl>
+                            <dt><span>*</span>手机:</dt>
+                            <dd>
+                                <input class="inp" type="text" id="prphone" placeholder="请输入手机号码" />
+                                <if condition="($register_type eq 'email') or ($register_type eq 'all')">
+                                    <p>或使用<a href="javascript:;" onclick="emailReg(this)">邮箱注册</a></p>
+                                </if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>验证码:</dt>
+                            <dd>
+                                <input class="inp" type="text" id="prverify" placeholder="请输入收到的验证码" style="width:145px;">
+                                <a class="yzm" href="javascript:;" onclick="getPhoneVerify()">获取验证码</a>
+                                <p class="width97"  style="display:none;color: red;" ><a id="dtime"></a>后可重新发送</p>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>设置密码:</dt>
+                            <dd>
+                                <input class="inp" id="prpassword" type="password" placeholder="请设置登录密码，6-20个字符">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>确认密码:</dt>
+                            <dd>
+                                <input class="inp" id="prpassword2" type="password" placeholder="请设置登录密码，6-20个字符">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <p></p><label class="check"><input type="checkbox" checked >我已阅读并同意<a href="{:U('public/Single/info',array('id'=>28))}" style="color: #188eee;">《{$site['site_keyword']}网站服务条款》</a></label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <a class="btn" type="button" href="javascript:;" onclick="phoneNext()">立即注册</a>
+                            </dd>
+                        </dl>
+                    </div>
+                </if>
+
+                <if condition="($register_type eq 'email') or ($register_type eq 'all')">
+                    <div id="emailReg" style='<if condition="($register_type eq 'email') and ($register_type neq 'all')">display: block;<else/>display: none;</if>' >
+                        <dl>
+                            <dt><span>*</span>邮箱地址:</dt>
+                            <dd>
+                                <input value="" class="inp" id="erusername" type="text" placeholder="请输入您的常用邮箱地址">
+                                <if condition="($register_type eq 'phone') or ($register_type eq 'all')">
+                                    <p>或使用<a href="javascript:;" onclick="phoneReg(this)">手机注册</a></p>
+                                </if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>验证码:</dt>
+                            <dd>
+                                <input class="inp" type="text" id="erverify" placeholder="请输入右侧验证码" style="width:145px;">
+                                <img class="yzm" src="__ROOT__/public/captcha.php" title="点击刷新" onclick="changeverify()" id="verifyimg" style="border-radius:0;">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>设置密码:</dt>
+                            <dd>
+                                <input class="inp" id="erpasswrod" type="password" placeholder="请设置登录密码，6-20个字符">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><span>*</span>确认密码:</dt>
+                            <dd>
+                                <input class="inp" id="erpasswrod2" type="password" placeholder="请设置登录密码，6-20个字符">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <p></p><label class="check"><input type="checkbox" checked >我已阅读并同意<a href="{:U('public/Single/info',array('id'=>28))}" style="color: #188eee;">《{$site['site_keyword']}网站服务条款》</a></label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dd>
+                                <a class="btn" type="button" href="javascript:;" onclick="onemaliNext()">立即注册</a>
+                            </dd>
+                        </dl>
+                    </div>
+                </if>
+            </form>
+        </div>
+
+        <!--用户信息-->
+        <div class="logincontent reg_set_user_info" style="display: none;">
+            <div class="title"><em></em>完善信息，让学友们更了解你</div>
+            <form class="loginform">
+                <dl>
+                    <dt><span>*</span>昵称:</dt>
+                    <dd>
+                        <input class="inp" id="uname" type="text" maxlength="6" placeholder="请输入用户昵称">
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>性别:</dt>
+                    <dd>
+                        <input id="sex"  name="sex" type="radio" value="1"  checked="checked" />
+                        <label>男</label>
+                        <input id="sex" name="sex" type="radio" value="2" />
+                        <label>女</label>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>地区:</dt>
+                    <dd style="width: 450px;">
+                        <style>
+                            select{width: 87px;}
+                            .tex01 {
+                                width: 280px;
+                                height: 100px;
+                                padding: 10px;
+                                border: solid 1px #b6c7d6;
+                                border-radius: 4px;
+                            }
+                        </style>
+                        {:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>职业:</dt>
+                    <dd>
+                        <input id="profession" class="inp" type="text" maxlength="10" placeholder="请输入您的职业,10个字符内">
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><span>*</span>个人简介:</dt>
+                    <dd>
+                        <textarea id="intro" class="tex01" maxlength="500" placeholder="请输入个人简介,6-500个字符内" cols="" rows=""></textarea>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>感兴趣:</dt>
+                    <dd style="width: 450px;">
+                    <style>
+                        select {
+                            margin-right: 15px !important;
+                            height: 40px;
+                            width: 121px !important;
+                            border-radius: 4px;
+                            border: solid 1px #b6c7d6;
+                            line-height: 34px;
+                            padding: 0;
+                        }
+                    </style>
+                    <select name="interest" id="interest">
+                      <foreach name="interest" item="vo" key="k">
+                        <option value="{$vo.zy_currency_category_id}">{$vo.title}</option>
+                      </foreach>
+                    </select>
+                </dl>
+
+                <dl>
+                    <dd>
+                        <a class="btn" type="button" href="javascript:;" onclick="setUserInfo()">完成填写，注册！</a>
+                        <a href="javascript:;" class="a"  style="font-size: 16px;" onclick="prevBang()">返回</a>
+                    </dd>
+                </dl>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--itembox end-->
+
+<div class="login-footer" style="margin-bottom:0;">
+    <ul>
+        <li><a href="/">{$site['site_keyword']}首页</a></li>
+        <volist name="pageCategory" id="vo" offset="0" length="5">
+            <li>|</li>
+            <li>
+                <a target="_blank" href="{$vo['url']}">{$key}</a>
+            </li>
+        </volist>
+        <li>|</li>
+        <li><span>{:t($site['site_footer']);}.</span></li>
+    </ul>
+</div>
+
+<script>
+    $(document).keydown(function(event){
+        if($("#transparent").css("display")=="block"){
+            if(event.keyCode == 13){
+                logSub();
+            }
+        }
+
+    });
+</script>

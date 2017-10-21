@@ -1,0 +1,135 @@
+<include file="__THEME__/public_header" />
+
+<div id="main">
+    <div class="wrapper">
+        <div class="search-header">
+            <div class="form-group city-select">
+                <label class="form-label">按省份选择</label>
+                <div class="form-controls">
+                    <div class="dropdown province"><b class="btn-default"><i class="caret"></i><span>请选择</span></b>
+                        <ul class="dropdown-menu">
+                            <volist name="province" id="v">
+                                <li data-id="{$v.area_id}" data-value="{$v.title}" class="select_cate">{$v.title}</li>
+                            </volist>
+                        </ul>
+                        <input type="hidden" name="province">
+                    </div>
+                    <div class="dropdown city"><b class="btn-default"><i class="caret"></i><span>请选择</span></b>
+                        <ul class="dropdown-menu">
+                        </ul>
+                        <input type="hidden" name="city">
+                    </div>
+                    <button class="btn-comfirm btn-info" >确定</button>
+                </div>
+            </div>
+            <!--<div class="form-group city-search">
+                <label class="form-label">直接输入城市</label>
+                <div class="form-controls">
+                    <input type="text" class="search-input form-text">
+                    <ul class="search-suggestion">
+                    </ul>
+                </div>
+            </div>-->
+        </div>
+        <div class="hot-cities list"><span class="title">热门城市：</span>
+            <ul>
+                <li><a href="javascript:;" data-id="110100" class="hover choose">北京</a></li>
+                <li><a href="javascript:;" data-id="310100" class="choose">上海</a></li>
+                <li><a href="javascript:;" data-id="510100" class="choose">成都</a></li>
+                <li><a href="javascript:;" data-id="420100" class="choose">武汉</a></li>
+                <li><a href="javascript:;" data-id="340100" class="choose">合肥</a></li>
+                <li><a href="javascript:;" data-id="320100" class="choose">南京</a></li>
+                <li><a href="javascript:;" data-id="210200" class="choose">大连</a></li>
+                <li><a href="javascript:;" data-id="610100" class="choose">西安</a></li>
+            </ul>
+        </div>
+        <div class="cities-list list">
+            <div class="alphabet-list"><span class="title">按拼音首字母选择：</span>
+                <ul>
+                    <?php $key = array_keys($charArray);?>
+                    <foreach name="key" item="v">
+                        <li><a href="#alphabet-{$v}" onclick="alphabet('alphabet-{$v}')" class="alphabet-index">{$v}</a></li>
+                    </foreach>
+                </ul>
+            </div>
+            <div class="alphabet-cities">
+                <?php $key = array_keys($charArray);?>
+                <foreach name="key" item="v">
+                    <dl id="alphabet-{$v}">
+                            <dt>{$v}</dt>
+                            <?php $name = $charArray[$v];?>
+                            <dd>
+                            <volist name="name" id="city">
+                                <a href="javascript:;" data-id="{$city.city_id}" class="common choose">{$city.city_name}</a>
+                            </volist>
+                            </dd>
+                    </dl>
+                </foreach>
+            </div>
+        </div>
+        <p class="reminder">如果没有您要找的城市，请拨打{$site.site_phone}联系我们，该城市开通分站后，我们会在第一时间联系您</p>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $(".province").click(function(){
+            $(this).children("ul").toggleClass('open');
+            $(".city").children('ul').removeClass('open');
+        });
+        $(".select_cate").click(function(){
+            var city_id = $(this).data('id'),
+                title = $(this).data('value');
+            $(".province").find("span").text(title);
+            if(city_id){
+                $.post(U('public/ChangeCity/getSubCategory'),{pid:city_id},function(res) {
+                    if (typeof res != 'object') {
+                        var res = eval('(' + res + ')');
+                    }
+                    if (res.status == 1) {
+                       var addHtml = '';
+                        $(".city").children('ul').html('');
+                        $.each(res.data,function(i,n){
+                            addHtml += '<li data-id="'+n.area_id+'" data-value="'+n.title+'" id="select_cate">';
+                            addHtml += n.title+'</li>';
+                        });
+                        $(".city").children('ul').append(addHtml);
+                    }
+                });
+            }
+        });
+        $(".city").click(function(){
+            $(this).children("ul").toggleClass('open');
+        });
+        $(document).on("click", "#select_cate", function(){
+            var city_id = $(this).data("id"),
+             title = $(this).data("value");
+             $(this).parent().parent('.city').find("span").text(title);
+            $('.btn-info').addClass('choose');
+            $('.btn-info').attr("data-id",city_id);
+         });
+        $(document).on("click", ".choose", function(){
+            var city_id = $(this).data("id");
+            save(city_id);
+        });
+    });
+    function alphabet(id){
+        var id = '#'+id;
+        $('dt').removeAttr('style');
+        $(id).children('dt').attr('style','background-color: #02C1D0;');
+    }
+    function save(city_id){
+        $.ajax({
+            type:'POST',
+            url:"{:U('public/Area/saveTemArea')}",
+            data:{city_id:city_id},
+            dataType:'json',
+            success:function(data){
+                if(data.status == 1){
+                    window.location.href="{:U('classroom/Index/index')}";
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,26 @@
+    <div class="footer">
+        <div class="link">
+            <a href="/">首页</a>
+            <span>|</span>
+            <if condition="$_SESSION['mid']">
+                <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">个人中心</a>
+                <else />
+                <a href="{:U('public/Passport/login_g')}">登录</a>
+            </if>
+            <span>|</span>
+            <php>if($this_mhm_id)  {</php>
+                <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">注册</a>
+            <php>}else{</php>
+                <a href="{:U('public/Passport/reg')}">注册</a>
+            <php>}</php>
+            <span>|</span>
+            <a href="javascript:;">下载APP</a>
+            <span>|</span>
+            <a href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">联系客服</a>
+        </div>
+        <p>{$site['site_footer']}</p>
+    </div>
+    <a class="backtop"></a>
+</div>
+<script src="__THEMEW3G__/js/script.js"></script>
+</body>

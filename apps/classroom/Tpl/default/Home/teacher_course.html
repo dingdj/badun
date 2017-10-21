@@ -1,0 +1,159 @@
+<include file="__THEME__/public_header" />
+
+<include file="../User/public/_top" />
+<style>
+    .user-imglist li{height: 172px;}
+</style>
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="javascript:;" class="on" onclick="navClick(this,'donecourse')" style="width:auto;float: left;">未完成的约课</a>
+                    <a onclick="navClick(this,'faildcourse')" href="javascript:;" style="width:auto;float: left;">已完成的约课</a>
+                </div>
+            </div>
+            <input type = "hidden"  id = "clickstatus"  value = "done"/>
+
+            <!--约课详情-->
+            <div class="center_right_con Manage_all" style="display: block">
+                <!--图片列表-->
+                <ul class="user-imglist">
+
+                </ul>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+    var btnclick="getTeachercourselist";
+    var fdata;
+    var magstatus;
+    var mid = "{$mid}";
+    $(function(){
+        var url="{:U('classroom/Home/getTeachercourselist')}";
+        //异步加载我购买的课程
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p=1&is_del=0&ordertype=1",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,btnclick,'getTeachercourselist');
+            }
+        });
+    });
+    //头部点击事件
+    function navClick(cate,type){
+        $("#magsta").text("管理");
+        $(".Operation-list").css("display","none");
+        $(".user-imglist").html("");
+        btnclick=type;
+        magstatus=false;
+        url="{:U('classroom/Home/getTeachercourselist')}";
+        if(type=="donecourse"){
+           fdata="ordertype=1";
+            $('#clickstatus').val('done');
+        }else{
+            fdata="ordertype=2";
+            $('#clickstatus').val('faild');
+        }
+        $("a").removeClass("on");
+        $(cate).addClass("on");
+        p=1;
+        type = "getTeachercourselist";
+        ajaxBang(url,type,fdata);
+    }
+
+//点击查看更多事件
+function fallBang(cate){
+    var clickid=$(cate).attr('id');
+    var url="{:U('classroom/Home/"+clickid+"')}";
+    ajaxBang(url,clickid,fdata,function(){
+        if(magstatus==true){
+            $(".Operation-list").css("display","block");
+        }else{
+            $(".Operation-list").css("display","none");
+
+        }
+    });
+
+}
+
+
+    //请求事件
+    function ajaxBang(url,type,callback){
+        var ordertype;
+
+            url = "{:U('classroom/Home/getTeachercourselist')}";
+        if($('#clickstatus').val() == 'done')
+        {
+            ordertype = 1;
+        }
+        if($('#clickstatus').val() == 'faild')
+        {
+             ordertype = 2;
+        }
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:"p="+p+"&ordertype="+ordertype,
+            dataType:"json",
+            success:function(data){
+                appendHtml(data,type);
+                callback && callback();
+            }
+        });
+    }
+
+
+    /**
+     * 删除课程方法
+     * @param id
+     */
+    function delcourse(cate,id){
+        var id=id;
+        url="{:U('classroom/Home/delCourse')}";
+        fdata="id="+id;
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+               if(data.status==1){
+                   $(cate).parent().parent().parent().fadeOut();
+               }
+            }
+        });
+    }
+
+    /**
+     * 完成约课方法
+     * @param id
+     */
+    function saveFinished(id,type){
+        url="{:U('classroom/Home/saveFinished')}";
+        fdata={id:id,type:type};
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    ui.success(data.info);
+                    window.location.reload();
+                }else{
+                    ui.error(data.info);
+                    return;
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

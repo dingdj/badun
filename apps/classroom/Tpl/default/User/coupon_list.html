@@ -1,0 +1,75 @@
+<php>if($listData){</php>
+    <volist name="listData" id="vo">
+        <php>if($vo['type'] == 1){</php>
+            <li>
+                <i class="icon-date"></i>
+                <div class="txt">
+                    <h3 <php>if($vo['status'] != 0){</php>style="color: #dddddd;"<php>}</php>><em>¥</em>{$vo.price}<span>满{$vo.maxprice}元可用</span></h3>
+                    <p>卡券编号&nbsp;:&nbsp;{$vo.code}</p>
+                    <p>仅限&nbsp;<span style="color: red;">{$vo.school_title}</span>&nbsp;下的课程使用</p>
+                    <p>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                </div>
+                <php>if($vo['status'] == -1){</php>
+                <a href="javascript:;" style="background-position: -280px -300px;color:#666;">已<br>过<br>期</a>
+                <php>}else{</php>
+                <switch name="vo.status">
+                    <case value="0"><a href="{:U('classroom/Video/index')}">立<br>即<br>使<br>用</a></case>
+                    <default/><a href="javascript:;" style="background-position: -280px -300px;">已<br>使<br>用</a>
+                </switch>
+                <php>}</php>
+            </li>
+        <php>}else if($vo['type'] == 2){</php>
+            <li <switch name="vo.status"><case value= "1|2" >class="used"</case><case value= "-1" >class="over"</case><default /></switch>>
+                <div class="quan">
+                    <if condition="($vo['is_out_time']) or ($vo['status']  neq 0)">
+                        <i class="icon-date"></i>
+                    </if>
+                    <div class="prcie">{$vo.discount}折</div>
+                    <p>打折卡<br>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                </div>
+                <div class="txt">
+                    <div class="item">卡券编号&nbsp;:&nbsp;{$vo.code}</div>
+                    <div class="item">发卡单位&nbsp;:&nbsp;{$vo.school_title}</div>
+                    <php>if($vo['status'] == 0){</php>
+                    <a href="{:U('classroom/Video/index')}">立即使用</a>
+                    <php>}</php>
+                </div>
+            </li>
+        <php>}else if($vo['type'] == 3){</php>
+            <li <switch name="vo.status"><case value= "1|2" >class="used"</case><case value= "-1" >class="over"</case><default /></switch>>
+                <div class="txt">
+                    <i class="icon-tb"></i>
+                    <h3 <php>if($vo['status'] != 0){</php>style="color: #dddddd;"<php>}</php>>{$vo.vip_date}天<span class="vip">{$vo.vip_grade}</span></h3>
+                    <p>卡券编号&nbsp;:&nbsp;{$vo.code}</p>
+                    <p>发卡单位&nbsp;:&nbsp;{$vo.school_title}</p>
+                    <p>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                </div>
+                <switch name="vo.status">
+                    <case value="1|2"><a href="javascript:;" style="background-position: -280px -300px;">已<br>使<br>用</a></case>
+                    <case value="-1"><a href="javascript:;" style="background-position: -280px -300px;color:#666;">已<br>过<br>期</a></case>
+                    <default/>
+                    <a href="{:U('classroom/User/recharge')}">立<br>即<br>使<br>用</a>
+                </switch>
+            </li>
+        <php>}else if($vo['type'] == 4){</php>
+            <li id="re_li" <switch name="vo.status"><case value= "1|2" >class="used"</case><case value= "-1" >class="over"</case><default /></switch>>
+                <div class="quan">
+                    <if condition="($vo['is_out_time']) or ($vo['status']  neq 0)">
+                        <i class="icon-date"></i>
+                    </if>
+                    <div class="prcie"><span>¥</span>{$vo.recharge_price}</div>
+                    <p>充值卡<br>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                </div>
+                <div class="txt">
+                    <div class="item">卡券编号&nbsp;:&nbsp;{$vo.code}</div>
+                    <div class="item">发卡单位&nbsp;:&nbsp;{$vo.school_title}</div>
+                    <php>if($vo['status'] == 0){</php>
+                    <a href="{:U('classroom/User/recharge')}">立即使用</a>
+                    <php>}</php>
+                </div>
+            </li>
+        <php>}</php>
+    </volist>
+<php>}else{</php>
+    <p>暂时没有符合要求的卡券</p>
+<php>}</php>

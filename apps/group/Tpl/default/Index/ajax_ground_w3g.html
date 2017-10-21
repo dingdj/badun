@@ -1,0 +1,22 @@
+<volist name="ground_list['data']" id="gla">
+    <if condition="$gla['groupstatus'] eq ''">
+        <a href="javascript:;" onclick =joingroup("{$gla['id']}");>
+            <else/>
+            <a href="{:U('group/Index/view',array('gid'=>$gla['id']))}">
+    </if>
+
+    <div class="group-content-img">
+        <img src="{:logo_path_to_url($gla['logo'])}">
+        <if condition="$gla['groupstatus'] eq ''">
+            <span>加入小组</span>
+            <else/>
+            <span style="background: rgba(0, 128, 0, 0.71)">您已加入</span>
+        </if>
+    </div>
+    <div class="group-content-per">
+        <h3>{$gla.name}</h3>
+        <p>{$gla.intro|msubstr=0,40,'utf-8',true}</p>
+        <div class="ibor"><i>成员：{$gla.membercount}</i><i class="ipos">帖子：{$gla.threadcount}</i></div>
+    </div>
+    </a>
+</volist>

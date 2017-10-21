@@ -1,0 +1,184 @@
+<include file="__THEME__/public_header_twolevel"/>
+    <div class="body">
+		<div class="communitytop">
+        	<div class="pic">
+               <img src="{:logo_path_to_url($group['logo'])}" alt="{$group.name}">
+
+
+                <!--<php>if($memberid == 0  || $memberid == '')  { </php>-->
+                <!--<a class="join" href="javascript:;"   onclick =joingroup("{$group.id}");>加入小组</a>-->
+                <!--<php>  } else  {</php>-->
+                <!--<a class="join"  ;>你已加入</a>  <php>}</php>-->
+
+                <php>if($level == '')  { </php>
+                    <a class="join" href="javascript:;"   onclick =joingroup("{$gid}");>加入小组</a>
+                <php>  } else  if($level == 0) {</php>
+                    <a class="join" >等待审核</a>
+                <php>} else {</php>
+                    <a class="join" >你已加入</a>
+                <php>}</php>
+
+            </div>
+            <div class="info">
+            	<div class="tit">
+            		<h2>{$group.name}</h2>
+                </div>
+                <div class="tit">
+                    <div class="fl"><i class="icon-xx"></i><span class="c1">{$topiccount}</span>条</div>
+                    <div class="fl">|</div>
+                    <div class="fl"><i class="icon-rs"></i><span class="c2">{$membercount}</span>人</div>
+                </div>
+                <div class="txt">{$group.intro}</div>
+            </div>
+        </div>
+        <div class="communitybot">
+            <div class="mallmain-hd">
+            	<ul>
+                	<li class="choose on"><a href="javascript:;">全部帖子</a></li>
+                    <li class="choose"><a href="javascript:;">精华帖子</a></li>
+                    <li class="choose"><a href="{:U('group/Index/addtopic',array('gid'=>$_GET['gid']))}">发布新帖</a></li>
+                </ul>
+            </div>
+            <div class="mallmain-bd">
+                <ul class="communitylist01 groupInfo" style="display: block;">
+                    <php>if(!$topic['data']){</php>
+                        <p style="font-size:14px;padding: 12px;"><b>该小组暂时没有帖子</b></p>
+                    <php>}else{</php>
+                        <volist name = "topic.data" id ="vo">
+                            <li>
+                                <h3><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">{$vo.title}</a></h3>
+                                <div class="pic"><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">
+                                    {$vo.intro}
+                                </a></div>
+                                <div class="info">
+                                    <!--<a href="#"><span class="icon-pl"></span>10</a>-->
+                                    <a href="javascript:;"><span class="icon-zan"></span>{$vo.replycount}</a>
+                                    {$vo.uname} {$vo.addtime}
+                                </div>
+                            </li>
+                        </volist>
+                    <php>}</php>
+                </ul>
+                <div class="mallmain-bd groupInfo" style="display: none;">
+                    <ul class="communitylist01">
+                        <php>if(!$dist_topic['data']){</php>
+                            <p style="font-size:14px;padding: 12px;"><b>该小组暂时没有精华帖子</b></p>
+                        <php>}else{</php>
+                            <volist name = "dist_topic.data" id ="vo">
+                                <li>
+                                    <h3><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">{$vo.title}</a></h3>
+                                    <div class="pic"><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">
+                                        {$vo.intro}
+                                    </a></div>
+                                    <div class="info">
+                                        <!--<a href="#"><span class="icon-pl"></span>{$vo.replycount}</a>-->
+                                        <a href="javascropt:;"><span class="icon-zan"></span>{$vo.replycount}</a>
+                                        {$vo.uname} {$vo.addtime}
+                                    </div>
+                                </li>
+                            </volist>
+                        <php>}</php>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <php>if($topic['data']){</php>
+    <div class="loadding">
+        <if condition="$topic['nowPage'] eq $topic['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>
+            <else/>
+            正在加载更多。。
+        </if>
+    </div>
+    <a class="backtop"></a>
+    <php>}</php>
+
+<script>
+    $(function(){
+        $(".choose").click(function(){
+            $(this).addClass("on").siblings().removeClass();
+            var index = $(this).index();
+            $(".groupInfo").hide().eq(index).show();
+        });
+        var p = 1;
+        var gid = {$group.id};
+        $(window).scroll(function () {
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if (!p || p >= "{$topic['totalPages']}") {
+                    $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                } else {
+                    p = p + 1;
+                    ajaxBang();
+                }
+            }
+        });
+
+        //请求事件
+        function ajaxBang() {
+            $.ajax({
+                type: "GET",
+                url: "{:U('group/Index/getGroupInfoList')}",
+                data: {p:p,gid:gid},
+                dataType: "json",
+                success: function (data) {
+                    appendHtml(data);
+                }
+            });
+        }
+
+        //追加html
+        function appendHtml(data) {
+            $(".groupInfo").append(data.data);
+            if (!p || p >= data.totalPages) {
+                $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                return false;
+            }
+        }
+    });
+
+    var uid = "{$mid}";
+
+
+    // 加入群组
+    function joingroup(gid) {
+
+        if(uid<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+
+
+        if(!confirm("确定要加入该小组吗？")){
+            return false;
+        }
+
+        var accept = accept == 0 ? 0 : 1;
+        $.ajax({
+            type: "POST",
+            url: U('group/Index/joinGroup'),
+            data:   "addsubmit=1&gid="+gid+"&accept=" + accept + "&reason=" + $('#reason').val(),
+            success: function(msg){
+                if (msg == 1) {
+                    alert('加入成功！');
+                    window.location.reload();
+                } else {
+                    alert('加入失败！');
+                }
+            }
+        });
+    }
+
+
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

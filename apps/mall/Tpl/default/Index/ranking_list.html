@@ -1,0 +1,9 @@
+<volist name="data" id="vo" key="k">
+    <li class="fir c{$k}">
+        <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+        <h3><em>{$k}</em>{$vo.title}</h3>
+        <p><span>{$vo.price}</span>积分，库存{$vo.stock}份</p>
+        <img src="{$vo.cover}" class="lazyloading" />
+        </a>
+    </li>
+</volist>

@@ -1,0 +1,200 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+<!--header-->
+<!--container-->
+<div class="content">
+    <div class="header2">
+        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <div>我的直播</div>
+    </div>
+    <div class="body">
+        <ul class="classlistnav">
+                <li class="on"><a href="javascript:;"  onclick="navClick(this,'getbuyliveslist')">购买的直播</a></li>
+                <li><a href="javascript:;" onclick="navClick(this,'getcollectlivelist')" >收藏的直播</a></li>
+            </ul>
+        </div>
+        <div class="commentbox">
+            <ul class="list02">
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+
+var btnclick="getbuyliveslist";
+var fdata;
+var magstatus;
+var mid = "{$mid}";
+$(function(){
+    $(".header").hide();
+
+    var url="{:U('classroom/Home/getbuyliveslist')}";
+    $(".user-Release").hide();
+	//异步加载我购买的课程
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:"p=1",
+        dataType:"json",
+        success:function(data){
+            appendHtml(data,btnclick,'getbuyliveslist');
+        }
+    });
+});
+//头部点击事件
+function navClick(cate,type){
+    $(".list02").html("");
+    btnclick=type;
+    magstatus=false;
+    $(".body ul li a").parent().removeClass("on");
+    $(cate).parent().addClass("on");
+    if(type=="getbuyliveslist"){
+        url="{:U('classroom/Home/getbuyliveslist')}";
+    }else if(type=="getcollectlivelist"){
+
+        url="{:U('classroom/Home/getcollectlivelist')}";
+    }else{
+        url="{:U('classroom/Home/getbuyliveslist')}";
+    }
+    $(".center_right_tit ul li a").parent().removeClass("on");
+    $(cate).parent().addClass("on");
+    p=1;
+    ajaxBang(url,type,fdata);
+}
+//点击查看更多事件
+function fallBang(cate){
+    var clickid=$(cate).attr('id');
+    var url="{:U('classroom/Home/"+clickid+"')}";
+    ajaxBang(url,clickid,fdata,function(){
+        /*if(magstatus==true){
+            $(".Operation-list").css("display","block");
+        }else{
+            $(".Operation-list").css("display","none");
+
+        }*/
+    });
+
+}
+//请求事件
+function ajaxBang(url,clickid,fdata,callback,type){
+
+    if(fdata!=""){
+        var fdata="&"+fdata;
+    }
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:"p="+p+fdata,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data,clickid,type);
+            callback && callback();
+        }
+    });
+}
+
+//追加html
+function appendHtml(data,clickid,type){
+    $(".more").remove();
+    $('.list02').html('');
+    if(data.data==""){
+        var text = '';
+        if( clickid == 'getbuyvideoslist') {
+            text = '您还没有购买课程';
+        } else if( clickid == 'getcollectvideolist' ) {
+            text = '您还没有收藏课程';
+        } else if( clickid == 'getbuyalbumslist' ) {
+            text = '您还没有购买套餐';
+        }
+        else if( clickid == 'getupvideoslist') {
+            text = '您还没有上传课程';
+        }
+        else if( clickid == 'getbuyliveslist') {
+            text = '您还没有购买直播';
+        }
+        else if( clickid == 'getcollectlivelist') {
+            text = '您还没有收藏直播';
+        }
+        else if( clickid == 'getmyvideolist' ){
+            text = '您还没有上传课程';
+        } else if( clickid == 'getTeacherVideo' ){
+            text = '您还没有上传录播课程';
+        } else if( clickid == 'getTeacherLive' ){
+            text = '您还没有上传直播课程';
+        } else if( clickid == 'getTeacherFace' ){
+            text = '您还没有上传面授课程';
+        }else {
+            text = '您还没有收藏套餐';
+        }
+        $('.user-Release-l').hide();
+        $(".list02").append("<span>"+text+"</span>");
+    }else{
+        $('.user-Release-l').show();
+        $(".list02").append(data.data);
+    }
+    if(data.nowPage+1>data.totalPages){
+        return;
+    }else{
+        var html="<div class=\"more\" ><a href=\"javascript:void(0)\" onclick='fallBang(this)' id=\""+clickid+"\">查看更多</a></div>"
+        $(".list02").append(html);
+        p=data.nowPage+1;//下一页
+    }
+
+}
+
+
+/**
+ * 删除课程方法
+ * @param id
+ */
+function delalbum(cate,id){
+    var id=id;
+    url="{:U('classroom/Album/delalbum')}";
+    //删除我购买的套餐
+    if(btnclick=="getbuyliveslist"){
+        fdata="type=1&rtype=1&id="+id;
+    }else if(btnclick=="getcollectlivelist"){
+        fdata="type=1&rtype=2&id="+id;
+    }
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:fdata,
+        dataType:"json",
+        success:function(data){
+           if(data.status==1){
+               $(cate).parent().parent().parent().fadeOut();
+           }
+        }
+    });
+}
+
+
+
+
+/**
+ * 删除直播方法
+ * @param id
+ */
+function dellive(cate,id){
+    var id=id;
+    url="{:U('classroom/Album/delalbum')}";
+
+        fdata="type=1&rtype=5&id="+id;
+    $.ajax({
+        type: "POST",
+        url:url,
+        data:fdata,
+        dataType:"json",
+        success:function(data){
+            if(data.status==1){
+                $(cate).parent().parent().parent().fadeOut();
+            }
+        }
+    });
+}
+
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

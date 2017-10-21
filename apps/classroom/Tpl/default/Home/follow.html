@@ -1,0 +1,139 @@
+<include file="__THEME__/public_header" />
+
+<include file="../User/public/_top" />
+<style>
+    .center_right_tit div a{width: 80px;}
+</style>
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <ul>
+                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/follow')}">关注的讲师</a></li>
+                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/follow',['tab'=>1])}">关注的机构</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <if condition="$_GET['tab'] eq null">
+            <div class="center_right_con">
+                <ul class="user-wenda">
+                    <if condition="$teacher_data['data'] eq null">
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有关注讲师。。</li>
+                        <else/>
+                        <foreach name="teacher_data['data']" item="l" key="k">
+                            <php>if($l['tid'] != 0){</php>
+                            <li  class="li" <php> if($k == 0) echo ""</php>>
+                            <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}"><img width="40" height="40" src="{:getCover($l['head_id'],180,180)}"></a>
+                                <div class="detailmeg">
+                                    <div class="mynote">
+                                        <em>讲师姓名:</em><a target="_blank" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}">{$l.name}</a>
+                                        <em>头衔:</em><a>{$l.title}</a><br/>
+                                        <em>简介:</em><a>{$l.inro}</a>
+                                    </div>
+                                    <div class="fbtime">时间：
+                                        <span>{$l.ctime|friendlyDate}</span>
+                                        <div class="Operation-wd">
+                                            <a href="javascript:;" onclick="ui.confirm(this,'确定要取消关注讲师吗？');return false;" callback="delFollow({$l['follow_id']})" ><span>取消关注</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </li>
+                            <php>}</php>
+                        </foreach>
+                    </if>
+                </ul>
+                <if condition="$teacher_data['data']">
+                    <div class="page">
+                        <div class="pagebox">
+                            {$teacher_data['html']}
+                        </div>
+                    </div>
+                </if>
+            </div>
+            <else/>
+            <div class="center_right_con">
+                <ul class="user-wenda">
+                    <if condition="$school_data['data'] eq null">
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有关注机构。。</li>
+                        <else/>
+                        <foreach name="school_data['data']" item="l" key="k">
+                        <li  class="li">
+                            <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" href="{$l.domain}"><img width="40" height="40" src="{:getCover($l['cover'],180,180)}"></a>
+                                <div class="detailmeg">
+                                    <div class="mynote">
+                                        <em>机构名称:</em><a target="_blank" href="{$l.domain}">{$l.title}</a>
+                                        <br/>
+                                        <em>简介:</em><a>{$l.info}</a>
+                                    </div>
+                                    <div class="fbtime">时间：
+                                        <span>{$l.ctime|date="Y/m/d ",###}</span>
+                                        <div class="Operation-wd">
+                                            <a href="javascript:;" onclick="ui.confirm(this,'确定要取消关注机构吗？');return false;" callback="delFollow({$l['follow_id']})" ><span>取消关注</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        </foreach>
+                    </if>
+                </ul>
+                <if condition="$school_data['data']">
+                    <div class="page">
+                        <div class="pagebox">
+                            {$school_data['html']}
+                        </div>
+                    </div>
+                </if>
+            </div>
+            </if>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<script>
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Home/follow')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+//    $(".center_right_con:first").show();
+//    $(".center_right_tit a").on("click",function(){
+//        $(this).addClass("on").siblings().removeClass("on");
+//        var tit_li = $(this).index();
+//        $(".center_right_con").hide();
+//        $(".center_right_con").eq(tit_li).show();
+//    });
+
+    //删除关注
+    function delFollow(follow_id){
+        var id=follow_id;
+        $.post("{:U('classroom/User/delFollow')}", {id:id}, function(res){
+            if(res==200){
+                ui.success('取消关注成功!')
+                location.reload();
+            }else{
+                ui.error('对不起，取消关注失败请重试!');
+            }
+        });
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

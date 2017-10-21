@@ -1,0 +1,100 @@
+<include file="__THEME__/public_header_twolevel"/>
+<div class="min-height-wrap">
+    <!--content start-->
+    <div class="body" style="overflow-x: hidden;">
+        <div id="slideBox" class="slideBox">
+            <div class="bd">
+                <ul>
+                    <volist name="ad_list" id="vo" offset="0" length="5">
+                        <li>
+                            <a target="_blank" href="{$vo.bannerurl}">
+                                <img src="{:cutImg($vo['banner'],640,320)}" title="{$vo.banner_title}" alt="{$vo.banner_title}" class="lazyloading"/>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+            <div class="hd">
+                <ul></ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            TouchSlide({
+                slideCell:"#slideBox",
+                titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+                mainCell:".bd ul",
+                effect:"leftLoop",
+                autoPage:true,//自动分页
+                autoPlay:true //自动播放
+            });
+        </script>
+        <ul class="newsnav">
+            <li><a href="{:U('classroom/Topic/index')}" <if condition="$_GET['cate'] eq ''">style="color: #00BED4;border-bottom: 2px solid #00BED4;"</if> >全部资讯</a></li>
+            <volist name="cate" id="vo">
+                <li><a href="{:U('classroom/Topic/index',['cate'=>$vo['zy_topic_category_id']])}" <if condition="$_GET['cate'] eq $vo['zy_topic_category_id']">style="color: #00BED4;border-bottom: 2px solid #00BED4;"</if> >{:msubstr(t($vo['title']),0,5,'utf-8',true)}</a></li>
+            </volist>
+        </ul>
+        <div class="searchdiv"><if condition="$cate_name_one">在“<span>{$cate_name_one}</span>”分类下，</if>找到{$topic_data.count}条资讯</div>
+        <ul class="newslist more_newslist">
+            <volist name="topic_data.data" id="vo">
+                <li><a href="{:U('classroom/Topic/view',array('id'=>$vo['id']))}">
+                    <img src="{:cutImg($vo['image'],150,90)}" />
+                    <h3>{$vo.title|getShort=###,'21'}</h3>
+                    <p>{$vo.desc|getShort=###,'85','...'}</p>
+                    <div class="info"><span>{$vo.readcount}阅读</span>{$vo.dateline|friendlyDate}</div>
+                </a></li>
+            </volist>
+        </ul>
+    </div>
+    <div class="loadding">
+        <if condition="$topic_data['nowPage'] eq $topic_data['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+        </if></div></div>
+    <a class="backtop"></a>
+</div>
+<script>
+    var p = 1;
+    $(window).scroll(function () {
+        //已经滚动到上面的页面高度
+        var scrollTop = $(this).scrollTop();
+        //页面高度
+        var scrollHeight = $(document).height();
+        //浏览器窗口高度
+        var windowHeight = $(this).height();
+        //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+        if (scrollTop + windowHeight == scrollHeight) {
+            if(!p || p >= "{$topic_data['totalPages']}"){
+                return false;
+            }else{
+                p = p + 1;
+                ajaxBang();
+            }
+        }
+    });
+
+    //请求事件
+    function ajaxBang(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('classroom/Topic/getTopicList')}",
+            data:"p="+p+"&cate={$_GET['cate']}",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".more_newslist").append(data.data);
+        if(!p || p >= data.totalPages){
+            $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+            return false;
+        }else{
+            p = data.nowPage;//下一页
+        }
+    }
+
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

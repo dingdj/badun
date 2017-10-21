@@ -1,0 +1,72 @@
+<include file="__THEME__/public_header" />
+<link  href="__APP__/css/group.css" rel="stylesheet" type="text/css"/>
+<div class="content">
+    <div class="wrap">
+        <div class="class_left">
+            <div class="content-place">
+                <ul>
+                    <li><a href="{:U('group/Index/index')}">更多</a><span>&gt;</span><a href="{:U('group/Index/view',array('gid'=>$topic['gid']))}">社区</a><span>&gt;</span>{$topic.title}</li>
+                </ul>
+            </div>
+            <div class="question-box">
+                    <h2>{$topic.title}</h2>
+                    <dl>
+                        <dt>
+                            <a href="{:U('classroom/UserShow/index',array('uid'=>$topic['uid']))}"><img  class="lazyloading"  src="{:getUserFace($topic['uid'],'m')}"  >{$topic.uname}</a>发表于：{$topic.addtime}</dt>
+                    </dl>
+                    <div class="question-page">
+                        <p>{$topic.intro}</p>
+                    </div>
+
+
+
+                <foreach name="topic.attach" item="l">
+
+                    <li>
+                        <div class="position-rt">
+                            <a class="img"><img src="{:getCover($l, 266,148)}"></a>
+                        </div>
+                    </li>
+                </foreach>
+
+
+                <div class="page-question">
+                        <php>if($down['title'])   {</php>
+                        <div class="fl"><a href="{:U('group/Index/detail',array('id'=>$down['id']))}">上一篇：{$down.title|msubstr=0,5,'utf-8',true}</a></div>
+                        <php>}</php>
+                        <php>if($up['title'])   {</php>
+                        <div class="fr"><a href="{:U('group/Index/detail',array('id'=>$up['id']))}">下一篇：{$up.title|msubstr=0,5,'utf-8',true}</a></div>
+                        <php>}</php>
+                    </div>
+
+
+            </div>
+
+                <div class="reply feed_list">
+                    {:W('Comment',array('tpl'=>'detail', 'table'=>'group_topic', 'row_id'=>$topic[id], 'canrepost'=>'0', 'cancomment'=>1, 'cancomment_old'=>0, 'showlist'=>1, 'limit'=>'20', 'order'=>'DESC'))}
+                </div>
+                </div>
+
+        <div class="jg_right">
+            <div class="gr_rightitem">
+                <h3 class="gr_rightitem_tit">作者的其他帖子</h3>
+                <ul class="dotlist">
+                    <volist name ="authtopic" id ="vo">
+                        <li><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">{$vo.title}</a></li>
+                        </volist>
+                </ul>
+            </div>
+            <div class="gr_rightitem">
+                <h3 class="gr_rightitem_tit">最新帖子</h3>
+                <ul class="dotlist">
+                   <volist name ="newtopic" id ="vo">
+                    <li><a href="{:U('group/Index/detail',array('id'=>$vo['id']))}">{$vo.title}</a></li>
+                       </volist>
+                </ul>
+                <a class="fb_btn" href="{:U('group/Index/addtopic')}">我要发帖</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,158 @@
+  <include file="__THEME__/public_header" />
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+<div class="worap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+    <!--中 -->
+    <include file="__THEME__/swfupload" />
+
+    <div class="user-con fl user-pbottom">
+        <div class="user-con-title">
+          <a href="{:U('classroom/User/address')}">收货地址</a>
+          <php>if($_GET['type']){</php>
+          <a class="onactive" onclick="navClick(this,'updateAddress')" href="javascript:;">添加收货地址</a>
+          <php> }else{ </php>
+          <a class="onactive" onclick="navClick(this,'updateAddress')" href="javascript:;">修改收货地址</a>
+          <php> }</php>
+        </div>
+    <div class="updateAddress">
+      <form method="POST" action="{:U('classroom/User/doUpdateAddress' ,array('type'=>$_GET['type']))}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+        <div class="form2" style="margin-top:30px;">
+          <ul class="user-set-sz">
+            <li>
+              <label class="label1"><em>*</em> 收货人姓名：</label>
+             <input type="text" name="name" id="name" value="{$address.name}">
+            </li>
+            <li>
+              <label class="label1"><em>*</em> 收货人手机：</label>
+             <input type="text" name="phone" id="phone" value="{$address.phone}">
+            </li>
+            <li>
+              <label class="label1"><em>*</em> 省/市/区：</label>
+              <php>if(isset($data['id'])):</php>
+              <!--编辑的情况-->
+              {:W('Area',array('curPro'=>$data['province'],'curCity'=>$data['city'],'area'=>$data['area'],'city_names'=>$data['location'],'tpl'=>'selectArea'))}
+              <php>else:</php>
+              <!--添加的情况-->
+              {:W('Area',array('tpl'=>'selectArea'))}
+               <php>endif;</php>
+            </li>
+            <li>
+              <label class="label1"><em>*</em> 详细地址：</label>
+               <textarea id="address" class="user-textarea" name="address">{$address.address}</textarea>
+            </li>
+            <li>
+              <label class="label1"><em>*</em> 设为默认地址：</label>
+              <input type="radio" value="1" name="is_default" {$address['is_default']==0?'checked':''}/>
+              <label>否&nbsp;&nbsp;&nbsp;</label>
+              <input type="radio" value="2" name="is_default" {$address['is_default']==1?'checked':''}/>
+              <label>是</label>
+            </li>
+            <li style="margin-top:15px;">
+              <label class="label1">&nbsp;</label>
+              <input  class="user-submit" type="submit" value="保 存">
+            </li>
+          <ul>
+        </div> 
+      </form>
+    </div>
+ </div>
+    <!--右-->
+    <include file="../User/_right" />
+</div>
+<script type="text/javascript">
+    function j_validateCallback(form,call,callback) {
+    var $form = $(form);
+    if(typeof call != 'undefined' && call instanceof Function){    
+      $i = call($form);
+      if(!$i){
+        return false;
+      }
+    }
+    var _submitFn = function(){
+      $.ajax({
+        type: form.method || 'POST',
+        url:$form.attr("action"),
+        data:$form.serializeArray(),
+        dataType:"json",
+        cache: false,
+        success: function(xMLHttpRequest, textStatus, errorThrown){
+          if(typeof callback != 'undefined' && callback instanceof Function){   
+            callback($form,xMLHttpRequest);
+          }  
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+      });
+    }
+    _submitFn();
+    return false;
+  }
+  function checkForm(form){
+    var city  = form.find('select#city option:selected').val();
+    if($("#name").val()==""){
+      ui.error("请输入收货人姓名!");
+      return false;
+    }
+    if($("#phone").val()==""){
+      ui.error("请输入收货人手机!");
+      return false;
+    }
+    if(city<=0){
+      ui.error("请选择地区!");
+      return false;
+    }
+    if($("#address").val()==""){
+      ui.error("请输入详细地址!");
+      return false;
+    }
+    if($('input:radio:checked').val()==""){
+      ui.error("请输入标签!");
+      return false;
+    }
+    return true;
+  }
+  function post_callback(_form,data){
+    if(data.status != undefined){
+      if(data.status == '0'){
+        ui.error(data.info);
+      } else {
+        ui.success(data.info);
+        window.location.href = U('classroom/User/address');
+      }
+    }
+  }
+  function callback(data){
+    $("#"+data.input_id+"_cover").remove();
+    $("#image_"+data.input_id).append(
+      '<div id='+data.input_id+'_cover>'
+      +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+      +'</div>'
+    ).find('input:file').val('');
+    $("#"+data.input_id+"_ids").val(data.attach_id);
+  }
+  function selectschedule(schedule,schedule_id){
+    var id=$("#teacher_schedule").val();
+    if($(schedule).attr("class")=="td"){
+      $(schedule).attr("class","td-1");
+      if(id){
+        id=id+","+schedule_id;
+      }else{
+        id=","+schedule_id;
+      }
+      $("#teacher_schedule").val(id);
+    }else{
+      if(id.indexOf(","+schedule_id)!=-1){
+        id=id.replace(","+schedule_id,'');
+      }else if(id.indexOf(schedule_id+",")!=-1){
+        id=id.replace(","+schedule_id,'');
+      }else{
+        id=id.replace(schedule_id,'');
+      }
+      $("#teacher_schedule").val(id);
+      $(schedule).attr("class","td");
+    }
+  }
+  </script>
+<include file="__THEME__/public_footer" />

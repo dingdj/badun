@@ -1,0 +1,33 @@
+<ul class="con addressStyle">
+    <foreach name="address_list" item="l">
+        <li>
+            <span onclick="changeAddress('{$l.id}')">{$l.location}&nbsp;&nbsp;{$l.address}</span>
+        </li>
+    </foreach>
+    <input type="hidden" name="address_id" value="{$id}" id="vid">
+    <input type="hidden" name="status" value="{$status}" id="status">
+
+    <div class="clear"></div>
+</ul>
+
+<script type="text/javascript">
+    function changeAddress(address_id) {
+        if(getLength(address_id) < 1){
+            alert("请选择地址");
+            return false;
+        }
+        $.post(U('mall/Goods/getAddress'),{address_id:address_id},function(msg){
+            var msg = getResponseData(msg);
+            if(msg.status == 1){
+                $("input[name='address_id']").val(msg.data['id']);
+                msg.data = msg.data['location'] + msg.data['address'];
+                $("#old").html(msg.data);
+                ui.box.close();
+            }
+        });
+    };
+    // 关闭弹窗
+    function cancel() {
+        ui.box.close();
+    }
+</script>

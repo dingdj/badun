@@ -1,0 +1,181 @@
+<include file="__THEME__/public_header" />
+<!--分类筛选使用的jquery1.7.1不兼容，故使用jquery  主要用于课程直播分类筛选-->
+<script type="text/javascript" src="__THEME__/js/jquery.js"></script>
+<div class="worap position-rt">
+    <!--左-->
+    <include file="../User/_left" />
+
+    <div class="user-con fl user-pbottom">
+        <div class="user-con-title">
+          <a href="{:U('classroom/User/teacherVideo')}">我上传的课程</a>
+          <a class="onactive" onclick="navClick(this,'uploadvideo')" href="javascript:;">修改直播课程</a>
+        </div>
+        <!--图片列表-->
+        <ul class="user-imglist">
+        </ul>
+        <div class="uploadvideo">
+            <form method="post" action="{:U('classroom/User/doUploadZshdLive')}" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
+                <div class="form2">
+                  <ul class="user-set-sz">
+                      <li>
+                          <label class="label1"><em>*</em>直播课堂名称：</label>
+                          <input type="text" class="user-width" id="subject" name="subject" value="{$subject}">
+                          <p class="add_live_p">请输入直播课堂的名称，不能与已有直播课堂名称相同</p>
+                      </li>
+                      <li id="image_live_cover">
+                          <label class="label1"><em>*</em>封面上传：</label>
+                          {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'live_cover','urlquery'=>'input_id=live_cover'))}
+                          建议尺寸：520px*320px
+                          <php>if($cover){</php>
+                          <div id="small_cover">
+                              <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$cover_path}" />
+                              <input type="hidden" name="live_cover_ids" data="live_cover_ids" value="{$cover}" />
+                          </div>
+                          <php>}</php>
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em> 价格：</label>
+                          <input type="text" class="user-width" id="price" name="price" value="{$price}" >
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em>分类：</label>
+                          <php>$fullcategorypaths = trim($cate_id , ',');</php>
+                          {:W('VideoLevel',array('type'=>3,'default'=>$fullcategorypaths))}
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em> 评分：</label>
+                          <input type="text" id="score" name="score" value="5" class="head_search upload_input_a" >
+                          <p class="add_live_p">默认值 可以修改 请输入0-5之间的整数</p>
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em>开始时间：</label>
+                          <input type="text"  name="startDate" value="{$startDate}" id="startDate" onfocus="core.rcalendar(this,'full');" readonly="readonly">
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em>结束时间：</label>
+                          <input type="text"  name="invalidDate" value="{$invalidDate}" id="invalidDate" onfocus="core.rcalendar(this,'full');" readonly="readonly" >
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em> 课程安排信息：</label>
+                          <textarea id="form_scheduleInfo" class="user-textarea" name="scheduleInfo">{$scheduleInfo}</textarea>　　
+                      </li>
+                      <li>
+                          <label class="label1"><em>*</em> 课程信息简介：</label>
+                          <textarea id="form_description" class="user-textarea" name="description">{$description}</textarea>　　
+                      </li>
+                      <li>
+                          <label class="label1">&nbsp;</label>
+                          <input type="hidden" name="id" value="{$SDK_ID}" />
+                          <input  class="user-submit" type="submit"  value="保 存">
+                      </li>
+                  </ul>
+              </div>   
+          </form>
+        </div>
+      </div>
+    <!--右-->
+    <include file="../User/_right" />
+</div>
+<script>
+
+    function j_validateCallback(form,call,callback) {
+        var $form = $(form);
+        if(typeof call != 'undefined' && call instanceof Function){
+            $i = call($form);
+            if(!$i){
+                return false;
+            }
+        }
+        var _submitFn = function(){
+            $.ajax({
+                type: form.method || 'POST',
+                url:$form.attr("action"),
+                data:$form.serializeArray(),
+                dataType:"json",
+                cache: false,
+                success: function(xMLHttpRequest, textStatus, errorThrown){
+                    if(typeof callback != 'undefined' && callback instanceof Function){
+                        callback($form,xMLHttpRequest);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    ui.error("未知错误!");
+                }
+            });
+        }
+        _submitFn();
+        return false;
+    }
+    function checkForm(form){
+        if($("#subject").val()==""){
+            ui.error("直播课堂名称不能为空");
+            return false;
+        }
+        if($("#live_cover_ids").val()==""){
+            ui.error("请上传封面");
+            return false;
+        }
+        if($("#price").val()==""){
+            ui.error("请输入价格");
+            return false;
+        }
+        if(isNaN($("#price").val())){
+            ui.error("价格必须为数字");
+            return false;
+        }
+        if($(".mzTopLevel ").val()==""){
+            ui.error("请选择分类");
+            return false;
+        }
+        if($("#score").val()==""){
+            ui.error("请输入评分");
+            return false;
+        }
+        if(isNaN($("#score").val())){
+            ui.error("评分必须为数字");
+            return false;
+        }
+        if($("#score").val() >5){
+            ui.error("评分不能大于5");
+            return false;
+        }
+        if($("#startDate").val()==""){
+            ui.error("开始时间不能为空");
+            return false;
+        }
+        if($("#invalidDate").val()==""){
+            ui.error("结束时间不能为空");
+            return false;
+        }
+        if($("#form_scheduleInfo").val()==""){
+            ui.error("课程安排信息不能为空");
+            return false;
+        }
+        if($("#form_description").val()==""){
+            ui.error("课程信息不能为空");
+            return false;
+        }
+        return true;
+    }
+    function post_callback(_form,data){
+        if(data.status != undefined){
+            if(data.status == '0'){
+                ui.error(data.info);
+            } else {
+                ui.success(data.info);
+                window.location.reload();
+            }
+        }
+    }
+
+    function callback(data){
+        $("#"+data.input_id+"_cover").remove();
+        $("#image_"+data.input_id).append(
+            '<div id='+data.input_id+'_cover>'
+            +'<img style="max-width:100px;padding:2px; border:1px solid #ccc" src='+UPLOAD_URL+'/'+data.src+' />'
+            +'</div>'
+        ).find('input:file').val('');
+        $("#"+data.input_id+"_ids").val(data.attach_id);
+    }
+</script>
+<include file="__THEME__/public_footer" />

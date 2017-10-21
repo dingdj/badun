@@ -1,0 +1,137 @@
+
+    <!--footer start-->
+    <div class="post-service yensen" style="height: 260px">
+        <div class="post-service-box">
+            <div class="other-service">
+                <volist name="pageCategory" id="vo" offset="0" length="5">
+                    <div class="service-class" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
+                        <a href="javascript:;"><span>{$key}</span></a>
+                        <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                            <a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
+                        </volist>
+                    </div>
+                </volist>
+                <div class="tel-box">
+                    <div class="tel-icon">
+                        <img src="{:getCover($site['wx_qrcode'],120,120)}">
+                    </div>
+                    <div class="week">关注官方微信</div>
+                </div>
+            </div>
+            <div class="post-service-pers">
+               <!--  <div class="about">
+                   <a href="javascript:;">关于我们</a>
+                   <a href="javascript:;">联系我们</a>
+                   <a href="javascript:;">联系客服</a>
+                   <a href="javascript:;">商家入驻</a>
+                   <a href="javascript:;">帮助中心</a>
+                   <a href="javascript:;">手机{$site['site_keyword']}</a>
+                   <a href="javascript:;">友情链接</a>
+                   <a href="javascript:;">代理合作</a>
+                   <a href="{:U('group/Index/index')}" style="border:none;">{$site['site_keyword']}社区</a>
+               </div> -->
+                <div class="copyright-box">
+                    {$site['site_footer']}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--footer end-->
+
+    <div class="sidernav">
+        <ul>
+            <li class="share-alls">
+                    <a href="javascript:;">
+                        <i class="icon-01"></i>
+                    </a>
+                    <div class="qq_and_phone_info_div">
+                        <div class="siderbox">
+                            <p>分享到：</p>
+                            <div class="bdsharebuttonbox">
+                                <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                                <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+
+                                <script>window._bd_share_config={"common":{"bdSnsKey":{"tqq":"http://share.baidu.com/code#"},"bdText":"","bdMini":"2","bdMiniList":["tsina","weixin","qzone","sqq","renren","copy"],"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{},"image":{"viewList":["tsina","weixin","qzone","sqq"],"viewText":"分享到：","viewSize":"0"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            <!--<li>-->
+                <!--<a href="javascript:;">-->
+                    <!--<i class="icon-02"></i>-->
+                <!--</a>-->
+                <!--<div class="xiala">-->
+                    <!--<img src="{:getCover($site['app_qrcode'],120,120)}" alt="">-->
+                    <!--<p>扫描下载APP</p>-->
+                <!--</div>-->
+            <!--</li>-->
+
+            <li>
+                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">
+                    <i class="icon-03"></i>
+                </a>
+                <div class="qq_and_phone_info_div">
+                    <div class="siderbox">
+                        <dl>
+                            <dt class="qq_info_dt">
+                                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes" >
+                                    <span class="icon-qq"></span>QQ在线咨询</a>
+                            </dt>
+                        </dl>
+                        <dl>
+                            <dt><span class="icon-ph"></span>咨询热线：</dt>
+                            <dd style="color:#188eee;">{$site.site_phone}</dd>
+                            <dd style="color:#25c151;">{$site.site_phone_two}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </li>
+
+            <li><a href="{:U('exam/Index/index')}">
+                <i class="icon-04"></i>
+            </a></li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="icon-05"></i>
+                </a>
+                <div class="xiala">
+                    <img src="{:getCover($site['wb_qrcode'],120,120)}" alt="">
+                    <p>扫一扫关注官方<span style="color: #FB7D30">微博</span></p>
+                </div>
+            </li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="icon-06"></i>
+                </a>
+                <div class="xiala">
+                    <img src="{:getCover($site['wx_qrcode'],120,120)}" alt="">
+                    <p>扫一扫关注官方<span style="color: #8BDA64">微信</span></p>
+                </div>
+            </li>
+
+            <li class="backtop" style="display: none;"><a href="javascript:;"><i class="icon-07"></i></a></li>
+        </ul>
+    </div>
+
+    <!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+    <div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+    </div>
+    <eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+    </eq>
+
+
+    <!--&lt;!&ndash;百度推广网页转化&ndash;&gt;-->
+    <!--<script type="text/javascript">-->
+    <!--var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");-->
+    <!--document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F9efa5e6b982a815a97700d8e78129b16' type='text/javascript'%3E%3C/script%3E"));-->
+    <!--</script>-->
+</body>
+</html>

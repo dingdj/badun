@@ -1,0 +1,89 @@
+<include file="__THEME__/public_header" />
+
+<div class="content cf2">
+	<div class="wrap">
+    	<!--左-->
+	    <include file="../User/_left" />
+	    <!--右-->
+        <div class="jgpage_right">
+        	<div class="jgpage_right_tit mb50">首页模板</div>
+            <div class="jgpage_right_con">
+                <ul class="jg_home_list">
+                	<!-- <volist name="template" id="vo">
+                		<li>
+	                    	<img src="{:getCover($vo['attach_id'],270,170)}" class="lazyloading" alt="{$vo.title}">
+							<a href="javascript:;" onclick="template();">点击即可更换模板</a>
+	                    </li>
+                	</volist> -->
+                    <li>
+                    	<img src="__THEME__/images/c2.jpg" alt="">
+                        <a href="javascript:;" onclick="template();">点击即可更换模板</a>
+                    </li>
+                    <li>
+                    	<img src="__THEME__/images/c3.jpg" alt="">
+                        <a href="javascript:;" onclick="template();">点击即可更换模板</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="jgpage_right_con" id="checkfrom" style="margin-top:50px;">
+    			<form id="checkfrom" action="" method="post" onsubmit="return false;">
+                    <div class="jgformitem" style="width: 430px;">
+                        <h1>自定义首页展示模块</h1>
+                        <ul class="user-set-sz" style="margin-top:40px;">
+                            <li>
+                                <input type="checkbox" name="tem" value="video"     checked="checked" disabled="disabled">课程</input>&nbsp;&nbsp;
+                                <input type="checkbox" name="tem" value="album"     checked="checked" disabled="disabled">套餐</input>&nbsp;&nbsp;
+                                <input type="checkbox" name="tem" value="coupon"    <php>if(in_array("coupon",$template)){</php>checked="checked"<php>}</php>>优惠券</input>&nbsp;&nbsp;
+                                <input type="checkbox" name="tem" value="teacher"   <php>if(in_array("teacher",$template)){</php>checked="checked"<php>}</php>>教师</input>&nbsp;&nbsp;
+                                <input type="checkbox" name="tem" value="banner"    <php>if(in_array("banner",$template)){</php>checked="checked"<php>}</php>>banner</input>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="jgformitem">
+                        <a class="jg_btn" href="javascript:;" onclick="check();">保存</a>
+                    </div>
+    			</form>
+
+			</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+	$(".box ul li").hover(
+		function () {
+			$(this).find(".dask").stop().delay(50).animate({"top":0,opacity:0.8},300)
+		 },
+		function () {
+			$(this).find(".dask").stop().animate({"top":-200,opacity:0},300)
+		}
+
+	)
+});
+</script>
+<script>
+    function check(){
+    var data =[]; 
+    $('input:checked').each(function(){ 
+        data.push($(this).val()); 
+    })
+    $.post(U('school/User/template'),{data:data},function(msg){
+        var msg = getResponseData(msg);
+        if(msg.status == 1){
+            notes(msg.info, 'success');
+            setTimeout(function(){
+                location .reload();
+            },'1500');
+        }else{
+            notes(msg.info, 'failure');
+            return false;
+        }
+    });
+}
+</script>
+
+
+
+		    
+<include file="__THEME__/public_footer" />

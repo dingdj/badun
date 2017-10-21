@@ -1,0 +1,145 @@
+<include file="__THEME__/public_header" />
+<style>
+    .quesdetail textarea{padding:5px;border:1px solid #eee;width: 700px;height: 100px;}
+</style>
+<!--main-->
+<div  class="wenda position-rt"style="min-height: 600px;">
+    <!--左边-->
+    <div class="sucesspage" style="">
+        <h2>发问题</h2>
+        <div class="inputques">
+            <div class="quesdetail mbot"> <span class="ques-label">分类：</span>
+                <volist name="wenda_cate" id="vo">
+                    <a <php>if($key == 0){</php>class="onactive"<php>}</php> href="javascript:;" data-val="{$vo['zy_wenda_category_id']}" onclick="setType(this,{$vo['zy_wenda_category_id']})" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                </volist>
+            </div>
+            <!--
+            <div class="jgformitem">
+                <span class="ques-label fl">标签：</span>
+                <input name="str_tag" value=" " type="text" id ="str_tag" style="width: 363px" />
+                <p style="padding: 10px 0 0 50px;">添加标签(多个标签用英文逗号< , >隔开)</p>
+            </div>
+
+            <div class="u_hot_tag clearfix" id="u_hot_tag">
+                <ul>
+                    <li class="b">热门标签： <volist name="WendaHottag" id="vo"   >
+                        <span>{$vo['hottagname']}　</span>
+                    </volist>
+                    </li>
+                </ul>
+            </div>
+            -->
+            <div class="quesdetail mbottom" > <span class="ques-label fl">内容：</span>
+                <textarea rows="" cols="" id="content" placeholder="简单描述下您的问题吧"></textarea>
+            </div>
+
+            <!--<div class="form-tt">-->
+                <!--<span class="ques-label fl">验证码：</span>-->
+            <!--&lt;!&ndash;<img src="__ROOT__/public/captcha.php" id="verifyimg" alt="{:L('PUBLIC_CHANGE_ONE')}"  style="vertical-align:middle;padding:0 5px 0 0" onclick="changeverify()"/>&lt;!&ndash;<a href="javascript:void(0);" onclick="changeverify()">看不清，换一张</a>&ndash;&gt; &ndash;&gt;-->
+        <!--&lt;!&ndash;<img id="verifyImg"  src="-Article-verify"    onclick="changeverify()"  title ="点击刷新验证">&ndash;&gt;-->
+                <!--<input id="login_verify" placeholder="请输入验证码">-->
+                <!--<img class="verifyimg" src="{:U('wenda/Index/verify')}" title ="点击刷新验证" style="height: 40px;" />-->
+            <!--</div>-->
+
+            <div class="publishbtn-worap"> <a class="publishbtn" href="javascript:;" onclick="subWenda()">发布</a>
+                <p class="global-errortip js-global-error"></p>
+            </div>
+        </div>
+    </div>
+    <!--右边-->
+    <div class="fr bbs-slide">
+        <div class="bbs-sendques">
+            <h1> 您想发问题 还是发问题，还是想发问题？ </h1>
+            <dl>
+                <dt>上面没有写错，是您看错啦。</dt>
+                <dd>1、您是想来吐槽的吧，没事，随便发吧。有人会跟你一起吐槽的。</dd>
+                <dd>2、您是来解决问题？请先搜索是否已经有同类问题吧。这样您就省心少打字。</dd>
+                <dd>3、没找到是么？就在发问题时精确描述你的问题，不要写与问题无关的内容哟；</dd>
+                <dd>4、讨论更衷于解达您想要的答案。能引起思考和讨论的知识性问题；</dd>
+            </dl>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<script>
+    var wdtype = $('.mbot a:first').attr('data-val');//分类id
+    function setType(cate,id){
+        wdtype=id;
+        // $("#wdType").removeClass("onactive");
+        //$(cate).addClass("onactive");
+        $(cate).addClass("onactive").siblings().removeClass("onactive");
+    }
+
+    /**
+     * 提交发布
+     */
+    function subWenda(){
+        var tagids="";
+        if(MID==0){
+            reg_login();
+            return;
+        }
+        var title = $.trim($("#title").val());//获取标题
+        var count = $.trim($("#content").val());//获取内容
+        var verify = $.trim($("#login_verify").val()); //获取验证码
+        var tag = $.trim($("#str_tag").val());// 获取标签名称
+        if(count==""){
+            notes("对不起，内容不能为空","failure");
+            return;
+        }
+//        if(verify==""){
+//            notes("对不起，验证码不能为空","failure");
+//            return;
+//        }
+        if(count.length<3){
+            notes("对不起，内容最少为3个字符","failure");
+            return;
+        }
+
+        $("#tagcontent").children().each(function(i,n){
+            var obj=$(n).attr("id");
+            tagids+=obj+",";
+        });
+        $(".publishbtn").text("发布中...");
+        $(".publishbtn").attr('disabled',"true");
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doAddWenda')}",
+            data:"typeid="+wdtype+"&content="+count+"&verify="+verify+"&tag="+tag ,
+            dataType:"text",
+            success:function(data){
+                if(isNaN(data)){
+                    notes(data,"failure");
+                }else{
+                    notes("恭喜，发布成功！","success");
+                    location.href = U('wenda/Index/detail')+'&id='+data;
+                }
+                $(".publishbtn").text("发布");
+                $(".publishbtn").removeAttr("disabled");
+
+            }
+        });
+    }
+    $('.verifyimg').click(function (){
+        var url = "{:U('wenda/Index/verify')}";
+        $('.verifyimg').removeAttr('src');
+        $('.verifyimg').attr('src',url);
+    });
+
+    //热门标签添加
+    $('#u_hot_tag span').click(function () {
+        var tag = $('input[name=str_tag]').val();
+        if (tag == '') {
+            $('input[name=str_tag]').val($(this).html());
+        }
+        else {
+            $('input[name=str_tag]').val(tag + ',' + $(this).html());
+        }
+    });
+
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

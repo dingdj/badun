@@ -1,0 +1,150 @@
+<include file="__THEME__/public_header_twolevel"/>
+<style>
+    .content {height: auto;}
+    dl select {min-width: 70px;border-radius: 4px;border: solid 1px #b6c7d6;line-height: 34px;padding-left: 5px;}
+    #str_tag ,#login_verify ,#content{width: 200px;border-radius: 4px;border: solid 1px #b6c7d6;padding-left: 3px;}
+</style>
+<!--main-->
+<div class="content" >
+    <div class="header2">
+        <a href="{:U('wenda/Index/index')}" class="icon-back"></a>
+        <div>发问题</div>
+        <a href="javascript:;" class="save" onclick="subWenda()">保存</a>
+    </div>
+    <div class="jgzlbox">
+        <dl>
+            <dt>分类：</dt>
+            <dd>
+                <select id ="wdtype">
+                    <option value="">请选择</option>
+                    <volist name="wenda_cate" id="vo">
+                        <option value="{$vo.zy_wenda_category_id}">{:msubstr(t($vo['title']),0,12,'utf-8',true)}</option>
+                    </volist>
+                </select>
+                <input type="hidden" name="wdtype" value="" />
+            </dd>
+        </dl>
+        <!--
+        <dl>
+            <dt>标签：</dt>
+            <dd><input name="str_tag" value="" type="text" id ="str_tag" placeholder="多个标签用英文逗号< , >隔开"/></dd>
+        </dl>
+
+        <dl>
+            <dt>热门标签</dt>
+            <dd>
+                <select id ="hot_tag">
+                    <option value="">请选择</option>
+                    <volist name="WendaHottag" id="vo">
+                        <option value="{$vo.hottagname}">{$vo.hottagname}</option>
+                    </volist>
+                </select>
+            </dd>
+        </dl>
+        -->
+
+        <dl>
+            <dt>内容：</dt>
+            <dd><textarea rows="" cols="" id="content" placeholder="简单描述下你的问题吧"></textarea></dd>
+        </dl>
+
+        <!--<dl>-->
+            <!--<dt>验证码：</dt>-->
+            <!--<dd><input id="login_verify" value="" type="text" placeholder="请输入验证码"></dd>-->
+        <!--</dl>-->
+
+        <!--<dl>-->
+            <!--<dt>验证码：</dt>-->
+            <!--<img class="verifyimg" src="{:U('wenda/Index/verify')}" title ="点击刷新验证" style="height: 40px;" />-->
+        <!--</dl>-->
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $(".header").hide();
+        //选择分类
+        $('#wdtype').change(function() {
+            var type = $(this).val();
+            $("input[name='wdtype']").val(type);
+        });
+
+        //切换验证码
+        $('.verifyimg').click(function (){
+            var url = "{:U('wenda/Index/verify')}";
+            $('.verifyimg').removeAttr('src');
+            $('.verifyimg').attr('src',url);
+        });
+
+        //热门标签添加
+        $('#hot_tag').change(function() {
+            var hot_tag = $(this).val();
+            var tag = $("input[name='str_tag']").val();
+            if (tag == '') {
+                $("input[name='str_tag']").val(hot_tag);
+            }else {
+                $("input[name='str_tag']").val(tag + ',' + hot_tag);
+            }
+        });
+    });
+    /**
+     * 提交发布
+     */
+    function subWenda(){
+        var tagids="";
+        if(MID==0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return;
+        }
+        var wdtype = $.trim($("input[name='wdtype']").val());//获取标题
+        var tag = $.trim($("#str_tag").val());// 获取标签名称
+        var count = $.trim($("#content").val());//获取内容
+        var verify = $.trim($("#login_verify").val()); //获取验证码
+        console.log(verify);
+        if(wdtype==""){
+            alert("请选择分类");
+            return;
+        }
+        if(count==""){
+            alert("内容不能为空");
+            return;
+        }
+        if(count.length<3){
+            alert("内容最少为3个字符");
+            return;
+        }
+//        if(verify==""){
+//            alert("验证码不能为空");
+//            return;
+//        }
+
+        $("#tagcontent").children().each(function(i,n){
+            var obj=$(n).attr("id");
+            tagids+=obj+",";
+        });
+        $(".publishbtn").text("发布中...");
+        $(".publishbtn").attr('disabled',"true");
+        $.ajax({
+            type: "POST",
+            url:"{:U('wenda/Index/doAddWenda')}",
+            data:"typeid="+wdtype+"&content="+count+"&verify="+verify+"&tag="+tag ,
+            dataType:"text",
+            success:function(data){
+                if(isNaN(data)){
+                    alert(data);
+                }else{
+                    alert("恭喜，发布成功！");
+                    location.href = U('wenda/Index/detail')+'&id='+data;
+                }
+                $(".publishbtn").text("发布");
+                $(".publishbtn").removeAttr("disabled");
+
+            }
+        });
+    }
+
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

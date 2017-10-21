@@ -1,0 +1,162 @@
+<include file="__THEME__/_header" />
+<php>if(empty($_SESSION['mid'])){</php>
+  <include file="__THEME__/reg_login" />
+<php>}</php>
+<!--header-->
+<div class="header">
+    <div class="header-top">
+      <div class="wrap">
+            <div class="header-logo">
+                <a href="javascript:;" title="Eduline"><img src="{$site.logo_head}"/></a>
+            </div>
+
+            <div class="header-login">
+                <div class="login-ewm">
+                  <!--<img src="__THEME__/images/appdownload.png" class="lazyloading">  -->
+                  
+                  <div class="login-nav" style="background:none;">
+                    <a href="javascript:;" style="font-size:18px;">这一刻，你已经领先</a>
+                  </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<script>
+//更换验证码
+function changeverify(){
+	var date = new Date();
+    var ttime = date.getTime();
+    var url = "__ROOT__/public/captcha.php";
+    $('#verifyimg').attr('src',url+'?'+ttime);
+
+};
+/**
+ * 取消注册
+ */
+function removeReg(){
+    $("#transparent").css("display","none");
+}
+
+/**
+ * 一键试用
+ */
+ 
+function tryout(){
+	phone   = $.trim($("#phone").val());//获取用户手机号
+	verify  = $.trim($("#verify").val());//获取验证码
+	tname   = $.trim($("#tname").val());//获取真实姓名
+	company = $.trim($("#company").val());//获取公司
+	hangye  = $.trim($("#hangye").val());//获取行业
+  	//检查手机号格式
+	if( !phone.match(/^1[3|4|5|7|8][0-9]\d{8}$/) ){
+		 notes('对不起，请填写正确的手机号!','failure');
+		 return;
+	}
+	
+	//检查验证码
+	if(verify == "" || verify.length != 6){
+		 notes('对不起，手机验证码长度不正确!','failure');
+		 return;
+	}
+	
+	
+	$.ajax({
+        type: "POST",
+        url:"{:U('home/Tryout/add')}",
+        data:"phone="+phone+"&tname="+tname+"&verify="+verify+"&company="+company+"&hangye="+hangye,
+        dataType:"json",
+        success:function(data){
+        	 if(data.status=='0'){
+            	 notes(data.info,'failure');	
+            	 return;
+            }else{
+            	notes(data.info,'success');	
+            	window.location.href = "{:U('classroom/Index/index')}";
+            }
+        }
+    }); 
+}
+
+//临时处理方法
+var timerc; 
+function dtime(){
+    if(timerc > 1){ 
+    	timerc = timerc-1; 
+        $("#dtimes").text(timerc);
+        setTimeout("dtime()", 1000); //设置1000毫秒以后执行一次本函数
+    }else{
+    	$('.width97').css("display","none");
+		$('.width80').removeAttr("style");
+    }
+}
+
+/**
+ * 找回密码发送手机验证码
+ */
+function getVerify(){
+	phone = $.trim($("#phone").val());//获取用户手机号
+	//检查手机号格式
+	if(!phone.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+		 notes('对不起，请填写正确的手机号!','failure');
+		 return;
+	}
+	//获取手机验证码
+	 $.ajax({
+		 type: "POST",
+		 url:"{:U('home/Tryout/getVerify')}",
+		 data:"phone="+phone,
+		 dataType:"json",
+		 success:function(data){
+			 if(data.status=='0'){
+			 	notes(data.info,'failure');
+			 	return;
+			 }else{
+		        notes(data.info,'success');
+		        $('.width80').css("display","none");
+		        $('.width97').removeAttr("style");
+		        timerc = 60;
+		        dtime();
+		       	return;
+			 }
+		 }
+	}); 
+}
+</script>
+
+
+<style>
+.main{width:410px;height:500px;margin:0 auto;}
+.regsiter{border:0;}
+.regsiter .teb{text-align:center;line-height:80px;height:80px;}
+.fcc{color:#2B92F9;font-size:24px;}
+</style>
+    <div class="main">
+		<a class="loging-Cancel" href="javascript:;" onclick="removeReg()">×</a>
+
+      <!--注册-->
+    <div id="regsiter-worap">
+      <form>
+        <div class="regsiter">
+          <div class="teb"><a href="javascript:;" class="fcc"onclick="phoneReg(this)" >一键免费试用</a></div>
+          
+          <ul id="phoneReg">
+           <li>
+              <label class="label">手机号:</label>
+              <input class="regsiter-width" type="text" id="phone" maxlength="11" placeholder="请输入手机号码">
+            </li>
+            <li>
+              <label class="label">验证码:</label>
+              <input class="width130" type="text" id="verify" maxlength="6" placeholder="请输入收到的验证码">
+              <a class="width80" href="javascript:;" onclick="getVerify()">获取验证码</a><span class="width97"  style="display:none" ><a id="dtimes"></a>秒后重新发送</span> </li>
+            <li style="font-size:14px;">10秒获取试用账号，体验你的专属网校</li>
+              
+            <li>
+              <label class="label">&nbsp;</label>
+              <input name="" onclick="tryout()" class="regsiter-xy-submit" type="button" value="立即体验"/>
+            </li>
+          </ul>
+        </div>
+      </form>
+  </div>
+</div>

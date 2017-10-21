@@ -1,0 +1,117 @@
+<include file="__THEME__/public_header" />
+
+<include file="../User/public/_top" />
+<style type="text/css">
+    .center_right{
+        margin-bottom: 30px;
+    }
+    .detailmeg{
+        float: left;
+        line-height: 40px;
+        width:auto;
+        margin-left: 20px;
+    }
+    .fbtime {
+        line-height: 40px;
+    }
+    .discusslist{
+        width:100%;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="center_right_tit">
+                    <ul>
+                        <li {$tab==0 ?' class="on"':''}><a href="{:U('classroom/Home/share')}" >我的分享</a></li>
+                        <li {$tab==1 ?' class="on"':''}><a href="{:U('classroom/Home/share', array('tab'=>1))}" >我的分享收入余额</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="center_right_con">
+                <ul class="user-wenda">
+                    <if condition="$video_share['data']">
+                        <ul class="new-list">
+                            <volist name="video_share['data']" id="vs">
+                                <li class="li">
+                                    <div class="discusslist" style="float: left;">
+                                        <div id="qrcode" class="fxp" style="float: left;" title="{$vs['share_url']}">
+                                            <img style="display: block;" src="/api/pay/wxpay/qrcode.php?data={$vs['share_url']}">
+                                        </div>
+                                        <div class="detailmeg">
+                                            <if condition="$vs['type'] eq 0"><em>分享课程：</em><a href="{:U('classroom/Video/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
+                                            <if condition="$vs['type'] eq 1"><em>分享套餐：</em><a href="{:U('classroom/Album/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
+                                            <if condition="$vs['type'] eq 2"><em>分享直播课程：</em><a href="{:U('live/Index/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
+                                            <div class="fbtime">分享链接：
+                                                <span>{$vs['share_url']}</span>
+                                            </div>
+                                            <div class="fbtime">分享时间：
+                                                <span>{$vs.ctime|friendlyDate}</span>
+                                                <div class="Operation-wd"><a href="javascript:;" onclick="ui.confirm(this,'确定要删除该分享吗？');return false;" callback="delShare(this,{$vs['id']})" ><i></i><span>删除</span></a><!--<a href="javascript:;" onclick= shareurl("{$vs['share_url']}"); ><i></i><span>分享</span></a>--></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </volist>
+                        </ul>
+
+                        <div class="page">
+                            <div class="pagebox">
+                                {$video_share['html']}
+                            </div>
+                        </div>
+                        <else/>
+                        <li style="border: none;box-shadow: none;margin: 10px 0 30px 10px;">您还没有分享。。</li>
+                    </if>
+                </ul>
+            </div>
+        </div>
+
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script>
+
+
+    //请求事件
+    function gotopage(){
+
+        var p = $('#pageNum').val();
+        window.location.href= U('classroom/Home/share')+"&p="+p;
+    }
+
+    function delShare(obj,sid) {
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/VideoShare/delShare')}",
+            data:"sid="+sid,
+            dataType:"json",
+            success:function(e){
+                if(e.status == 1){
+                    ui.success(e.info);
+                    window.location.reload();
+                }else{
+                    ui.error(e.info);
+                }
+            }
+        });
+    }
+
+    function shareurl(url)
+    {
+        $('#urlcopy').val(url);
+        var text=document.getElementById("urlcopy");
+        text.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        ui.success("你已经成功复制链接！");
+        window.location.reload();
+
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer" />
+<input type ="text"   id="urlcopy"   style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"  >

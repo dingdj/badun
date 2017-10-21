@@ -1,0 +1,261 @@
+<include file="__THEME__/public_header_twolevel"/>
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_w3g/css/style_media.css">
+<style>
+    .icon-arrowDown{background: transparent;}
+    .one-nav-layer .active{border-bottom:1px solid #00BED4;color:#00BED4;background-color:#f9f9f9;}
+    .one-nav-layer .active2{color:#00BED4;}
+    .line-course-all-tab ul{padding: 10px 0 10px 0;}
+    .line-course-all-tab ul span{padding-left: 10px;}
+</style>
+<!-- 导航筛选 -->
+<div class="nav-screen">
+    <div class="nav-screen-all">
+        <div class="nav-screen-head"><if condition="$cateId">{:msubstr($title,0,6,'utf-8',true)}<else/>课程专业</if><i class="icon icon-arrowDown"></i></div>
+        <div class="nav-screen-head"><if condition="$mhm_id">{:msubstr($mhm_title,0,6,'utf-8',true)}<else/>选择机构</if><i class="icon icon-arrowDown"></i></div>
+        <div class="nav-screen-head">筛选条件<i class="icon icon-arrowDown"></i></div>
+    </div>
+    <div class="cover"></div>
+    <div class="nav-screen-content">
+
+        <!-- 课程专业 start -->
+        <ul class="one-nav-layer">
+            <!-- 一级 -->
+            <li><a href="{:U('classroom/LineClass/index')}"  class="one-on <eq name='cateId' value=''>active</eq>">不限</a></li>
+            <volist name="selCate" id="vo">
+                <li>
+                    <a href="javascript:void(0)" class="one-on screen <eq name='vo.zy_currency_category_id' value='$cateId'>active</eq>" data-type="cateId" data-value="{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                    <ul class="two-nav-layer" <if condition="$vo['zy_currency_category_id'] eq $cateId">style="display:block;"</if>>
+                        <li><a href="javascript:void(0)" class="two-on <eq name='cate_id' value=''>active2</eq>">不限</a></li>
+                        <volist name="cate" id="vo">
+                            <li>
+                                <a href="javascript:void(0)" class="two-on screen <eq name='vo.zy_currency_category_id' value='$cate_id'>active2</eq>" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                                <ul class="three-nav-layer" <if condition="$vo['zy_currency_category_id'] eq $cate_id">style="display:block;"</if>>
+                                    <li><a href="javascript:void(0)" class="three-on <eq name='cate_ids' value=''>active2</eq>">不限</a></li>
+                                    <volist name="childCate" id="vo">
+                                        <li><a href="javascript:void(0)" class="two-on screen <eq name='vo.zy_currency_category_id' value='$cate_ids'>active2</eq>" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a><li>
+                                    </volist>
+                                </ul>
+                            <li>
+                        </volist>
+                    </ul>
+                </li>
+            </volist>
+        </ul>
+        <!-- 课程专业 end -->
+
+        <!-- 机构 start-->
+        <ul class="one-nav-layer">
+            <li><a href="javascript:void(0)" class="one-on screen" data-type="mhm_id" data-value="">不限</a></li>
+            <foreach name="school" item="mhm" key="k">
+                <li><a href="javascript:void(0)" class="one-on screen" data-type="mhm_id" data-value="{$k}">{$mhm}</a></li>
+            </foreach>
+        </ul>
+        <!-- 机构 end -->
+
+        <!-- 筛选条件 start -->
+        <div class="one-nav-layer">
+            <!--<dl class="date-layer">
+                <dt><h4>开班时间<small>（以月为单位）</small></h4></dt>
+                <dd><input type="text" name=""></dd>
+                <i>～</i>
+                <dd><input type="text" name=""></dd>
+            </dl>-->
+            <dl class="date-layer date-condition">
+                <dt><h4>排序</h4></dt>
+                <dd><button><a href="{:U('classroom/LineClass/index')}" >综合排序</a></button></dd>
+                <dd><button><a href="javascript:;" class="screen" data-type="orderBy" data-value="new">最新</a></button></dd>
+                <dd><button><a href="javascript:;" class="screen" data-type="orderBy" data-value="hot">最热</a></button></dd>
+                <dd><button><a href="javascript:;" class="screen price-on" data-type="orderBy" data-value="t_price">价格从低到高</a></button></dd>
+                <dd><button><a href="javascript:;" class="screen" data-type="orderBy" data-value="t_price_down">价格从高到低</a></button></dd>
+            </dl>
+            <!--<dl class="deta-cancel">
+                <dd><button class="btn02">确定</button></dd>
+                <dd><button class="btn01">重置</button></dd>
+            </dl>-->
+        </div>
+        <!-- 筛选条件 end -->
+    </div>
+</div>
+
+<!-- 课程列表 start-->
+<div class="line-course-all-tab">
+    <ul class="lineclasslist">
+        <php>if($data['data']){</php>
+        <volist name="data.data" id="vo">
+            <li>
+                <div class="line-course-img-txt">
+                    <a href="{:U('classroom/LineClass/view',array('id'=>$vo['course_id']))}">
+                    <span class="img">
+                        <img src="{:getCover($vo['cover'],520,320)}" style="min-width: 172px;max-height: 112px;">
+                    </span>
+                    <span class="txt">
+                        <h4>{:msubstr(t($vo['course_name']),0,10,'utf-8',true)}</h4>
+                        <if condition="$vo['course_price'] eq 0"><b style="color: #56b02a;">免费 </b><else/><b>¥{$vo['course_price']}</b></if>
+                        <p>{:date('Y-m-d',$vo['listingtime'])}～{:date('Y-m-d',$vo['uctime'])}</p>
+                        <p>{$vo['teach_areas'] | default='无限制'}</p>
+                    </span>
+                    </a>
+                </div>
+                <div class="line-course-service">
+                    <!--<a href="javascript:ui.sendmessage({$vo['teacher_uid']}, 0)">在线咨询</a>-->
+                    <if condition="$vo['is_buy'] eq 3"><a href="javascript:;" >已购买</a><else/><a href="javascript:;" onclick="meetingteacher(this,{$vo['course_id']},{$vo['teacher_uid']},{$vo['course_price']})">预约课程</a></if>
+                </div>
+            </li>
+        </volist>
+        <php>}else{</php>
+            <span>暂无课程信息。。</span>
+        <php>}</php>
+    </ul>
+</div>
+<php>if($data['data']){</php>
+    <div class="loadding">
+        <if condition="$data['nowPage'] eq $data['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+        </if>
+    </div>
+    <a class="backtop"></a>
+<php>}</php>
+ <!--footer start-->
+<div class="footer" style="display: none;">
+    <!-- 回到顶部 -->
+    <span class="icon icon-huidaodingbu"></span>
+</div>
+<!--footer end-->
+<script>
+    $(function(){
+        //同步请求
+        $(".screen").click(function(){
+            var _this = this;
+            var type = $(_this).data("type"),
+                value = $(_this).data("value"),
+                baseUrl = "{:U('classroom/LineClass/index')}";
+            window.location.href = getRequestUrl(type,value,baseUrl);
+        });
+        function getRequestUrl(field,value,baseUrl){
+            if(field){
+                //匹配是否有该参数
+                var reg = new RegExp("(^|&)" + field + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                //已经存在参数
+                var in_params = false;
+                if (r != null){
+                    in_params = true;
+                }
+                //获取参数部分
+                var url = window.location.search;
+                var replaceReg = new RegExp(field+'=[^&]+','g');
+                if(value){
+                    //合法参数传递方式
+                    if(in_params){
+                        url = url.replace(replaceReg,field+'='+value);
+                    }else{
+                        if(url.indexOf("?") != -1){
+                            url += '&'+field+'='+value;
+                        }else{
+                            url += '?'+field+'='+value;
+                        }
+                    }
+
+                }else{
+                    //如果value不存在,移除该参数
+                    url = url.replace(replaceReg,'');
+                }
+            }
+            url = url.replace(/&{2,}/,'&').replace(/&$/,'');
+            setsearchUrl = url;
+            return baseUrl ? baseUrl+url: document.domain + url;
+        }
+
+        var p = 1;
+        $(window).scroll(function(){
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = $(this).height();
+            if(scrollTop + windowHeight == scrollHeight){
+                if(!p || p >= "{$data['totalPages']}"){
+//					$('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                }else{
+                    p = p+1;
+                    ajaxBang();
+                }
+            }
+        });
+        //请求事件
+        function ajaxBang(){
+            $.ajax({
+                type: "GET",
+                url:"{:U('classroom/LineClass/getVideoList')}",
+                data:"p="+p+"&orderBy={$_GET['orderBy']}&cateId={$_GET['cateId']}&mhm_id={$_GET['mhm_id']}",
+                dataType:"json",
+                success:function(data){
+                    appendHtml(data);
+                }
+            });
+        }
+        //追加html
+        function appendHtml(data){
+            $(".lineclasslist").append(data.data);
+            if(!p || p >= data.totalPages){
+                $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+                return false;
+            }else{
+                p = data.nowPage;//下一页
+            }
+        }
+    });
+
+    //约课
+    function meetingteacher(sbt,cid,tuid,price){
+        var vtype = "zy_teacher";
+        if(MID<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+        if(tuid  == MID)
+        {
+            alert("该课程不需要您购买！");
+            return ;
+        }
+        if(price <= 0){
+            if(confirm('该线下课程需要加入我的看单后方可学习，确定加入？')){
+                $.post(U("classroom/PayVideo/add_order"),{vid:cid,vtype:vtype},function(data){
+                    if(data.status == 1){
+                        alert(data.info);
+                        window.location.reload();
+                    } else {
+                        alert(data.info);
+                        return false;
+                    }
+                },'json');
+            }
+            return false;
+        }
+        $.post(U("classroom/PayVideo/checkPay"),{vid:cid,money:price},function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+cid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+            } else {
+                alert(data.info);
+                return false;
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+</script>
+
+<script src="__THEME__/../_static_w3g/js/course_h5.js"></script>
+
+<include file="__THEME__/public_footer_twolevel"/>

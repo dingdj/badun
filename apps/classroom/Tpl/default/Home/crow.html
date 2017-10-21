@@ -1,0 +1,91 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<include file="../User/public/_top" />
+<!--centerbox end-->
+
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <ul>
+                    <li class="on"><a href="javascript:;"  onclick="navClick(this,'1')">发起的众筹</a></li>
+                    <li><a href="javascript:;" onclick="navClick(this,'2')" >参与的众筹</a></li>
+                </ul>
+            </div>
+            <div class="center_right_con">
+                <ul class="user-imglist J_list" data-type="1">
+                </ul>
+            </div>
+        </div>
+
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+
+<script>
+
+var btnclick="crowList";
+var mid = "{$mid}";
+$(function(){
+    var url="{:U('classroom/Home/crowList')}";
+	//异步加载我购买的课程
+    $.ajax({
+        type:"GET",
+        url:url,
+        data:"p=1&type=1",
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+});
+//头部点击事件
+function navClick(obj,type){
+    $(".user-imglist").html("");
+    $(".center_right_tit ul li a").parent().removeClass("on");
+    $(obj).parent().addClass("on");
+    $('.J_list').attr('data-type',type);
+    p=1;
+    ajaxBang();
+}
+
+//查看更多点击事件
+$("#getList").live("click",function(){
+     $(this).remove();
+     ajaxBang();
+});
+
+//追加html
+function appendHtml(data){
+    $(".J_more").remove();
+    if(data.data!=""){
+    	$(".J_list").append(data.data);
+	    if(data.nowPage+1>data.totalPages){
+	        return;
+	    }else{
+	        var html='<div class="more"><a href="javascript:void(0)" id="getList">查看更多</a></div>'
+	        $(".J_list").append(html);
+	        p = data.nowPage+1;//下一页
+	    }
+    }else{
+     $(".J_list").append("<script>对不起，暂无此分类课程T_T<\/script>");
+    }
+}
+
+//排序请求事件 TODO
+function ajaxBang(){
+	var type = $('.J_list').attr('data-type');
+    $.ajax({
+        type: "GET",
+        url:"{:U('classroom/Home/crowList')}",
+        data:"p="+p+"&type="+type,
+        dataType:"json",
+        success:function(data){
+            appendHtml(data);
+        }
+    });
+}
+
+</script>
+<include file="__THEME__/public_footer" />

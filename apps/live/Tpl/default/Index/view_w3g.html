@@ -1,0 +1,368 @@
+<include file="__THEME__/public_header_twolevel"/>
+<style>
+    .class_directory dd a{float: right;}
+    .classtop .btn .fr{margin-top:0}
+</style>
+<!--content start-->
+    <div class="body">
+        <div class="classtop">
+            <div class="img-box">
+                <img src="{:cutImg($data['cover'] ,640 , 340 )}" alt="" />
+            </div>
+            <div class="info">
+                <h3>{$data.video_title}</h3>
+                <div class="num">已购买：{$data.video_order_count}人<span>|</span>课时数：共{$data['sectionNum']}节</div>
+                <div class="txt">
+                    <div class="price">
+                        <php>if($data['is_charge'] == 1 || $data['t_price'] == 0){</php><span style="color: #39b75d;">免费</span><php>}else{</php><span>￥{$data['t_price']}</span><php>}</php>
+                    </div>
+                </div>
+                <div class="btn">
+                    <php>if($data['is_buy']){</php>
+                        <a href="{:U('live/Index/watch',array('id'=>$lid))}" class="sign" style="width: 160px;" >报名{$data['video_order_count']}人<em>|</em>进入直播间</a>
+                    <php>}else if($enough == 1){</php>
+                        <a href="javascript:;" class="sign" style="width: 150px;">报名{$data['video_order_count']}人<em>|</em>已满</a>
+                    <php>}else {</php>
+                        <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                            <input type="hidden" value="{$data['id']}" name="vid" />
+                            <input type="hidden" value="zy_live" name="check_type" />
+                            <input type="hidden" value="直播：{$data['video_title']}" name="title" />
+                            <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                        </form>
+                        <a href="javascript:;" class="sign" id="charge_video" style="width: 150px;">报名{$data['video_order_count']}人<em>|</em>立即报名</a>
+                    <php>}</php>
+                    <div class="fx fr">
+                        <a href="javascript:;" onClick="shareVideo(this,{$lid})"><i class="icon-02"></i></a>
+                    </div>
+                    <div class="sc fr">
+                        <php>if($data['iscollect'] > 0){</php>
+                        <a href="javascript:;" onClick="collectVideo(this,{$lid},0)"><i class="icon-01 hover"></i></a>
+                        <php>}else{</php>
+                        <a href="javascript:;" onClick="collectVideo(this,{$lid},1)"><i class="icon-01"></i></a>
+                        <php>}</php>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="classbot">
+            <div class="classmain-hd classmain-ul">
+                <ul>
+                    <li class="on"><a href="javascript:;">简介</a></li>
+                    <li><a href="javascript:;">目录</a></li>
+                    <!--<li><a href="javascript:;">提问</a></li>-->
+                    <!--<li><a href="javascript:;">笔记</a></li>-->
+                    <!--<li><a href="javascript:;">点评</a></li>-->
+                </ul>
+            </div>
+            <div class="classmain-bd">
+                <div class="classmain_con">
+                    <div class="classitem">
+                        <div class="classtit">课程详情</div>
+                        <div class="classcon" style="font-size: 12px;">{$data.video_intro}</div>
+                    </div>
+                    <div class="classitem">
+                        <div class="classtit">机构信息</div>
+                        <div class="classcon">
+                            <dl class="class_jg_dl">
+                                <dt><a href="{$mhmData.domain}"><img src="{$mhmData['logo']}" alt="" style="margin-top:0"></a></dt>
+                                <dd>
+                                    <h3>
+                                        <a href="{$mhmData.domain}">{$mhmData['title']}<!--<span class="icon-star"></span>--></a>
+                                        <div class="class_jg_btn">
+                                            <!--<a href="{$mhmData.domain}">进入机构</a>-->
+                                            <php>if($mhmData['state']['following']){</php>
+                                            <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, false)">已关注</a>
+                                            <php>}else{</php>
+                                            <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, true)">+关注</a>
+                                            <php>}</php>
+                                        </div>
+                                    </h3>
+                                    <!--<div class="new_tags">{:limitNumber($mhmData['str_tag'],15)}</div>-->
+                                    <ul class="class_jg_ul">
+                                        <li>好评度<span>{$data.reviewRate}</span></li>
+                                        <li>课程数<span>{$mhmData['count']}</span></li>
+                                        <li>学生数<span>{$mhmData['student']}</span></li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                            <div class="class_jg_txt">{$mhmData['info']}</div>
+                        </div>
+                    </div>
+                    <php>if($data['user']){</php>
+                    <div class="classitem">
+                        <div class="classtit"><em></em>讲师信息</div>
+                        <div class="classcon">
+                            <dl class="class_js_dl">
+                                <dt><a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}"><img src="{:cutImg($data['user']['head_id'],266,170)}" alt=""></a></dt>
+                                <dd>
+                                    <h3>
+                                        <a href="javascript:;">{$data.user.name}</a>
+                                        <div class="class_jg_btn">
+                                            <!--<a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">查看讲师</a>-->
+                                            <php>if($data['user']['fans_state']){</php>
+                                            <a href="">已关注</a>
+                                            <php>}else{</php>
+                                            <a href="javascript:;" onclick="followyou(this,{$data['user']['uid']},{$data['user']['id']})">+关注</a>
+                                            <php>}</php>
+                                        </div>
+                                    </h3>
+                                    <div class="class_jg_ul">
+                                        <li><span>{:limitNumber($data['user']['label'],15)}</span></li>
+                                        <li>粉丝 <span>{$follow}</span></li>
+                                    </div>
+                                </dd>
+                            </dl>
+                            <div class="class_jg_ul" style="font-size: 14px">{$data.user.inro}</div>
+                        </div>
+                    </div>
+                    <php>}</php>
+                    <!--<div class="classitem">-->
+                        <!--<div class="classtit"><em></em>他们也关注了</div>-->
+                        <!--<div class="classcon">-->
+                            <!--<ul class="class_mb_ul">-->
+                                <!--<volist name="source" id="vol">-->
+                                    <!--<li>-->
+                                        <!--&lt;!&ndash;<a href="{:U('classroom/UserShow/index',array('uid'=>$vol['uid']))}">&ndash;&gt;-->
+                                            <!--<img src="{$vol['user']['avatar_big']}" alt="{$vol['user']['uname']}">-->
+                                            <!--<p>{$vol['user']['uname']}</p>-->
+                                        <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                                    <!--</li>-->
+                                <!--</volist>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+
+            <div class="classmain-bd" style="display: none;">
+                <div class="classmain_con">
+                    <volist name="live_menu" id="vo">
+                        <dl class="class_directory">
+                            <dt>&nbsp;第{$key+1}节&nbsp;&nbsp;&nbsp;{:msubstr(t($vo['title']),0,15,'utf-8',true)}</dt>
+                            <dd style="font-size: 12px;">
+                                &nbsp;<php>echo date('Y/m/d H:i',$vo['startDate']);</php> - <php>echo date('Y/m/d H:i',$vo['invalidDate']);</php>&nbsp;&nbsp;{$vo['note']}
+                            </dd>
+                        </dl>
+                    </volist>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="message_add_order_box">-->
+        <!--<div class="w-close"><a class="mr15 mt5">×</a></div>-->
+        <!--<div class="w-notice">-->
+            <!--<h4>加入我的看单</h4>-->
+        <!--</div>-->
+        <!--<div class="agreement blue">-->
+            <!--<span class="tips_info">该直播课程需要加入我的看单后方可学习，确定加入？</span>-->
+        <!--</div><br>-->
+        <!--<div class="buy-btn">-->
+            <!--<a class="quer_btn shou_mount add_order_live" style="color: #fff;background: rgb(101, 173, 221);" >确　定</a>-->
+            <!--<a class="quer_btn close_btn">取　消</a>-->
+        <!--</div>-->
+    <!--</div>-->
+<script type="text/javascript">
+
+    var uid = '{$mid}';
+    var mid = '{$mid}';
+    //导航选择卡
+    $(".classmain-ul li").click(function(){
+        $(this).addClass("on").siblings().removeClass();
+        var index = $(this).index();
+        $(".classmain-bd").hide().eq(index).show();
+    });
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //点击购买
+    $('#charge_video,#charge_video2').click(function () {
+        if(uid<=0){
+            if(confirm("请先登录")){
+                var mhm_id='{$this_mhm_id}';
+                if(mhm_id){
+                    window.location.href  = "{:U('public/Passport/login_g')}"+'?'+'this_mhm_id'+'='+mhm_id;
+                }else{
+                    window.location.href = "{:U('public/Passport/login_g')}";
+                }
+            }
+            return false;
+        }
+
+        var form  = $('#pay_form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+
+        if(!vid || !vtype){
+            alert('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+        if(money <= 0){
+            if(confirm('该直播课程需要加入我的看单后方可学习，确定加入？')){
+                var form  = $('#pay_form');
+                var vid = form.find('input:hidden[name="vid"]').val();
+                var vtype = form.find('input:hidden[name="check_type"]').val();
+
+                $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+                    if(data.status == 1){
+                        $('.message_add_order_box').hide();
+                        alert(data.info);
+                        window.location.reload();
+                    } else {
+                        alert(data.info);
+                        return false;
+                    }
+                },'json');
+            }
+//            $('.message_add_order_box').show();
+//            $('.mask').show();
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                alert('购买金额必须为整数');
+            }else{
+                alert('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
+            if(data.status == 1){
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+            } else if(data.status == 9){
+                alert(data.info);
+                window.location.reload();
+            } else {
+                alert(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+    function setFollow(uid, follow){
+        if(mid<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+        action = follow?'doFollowMhm':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:uid}, function(data){
+            if(data.status){
+                alert('操作成功');
+                setTimeout('window.location.reload()', 1000);
+            }else{
+                alert(data.info);
+            }
+        }, 'json');
+    }
+
+
+
+    //关注讲师
+    function followyou(cate,uid,id){
+
+
+        if(mid<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+uid+"&tid="+id,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    alert(data.info);
+                    return;
+                }else{
+                    setTimeout('window.location.reload()', 1000);
+                }
+
+            }
+        });
+    }
+
+
+
+    //收藏课程
+    function collectVideo(cate,vid,type){
+        if(uid<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Public/collect')}",
+            data:{type:type,sctype:2,source_id:vid,is_video:2},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    alert(data.info);
+                } else {
+                    alert(data.info);
+                    window.location.reload();
+                }
+            },
+        });
+    }
+
+
+    //分享
+    function shareVideo(obj,lid) {
+
+        if(uid<=0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+
+        if(!lid){
+            alert("参数错误");
+            return false;
+        }
+
+        $.post("{:U('classroom/VideoShare/addVideoShare')}", {vid:lid,type:2}, function (e) {
+
+            if(e.status == 1){
+                e.allinfo ="分享成功！您的分享链接为："+e.info;
+                if(!confirm(e.allinfo)){
+                    return false;
+                }
+                $('#urlcopy').val(e.info);
+                var text=document.getElementById("urlcopy");
+                text.select(); // 选择对象
+                document.execCommand("Copy"); // 执行浏览器复制命令
+                window.location.reload();
+//                   alert("你已经成功复制链接！");
+            }else{
+               alert(e.info);
+            }
+        }, 'json');
+
+    }
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

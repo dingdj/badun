@@ -1,0 +1,7 @@
+{
+    "name": "eduline/el3-plus",
+    "description": "eduline-plus",
+    "require": {
+        "overtrue/wechat": "~3.1"
+    }
+}

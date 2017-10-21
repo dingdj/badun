@@ -1,0 +1,645 @@
+<include file="__THEME__/public_header" />
+<div class="mask"></div>
+<div class="topbox coursebg" style="margin-top: 2px;">
+	<div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                	<a href="/">首页</a>
+                    <span>&gt;</span>
+                    <a href="{:U('classroom/Album/index')}">套餐</a>
+                    <span>&gt;</span>
+                    <a href="javascript:;">{$data['album_title']}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="coursetopbox">
+        	<div class="left">
+            	<img src="{:getCover($data['cover'],530,260)}" alt="{$data['album_title']}">
+            	<i></i>
+            </div>
+            <div class="right">
+            	<h3>{$data['album_title']}</h3>
+                <div class="info">{$data['album_title']}</div>
+                <div class="coursetopitem">讲师：{:msubstr(t($teachers),0,10,'utf-8',true)}</div>
+                <div class="coursetopitem">包含：{$data['video_count']}门课程</div>
+                <div class="coursetopitem">
+                	<div class="fl">套餐价格：</div>
+                    <div class="new_price"><span>¥{$data['price']}</span></div>
+                    <div class="old_price">原价：<span>¥{$data['oPrice']}</span></div>
+                    <div class="save_price">立即节省<span>¥{$data['disPrice']}</span></div>
+                </div>
+                <div class="coursetopitem btn">
+                    <php>if($data['is_buy']){</php>
+                        <a  href="javascript:void(0);" class="buy">已购买</a>
+                    <php>}else{</php>
+                        <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                            <input type="hidden" value="{$data['id']}" name="vid" />
+                            <input type="hidden" value="zy_album" name="check_type" />
+                            <input type="hidden" value="套餐：{$data['album_title']}" name="title" />
+                            <input type="hidden" id="money" value="{$data['price']}" name="money" />
+                        </form>
+                        <a  href="javascript:;" id="charge_video" class="buy">立即购买</a>
+                    <php>}</php>
+
+                	<php>if($data['iscollect']){</php>
+                    <div class="sc uncollect" style="margin-right:40px;;"><a href="javascript:;" onclick="collectAlbum(this,{$data['id']})" data-type="0"><i class="icon-01"></i>取消收藏</a></div>
+                    <php>}else{</php>
+                    <div class="sc collect" style="margin-right:40px;"><a href="javascript:;" onclick="collectAlbum(this,{$data['id']})" data-type="1"><i class="icon-11"></i>收藏</a></div>
+                    <php>}</php>
+                    <!--<div class="fx  zhuang-left" style="position: relative;"><a href="javascript:;"><i class="icon-02"></i>分享</a>-->
+
+
+
+
+                    <!--<div class="_share_my_firends" style="top:10px">-->
+                        <!--<div class="_share_all_channel">-->
+                            <!--<i class=f"side-ills-fell"></i>-->
+                            <!--<p  style="line-height: 20px; text-indent: 10px;">分享到：</p>-->
+                            <!--<div class="bdsharebuttonbox"  data-tag="share_1">-->
+                                <!--&lt;!&ndash; <a data-cmd="more" class="bds_more " href="#"></a> &ndash;&gt;-->
+                                <!--<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>-->
+                            <!--</div>-->
+                            <!--<script>-->
+                                <!--var share_url = "{$share_url}";-->
+                                <!--window._bd_share_config={"common":{-->
+                                    <!--bdUrl:share_url,-->
+                                    <!--bdText:"",-->
+                                    <!--bdMini:"2",-->
+                                    <!--bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],-->
+                                    <!--bdPic:"",-->
+                                    <!--bdSize:"24"-->
+                                <!--},-->
+                                    <!--share:{},-->
+                                    <!--image:{"viewList":["tsina","weixin","qzone","sqq"],-->
+                                        <!--viewText:"分享到：","viewSize":"0"}};-->
+                                <!--with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];-->
+
+                            <!--</script>-->
+
+                        <!--</div>-->
+                    <!--</div>-->
+
+                    <!--</div>-->
+                    <!--<div class="fx">-->
+                        <!--<input type="checkbox" checked="checked">-->
+                        <!--<a href="javascript:;" class="addtochart" kid="{$data['id']}" >加入购物车</a>-->
+                    <!--</div>-->
+                </div>
+                <!--<a class="hybtn" href="#">开通 黄金会员免费观看</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content pt40">
+	<div class="wrap">
+    	<div class="coursemain">
+        	<div class="coursemain-hd" id="view_main_nav">
+                <style>
+                    .coursemain-hd ul li a:hover{border-top: solid 2px #00BED4;}
+                </style>
+            	<ul>
+                	<li><a href="javascript:;"><i class="icon-01"></i>套餐概述</a></li>
+                    <li class="on"><a href="javascript:;"><i class="icon-02"></i>套餐包含课程（<php>echo count($videos);</php>）</a></li>
+                    <li><a href="javascript:;"><i class="icon-03"></i>套餐评论</a></li>
+                </ul>
+                <div class="coursetopitem_btn coursetopitem btn" style="display:none;width:560px;margin-top: 0px;padding: 0px;float: right;height: 53px;">
+                    <div class="coursetopitem" style="margin-right: 0px;">
+                        <div class="fl" style="margin-right: 5px; ">套餐价格：</div>
+                        <div class="new_price" style="margin-right: 15px;"><span>¥{$data['price']}</span></div>
+                        <div class="old_price" style="margin-right: 15px;">原价：<span>¥{$data['oPrice']}</span></div>
+                        <div class="save_price" style="margin-right: 15px;">立即节省<span>¥{$data['disPrice']}</span></div>
+                    </div>
+                    <php>if($data['is_buy']){</php>
+                    <a  href="javascript:void(0);" class="buy" style="height: 49px;width: 200px;margin-right: 0px;">已购买</a>
+                    <php>}else{</php>
+                    <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                        <input type="hidden" value="{$data['id']}" name="vid" />
+                        <input type="hidden" value="zy_album" name="check_type" />
+                        <input type="hidden" value="套餐：{$data['album_title']}" name="title" />
+                        <input type="hidden" id="money" value="{$data['price']}" name="money" />
+                    </form>
+                    <a  href="javascript:;" id="charge_video2" class="buy" style="height: 49px;width: 200px;margin-right: 0px;">立即购买</a>
+                    <php>}</php>
+                </div>
+            </div>
+            <!-- 套餐简介 -->
+            <div class="coursemain-bd">
+            	<div class="coursemain_con">{$data['album_intro']}</div>
+            </div>
+            <!-- 套餐包含课程 -->
+            <div class="coursemain-bd">
+            	<div class="coursemain_con">
+                    <ul class="coursemainlist">
+                    <volist name="videos" id="vo">
+                    	<li>
+
+                            <php>if($vo['type'] == 1){</php>
+                        	<a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],154,116)}"></a>
+                            <php>} else{</php>
+                            <a href="{:U('live/Index/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],154,116)}"></a>
+                            <php>}</php>
+
+                            <php>if($vo['type'] == 1){</php>
+                            <h3><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr($vo['video_title'],0,24)}</a></h3>
+                            <php>} else{</php>
+                            <a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:msubstr($vo['video_title'],0,24)}</a></h3>
+                            <php>}</php>
+
+                            <p>{:limitNumber($vo['video_intro'],50)}</p>
+                            价格：{$vo['t_price']}元
+
+                            <div class="info">课时：{$vo['sectionNum']}节</div>
+
+                            <php>if($vo['t_price'] == 0   && $vo['type'] == 1)  {</php>
+                            <a class="shiting" href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">免费试听</a>
+                            <php>}</php>
+                        </li>
+                    </volist>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 套餐评论 -->
+            <php> if($switch ==0) {  </php>
+            <div class="coursemain-bd">
+            	<div class="classmain_con">
+                	{:W('Resource',array('fid'=>$data['uid'],'type'=>4,'ispage'=>true,'kztype'=>2,'kzid'=>$data['id'],'template'=>'album_comment','is_buy'=>$data['is_buy']))}
+                </div>
+            </div>
+            <php> }  </php>
+
+        </div>
+
+        <div class="classside course">
+            <php>if($mhmData){</php>
+        	<div class="classsideitem">
+            	<h3 class="classsidetit">机构信息</h3>
+                <div class="classsidecon">
+                	<dl class="class_jg_dl">
+                    	<dt><a href="{$mhmData['domain']}"><img src="{$mhmData['logo']}" alt="{$mhmData['title']}"></a></dt>
+                        <dd>
+                        	<h3><a href="{$mhmData['domain']}">{:msubstr(t($mhmData['title']),0,20,'utf-8',true)}</a><php>if($mhmData['school_vip_cover']){</php><img src="{$mhmData.school_vip_cover}" width="19" height="19"><php>}</php></h3>
+                            <p>
+                            	<span class="icon-star"></span>
+                                <span class="icon-cert"></span>
+                            </p>
+                        </dd>
+                    </dl>
+                    <ul class="class_jg_ul">
+                    	<li>
+                        	<p>好评度</p>
+                            <span>80%</span>
+                        </li>
+                        <li>
+                        	<p>课程数</p>
+                            <span>{$mhmData['count']}</span>
+                        </li>
+                        <li>
+                        	<p>学生数</p>
+                            <span>{$mhmData['student']}</span>
+                        </li>
+                    </ul>
+                    <div class="class_jg_txt">{$mhmData['info']}</div>
+                    <div class="class_jg_btn">
+                    	<a href="{$mhmData.domain}">进入机构</a>
+                        <php>if($mhmData['state']['following']){</php>
+                        <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, false)">取消关注</a>
+                        <php>}else{</php>
+                        <a href="javascript:;" onclick="setFollow({$mhmData['uid']}, true)">关注机构</a>
+                        <php>}</php>
+                    </div>
+                </div>
+            </div>
+            <php>}</php>
+            <div class="classsideitem">
+            	<h3 class="classsidetit">讲师信息</h3>
+                <div class="classsidecon">
+                	<dl class="class_js_dl">
+                    	<dt><a href="{:U('classroom/Teacher/view',array('id'=>$trlist['0']['id']))}"><img src="{:getCover($trlist['0']['head_id'],266,170)}" alt=""></a></dt>
+                        <dd>
+                        	<h3><a href="{:U('classroom/Teacher/view',array('id'=>$trlist['0']['id']))}">{:msubstr(t($trlist['0']['name']),0,10,'utf-8',true)}</a><php>if($trlist['teacher_vip_cover']){</php><img src="{$trlist.teacher_vip_cover}" width="19" height="19"><php>}</php></h3>
+                            <div class="tag">{:limitNumber($trlist['0']['label'],15)}</div>
+                            <div class="info"><i class="icon-fs"></i>粉丝：<span>{$trlist['0']['fans_count']}</span>人</div>
+                        </dd>
+                    </dl>
+                    <div class="class_js_txt">{$trlist['0']['inro']}</div>
+                    <div class="class_jg_btn">
+                    	<a href="{:U('classroom/Teacher/view',array('id'=>$trlist['0']['id']))}">查看讲师</a>
+                        <php>if($trlist['0']['fans_state']){</php>
+                        <a href="javascript:;">已关注对方</a>
+                        <php>}else{</php>
+                        <a href="javascript:;" onclick="followyou(this,{$trlist['0']['uid']},{$trlist['0']['id']})">关注讲师</a>
+                        <php>}</php>
+                    </div>
+                </div>
+            </div>
+            <php>if($source){</php>
+            <div class="classsideitem">
+            	<h3 class="classsidetit">他们也关注了</h3>
+                <div class="classsidecon">
+                	<ul class="class_mb_ul">
+                        <volist name="source" id="vol">
+                            <li>
+                                <img src="{$vol['user']['avatar_big']}" alt="">
+                                <p>{$vol['user']['uname']}</p>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+            <php>}</php>
+        </div>
+        <div class="clear"></div>
+        <php>if($like){</php>
+        <div class="guess_like">
+            <h3 class="guess_like_tit">猜你喜欢</h3>
+            <ul class="classlist02 clearfix">
+                <volist name="like" id="val" offset="2" length="5">
+                    <li>
+                        <div class="pic">
+                            <php>if($val['type'] == 2){</php>
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],266,170)}" alt=""></a>
+                                <div class="txt">
+                                    <div class="fl orange class">直播中</div>
+                                    <span class="fl">进度：{$val['live']['now']}/{$val['live']['count']}节</span>
+                                </div>
+                            <php>}else{</php>
+                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],266,170)}" alt=""></a>
+                            <php>}</php>
+                        </div>
+                        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],20)}</a></h3>
+                        <div class="info">
+                            <div class="price">￥{$val['t_price']}
+                                <if condition="$val['free_status']"><span class="sx">{$val['free_status']}</span></if>
+                            </div>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+        <php>}</php>
+    </div>
+</div>
+
+<!--消息提示框-->
+<div class="message_prompt_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>分享成功，快去个人中心查看吧~~~</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">祝您:购物愉快 !</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn">确　定</a>
+    </div>
+</div>
+<div class="message_add_order_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>加入我的看单</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">该套餐课程需要加入我的看单后方可学习，确定加入？</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn shou_mount add_order_album" style="color: #fff;background: rgb(101, 173, 221);" >确　定</a>
+        <a class="quer_btn close_btn">取　消</a>
+    </div>
+</div>
+<script type="text/javascript">
+    window.onload=function(){
+        var view_main_nav = document.getElementById('view_main_nav');
+
+        window.onscroll = function(){
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+            if(scrollTop <= 625){
+                $('.coursetopitem_btn').hide();
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop && scrollTop <= 625){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop){
+                $('.coursetopitem_btn').show();
+                $('#view_main_nav').attr("style","position: fixed;top: 0;z-index: 9;width:1200px;background: url(__THEME__/icon/topbg.jpg);");
+            }else{
+                $('#view_main_nav').removeAttr("style");
+            }
+        }
+    };
+
+    var uid = '{$uid}';
+    var app_id = "{$data['id']}";
+    var arr = ['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
+    //关注
+    function setFollow(tuid, follow){
+        if(uid <= 0 ){
+            reg_login();
+            return false;
+        }
+        action = follow?'doFollowMhm':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:tuid}, function(data){
+            if(data.status){
+                notes('操作成功', 'success');
+                setTimeout('window.location.reload()', 1000);
+            }else{
+                notes(data.info, 'failure');
+            }
+        }, 'json');
+    }
+
+    //收藏套餐
+    function collectAlbum(cate,id){
+    if(uid<=0){
+      reg_login();
+      return;
+    }
+    var type = $(cate).attr('data-type');
+    $.ajax({
+      type: 'POST',
+      url:"{:U('classroom/Public/collect')}",
+      data:{type:type,sctype:1,source_id:id,is_video:3},
+      dataType:"json",
+      cache: false,
+      success: function(data){
+          if(data.status == '0'){
+              notes(data.info,'failure');
+          } else {
+              notes(data.info,'');
+              //$(cate).removeClass().addClass("wenda-gz-Toggle");
+              if(type == 1){ //收藏
+                  $(cate).html('<i class="icon-11"></i>取消收藏');
+                  $(cate).attr('data-type',0);
+              }else{
+                  $(cate).html('<i class="icon-01"></i>收藏套餐');
+                  $(cate).attr('data-type',1);
+              }
+
+          }
+      },
+    });
+    }
+    //tab 切换效果
+    $(function(){
+        var show_index = 1;
+        $('div.coursemain-bd').hide();
+        $('div.coursemain-bd').eq(show_index).show();
+        $('div.coursemain-hd ul li').click(function(){
+            $('body,html').animate({scrollTop:625},200);
+            $(this).addClass('on').siblings().removeClass('on');
+            $('div.coursemain-bd').hide();
+            $('div.coursemain-bd').eq($(this).index()).show();
+        });
+    });
+
+    //分享
+    function shareVideo(obj,aid) {
+        if('{$mid}'<=0){
+            reg_login();
+            return false;
+        }
+
+        if(!aid){
+            ui.error("参数错误");
+            return false;
+        }
+        $.post("{:U('classroom/VideoShare/addVideoShare')}", {vid:aid,type:1}, function (e) {
+            if(e.status == 1){
+                $('.message_prompt_box').show();
+                e.allinfo ="分享成功！您的分享链接为："+e.info;
+                $('.tips_info').html(e.allinfo);
+                $('.mask').show();
+                $('.quer_btn').click(function () {
+                    $('.message_prompt_box,.mask').hide();
+                    $('#urlcopy').val(e.info);
+                    var text=document.getElementById("urlcopy");
+                    text.select(); // 选择对象
+                    document.execCommand("Copy"); // 执行浏览器复制命令
+                    $('#urlcopy').hide();
+                    window.location.reload();
+                    ui.success("你已经成功复制链接！");
+                });
+
+                $('.message_prompt_box').click(function () {
+                    $('.message_prompt_box,.mask').hide();
+                    window.location.reload();
+                });
+
+            }else{
+                ui.error(e.info);
+            }
+        }, 'json');
+    }
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //购买操作
+    $('#charge_video,#charge_video2').click(function () {
+        if(uid<=0){
+        	reg_login();
+            return false;
+        }
+        var form  = $('#pay_form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+
+        if(!vid || !vtype){
+            ui.error('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+        if(money <= 0){
+            $('.message_add_order_box').show();
+            $('.mask').show();
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                ui.error('购买金额必须为整数');
+            }else{
+                ui.error('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
+            var mount_url = "{$mount_str}";
+            if(data.status == 1){
+                if(mount_url){
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+                }else{
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+//                window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                }
+            } else if(data.status == 9){
+                ui.error(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+    $('.add_order_album').click(function () {
+        var form  = $('#pay_form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+            if(data.status == 1){
+                $('.message_add_order_box').hide();
+                ui.success(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+    $('.message_add_order_box .w-close a,.close_btn').click(function () {
+        $('.message_add_order_box').hide();
+        $('.mask').hide();
+    });
+
+    $(function(){
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+    });
+    function dashangToggle(){
+        $('.mask').hide();
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+    }
+
+    //同意协议
+    $('.agreement #protocol').click(function(){
+        var type = $(this).attr('class');
+        if(type == 'no-agree'){
+            $(this).attr('class','agree');
+        }else{
+            $(this).attr('class','no-agree');
+        }
+    });
+    //暂不支付
+    $('.w-close a,.buy-btn .cancel').click(function(){
+        $('.buyOperating,.mask').hide();
+    });		//点击购买
+    $('#charge').live('click',function(){
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+        $('.buyOperating').show();
+//			var mask_height = $(document).height();
+//			$('.mask').height(mask_height).show();
+    });
+    //同意协议
+    $('.agreement #protocol').click(function(){
+        var type = $(this).attr('class');
+        if(type == 'no-agree'){
+            $(this).attr('class','agree');
+        }else{
+            $(this).attr('class','no-agree');
+        }
+    });
+    //暂不支付
+    $('.w-close a,.buy-btn .cancel').click(function(){
+        $('.buyOperating,.mask').hide();
+    });
+    $('.zfb_zxzf a').click(function(){
+        $(this).siblings().find('em').removeClass('ch_z');
+        $(this).find('em').addClass('ch_z');
+        $(this).parents('form').find('input:hidden[name="pay"]').val($(this).attr('val'));
+    });
+
+  //关注讲师
+    function followyou(cate,tuid,id){
+        if(uid<=0){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/Public/followyou')}",
+            data:"fid="+tuid+"&tid="+id,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    notes(data.info,'failure');
+                    return;
+                }else{
+                    setTimeout('window.location.reload()', 1000);
+//                    $(cate).text("已关注对方");
+                }
+
+            }
+        });
+    }
+</script>
+
+<include file="__THEME__/public_footer" />
+<input type ="text"   id="urlcopy"   style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"  >
+
+
+<style>
+
+
+    .zhuang-left:hover ._share_my_firends{display: block;}
+    ._share_my_firends {
+        height: 62px;
+        position: absolute;
+        right: 44px;
+        bottom: 3px;
+        width: 168px;
+        top: 0px;
+        left: 0;
+        display: none;
+        margin-top: 20px
+    }
+
+    ._share_all_channel {
+        margin-top: 13px;
+        width: 155px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(83,87,88,.2);
+        margin-top: 10px;
+    }
+
+
+    .side-ills-fell {
+        width: 0!important;
+        position: absolute;
+        height: 0!important;
+        top: 8px;
+        left: 11px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 5px solid #FFF;
+    }
+
+
+
+
+
+
+
+</style>

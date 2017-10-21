@@ -1,0 +1,50 @@
+<include file="__THEME__/public_header_twolevel"/>
+
+    <div class="header2">
+    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<div>我的优惠券</div>
+    </div>
+    <div class="body">
+        <ul class="cardlistnav">
+            <li class="on"><a href="{:U('classroom/User/discount')}">打折</a></li>
+            <li><a href="{:U('classroom/User/vipCard')}">会员</a></li>
+            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
+            <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+        </ul>
+        <ul class="card2list">
+            <if condition="$data">
+                <volist name="data" id="vo">
+                    <li class="<if condition='$vo["status"] eq 0'>stamp02<elseif condition='$vo["status"] egt 1'/>stamp03<elseif condition='$vo["etime"] lt time()'/>stamp04</if>">
+                    <div class="top">
+                        <div class="info">
+                            <div class="price">{$vo.discount}折</div>
+                            <p>打折卡</p>
+                            <p>{:date("Y.m.d",$vo['stime'])} - {:date("Y.m
+                                .d",$vo['etime'])}</p>
+                        </div>
+                        <php>if($vo['status'] == 0 && $vo['etime'] - time() > 86400*2){</php>
+                        <i style="display: none;"></i>
+                        <php>}else{</php>
+                        <i></i>
+                        <php>}</php>
+                    </div>
+                    <div class="bot">
+                        <p>券编号&nbsp;:&nbsp;{$vo.code}</p>
+                        <p>发卡单位：{$vo.school_title}</p>
+                        <a href="{:U('classroom/Video/index')}">立即使用</a>
+                    </div>
+                    </li>
+                </volist>
+                <else/>
+                <div style="font-size: 15px;padding: 20px;margin-top: 8px;">您暂未获得打折卡~</div>
+            </if>
+        </ul>
+    </div>
+
+<script>
+    $(function() {
+        $(".header").hide();
+    });
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

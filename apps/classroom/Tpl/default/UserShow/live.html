@@ -1,0 +1,45 @@
+<include file="__THEME__/public_header" />
+<include file="public/_top" />
+<!--centerbox end-->
+
+<div class="left-all">
+    <div class="center_right">
+        <div class="center_right_tit">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <h5>直播</h5>
+                    <!--<a href="{:U('live/Index/index')}">更多></a>-->
+                    <!--<a href="javascript:void(0);">个人资料</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="center_right_con Manage_all">
+            <ul class="user-imglist">
+                <if condition="$data eq null">
+                    <li style="border: none;box-shadow: none;">TA还没有相关直播。。</li>
+                    <else/>
+                    <foreach name="data" item="l" key='k'>
+                        <li>
+                            <a href="{:U('live/Index/view',array('id'=>$l['live_id']))}" class="img"><img src="{:getCover($l['cover'] , 248,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                            <div class="user-title">
+                                <h3><a href="{:U('live/Index/view',array('id'=>$l['live_id']))}">{$l.video_title}</a></h3>
+                                <p><a href="{$l.domain}">{$l.mhm_title}</a></p>
+                                <span><strong>¥{$l.money}</strong><small>{$l.order_count}人在学</small></span>
+                            </div>
+                        </li>
+                    </foreach>
+                </if>
+            </ul>
+            <div class="page">
+                <div class="pagebox">
+                    {$listData['html']}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<include file="public/_right" />
+
+<include file="__THEME__/public_footer" />

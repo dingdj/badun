@@ -1,0 +1,25 @@
+<if condition="$listData">
+    <volist name="listData" id="vo">
+        <li>
+            <a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">
+                <img src="{:cutImg($vo['head_id'],70,70)}" alt="{$vo.name}">
+                <div class="tit">
+                    <h3>{$vo.name}</h3>
+                    <php>if($vo['teacher_title_cover_id']){</php>
+                    <i style="background:url({:getCover($vo['teacher_title_cover_id'],19,19)}) 0 0 no-repeat;display:inline-block;vertical-align: middle;width: 19px;height: 19px;"></i>
+                    <php>}</php>
+                    <span>{$vo.school}</span>
+                </div>
+                <div class="dis">{:limitNumber($vo['inro'],35)}</div>
+                <div class="info">综合评分：{$vo.star}分<span>|</span><i class="icon-03"></i>{$vo.Teacher_areas}</div>
+                <div class="label">
+                    <span>{$vo.teacher_age}年教龄</span>
+                    <php>foreach($vo['label'] as $k=>$v){</php>
+                    <php>if($k < 4){</php><span>{$v}</span><php>}</php>
+                    <php>}</php>
+                    <span>{:limitNumber($vo['teach_evaluation'],15)}</span>
+                </div>
+            </a>
+        </li>
+    </volist>
+</if>

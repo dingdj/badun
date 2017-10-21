@@ -1,0 +1,85 @@
+<div style="width:300px;padding:10px;">
+
+	<div class="jgformitem" style="line-height: 30px;">
+		<label><span style="color: red;">*</span>退款原因:</label>
+        <select name="refund_reason" id="refund_reason" style="border: solid 1px #b6c7d6;vertical-align: 0px;width: 229px;margin-left: 5px;border-radius: 1px;">
+            <option value="0">请选择</option>
+            <option value="1">讲师不专业</option>
+            <option value="2">课程不是想学习的</option>
+            <option value="3">{$refundConfig['refund_numday']}天无理由退款</option>
+            <option value="4">其他原因</option>
+        </select>
+	</div>
+    <div class="jgformitem">
+        <label><span style="color: red;"></span>退款金额:</label><span style="color:red;">　￥{$price}</span>
+    </div><br/>
+    <div class="jgformitem">
+        <label><span style="color: red;"></span>退款渠道:</label><span style="color:red;">　原支付渠道退回（{$pay_type}）</span>
+    </div><br/>
+
+    <div class="jgformitem">
+        <label><span style="color: red;">*</span>退款说明:</label>
+        <textarea class="jg_input" name=refund_note" placeholder="选填" id ="refund_note" style ="width: 285px;height: 64px;margin-left: 4px;padding: 0 4px; line-height: 38px; border: solid 1px #b6c7d6; border-radius: 3px;" />
+    </div><br/>
+
+	<div class="jgformitem banner_div">
+		<label class="label" style="float: left;"><span style="color: red;"> </span>上传凭证：</label>
+        <style>
+            #width_150{width: 235px;float: left;}
+            .btn_b,.btn_w{
+                display: block;
+                cursor:pointer;
+                width: 70px;
+                height: 30px;
+                border: solid 1px #00BED4;
+                border-radius: 4px;
+                background-color: #00BED4;
+                color: #fff;
+                text-align: center;
+                font-size: 14px;
+                line-height: 30px;
+            }
+            .btn_b{float: left; margin: 0 10px 0 75px;}
+        </style>
+        {:W('Upload',array('inputname'=>'voucher','inForm'=>3, 'attachIds'=>$voucher, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+	</div><br/>
+	<p style="padding-top: 10px;">请上传相关凭证/截图以及退款理由等详细信息</p>
+
+    <a id="buy-s-1r" class="topics_up color_wen9 fl pos_r" style="margin: 10px 30px;"> <b class="Test_True"></b> 同意<em class="green_txt">《{$site['site_keyword']}在线退款服务协议》</em> </a>
+
+	<input class="btn_b" type="button" value="确认" onclick="saveReason();" />
+	<input class="btn_w ml10" type="button" value="取消" onclick="ui.box.close();" />
+</div>
+<script type="text/javascript">
+    function saveReason(){
+        var id = '{$id}';
+        var type = '{$type}';
+        var	refund_reason =   $('#refund_reason').find('option:selected').attr('value');//退款原因
+        var refund_note = $.trim($('#refund_note').val());//退款说明
+        var voucher = $("#voucher_ids").val();//退款凭证图片
+        if (refund_reason == 0) {
+            ui.error('请选择申请退款原因。。');
+            return false;
+        }
+        if (refund_note == '') {
+            ui.error('退款说明不能为空');
+            return false;
+        }
+        // 提交申请
+        $.post(U('classroom/Home/doApplyFR'),
+                {id:id,order_type:type,refund_reason:refund_reason,refund_note:refund_note,voucher:voucher}, function (res) {
+                    if (res.status == 1) {
+                        ui.box.close();
+                        ui.success(res.info);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        ui.error(res.info);
+                        ui.box.close();
+                    }
+                }, 'json');
+    }
+</script>
+
+

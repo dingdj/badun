@@ -1,0 +1,10 @@
+<dt><a href="javascript:;"><img src="{$vl.cover}"  class="lazyloading" style="width:313px;height:650px;" /></a></dt>
+<foreach name="l.data_list" item="vo">
+    <dd>
+        <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}"><img src="{$vo.cover}" class="lazyloading"/></a>
+        <h3><a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">{$vo.title$vo.info|msubstr=0,6,'utf-8',true}</a></h3>
+        <p>{$vo.info|msubstr=0,9,'utf-8',true}</p>
+        <div class="prcie"><span>{$vo.price}</span>积分&nbsp;&nbsp;&nbsp;&nbsp;运费<span>{$vo.fare}</span>积分</div>
+        <div class="num">剩余<span>{$vo.stock}</span>名额</div>
+    </dd>
+</foreach>

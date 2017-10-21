@@ -1,0 +1,155 @@
+<include file="../Public/_header" />
+<link href="__THEME__/css/css.php?t=css&f=index.css" rel="stylesheet" type="text/css" />
+<div class="mask"></div>
+<include file="_nav" />
+<!--container-->
+<div class="container"> 
+    <div class="item_box classroom">
+        <img src="{:cut_img($data['cover'],520,320)}" />
+        <h3><a class="a f3" href="{:U('w3g/Album/watch',array('aid'=>$id,'type'=>2))}">{$data.album_title}</a></h3>
+        <div class="info">
+            <div class="price">￥{$data.mzprice.overplus}</div>
+            <div class="num">购买人数：{$data.album_order_count} 人</div>
+            <div class="star">
+            <if condition="$data.album_score  GT 0 "> <span></span>
+            <else /><span class="no"></span></if>
+            <if condition="$data.album_score  GT 1 "> <span></span>
+            <else /><span class="no"></span></if>
+            <if condition="$data.album_score  GT 2 "> <span></span>
+            <else /><span class="no"></span></if>
+            <if condition="$data.album_score  GT 3 "> <span></span>
+            <else /><span class="no"></span></if>
+            <if condition="$data.album_score  GT 4 "> <span></span>
+            <else /><span class="no"></span>
+            </if>
+            （{$data.reviewCount} 人）
+            </div>
+        </div>
+        <div class="btn" >
+        <php>if($data['is_buy']){</php><a class="bb" href="javascript:;">已购买</a><php>}else{</php><a class="bb" href="javascript:;" id="charge">立即购买</a><php>}</php>
+        <a class="sb" href="{:U('w3g/Album/watch',array('aid'=>$id,'type'=>2))}">开始学习</a></div>
+    </div>
+    <div class="classroom_intr">
+        <h4>课程介绍：</h4>
+        <p>{$data.album_intro}</p>
+    </div>
+    <div class="classroom_type">
+        <ul class="type_hd">
+            <li class="on">课程目录</li>
+        </ul>
+        <div class="type_bd db">
+            <dl class="class-list" id="dirVideo">
+              <dt></dt>
+              <volist name="sVideos" id="vo">
+                <dd class="on">
+                  <a href="{:U('w3g/Album/watch','type=1&aid='.$vo['id'].'&vsum='.($key+1))}">
+                    <div class="fr"><if condition="$is_buy"><span>免费</span></if><em></em></div>
+                    <div><span>课程{$key+1}</span>{$vo.video_title|msubstr=###,0,80}</div>
+                    <i></i>
+                  </a>
+                </dd>
+              </volist>
+            </dl>
+        </div>
+    </div>
+    <div class="classroom_teacher">
+        <div class="classroom_teacher-tit">讲师信息</div>
+        <volist name="trlist" id="vo">
+            <dl class="classroom_teacher-originator">
+                <dt>
+                    <a href="{:U('w3g/Teacher/view',array('id'=>$vo['id']))}"><img src="{:getAttachUrlByAttachId($vo['head_id'])}" /></a>
+                </dt>
+                <dd>
+                    <h3><a href="{:U('w3g/Teacher/view',array('id'=>$vo['id']))}">{$vo.name}</a></h3>
+                    <div class="txt">{$vo.inro}</div>
+                </dd>
+            </dl>
+        </volist>
+    </div>
+</div>
+<!-- 购买确认弹出框 -->
+<div class="buyOperating" style="display: none; width:300px;left:75%;">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>提示：该课程需要支付<em class="coin_num_l" id="price"></em>学币，您当前账户余额为<em class="coin_num_l">{$data['balance']['balance']}</em>学币。是否继续？</h4>
+    </div>
+    <div class="agreement" style="margin-top:-15px;margin-bottom: -15px;">
+        <span id="protocol" class="agree" style="margin-top:-130px;margin-left:-65px;"></span><a style="width:auto;float:left;margin-left:20px;">我已经阅读并同意</a>
+        <a>《收费课程服务协议》</a>
+    </div>
+    <div class="buy-btn" style="margin-left:15px;">
+        <a class="btn" style="width:80px;height:25px;background:#2b92f9;color:#fff;padding:6px;float:left;" onclick="buyOperat({$_GET['id']},'album');">确认支付</a>
+        <a class="btn" style="width:50px;height:25px;background:#2b92f9;color:#fff;float:left;" href="{:U('w3g/User/recharge')}">充值</a>
+        <a class="btn cancel" style="width:100px;background:#2b92f9;height:25px;color:#fff;float:left;">暂不支付</a>
+    </div>
+</div>
+<style>
+  .btn{background:#fff;height:auto;}
+</style>
+<script type="text/javascript">
+var albumId = '{$id}';
+var id = '{$uid}';
+var collectStatus = 1;
+var arr=['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
+$(document).ready(function(){
+    //点击购买
+    $('#charge').live('click',function(){
+        if(id<=0){
+          window.location.href="{:U('w3g/Passport/login')}";
+        }
+        $('.buyOperating').show();
+        var mask_height = $(document).height();
+        $('.mask').height(mask_height).show();
+    });
+    //同意协议
+    $('.agreement #protocol').click(function(){
+        var type = $(this).attr('class');
+        if(type == 'no-agree'){
+            $(this).attr('class','agree');
+        }else{
+            $(this).attr('class','no-agree');   
+        }
+    });
+    //暂不支付
+    $('.w-close a,.buy-btn .cancel').click(function(){
+        $('.buyOperating,.mask').hide();
+    });
+ });     
+var nextBang=function(){
+    index = $('.switch-tab .current').index();
+    $(this).attr('class')=='prev'? index-=1 : index+=1;
+    var silder_size = $('.switch-tab a').size();
+    if(index < 0) index = silder_size-1;
+    if(index >=silder_size) index = 0;
+    $('.switch-tab a').removeClass().eq(index).addClass('current');
+    silder(index);
+}
+ //购买操作
+var buyOperat = function(id,type){
+    if(!id || !type){
+        return;
+    }
+    if($(".agree").size() < 1){
+        alert("购买套餐必须同意《收费课程服务协议》");
+        return;
+    }
+    var id = '<?php echo $_GET["id"]; ?>';
+    $.post(U('w3g/Album/buyOperating'),{id:id},function(txt){
+        if(txt.status == '0'){
+            $(".buyOperating").hide();
+            $(".mask").hide();
+            $("#charge").attr('id','');
+            alert(txt.info);
+        } else {
+            $(".buyOperating").hide();
+            $("#charge").attr('id','');
+            $(".mask").hide();
+            alert(txt.info);
+            window.location.href = window.location.href;
+        }
+    },'json');
+}
+
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

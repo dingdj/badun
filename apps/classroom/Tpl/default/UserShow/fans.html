@@ -1,0 +1,93 @@
+<include file="__THEME__/public_header" />
+<include file="public/_top" />
+<!--main-->
+<div class="worap position-rt">
+    <!--左-->
+    <div class="left-all-content-per fl user-pbottom">
+        <div class="center_right_tit">
+            <div class="user-con-title">
+                <h5>粉丝（{$count['follower']}）</h5>
+                <!--<a <?php echo $type=='follower'?' class="onactive"':''?> href="{:U('classroom/UserShow/fans', array('type'=>'follower','uid'=>$_GET['uid']))}">粉丝（{$count['follower']}）</a>-->
+            </div>
+        </div>
+        <!--下面这个盒子user-Release 内容都要被替换-->
+        <div class="user-Release" style="padding-top:0;">
+            <div class="pb40 clearfix Manage_all" style="display:block">
+                <?php if($count['follower']<=0):?>
+                <p class="" style="padding-top:20px;">TA暂时还没有粉丝</p>
+                <?php else:?>
+                <div class="clearfix">
+                    <?php foreach($data['data'] as $i=>$rs):?>
+                    <div class="box_block">
+                        <img src="{$rs['user']['avatar_middle']}" width="60" height="60" class="fl">
+                        <div class="clearfix " style="width:740px; float:right;">
+                            <a class="daren_name_a fl" href="{:U('classroom/UserShow/index',array('uid'=>$rs['user']['uid']))}"{:empty($rs['user']['user_group'])?' style="background:none;"':''}>{$rs['user']['uname']}</a>
+                            <?php if($followState[$rs['fid']]['following']==1):?>
+                            <php>if($_GET['uid']==$mid){</php>
+                            <div class="box_gf fr" style="width:40px; text-align:center;float:right;">
+                                <!--<a href="javascript:;">相互关注</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="green_txt" href="javascript:;" onclick="setFollow({$rs['fid']}, false)">取消</a>-->
+                                <a href="javascript:;" onclick="setFollow({$rs['fid']}, false)">取消</a>
+                            </div>
+                            <php>}</php>
+                            <?php else:?>
+                            <php>if($_GET['uid']==$mid){</php>
+                            <div class="box_gf" style="width:40px;float:right;">
+                                <a class="green_txt" href="javascript:;" onclick="setFollow({$rs['fid']}, true)">+关注</a>
+                            </div>
+                            <php>}</php>
+                            <?php endif;?>
+                            <php> if(!empty($rs['user']['intro'])): </php>
+                            <p  style="width:740px; float:right;">{:mb_substr($rs['user']['intro'], 0, 60, 'utf-8');}</p>
+                            <php> else: </php>
+                            <p  style="width:740px; float:right;">这个人很懒，什么都没有留下~</p>
+                            <php> endif; </php>
+                        </div>
+
+                    </div>
+                    <?php endforeach;?>
+                    <div class="follow_page">共{$data.totalRows}个粉丝</div>
+                    <div class="page">
+                        <div class="pagebox">
+                            {$data.html}
+                        </div>
+                    </div>
+                </div>
+                <?php endif;?>
+            </div>
+        </div>
+        <!--关注页面---------------
+        <div class="user-gz-box">
+        <p>暂时还没有关注他人 </p>
+        <p>去邀请好友页面和朋友们打个招呼吧~</p>
+      <ul>
+        <li class="user-gz"><img src="../image/img/th2.jpg"  class="img fl">
+          <div class="user-gzcon-box">
+            <h2><a href="#">zhuyudong@higher-edu.cn</a></h2>
+            <p>账户信息或这非法所得故更好反感很反感账户信息或这非法所得故更好反感很反感</p>
+          </div>
+          <a href="#" class="gz-submit fr">+ 关注</a></li>
+    </ul>
+    <div class="p fl">共1个粉丝</div>
+    </div>
+        -->
+    </div>
+</div>
+<!--右-->
+<include file="public/_right" />
+
+<!--footer-->
+<include file="__THEME__/public_footer" />
+<script type="text/javascript">
+    function setFollow(uid, follow){
+        action = follow?'doFollow':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:uid}, function(data){
+            if(data.status){
+                notes('关注成功', 'success');
+                setTimeout('window.location.reload()', 1500);
+            }else{
+                notes('关注失败', 'failure');
+            }
+        }, 'json');
+    }
+
+</script>

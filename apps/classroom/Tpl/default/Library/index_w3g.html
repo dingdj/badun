@@ -1,0 +1,269 @@
+<include file="__THEME__/public_header_twolevel"/>
+<style>
+    .selectul li {width: 50%;}
+    .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
+</style>
+<div class="min-height-wrap">
+    <div class="maskbox"></div>
+    <div class="body">
+        <ul class="selectul">
+            <li class="r01" name="list_dl">
+                <div class="hd">
+                    <switch name="sort_type">
+                        <case value="1">精华</case>
+                        <case value="hot">最热</case>
+                        <default/>
+                        综合排序
+                    </switch>
+                    <i></i></div>
+                <div class="bd">
+                    <dl>
+                        <dd
+                        <eq name='sort_type' value=''> class="active"</eq>
+                        ><a href="javascript:;" class="screen" data-type="sort_type" data-value="">综合排序</a></dd>
+                        <dd
+                        <eq name="sort_type" value="1">class="active"</eq>
+                        ><a href="javascript:;" class="screen" data-type="sort_type" data-value="1">精华</a></dd>
+                        <dd
+                        <eq name="sort_type" value="hot">class="active"</eq>
+                        ><a href="javascript:;" class="screen" data-type="sort_type" data-value="hot">最热</a></dd>
+                    </dl>
+                </div>
+            </li>
+            <li class="r02" name="list_dl">
+                <div class="hd">
+                    <php>if($cateId){</php>
+                    {:msubstr(t($title),0,6,'utf-8',true)}
+                    <php>}else{</php>
+                    全部
+                    <php>}</php>
+                    <i></i></div>
+                <div class="bd">
+                    <dl>
+                        <dd class="clearfix n1">
+                            <div class="item <eq name='cateId' value=''>active</eq>"><a
+                                    href="{:U('classroom/Library/index')}" id="cate0">全部</a></div>
+                            <volist name="category" id="vo">
+                                <div class="item <eq name='vo.doc_category_id' value='$cateId'>active</eq>"><a
+                                        href="javascript:;" class="screen" data-type="cateId"
+                                        data-value="{$vo.doc_category_id}">{$vo.title}</a></div>
+                            </volist>
+                        </dd>
+                        <dd class="n2">
+                        <volist name="category_two" id="vo">
+                            <div class="item <eq name='vo.doc_category_id' value='$cate_id'>active</eq>"><a
+                                    href="javascript:;" class="screen" data-type="cateId"
+                                    data-value="{$cateId}%2C{$vo.doc_category_id}">{$vo.title}</a></div>
+                        </volist>
+                        </dd>
+                        <dd class="n3">
+                        <volist name="category_three" id="vo">
+                            <div class="item <eq name='vo.doc_category_id' value='$cate_ids'>active</eq>"><a
+                                    href="javascript:;" class="screen" data-type="cateId"
+                                    data-value="{$cateId}%2C{$cate_id}%2C{$vo.doc_category_id}">{$vo.title}</a></div>
+                        </volist>
+                        </dd>
+                    </dl>
+                </div>
+            </li>
+        </ul>
+        <php>if($cateId){</php>
+        <div class="searchdiv">在“<span>{:msubstr(t($title),0,10,'utf-8',true)}</span>”分类下，找到{$data.count}文档</div>
+        <php>}</php>
+        <ul class="librarylist clearfix">
+            <php>if($listData){</php>
+            <volist name="listData" id="l">
+                <li>
+                    <i class="<switch name='l.attach_info.extension'><case value='ppt|pptx|pptm|ppsx|potm|ppam|ppsm'>icon-01</case><case value='word|doc|docx|docm|dotx'>icon-02</case>
+                            <case value='pdf'>icon-03</case><case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-04</case><case value='txt'>icon-05</case><default/></switch>"></i>
+                    <h3>{:msubstr(t($l['title']),0,20,'utf-8',true)}</h3>
+                    <p>更新时间：{:date("Y-m-d H:i",$l['ctime'])}</p>
+                    <p>文件大小：{$l['attach_info']['size']}</p>
+                    <p>文件类型：{$l['attach_info']['extension']}</p>
+                    <p>下载次数：{$l.down_nums}</p>
+                    <p>所需积分：<span class="free"><eq name="l.price" value="0">免费
+                        <else/>
+                        {$l.price}
+                    </eq></span></p>
+                    <a class="down" href="javascript:;" data-id="{$l.doc_id}">下载</a>
+                </li>
+            </volist>
+            <php>}else{</php>
+            <span style="font-size: 14px;padding: 10px;">已经没有相关文档啦。。</span>
+            <php>}</php>
+        </ul>
+    </div>
+    <div class="layer-shade"></div>
+    <div class="layer-dialog downbox"></div>
+
+    <php>if($listData){</php>
+    <div class="loadding">
+        <if condition="$data['nowPage'] eq $data['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>
+            <else/>
+            正在加载更多。。
+        </if>
+    </div>
+    <a class="backtop"></a>
+    <php>}</php>
+</div>
+<script>
+    $(function () {
+        $(".hd").click(function(){
+            if($(".maskbox").css("display")=="none") {
+                $(".maskbox").css({"display": "block"});
+            }else{
+                $(".maskbox").css({"display": "none"});
+            }
+        });
+        
+        //获取下载文档信息
+        $(".down").click(function () {
+            if(MID == 0){
+                if(confirm("请先登录")){
+                    window.location.href = "{:U('public/Passport/login_g')}";
+                }
+                return false;
+            }
+            var sid = $(this).data("id");
+
+            if(!sid){
+                alert('参数错误');
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "{:U('classroom/Library/getLibraryInfo')}",
+                data: "source_id=" + sid,
+                dataType: "json",
+                success: function (data) {
+                    $(".layer-content").html("");
+                    if (data.data != "") {
+                        var html = '<div class="layer-title">文档下载</div>'+
+                                    '<div class="layer-content"><div class="txt">'+data.title+ '<p>'+
+                                        '<span>文件大小：'+data.attach_info.size+ '</span> <span>文件类型：' + data.attach_info.extension + '</span></p>'+
+                                        '<p><em class="free">所需积分：' + data.price + '</em></p></div>'+
+                                    '</div>'+
+                                    '<div class="layer-btn">' +
+                                        '<a class="cancel" href="javascript:;">取消</a>'+
+                                        '<a href="javascript:;" onclick="downLibrary(' + data.doc_id + ')" >确认</a>'+
+                                    '</div>'
+                        $(".downbox").html(html);
+                    }
+                }
+            });
+        });
+
+        //同步请求
+        $(".screen").click(function () {
+            var _this = this;
+            var type = $(_this).data("type"),
+                    value = $(_this).data("value"),
+                    baseUrl = "{:U('classroom/Library/index')}";
+
+            window.location.href = getRequestUrl(type, value, baseUrl);
+        });
+        function getRequestUrl(field, value, baseUrl) {
+            if (field) {
+                //匹配是否有该参数
+                var reg = new RegExp("(^|&)" + field + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                //已经存在参数
+                var in_params = false;
+                if (r != null) {
+                    in_params = true;
+                }
+                //获取参数部分
+                var url = window.location.search;
+                var replaceReg = new RegExp(field + '=[^&]+', 'g');
+                if (value) {
+                    //合法参数传递方式
+                    if (in_params) {
+                        url = url.replace(replaceReg, field + '=' + value);
+                    } else {
+                        if (url.indexOf("?") != -1) {
+                            url += '&' + field + '=' + value;
+                        } else {
+                            url += '?' + field + '=' + value;
+                        }
+                    }
+
+                } else {
+                    //如果value不存在,移除该参数
+                    url = url.replace(replaceReg, '');
+                }
+            }
+            url = url.replace(/&{2,}/, '&').replace(/&$/, '');
+            setsearchUrl = url;
+            return baseUrl ? baseUrl + url : document.domain + url;
+        }
+
+        var p = 1;
+        $(window).scroll(function () {
+            //已经滚动到上面的页面高度
+            var scrollTop = $(this).scrollTop();
+            //页面高度
+            var scrollHeight = $(document).height();
+            //浏览器窗口高度
+            var windowHeight = $(this).height();
+            //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+            if (scrollTop + windowHeight == scrollHeight) {
+                if (!p || p >= "{$data['totalPages']}") {
+//                    $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>');
+                    return false;
+                } else {
+                    p = p + 1;
+                    ajaxBang();
+                }
+            }
+        });
+        //请求事件
+        function ajaxBang() {
+            $.ajax({
+                type: "GET",
+                url: "{:U('classroom/Library/getLibraryList')}",
+                data: "p=" + p + "&sort_type={$_GET['sort_type']}&cateId={$_GET['cateId']}",
+                dataType: "json",
+                success: function (data) {
+                    appendHtml(data);
+                }
+            });
+        }
+
+        //追加html
+        function appendHtml(data) {
+            $(".librarylist").append(data.data);
+            if(!p || p >= data.totalPages){
+                $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+                return false;
+            }else{
+                p = data.nowPage;//下一页
+            }
+        }
+    });
+    function downLibrary(down_id){
+        if(MID == 0){
+            if(confirm("请先登录")){
+                window.location.href = "{:U('public/Passport/login_g')}";
+            }
+            return false;
+        }
+        if(!down_id){
+            alert('参数错误');
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "{:U('classroom/Library/downW3g')}",
+            data: "source_id=" + down_id,
+            dataType: "json",
+            success: function (data) {
+                if(data.status == 1){
+                    var url = '{:U("classroom/Library/downLink")}'+'&source_id='+down_id;
+                    window.location.href = url;
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer_twolevel"/>

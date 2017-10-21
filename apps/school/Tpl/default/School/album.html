@@ -1,0 +1,161 @@
+<include file="../School/public/school_header" />
+
+<style type="text/css">
+    .wrap{
+        width:1170px
+    }
+    .left-all, .user-imglist, .center_right {
+        width: 1170px;
+    }
+    .package-buied{
+        display: block;
+        float: left;
+        width: 100%;
+        line-height: 40px;
+        text-align: center;
+        background-color: #00bed4;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 4px;
+        margin-top: 20px;
+    }
+</style>
+<div class="content">
+    <div class="wrap">
+        <div class="left-all">
+            <div class="center_right">
+                <div class="center_right_tit">
+                    <div class="user-con-title">
+                        <button class="on">综合排序</button>
+                        <!--<button>最新</button>
+                        <button>评分</button>
+                        <button>价格<span><i class="i01"></i><i class="i02"></i></span></button>-->
+                    </div>
+                </div>
+                <div class="package-content">
+                    <!--显示四个dl-->
+                    <if condition="$listData">
+                        <volist name="listData" id="vo">
+                            <dl>
+                                <dt>
+                                <div class="package-content-tit">
+                                    <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">
+                                        <img src="{:getCover($vo['cover'],390,224)}">
+                                        <h4>{:msubstr($vo['album_title'],0,12)}</h4>
+                                    </a>
+                                </div>
+                                </dt>
+                                <span class="icon-deng"></span>
+                                <dd>
+                                    <div class="package-content-all">
+                                        <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
+                                            <input type="hidden" value="{$vo['id']}" name="vid" />
+                                            <input type="hidden" value="zy_album" name="check_type" />
+                                            <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                                            <input type="hidden" id="money" value="{$vo['price']}" name="money" />
+                                            <input type="hidden" value="{$_SESSION['mid']}" name="mid" />
+                                        </form>
+                                        <div class="package-content-all-img">
+                                            <ul>
+                                                <!--最多显示5条-->
+                                                <volist name="vo.video" id="val" offset="0" length="6">
+                                                    <li>
+                                                        <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                                            <img src="{:getCover($val['cover'],94,70)}">
+                                                            <h6>{:msubstr($val['video_title'],0,10)}</h6>
+                                                        </a>
+                                                    </li>
+                                                </volist>
+                                                <!--<em><a href="#">更多>></a></em>-->
+                                            </ul>
+                                        </div>
+                                        <div class="package-content-all-txt group">
+                                            <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">{:msubstr($vo['album_title'],0,8)}</a></h3>
+                                            <span><em>收藏：{$vo.collect_count}次</em><em>购买：{$vo.order_count}次</em></span>
+                                            <small>共{:count($vo['video'])}门课程</small>
+                                            <strong>¥{$vo['price']}<i>¥{$vo['oPrice']}</i></strong>
+                                            <p>为你节省了{$vo['oPrice']-$vo['price']}元</p>
+                                            <php>if($vo['price'] < 0 ){</php>
+                                                <a href="javascript:;">免费套餐</a>
+                                            <php>}else{</php>
+                                                <eq name="vo.isBuy" value="0">
+                                                    <a href="javascript:;" class="package-buy">立即购买</a>
+                                                    <else />
+                                                    <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" class="package-buied">已购买</a>
+                                                </eq>
+                                            <php>}</php>
+                                        </div>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </volist>
+                        <else/>
+                        <dl>该机构还没有套餐。。</dl>
+                    </if>
+                </div>
+                <div class="page">
+                    <div class="pagebox">
+                        {$album.html}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+    //购买操作
+    $('a.package-buy').on('click',function () {
+        if(UID<=0){
+            reg_login();
+            return false;
+        }
+        var form  = $(this).parents('.group').siblings('.pay_form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+
+        if(!vid || !vtype){
+            ui.error('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+        if(money <= 0){
+            ui.error('该课程不需要您购买');
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                ui.error('购买金额必须为整数');
+            }else{
+                ui.error('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),form.serialize(),function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+//                window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+            } else if(data.status == 9){
+                ui.error(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+</script>
+<include file="__THEME__/public_footer" />

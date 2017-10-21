@@ -1,0 +1,282 @@
+<include file="__THEME__/_header_w3g" />
+
+<script>
+    var REPOHNE_VAR="{:U('home/Repwd/getVrifi')}";
+    var REPWDHANDLE="{:U('home/Repwd/repwdhandle')}";
+    var REPWDEMAIL="{:U('public/Passport/doFindPasswordByEmail')}";
+    var OKEMAILADD="{:U('public/Passport/okemailadd')}";
+    //更换验证码
+    function changeverifys(){
+        var date = new Date();
+        var ttime = date.getTime();
+        var url = "__ROOT__/public/captcha.php";
+        $('#verifyimgs').attr('src',url+'?'+ttime);
+
+    };
+
+</script>
+<div class="content">
+  <div class="loginbox">
+  		<div class="login_head"><a href="/"><img src="{$site.logo_head_w3g}" alt=""/></a></div>
+        <ul class="logintype">
+        	<li class="s on">
+            	<span>1</span>
+                <p>验证账号</p>
+            </li>
+            <li class="b">
+            	<span></span>
+                <span></span>
+                <span></span>
+            </li>
+            <li class="s second">
+            	<span>2</span>
+                <p>重置密码</p>
+            </li>
+            <li class="b">
+            	<span></span>
+                <span></span>
+                <span></span>
+            </li>
+            <li class="s third">
+            	<span>3</span>
+                <p>完成</p>
+            </li>
+        </ul>
+        <div class="mmbox email">
+            <dl>
+                <dt>邮箱:</dt>
+                <dd>
+                    <input  type="text" id="repemail" maxlength="30" class="yzm"  placeholder="请输入注册时用的邮箱"  />
+                </dd>
+            </dl>
+            <dl>
+                <dt>验证码:</dt>
+                <dd>
+                    <input  type="text" id="repcode" maxlength="6" class="yzm"  placeholder="请输入验证码"  />
+                    <a class="yzmbtn" href="javascript:;"><img id="verifyimgs" onclick="changeverifys()" title="点击刷新" src="__ROOT__/public/captcha.php"></a>
+                </dd>
+            </dl>
+            <dl>
+                <dt></dt>
+                <dd>
+                    <a class="mm_btn" href="javascript:;" onclick="repEmailNext(this)">下一步</a>
+                    <p>或使用<a href="javascript:;" id="showPhone">手机验证</a></p>
+                </dd>
+            </dl>
+        </div>
+
+        <!--<div class="completebox" style="display: none;">
+            <img src="__THEME__/icon/ok.png" alt="" />
+            <p>验证信息已成功发至您的邮箱，请登录邮箱完成操作</p>
+            <a href="{:U('home/Repwd/index')}">点此返回登录页面</a>
+        </div>-->
+        <div class="phone" style="display: none;">
+            <div class="mmbox verify" >
+                  <dl>
+                      <dt>手机:</dt>
+                      <dd>
+                          <input class="yzm" id="rephoneval" maxlength="11" type="text" placeholder="请输入注册手机">
+                      </dd>
+                  </dl>
+                  <dl>
+                      <dt>验证码:</dt>
+                      <dd>
+                          <input class="yzm" id="repverval" maxlength="6" type="text" placeholder="请输入手机验证码">
+                          <a class="yzmbtn" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
+                          <p class="width97"  style="display:none;"><a id="dctime"></a>秒后重新发送</p>
+                      </dd>
+                  </dl>
+                  <dl>
+                      <dt></dt>
+                      <dd>
+                          <a class="mm_btn" href="javascript:;" onclick="okPhonecode(this)">下一步</a>
+                          <p>或使用<a href="javascript:;" id="showEmail">邮箱验证</a></p>
+                      </dd>
+                  </dl>
+            </div>
+            <div class="mmbox reset" style="display: none;">
+                  <dl>
+                      <dt><span>*</span>新密码:</dt>
+                      <dd>
+                          <input id="ppwd" maxlength="20"  type="password" placeholder="请输入新密码，6-20个字符">
+                      </dd>
+                  </dl>
+                  <dl>
+                      <dt><span>*</span>确认密码:</dt>
+                      <dd>
+                          <input id="ppwds" type="password" maxlength="20" placeholder="重复密码">
+                      </dd>
+                  </dl>
+                  <dl>
+                      <dd>
+                          <a class="mm_btn" href="javascript:;" onclick="okPhonepwd(this)">下一步</a>
+                      </dd>
+                  </dl>
+            </div>
+
+            <div class="mmbox completebox" style="display: none;">
+                <div class="ok">密码找回成功！</div>
+                <p class="back"><a href="{:U('public/Passport/login_g')}">点此返回登录页面</a></p>
+            </div>
+        </div>
+
+
+  </div>
+</div>
+<script>
+    $(function(){
+        $("#preloader").hide();
+        $("#showEmail").click(function(){
+            $(".phone").hide();
+            $(".email").show();
+        });
+        $("#showPhone").click(function(){
+            $(".email").hide();
+            $(".phone").show();
+        });
+    });
+
+    /**
+     * 邮箱找回密码
+     */
+    function repEmailNext(cate){
+        $("p").text("");
+        var email=$.trim($("#repemail").val());//获取用户手机号
+        var code=$.trim($("#repcode").val());//获取用户手机号
+        if(!email.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
+            //setRepMsg("repmsgemail","对不起，email不正确！");
+            alert("对不起，email不正确！");
+            return;
+        }
+        if(code.length!=5){
+            //setRepMsg("repmsgcode","对不起，验证码格式不正确！");
+            alert("对不起，验证码格式不正确！");
+            return;
+        }
+        $(cate).attr("disabled","disabled");
+        $(cate).val("提交中....");
+        //修改密码
+        $.ajax({
+            type: "POST",
+            url:REPWDEMAIL,
+            data:"email="+email+"&everify="+code,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    $(cate).removeAttr('disabled');
+                    $(cate).val("下一步");
+                    alert(data.info);
+                    return;
+                }else{
+                    window.location.href=OKEMAILADD;
+                }
+            }
+        });
+    }
+
+    //临时处理方法
+    var timerc;
+    function dctime(){
+        if(timerc > 1){
+            timerc=timerc-1;
+            $("#dctime").text(timerc);
+            setTimeout("dctime()", 1000); //设置1000毫秒以后执行一次本函数
+        }else{
+            $('.width97').css("display","none");
+            $('.width80').removeAttr("style");
+        }
+    }
+
+    /**
+     * 找回密码发送手机验证码
+     */
+    function getRepPhoneVerify(){
+        phone=$.trim($("#rephoneval").val());//获取用户手机号
+        //检查手机号格式
+        if(!phone.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+            alert('对不起，请填写正确的手机号!');
+            return;
+        }
+        //获取手机验证码
+        $.ajax({
+            type: "POST",
+            url:REPOHNE_VAR,
+            data:"phone="+phone,
+            dataType:"json",
+            success:function(data){
+                if(data.status=='0'){
+                    alert(data.info);
+                    return;
+                }else{
+                    alert(data.info);
+                    $('.width97').removeAttr("style");
+                    timerc = 60;
+                    dctime();
+                    return;
+                }
+            }
+        });
+    }
+
+    function okPhonecode(){
+        phone = $('#rephoneval').val();
+        code = $('#repverval').val();
+        $.ajax({
+            type: "POST",
+            url:"{:U('home/Repwd/repwdhandle')}",
+            data:"phone="+phone+"&code="+code,
+            dataType:"json",
+            success:function(data){
+                var data = getResponseData(data);
+                if(data.status =='1')
+                {
+                    $(".s").removeClass("on");
+                    $(".second").addClass("on");
+                    $(".verify").css("display", "none");
+                    $(".reset").css("display", "block");
+                    $("#phonecode").val(code);
+                }
+                else {
+                    alert(data.info);
+                }
+            }
+
+        });
+    }
+
+
+    function okPhonepwd() {
+        phone = $('#rephoneval').val();
+        code = $('#repverval').val();
+        pwd = $('#ppwd').val();
+        pwds = $('#ppwds').val();
+        if (pwd != pwds) {
+            alert("新密码与确认密码请保持一致");
+        }
+        if (!pwd) {
+            alert("请输入新密码！");
+        }
+        if (!pwds) {
+            alert("请输入确认密码！");
+        }
+        $.ajax({
+            type: "POST",
+            url: "{:U('home/Repwd/repwdhandle')}",
+            data: "phone=" + phone + "&code=" + code + "&pwd=" + pwd + "&repwd=" + pwds,
+            dataType: "json",
+            success: function (data) {
+                var data = getResponseData(data);
+                if (data.status == '1') {
+                    $(".s").removeClass("on");
+                    $(".third").addClass("on");
+                    $(".reset").css("display", "none");
+                    $(".completebox").css("display", "block");
+                }
+                else {
+                    alert(data.info);
+                }
+            }
+
+        });
+    }
+</script>

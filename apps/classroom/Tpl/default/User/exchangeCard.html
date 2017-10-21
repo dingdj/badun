@@ -1,0 +1,180 @@
+<include file="__THEME__/public_header" />
+<!--header end-->
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_right_con{
+        padding:0 10px;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+	<div class="wrap">
+    	<include file="../User/public/_left" />
+        <div class="center_right">
+        	<div class="center_right_tit">
+            	<ul>
+                    <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
+                    <li><a href="{:U('classroom/User/discount')}">打折卡</a></li>
+                    <li><a href="{:U('classroom/User/vipCard')}">会员卡</a></li>
+                    <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+                    <!--<php>if($coupon){</php>-->
+                        <!--<li class="on"><a href="{:U('classroom/User/exchangeCard')}">使用卡券</a></li>-->
+                    <!--<php>}else{</php>-->
+                        <!--<li class="on"><a href="{:U('classroom/User/exchangeCard')}">领取卡券</a></li>-->
+                    <!--<php>}</php>-->
+                    <li class="on"><a href="{:U('classroom/User/exchangeCard')}">使用卡券</a></li>
+                </ul>
+            </div>
+            <div class="center_right_con">
+                <form class="infobox input">
+                    <php>if(!$coupon){</php>
+                    <dl>
+                        <dt>实体卡编号：</dt>
+                        <dd>
+                            <input name="card" class="inp01" type="text" placeholder="请输入实体卡编号" value="">
+                            <a id="draw" href="javascript:;" class="fr" >使用</a>
+                        </dd>
+                    </dl>
+                    <ul class="couponlist"></ul>
+                    <php>}else{</php>
+                        <ul class="couponlist <eq name='coupon.type' value='4'>green<else/>red</eq>">
+                            <li>
+                                <div class="quan">
+                                    <php>if($coupon['type'] == 4){</php>
+                                        <div class="price"><span>¥</span>{$coupon.recharge_price}</div>
+                                        <p>充值卡<br>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                                    <php>}else if($coupon['type'] == 3){</php>
+                                        <div class="price">{$coupon['vip_grade_list']->title}</div>
+                                        <h3>会员时限&nbsp;:&nbsp;{$coupon.vip_date}天</h3>
+                                        <p>有效期&nbsp;:&nbsp;{$coupon.stime} - {$coupon.etime}</p>
+                                    <php>}</php>
+                                </div>
+                                <div class="txt">
+                                    <div class="item">卡券编号&nbsp;:&nbsp;{$coupon.code}</div>
+                                    <div class="item">发卡单位&nbsp;:&nbsp;{$coupon.school_title}</div>
+                                    <a href="javascript:;" onclick="doExchange({$coupon.coupon_id})">确认兑换</a>
+                                </div>
+                            </li>
+                        </ul>
+                    <php>}</php>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $("#draw").click(function(){
+        var code = $("input[name='card']").val();
+        var vid = '',
+            vtype = '',
+            url = '',
+            coupon_id = '';
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/User/getExchangeCard')}",
+            data:{code:code},
+            dataType:"json",
+            success:function(data){
+                if(data.id){
+                    $.post(U("classroom/User/convert"),{code:code},function(msg){
+                        if(msg.status == 1){
+                            coupon_id = data.id;
+                            vid = data.video_id;
+                            if(data.video_type == 1){
+                                vtype = 'zy_video';
+                                url = "{:U('classroom/Video/view',array('id'=>$id))}";
+                            }else if(data.video_type == 2){
+                                vtype = 'zy_live';
+                                url = "{:U('Live/Index/view',array('id'=>$id))}";
+                            }
+                            $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype,coupon_id:coupon_id},function(text){
+                                if(text.status == 1){
+                                    ui.success('使用成功');
+                                    location.reload();
+                                } else {
+                                    ui.error('使用失败');
+                                    return false;
+                                }
+                            },'json');
+                        } else {
+                            ui.error('使用失败');
+                            return false;
+                        }
+                    },'json');
+                }else{
+                    ui.error('该实体卡无法使用');
+                    return false;
+                }
+
+                /*if(parseInt(data.type) == 1 || parseInt(data.type) == 4){
+                    $(".couponlist").addClass("green");
+                    $(".couponlist").removeClass("red");
+                }else{
+                    $(".couponlist").addClass("red");
+                    $(".couponlist").removeClass("green");
+                }
+                $(".couponlist").html("");
+                if(data.data!=""){
+                    $(".couponlist").append(data.data);
+                }
+                return true;*/
+            }
+        });
+    });
+});
+    //使用卡券
+    function doExchange(id){
+        $.ajax({
+            type:"GET",
+            url:"{:U('classroom/User/doExchange')}",
+            data:{id:id},
+            dataType:"json",
+            success:function(data){
+                if(data.status == 1){
+                    ui.success(data.info);
+                    setTimeout(function(){
+                        location.href = data.referer;
+                    },1500);
+                }else{
+                    ui.error(data.info);
+                    return false;
+                }
+            }
+        });
+    }
+    //领取卡券
+    function convert(code){
+        $.ajax({
+            type:"GET",
+            url:"{:U('classroom/User/convert')}",
+            data:{code:code},
+            dataType:"json",
+            success:function(data){
+                if(data.status == 1){
+                    ui.success(data.info);
+                    location.reload();
+                }else{
+                    ui.error(data.info);
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

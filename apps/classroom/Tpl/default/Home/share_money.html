@@ -1,0 +1,54 @@
+<include file="__THEME__/public_header" />
+
+<include file="../User/public/_top" />
+<style>
+    .green_txt:hover{cursor:pointer;}
+</style>
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="center_right_tit">
+                    <ul>
+                        <li {$tab==0 ?' class="on"':''}><a href="{:U('classroom/Home/share')}" >我的分享</a></li>
+                        <li {$tab==1 ?' class="on"':''}><a href="{:U('classroom/Home/share', array('tab'=>1))}" >我的分享收入余额</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all" style="display:block;height: 335px;padding: 180px 0;text-align: center;">
+                <p class="txt_r ft24 pb20"> 我的分享余额：
+                    <em class="green_txt ft30 mlr22">{$share_price}</em>
+                    <a class="green_txt ft14 ml20"  onclick="ui.confirm(this,'确定要兑换？');return false;" callback="changeShare(this,{$share_price})">兑换为积分</a>
+                </p>
+            </div>
+        </div>
+
+        <include file="../User/public/_right" />
+
+    </div>
+</div>
+
+<script>
+    function changeShare(obj,share_price) {
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/VideoShare/changeShare')}",
+            data:"share_price="+share_price,
+            dataType:"json",
+            success:function(e){
+                if(e.status == 1){
+                    ui.success(e.info);
+                    window.location.reload();
+                }else{
+                    ui.error(e.info);
+                }
+            }
+        });
+    }
+</script>
+
+<!--footer-->
+<include file="__THEME__/public_footer" />

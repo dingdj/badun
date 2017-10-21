@@ -1,0 +1,72 @@
+<include file="__THEME__/public_header" />
+
+<div class="content cf2">
+	<div class="wrap">
+    	<!--左-->
+	    <include file="../User/_left" />
+	    <!--右-->
+        <div class="jgpage_right">
+        	<div class="jgpage_right_tit mb50">视频空间</div>
+            <div class="jgpage_right_con">
+            	<div class="txt">您可以填写并提交扩充或缩减视频空间的申请，我们的工作人员将在收到申请的1个工作日内审核您的申请并及时与您联系，请耐心等待。</div>
+                <div class="jgbox">
+                <form>
+                	<div class="jgformitem">
+                    	<label><span>*</span>当前空间大小:</label>
+                        {$videoSpace} GB
+                    </div>
+                    <div class="jgformitem">
+                    	<label><span></span>可用空间大小:</label>
+                        {$usedSpace} GB
+                    </div>
+                    <div class="jgformjdt"><span style="width:{$style};"></span></div>
+                    <php>if(!$verified || $verified['status'] != 0){</php>
+	                    <div class="jgformitem">
+	                    	<label><span>*</span>申请扩展空间:</label>
+	                        <input style="width:150px;" name="videoSpace" id="videoSpace" class="jg_input" value="" placeholder="请输入申请扩展空间" type="text" >
+	                        <span>{$oneprice}/GB</span>
+	                    </div>
+	                    <div class="jgformitem">
+	                        <a style="width:120px;" class="jg_btn" href="javascript:;" onclick="saveVideoSpace()">申请购买</a>
+	                    </div>
+	                <php>}else{</php>
+						<div class="jgformitem">
+	                    	<label><span>*</span>申请扩展空间:</label>
+	                        {$verified.videoSpace}GB
+	                    </div>
+	                    <div class="jgformitem">
+	                        <input  class="jg_btn"  type="submit" style="background: #ccc;width: 200px;" value="已申请,请等待审核">
+	                    </div>
+	                <php>}</php>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function saveVideoSpace(){
+    var videoSpace = $("#videoSpace").val();
+
+	var numreg = /^[0-9]*[1-9][0-9]*$/ ;
+	if(!numreg.test(videoSpace))
+	{
+		alert('扩展空间数目需为正整数！');
+		return false;
+	}
+
+    if(!videoSpace){
+    	notes('请输入申请扩展空间', 'failure');
+		return false;
+    }
+	if(!/^[\d]{1,6}$/.test(videoSpace)){
+		notes('扩展空间只能为数字', 'failure');
+		return false;
+	}
+
+	window.location.href = "{:U('school/User/buyvideoSpace',array('videoSpace' => '"+videoSpace+"'))}";
+
+
+}
+</script>
+<include file="__THEME__/public_footer" />

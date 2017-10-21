@@ -1,0 +1,80 @@
+
+<include file="__THEME__/public_header" />
+<div class="content cf2">
+    <div class="wrap">
+        <!--左-->
+        <include file="../User/_left" />
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="__THEME__/js/fulljquery.min.js"></script>
+    <script src="__THEME__/js/fulljquery-ui.custom.min.js"></script>
+    <script src="__THEME__/js/fullcalendar.min.js"></script>
+    <link href="__THEME__/css/fullcalendar.css" rel="stylesheet" type="text/css">
+
+
+    <script>
+
+        $(document).ready(function() {
+
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    right: ' agendaWeek'
+                },
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                eventClick: function (calEvent, jsEvent, view) {
+                    var reset=document.getElementById('reset');
+                    var time=document.getElementById('eventtime');
+                    reset.value  =calEvent.title;
+                    var d = new Date(calEvent.start);
+                    var eventtime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + '0'+d.getMinutes() + ':' + '0'+d.getSeconds();
+                    time.value  =eventtime;
+             //       view.css('background', 'green');
+                    $(this).css('background', 'green');
+                },
+
+                events:  '{:U("school/User/addArrCoursedata")}' ,
+
+            });
+
+        });
+
+    </script>
+
+
+
+    <style>
+
+        body {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+        }
+
+        #calendar {
+            width: 900px;
+            margin: 0 auto;
+
+        }
+
+    </style>
+</head>
+
+<div id='calendar'></div>
+<form action='{:U("classroom/Home/addArrCourse")}'     method="post">
+<span> <span style='color: red;'>*</span>当前选中排课时间</span> <input  id ="eventtime" name="start"  readonly="readonly"/><br/>
+<span><span style='color: red;'>*</span>排课课程</span> <input type ="text"  id ="course" name="course"/><br/>
+<span><span style='color: red;'>*</span>申请并发</span> <input type ="text"   id = "maxmannums" name="maxmannums"/><br/>
+<span></span> 　备注</span> 　<input type ="text" name = "notice" /><br/>
+<input type="text" style="display:none"  id = "reset" name = "reset"/><br/>
+<input type ="submit" />
+    </form>
+
+<include file="__THEME__/public_footer" />

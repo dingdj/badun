@@ -1,0 +1,66 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+	<?php if(isset($bindType['sina'])):$rs = $bindData[$bindType['sina']];?>
+	    <dl class="bangli">
+	        <dt><img src="__APP__/icon/l2.png">新浪微博</dt>
+	        <dd>
+	        <?php if($rs['isBind']):?>
+           		<a class="fr color_blue ml30" href="javascript:;" onclick="unbind('{$rs.name}','{$rs.type}','{$rs.addon}','{$rs.unbind_hook}');">解除绑定</a>
+           	<?php else:?>
+           		<a class="Share sel_w fr mt4" target="_blank" href="{:Addons::createAddonShow($rs['addon'],$rs['bind_hook'],array('type'=>$rs['type'],'do'=>'bind'))}">点击绑定</a>
+            <?php endif;?>
+            </dd>
+	    </dl>
+	<?php endif;?>
+    <?php if(isset($bindType['qzone'])):$rs = $bindData[$bindType['qzone']];?>
+	    <dl class="bangli">
+	        <dt><img src="__APP__/icon/l1.png">腾讯QQ</dt>
+	        <dd>
+	        <?php if($rs['isBind']):?>
+           		<a class="fr color_blue ml30" href="javascript:;" onclick="unbind('{$rs.name}','{$rs.type}','{$rs.addon}','{$rs.unbind_hook}');">解除绑定</a>
+           	<?php else:?>
+           		<a class="Share sel_w fr mt4" target="_blank" href="{:Addons::createAddonShow($rs['addon'],$rs['bind_hook'],array('type'=>$rs['type'],'do'=>'bind'))}">点击绑定</a>
+            <?php endif;?>
+            </dd>
+	    </dl>
+	<?php endif;?>
+	<?php if(isset($bindType['renren'])):$rs = $bindData[$bindType['renren']];?>
+	    <dl class="bangli">
+	        <dt><img src="__APP__/icon/l5.png">人人网</dt>
+	        <dd>
+	        <?php if($rs['isBind']):?>
+           		<a class="fr color_blue ml30" href="javascript:;" onclick="unbind('{$rs.name}','{$rs.type}','{$rs.addon}','{$rs.unbind_hook}');">解除绑定</a>
+           	<?php else:?>
+           		<a class="Share sel_w fr mt4" target="_blank" href="{:Addons::createAddonShow($rs['addon'],$rs['bind_hook'],array('type'=>$rs['type'],'do'=>'bind'))}">点击绑定</a>
+            <?php endif;?>
+            </dd>
+	    </dl>
+	<?php endif;?>
+	<?php if(isset($bindType['weixin'])):$rs = $bindData[$bindType['weixin']];?>
+	    <dl class="bangli">
+	        <dt><img src="__APP__/icon/l1.png">微信</dt>
+	        <dd>
+	        <?php if($rs['isBind']):?>
+           		<a class="fr color_blue ml30" href="javascript:;" onclick="unbind('{$rs.name}','{$rs.type}','{$rs.addon}','{$rs.unbind_hook}');">解除绑定</a>
+           	<?php else:?>
+           		<a class="Share sel_w fr mt4" target="_blank" href="{:Addons::createAddonShow($rs['addon'],$rs['bind_hook'],array('type'=>$rs['type'],'do'=>'bind'))}">点击绑定</a>
+            <?php endif;?>
+            </dd>
+	    </dl>
+	<?php endif;?>
+</div>
+<!--footer-->
+<script>
+function unbind(name,type,addon,hooks){
+    if(confirm('确认要取消绑定'+name+'？')){
+        $.post( U('public/Widget/addonsRequest'),{addon:addon,hook:hooks,type:type},function(txt){
+            if(txt){
+                window.location = '{:U(APP_NAME."/".MODULE_NAME."/".ACTION_NAME, array("tab"=>4))}';
+            }
+        });
+    }
+}
+</script>
+<include file="../Public/_footer" />

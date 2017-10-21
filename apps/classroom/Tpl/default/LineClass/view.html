@@ -1,0 +1,237 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/css/style3.0.css">
+<style>
+    .full-course:hover ul{display: block;}
+    .full-course ul{display: none;}
+    body{background-color: #f0f0f2;}
+    .center_left .on{border-left: transparent;}
+    img{max-height: 350px;}
+    .back a.edit{margin-right: 0;}
+    .teacher-dp dd .replymegfooter{width: 100%;}
+    .qa-total-reply{margin-right: 0;}
+    .center_left dl a{margin-left:0;}
+    .teacher-dp .pic{margin-top: 5px;}
+    .com_num{margin-right: 20px;}
+    .center_left dd a{margin-left:0;}
+    .center_left li{line-height: 50px;}
+</style>
+<div class="mask"></div>
+    <!-- 课程明细 start -->
+    <div class="topbox ">
+        <div class="screen-outer course-deta">
+            <input type="hidden" value="{$data['course_id']}" name="vid" />
+            <ul class="position-label-find">
+                <li>
+                    <a href="/">首页></a>
+                    <a href="{:U('classroom/LineClass/index')}">线下课></a>
+                    <a href="javascript:;">{:msubstr(t($data['course_name']),0,10,'utf-8',true)}</a>
+                </li>
+            </ul>
+            <dl>
+                <dd>
+                    <a href="javascript:;">
+                        <img src="{:getCover($data['cover'] ,580 , 350 )}">
+                    </a>
+                </dd>
+                <dd class="course-deta-txt">
+                    <h3>{:msubstr(t($data['course_name']),0,25,'utf-8',true)}</h3>
+                    <small>主讲人：{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</small>
+                    <small>已报名：{$data.course_order_count}人</small>
+                    <small>开课时间：{:date('Y-m-d',$data['listingtime'])}～{:date('Y-m-d',$data['uctime'])}</small>
+                    <small>上课地点：{$data['user']['Teach_areas'] | default='无限制'}</small>
+                    <!--<p>原价：<em>¥{$data['mzprice']['oriPrice']}</em></p>-->
+                    <p></p>
+                    <b><strong>优惠价：</strong><if condition="$data['mzprice']['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['mzprice']['price']}</if></b>
+                    <if condition="$data['is_buy'] eq 3"><button>已预约</button><else/><button onclick="meetingteacher(this)">预约课程</button></if>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <!-- 课程明细 end -->
+
+    <!-- 课程详情 start-->
+    <div class="screen-outer mar01">
+        <!-- left -->
+        <div class="center_left">
+            <div class="center_left_tit">
+                <ul class="head-li-per">
+                    <li><a href="javascript:void(0)">课程详情</a></li>
+                    <!--<li><a href="javascript:void(0)">课程大纲</a></li>-->
+                    <li><a href="javascript:void(0)" onclick="switchnav(this,'video_comment')">课程评价</a></li>
+                </ul>
+                <div class="course-contents classmain">
+                    <div class="course-infos evalua">
+                        {$data.course_intro}
+                    </div>
+                    <!-- 评论 -->
+                    <div class="course-infos classmain_con" id="video_comment">
+                        {:W('Resource',array('type'=>2,'ispage'=>true,'kztype'=>3,'kzid'=>$vid,'switch'=>$switch,'template'=>'album_review'))}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- right -->
+        <div class="center_right">
+            <div class="teacher-school">
+                <h3>讲师、机构简介</h3>
+                <div class="teacher-school-per">
+                    <!-- 讲师 -->
+                    <ul>
+                        <li>
+                            <div>
+                                <span>
+                                    <a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">
+                                        <img src="{:getCover($data['user']['head_id'],266,170)}">
+                                    </a>
+                                </span>
+                                <h4>
+                                    <a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</a>
+                                    <small>{:msubstr($data['user']['teacher_title'],0,100,'utf-8',true)}</small>
+                                </h4>
+                            </div>
+                            <p style="width: 250px;">{:msubstr(t($data['user']['inro']),0,50,'utf-8',true)}</p>
+                            <p>联系方式:{$contactWay['phone']|default=$contactWay['email']}</p>
+                        </li>
+                    </ul>
+                    <!-- 机构 -->
+                    <ul class="school-02ul">
+                        <li>
+                            <div>
+                                <span>
+                                    <a href="{$mhmData.domain}">
+                                        <img src="{$mhmData['logo']}">
+                                    </a>
+                                </span>
+                                <h4><a href="{$mhmData.domain}">{:msubstr(t($mhmData['title']),0,20,'utf-8',true)}</a></h4>
+                            </div>
+                            <p>{:msubstr(t($mhmData['info']),0,50,'utf-8',true)}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 联系我们 -->
+            <!--<div class="course-evaluate">
+                <div class="contact-us">
+                    <h3>联系我们</h3>
+                </div>
+                <ul class="contact-us-home">
+                    <li>
+                        <p>
+                            <i class="icon icon-lianxidianhua"></i>联系电话
+                            <b>139-127-33521</b>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <i class="icon icon-zaixianzixun"></i>在线咨询
+                            <button>点击咨询</button>
+                        </p>
+                    </li>
+                </ul>
+            </div>-->
+            <!-- 联系我们 end -->
+        </div>
+    </div>
+
+    <!--加入看单-->
+    <div class="message_add_order_box">
+        <div class="w-close"><a class="mr15 mt5">×</a></div>
+        <div class="w-notice">
+            <h4>加入我的看单</h4>
+        </div>
+        <div class="agreement blue">
+            <span class="tips_info">该课程需要加入我的看单后方可学习，确定加入？</span>
+        </div><br>
+        <div class="buy-btn">
+            <a class="quer_btn shou_mount add_order_video" style="color: #fff;background: rgb(101, 173, 221);">确　定</a>
+            <a class="quer_btn close_btn">取　消</a>
+        </div>
+    </div>
+<script type="text/javascript">
+    var arr=['他妈的', '你妈的', '傻×', '滚蛋', '你妹儿'];
+    function switchnav(obj , id){
+        $('body,html').animate({scrollTop:644},200);
+
+        $('li').removeClass('on');
+        $(obj).parent().addClass('on');
+
+        if( id == 'video_comment') {
+            $('#video_comment').css('display','block');
+            $('.wenda-listcon').css('display','block');
+        }
+    }
+    //约课
+    function meetingteacher(sbt){
+        var teauid = "{$data['user']['uid']}";
+        var vid = "{$data['course_id']}";
+        var money = "{$data['mzprice']['price']}";
+        var vtype = "zy_teacher";
+
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+
+        if(teauid  == id)
+        {
+            ui.error("该课程不需要您购买！");
+            return ;
+        }
+
+        if(money <= 0){
+            $('.message_add_order_box').show();
+            $('.mask').show();
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),{vid:vid,money:money},function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //取消加入看单
+    $('.message_add_order_box .w-close a,.close_btn').click(function () {
+        $('.message_add_order_box').hide();
+        $('.mask').hide();
+    });
+
+    //加入看单
+    $('.add_order_video').click(function () {
+        var vid = $('input:hidden[name="vid"]').val();
+        var vtype = "zy_teacher";
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+            if(data.status == 1){
+                $('.message_add_order_box').hide();
+                ui.success(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+</script>
+
+<script src="__THEME__/../_static_new/js/details.js"></script>
+<!--footer-->
+<include file="__THEME__/public_footer" />

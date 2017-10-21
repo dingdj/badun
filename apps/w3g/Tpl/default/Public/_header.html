@@ -1,0 +1,54 @@
+<!DOCTYPE HTML><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0 minimal-ui"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+<link href="__APP__/css/style.css" rel="stylesheet">
+<link href="__APP__/css/media.css" rel="stylesheet">
+<script src="__APP__/js/jquery.js"></script>
+<script src="__APP__/js/TouchSlide.1.0.js"></script>
+<script src="__APP__/js/jquery.SuperSlide.2.1.js"></script>
+<script src="__THEME__/js/cyjs/title_common.js"></script>
+<script src="__THEME__/js/cyjs/cyjs_common.js"></script>
+<script src="__THEME__/js/cyjs/offlights.js"></script>
+<script>
+//全局变量
+var SITE_URL  = '<php> echo SITE_URL;</php>';
+var UPLOAD_URL= '<php> echo UPLOAD_URL;</php>';
+var THEME_URL = '__THEME__';
+var APPNAME   = '<php> echo APP_NAME;</php>';
+var MID		  = '<php> echo $mid;</php>';
+var UID		  = '<php> echo $uid;</php>';
+var initNums  =  '<php> echo $initNums;</php>';
+var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
+var _ROOT_    = '__ROOT__';
+// Js语言变量
+var LANG = new Array();
+//注册登录模板
+var REG_LOGIN="{:U('public/Passport/regLogin')}";
+//邮箱验证地址
+var CLICK_EMIL="{:U('public/Passport/clickEmail')}";
+//异步注册地址
+var REG_ADDRESS="{:U('public/Passport/ajaxReg')}";
+//异步登录
+var LOGIN_ADDRESS="{:U('public/Passport/ajaxLogin')}";
+//退出登录
+var LOGINOUT_ADDRESS="{:U('public/Passport/logout')}";
+</script>
+</head>
+<body>
+<!--preloader-->
+<div id="preloader">
+    <div id="status">
+        <p class="center-text">
+            加载中，请稍后...
+        </p>
+    </div>
+</div> 
+<!--header-->
+<div class="header">
+    <a href="{:U('w3g/Index/index')}" title="Eduline" class="logo icon-logo"><img src="{$site.logo_head}" style="width:100px;height:30px;margin-top:20px;" /></a>
+    <a class="member icon-member" href="{:U('w3g/User/index')}"></a>
+    <a class="nav_btn icon-btn" href="javascript:;"></a>
+</div>

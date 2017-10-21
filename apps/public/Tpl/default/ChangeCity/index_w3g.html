@@ -1,0 +1,63 @@
+<include file="__THEME__/public_header_w3g" />
+    <div class="body">
+		<div class="citybox">
+            <dl class="citydl">
+            	<dt>定位城市</dt>
+                <dd>
+                    <a class="def choose" href="javascript:;" data-id="{$temp_id}" >{$visitRegion}</a>
+                </dd>
+            </dl>
+            <dl class="citydl">
+            	<dt>热门城市</dt>
+                <dd>
+                    <a href="javascript:;" data-id="110100" class="hover choose">北京</a>
+                    <a href="javascript:;" data-id="310100" class="choose">上海</a>
+                    <a href="javascript:;" data-id="510100" class="choose">成都</a>
+                    <a href="javascript:;" data-id="420100" class="choose">武汉</a>
+                    <a href="javascript:;" data-id="340100" class="choose">合肥</a>
+                    <a href="javascript:;" data-id="320100" class="choose">南京</a>
+                    <a href="javascript:;" data-id="210200" class="choose">大连</a>
+                    <a href="javascript:;" data-id="610100" class="choose">西安</a>
+                </dd>
+            </dl>
+            <?php $key = array_keys($charArray);?>
+            <foreach name="key" item="v">
+                    <div class="letter" id="{$v}">{$v}</div>
+                    <?php $name = $charArray[$v];?>
+                    <div class="cityname">
+                        <volist name="name" id="city">
+                            <a href="javascript:;" data-id="{$city.city_id}" class="choose">{$city.city_name}</a>
+                        </volist>
+                    </div>
+            </foreach>
+        </div>
+    </div>
+    <div class="fixedletter">
+        <?php $key = array_keys($charArray);?>
+        <foreach name="key" item="v">
+            <a href="#{$v}">{$v}</a>
+        </foreach>
+    </div>
+
+<script>
+    $(function(){
+        $(document).on("click", ".choose", function(){
+            var city_id = $(this).data("id");
+            save(city_id);
+        });
+    });
+    function save(city_id){
+        $.ajax({
+            type:'POST',
+            url:"{:U('public/Area/saveTemArea')}",
+            data:{city_id:city_id},
+            dataType:'json',
+            success:function(data){
+                if(data.status == 1){
+                    window.location.href="{:U('classroom/Index/index')}";
+                }
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer_w3g" />

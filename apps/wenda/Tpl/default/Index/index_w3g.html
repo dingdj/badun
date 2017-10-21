@@ -1,0 +1,92 @@
+<include file="__THEME__/public_header_twolevel"/>
+<div class="min-height-wrap">
+    <!--content start-->
+    <div class="body">
+        <!--提问按钮-->
+        <div class="header2">
+            <ul>
+                <li class="choose"><a href="{:U('wenda/Index/addWenda')}" style="background: #f9f9f9;font-size: 17px;color: #00bed4;">我要提问</a></li>
+            </ul>
+        </div>
+        <ul class="newsnav">
+            <li><a href="{:U('wenda/Index/index')}" <if condition="$_GET['wdtype'] eq ''">style="color: #00BED4;border-bottom: 2px solid #00BED4;"</if> >全部问答</a></li>
+            <volist name="wenda_cate" id="vo">
+                <li><a href="{:U('wenda/Index/index',array('wdtype'=>$vo['zy_wenda_category_id']))}" <if condition="$_GET['wdtype'] eq $vo['zy_wenda_category_id']">style="color: #00BED4;border-bottom: 2px solid #00BED4;"</if> >{:limitNumber($vo['title'],6)}</a></li>
+            </volist>
+        </ul>
+        <ul class="selectul">
+            <li class="r01" name="list_dl">
+                <div class="hd"><a href="{:U('wenda/Index/index',array('type'=>0,'wdtype'=>$wdtype))}">最新发布</a></div>
+            </li>
+            <li class="r02" name="list_dl">
+                <div class="hd"><a href="{:U('wenda/Index/index',array('type'=>1,'tpid'=>$wdtype,'wdtype'=>$wdtype))}">人气最高</a></div>
+            </li>
+            <li class="r03" name="list_dl">
+                <div class="hd"><a href="{:U('wenda/Index/index',array('type'=>2,'tpid'=>$wdtype,'wdtype'=>$wdtype))}">等待回复</a></div>
+            </li>
+        </ul>
+        <!--<div class="searchdiv"><if condition="$wenda_cate_neme">在“<span>{:msubstr(t($wenda_cate_neme),0,10,'utf-8',true)}</span>”分类下，</if>找到{$wendaList.count}个相关问答</div>-->
+        <ul class="fqalist">
+            <volist name="wendaList.data" id="vo">
+                <li>
+                    <h3><a href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}">{:mStr($vo['wd_description'],10)}</a></h3>
+                    <div class="info">
+                        <a class="fr" href="javascript:;"><span class="icon-pl"></span>{$vo.wd_comment_count}</a>
+                        {$vo.wd_browse_count}人浏览<span>|</span>{$vo.ctime}
+                    </div>
+                </li>
+            </volist>
+        </ul>
+    </div>
+    <div class="loadding">
+        <if condition="$wendaList['nowPage'] eq $wendaList['totalPages']">
+            <div>ᐠ(￣▽￣)ᐟ我可是有底线的</div><else/>正在加载更多。。
+        </if></div>
+    <a class="backtop"></a>
+</div>
+<script>
+    var p = 1;
+    $(window).scroll(function () {
+        //已经滚动到上面的页面高度
+        var scrollTop = $(this).scrollTop();
+        //页面高度
+        var scrollHeight = $(document).height();
+        //浏览器窗口高度
+        var windowHeight = $(this).height();
+        //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+        if (scrollTop + windowHeight == scrollHeight) {
+            if(!p || p >= "{$wendaList['totalPages']}"){
+                return false;
+            }else{
+                p = p + 1;
+                ajaxBang();
+            }
+        }
+    });
+
+    //请求事件
+    function ajaxBang(){
+        $.ajax({
+            type: "GET",
+            url:"{:U('wenda/Index/getWendaList')}",
+            data:"p="+p+"&wdtype={$_GET['wdtype']}&tpid={$_GET['tpid']}&type={$_GET['type']}",
+            dataType:"json",
+            success:function(data){
+                appendHtml(data);
+            }
+        });
+    }
+    //追加html
+    function appendHtml(data){
+        $(".fqalist").append(data.data);
+        if(!p || p >= data.totalPages){
+            $('.loadding').html('<div>ᐠ(￣▽￣)ᐟ我可是有底线的</div>')
+            return false;
+        }else{
+            p = data.nowPage+1;//下一页
+        }
+    }
+//
+</script>
+<!--footer-->
+<include file="__THEME__/public_footer_twolevel"/>

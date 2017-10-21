@@ -1,0 +1,164 @@
+<include file="__THEME__/_header_twolevel" />
+
+<script>
+    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+        $(window).load(function () {
+            $('.modular,.logos,.window-box').show();
+            $('.users').attr('style','display:block');
+        });
+    }
+    $(window).ready(function(){
+        $(".dic-box:last").css("border-bottom","none");
+    });
+    /**
+     * 退出成功
+     */
+    function logout(){
+        $.ajax({
+            type: "POST",
+            async:false,
+            url:LOGINOUT_ADDRESS,
+            dataType:"json",
+            success:function(data){
+                alert("退出成功！");
+                location.reload();
+            }
+        });
+    }
+</script>
+<style type="text/css">
+    header{
+        width:100%;
+    }
+    .modular
+    {
+        width: 25px;
+        height: 25px;
+        margin: 15px 0 0 0;
+        background: url(__THEMEW3G__/icon/icon.png);
+        background-position: 163px 124px;
+    }
+    .fill-in{
+        width: 25px;
+        height: 25px;
+        margin: 15px 15px 0 2%;
+        background: url(__THEMEW3G__/icon/icon.png);
+        background-position: 114px 124px;
+    }
+</style>
+<if condition="$_SESSION['mid'] eq ''">
+    <include file="__THEME__/reg_login" />
+</if>
+<div class="win hide"></div>
+
+<!--h5左侧导航弹出层-->
+<div class="shadow-panle"></div>
+<div class="window-panle" id="window-panle">
+    <dl>
+        <if condition="$_SESSION['mid']">
+            <dt><img src="{:getUserFace($user['uid'],'b')}" width="40" height="40"></dt>
+            <dd><a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">{:getUserName($user['uid'])}</a></dd>
+            <else/>
+            <dt><img src="__THEME__/images/head_img.png"></dt>
+            <dd><a href="{:U('public/Passport/login_g')}">登录</a></dd>
+            <dd><p>或</p></dd>
+            <dd><a href="{:U('public/Passport/reg')}">注册</a></dd>
+        </if>
+    </dl>
+    <ul>
+        <volist name="site_top_nav" id="vo" key="k" offset="0" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="3" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="6" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="9" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="12" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="15" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+    </ul>
+    <!--登录后显示-->
+    <if condition="$_SESSION['mid']">
+        <div class="sign-out">
+            <a href="javascript:;" onclick="logout()">退出登录</a>
+        </div>
+    </if>
+</div>
+
+<header>
+    <div class="modular"></div>
+    <!--<a href="http://el3.51eduline.com/changecity/init.html" class="media-posit">-->
+    <!--<i>北京市</i><em class="icon icon-arrowDown"></em>-->
+    <!--</a>-->
+    <a class="logos" href="/" title="{$site['site_keyword']}在线教育系统">
+        <img src="{$site.logo_head_w3g}">
+    </a>
+    <div class="users">
+        <if condition="$_SESSION['mid']">
+            <img src="{:getUserFace($user['uid'],'b')}" width="30" height="30">
+            <!--登录后显示-->
+                <span>
+                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的主页</a>
+                    <a href="{:U('classroom/User/setInfo')}">个人中心</a>
+                    <a href="javascript:;" onclick="logout()">退出</a>
+                </span>
+            <else/>
+            <img src="__THEME__/image/noavatar/big.jpg">
+            <!--登录后影藏-->
+                <span>
+                    <a href="{:U('public/Passport/login_g')}">登录</a>
+                    <if condition="$this_mhm_id neq ''">
+                        <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">注册</a>
+                        <else/>
+                        <a href="{:U('public/Passport/reg')}">注册</a>
+                    </if>
+                </span>
+        </if>
+    </div>
+    <a href="{:U('classroom/Index/search')}" class="fill-in"></a>
+</header>
+<script type="text/javascript">
+    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+        $(window).load(function () {
+            $('.modular,.logos,.window-box').show();
+        });
+    }
+
+    $(".modular").on("click",function(){
+        $(".win").show();
+        $(".window-box").animate({marginLeft:"0"});
+        var dis = $(".win").css('display');
+        if(dis == 'block'){
+            $("body").css("overflow-y","hidden");
+        }
+    });
+
+    $(".win").on("click",function(){
+        $(".window-box").animate({marginLeft:'-70%'});
+        $(".win").hide();
+        var dis = $(".win").css('display');
+        if(dis == 'none'){
+            $("body").css("overflow-y","visible");
+        }
+    });
+</script>

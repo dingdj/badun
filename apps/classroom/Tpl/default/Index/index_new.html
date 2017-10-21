@@ -1,0 +1,669 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+        <meta content="<neq name= '_keywords' value=''>{$_keywords}<else />{$site.site_header_keywords}</neq>" name="keywords">
+        <meta content="<neq name= '_description' value=''>{$_description}<else />{$site.site_header_description}</neq>" name="description">
+        <meta name="viewport" charset="UTF-8" content="user-scalable=no"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="qc:admins" content="1403267155765154541656375" />
+        <meta property="wb:webmaster" content="fdcd9430a88b1552" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Access-Control-Allow-Origin" content="*">
+
+        <link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
+        <!-- 站点css -->
+        <!--<link href="__THEME__/css/css.php?t=css&f=common_new.css,basic_new.css,common.css,index.css,logincss.css,media.css,style.css,style_add.css,style_new.css,wenda.css&v={$site.sys_version}.css" rel="stylesheet" type="text/css" />-->
+        <link  href="__THEMENEW__/css/public2.0.css" rel="stylesheet" type="text/css">
+        <link  href="__THEMENEW__/icon/iconfont.css" rel="stylesheet" type="text/css">
+        <link  href="__THEMENEW__/css/style2.0.css" rel="stylesheet" type="text/css">
+        <link  href="__THEME__/css/index.css" rel="stylesheet" type="text/css">
+        <link  href="__THEMENEW__/css/banner2.0.css" rel="stylesheet" type="text/css">
+        <link href="__THEME__/css/logincss.css" rel="stylesheet" type="text/css" />
+        <link  href="__THEMENEW__/css/swiper_02.min.css" rel="stylesheet" type="text/css">
+        <script>
+            //全局变量
+            var SITE_URL  = '<php> echo SITE_URL;</php>';
+            var UPLOAD_URL= '<php> echo UPLOAD_URL;</php>';
+            var THEME_URL = '__THEME__';
+            var APPNAME   = '<php> echo APP_NAME;</php>';
+            var MID		  = '<php> echo $mid;</php>';
+            var UID		  = '<php> echo $uid;</php>';
+            var initNums  =  '<php> echo $initNums;</php>';
+            var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
+            var _ROOT_    = '__ROOT__';
+            // Js语言变量
+            var LANG = new Array();
+            //注册登录模板
+            var REG_LOGIN="{:U('public/Passport/regLogin')}";
+            //邮箱验证地址
+            var CLICK_EMIL="{:U('public/Passport/clickEmail')}";
+            //异步注册地址
+            var REG_ADDRESS="{:U('public/Passport/ajaxReg')}";
+            //异步登录
+            var LOGIN_ADDRESS="{:U('public/Passport/ajaxLogin')}";
+            //退出登录
+            var LOGINOUT_ADDRESS="{:U('public/Passport/logout')}";
+        </script>
+        <php>if(!empty($langJsList)) {</php>
+        <volist name="langJsList" id="vo">
+            <script src="{$vo}?v={$site.sys_version}"></script>
+        </volist>
+        <php>}</php>
+        <!-- 站点js -->
+        <!--[if lt IE 9]>
+        <script src="__THEME__/js/lazyload/html5shiv.js"></script>
+        <![endif]-->
+        <!--[if lt IE 9]><script src="js/html5.js" type="text/javascript"></script><![endif]-->
+
+        <script type="text/javascript" src="__THEME__/js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="__THEME__/js/user/user.js"></script>
+        <script type="text/javascript" src="__THEME__/js/core.js"></script>
+
+        <!--<script src="__THEME__/js/js.php?t=js&f=jquery.form.js,common.js,core.js,module.js,module.common.js,jwidget_1.0.0.js,jquery.atwho.js,jquery.caret.js,ui.core.js,ui.draggable.js,plugins/core.comment.js,plugins/core.digg.js&v={$site.sys_version}.js"></script>-->
+
+        <script>
+            function login_box() {
+                reg_login();
+            }
+
+            function closeMsg(obj){
+                $(".news-msg").remove();
+            }
+
+            /**
+             * 退出成功
+             */
+            function logout(){
+                $.ajax({
+                    type: "POST",
+                    async:false,
+                    url:LOGINOUT_ADDRESS,
+                    dataType:"json",
+                    success:function(data){
+                        ui.success("退出成功！");
+                        location.reload();
+                    }
+                });
+            }
+            $(function(){
+                $('.backtop').click(function(){
+                    $('body,html').animate({scrollTop:0},300);
+                    return false;
+                });
+                $('.full-course').hover(function(){
+                    $(this).addClass('hover');
+                },function(){
+                    $(this).removeClass('hover');
+                });
+            });
+
+            $(window).scroll(function(){
+                if($(window).scrollTop()>300){
+                    $('.backtop').fadeIn(300);
+                }else{
+                    $('.backtop').fadeOut(200);
+                }
+            });
+
+            $(function(){
+                $(".direction a").on("click",function(){
+                    $("#search_cate").val($(this).attr("attr"));
+                    var search_cate = $("search_cate").val();
+                });
+                $('#btn_search_site').click(function(){
+                    var search_cate = $('#search_cate').val();
+                    var search_combo_input = $('#search_combo_input').val();
+                    if(search_combo_input != ''){
+                        if(search_cate == 'video'){
+                            window.open("{:U('classroom/Video/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'school'){
+                            window.open("{:U('school/Index/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'teacher'){
+                            window.open("{:U('classroom/Teacher/index')}"+"?search="+search_combo_input);
+                        }
+                    }
+                });
+                $('.search_hot a').click(function(){
+                    var cateId = $(this).attr('attr');
+                    var search_cate = $('#search_cate').val();
+                    if(search_cate == 'video'){
+                        window.open("{:U('classroom/Video/index')}"+"?search="+cateId);
+                    }else if(search_cate == 'school'){
+                        window.open("{:U('school/Index/index')}"+"&search="+cateId);
+                    }else if(search_cate == 'teacher'){
+                        window.open("{:U('classroom/Teacher/index')}"+"?search="+cateId);
+                    }
+                });
+            })
+        </script>
+    </head>
+
+    <if condition="$_SESSION['mid'] eq ''">
+        <include file="__THEME__/reg_login" />
+    </if>
+
+    <body id="loading">
+
+        <!--header-->
+        <header>
+            <div class="service">
+                <div class="service-box">
+                    <div class="user-center">
+
+                        <if condition="$_SESSION['mid']">
+                            <if condition="$user_ground_name">
+                                <a href="/" style="margin-left: 0px;">欢迎您访问{$site['site_keyword']}在线教育云平台，{$user_ground_name}！&nbsp;</a>
+                                <else/>
+                                <a href="/" style="margin-left: 0px;">欢迎访问{$site['site_keyword']}在线教育云平台！&nbsp;</a>
+                            </if>
+                            <else/>
+                            <a href="{:U('public/Passport/login_g')}" style="margin-left:0;"><span class="icon icon-geren01"></span>请登录</a>
+
+                            <if condition="$this_mhm_id neq ''">
+                                <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">免费注册</a>
+                                <else/>
+                                <a href="{:U('public/Passport/reg')}">免费注册</a>
+                            </if>
+                        </if>
+
+
+                        <a href="#" class="qrcode-box"><div class="icon icon-shouji"></div>手机{$site['site_keyword']}
+                            <div class="ewm">
+                                <div class="h5">
+                                    <div id="nav_h5_qrcode"><img src="/api/pay/wxpay/qrcode.php?data={$site['phone_url']}"></div>
+                                    <p>体验手机版</p>
+                                </div>
+                                <div class="app">
+                                    <div id="nav_app_qrcode"><img src="/api/pay/wxpay/qrcode.php?data={$site['download_url']}"></div>
+                                    <p>APP下载</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="page">
+                        <if condition="$_SESSION['mid'] eq ''">
+                            <a class="page_header_adiv" href="javascript:;" onClick="login_box();">申请成为机构</a>
+                            <else/>
+                            <a class="page_header_adiv" href="{:U('school/User/setInfo')}" target="_blank">申请成为机构</a>
+                        </if>
+
+                        <if condition="$_SESSION['mid'] eq ''">
+                            <a class="page_header_adiv" href="javascript:;"  onClick="login_box();">我的{$site['site_keyword']}</a>
+                            <else/>
+                            <div class="page_header_adiv">
+                                <div class="header_top_nav" style="height: 30px;margin-right: 0px;padding: 0px;">
+                                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" style="margin-left: 0px">{:getUserName($_SESSION['mid'])}</a>
+                                    <i class="icon-nav-arrow"></i>
+                                    <dl class="login-after-position">
+                                        <dd class="login-after-bdbt"><a href="{:U('classroom/User/index')}">个人中心</a></dd>
+                                        <dd class="login-after-bdbt"><a href="{:U('classroom/Home/order')}">账户中心</a></dd>
+                                        <dd class="login-after-bdbt"><a href="{:U('classroom/User/setInfo')}">我的设置</a></dd>
+                                        <dd class="login-after-bdbt"><a href="{:U('public/Message/index')}">我的消息</a></dd>
+
+                                        <if condition="$is_school and $school_info">
+                                            <dd class="login-after-bdbt">
+                                                <a href="{:U('school/School/index',array('id'=>$school_info['id'],'doadmin'=>$school_info['doadmin']))}">我的网校</a>
+                                            </dd>
+                                        </if>
+
+                                        <if condition="$is_school and $school_info">
+                                            <dd class="login-after-bdbt"><a href="{:U('school/User/index')}">网校设置</a></dd>
+                                        </if>
+
+                                        <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid'])  ) {</php>
+                                        <if condition="$is_school and $school_info"><dd class="login-after-bdbt"><a href="{:U('classroom/Mount/index')}">课程挂载申请</a></dd></if>
+                                        <php>}</php>
+
+                                        <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid']) || CheckPermission('admin_login') ) {</php>
+                                        <dd class="login-after-bdbt"><a href="{:U('admin')}"><if condition="$is_school and $school_info">网校</if>后台管理</a></dd>
+                                        <php>}</php>
+
+                                        <dd class="login-after-bdbt"><a href="javascript:;" onClick="logout()">退出</a></dd>
+                                    </dl>
+                                </div>
+                                <!--消息提示-->
+                                <ul class="news-msg"
+                                <php>if(!empty($mid) &&(!empty($unreadnum) || !empty($systemnum) || !empty($commentnum))){</php>
+                                style="display:block;"
+                                <php>}else{</php>
+                                style="display:none;"
+                                <php>}</php> >
+
+                                <a class="shanchu-ico" href="javascript:;" onClick="closeMsg(this)">×</a>
+
+                                <php>if(!empty($unreadnum) && !empty($mid)){</php>
+                                <li>{$unreadnum}条新的私信，&nbsp;<a href="{:U('public/Message/index')}">查看消息</a></li>
+                                <php>}</php>
+
+                                <php>if(!empty($systemnum) && !empty($mid)){</php>
+                                <li>{$systemnum}条新的系统消息，&nbsp;<a href="{:U('public/Message/notify')}">查看消息</a></li>
+                                <php>}</php>
+
+                                <php>if(!empty($commentnum) && !empty($mid)){</php>
+                                <li>{$commentnum}条新的评论消息，&nbsp;<a href="{:U('public/Message/comment')}">查看消息</a></li>
+                                <php>}</php>
+                                </ul>
+                            </div>
+                        </if>
+
+                    </div>
+                </div>
+            </div>
+            <div class="theme">
+                <div class="logo hidden">
+                    <a href="/" title="{$site['site_keyword']}在线教育系统" style="display: block;float: left;"><img src="{$site.logo_head}" width="150"/></a>
+                    <!--<div class="position hidden">-->
+                        <!--<p id="current_city" area-id="{$temp_id}" title="{$visitRegion}">{$visitRegion|msubstr=0,4,'utf-8',true}</p>-->
+                        <!--<a href="{:U('public/ChangeCity/index')}">【切换位置】</a>-->
+                    <!--</div>-->
+                </div>
+                <div class="cable hidden">
+                    <input value="video" id="search_cate" type="hidden" disabled />
+                    <div class="direction">
+                        <a href="javascript:;"  attr="video" class="active02">课程</a>
+                        <a href="javascript:;"  attr="school">机构</a>
+                        <a href="javascript:;"  attr="teacher">老师</a>
+                    </div>
+                    <div class="lookup">
+                        <input type="text" name="" id="search_combo_input" placeholder="请输入您要搜索的课程">
+                        <span id="btn_search_site">搜索</span>
+                    </div>
+                </div>
+                <div class="credit hidden">
+                    <a href="javascript:;"><img src="__THEMENEW__/image/shield.png">真实评价</a>
+                    <a href="javascript:;"><img src="__THEMENEW__/image/trophy.png">教师保证</a>
+                    <a href="javascript:;"><img src="__THEMENEW__/image/capital.png">资金保障</a>
+                </div>
+            </div>
+            <div class="curriculum-box">
+                <div class="curriculum">
+                    <div class="full-course">
+                        <a href="javascript:;" class="all-this">
+                            <p class="poescal">全部课程</P>
+                            <div class="icon icon-caidan"></div>
+                        </a>
+                        <!--leftcate start-->
+                        <ul>
+                            <volist name="currency_category" id="cycy" offset="0" length="7" >
+                                <li>
+                                    <div class="list-data-all">
+                                        <span>
+                                            <!--<i class="icon icon-jiating"></i>-->
+                                            <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id']))}" target="_blank">{$cycy.title}</a>
+                                        </span>
+                                        <i class="icon icon-youjiantou"></i>
+                                        <div class="detailed-class">
+                                            <volist name="cycy.child" id="cycd" offset="0" length="8" >
+                                                <php>if($cycd['child']){</php>
+                                                <div class="detailed-header">
+                                                    {$cycd.title}>
+                                                    <div class="detailed-new-bodyer">
+                                                        <volist name="cycd.child" id="ccd">
+                                                            <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycd['id'].','.$ccd['id']))}" target="_blank">{$ccd.title}<span></span></a>
+                                                        </volist>
+                                                    </div>
+                                                </div>
+                                                <php>}</php>
+                                            </volist>
+                                        </div>
+                                    </div>
+                                </li>
+                            </volist>
+                        </ul>
+                    </div>
+                    <!-- top nav start-->
+                    <div class="course-content">
+                        <ul>
+                            <volist name="site_top_nav" id="vo" key="k" offset="0" length="20">
+                                <if condition="$vo.app_name neq more">
+                                    <li <php>if(APP_NAME == $vo['app_name'] || ( APP_NAME == 'classroom' && MODULE_NAME == $vo['app_name'] ) ){echo "class='bac01-active'";}</php>>
+                                        <a href="{$vo['url']}" target="{$vo['target']}">{$vo['navi_name']}</a>
+                                        <if condition="$vo.child neq ''">
+                                            <span class="course-class">
+                                            <volist name="vo.child" id="child" key="k" offset="0" length="20">
+                                                <a href="{$child['url']}" target="{$child['target']}">{$child['navi_name']}</a>
+                                            </volist>
+                                            </span>
+                                        </if>
+                                    </li>
+                                </if>
+                            </volist>
+                        </ul>
+                        <!--<if condition="$is_school and $school_info">-->
+                            <!--<a href="{:U('classroom/Mount/index')}" target="_blank" <php>if(APP_NAME == Mount || ( APP_NAME == 'classroom' && MODULE_NAME == Mount ) ){echo "class='active'";}</php> >销课</a>-->
+                        <!--</if>-->
+                    </div>
+                    <!-- top nav end-->
+                </div>
+            </div>
+        </header>
+        <!--header end-->
+
+        <!--banner start-->
+        <section>
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <volist name="ad_list" id="adlt">
+                        <div class="swiper-slide">
+                            <a href="{$adlt['bannerurl']}" title="{$adlt['banner_title']}">
+                                <img src="{:getCover($adlt['banner'],1920,500)}" alt="{$adlt['banner_title']}" >
+                            </a>
+                        </div>
+                    </volist>
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination swiper-pagination-white"></div>
+                <!-- Add Arrows -->
+                <div class="swiper-button-next icon icon-rightarrow"></div>
+                <div class="swiper-button-prev icon icon-leftarrow"></div>
+            </div>
+        </section>
+        <!--banner end-->
+
+        <!--APP下载、创建小组、入驻机构-->
+        <div class="body01">
+            <ul class="my-server">
+                <li>
+                    <a href="{$site['download_url']}">
+                        <i class="icon icon-app"></i>
+                        <span>
+                            <h3>APP下载</h3>
+                            <small>海量课程随身携带</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a <if condition="$_SESSION['mid'] eq ''">
+                        href="javascript:;" onClick="login_box();"
+                        <else/> href="{:U('group/Index/addgroup')}" target="_blank"
+                    </if> >
+                        <i class="icon icon-xiaozu"></i>
+                        <span>
+                            <h3>创建小组</h3>
+                            <small>寻找更多志同道合的人</small>
+                        </span>
+                    </a>
+                </li>
+                <li class="border-none">
+
+                    <a <if condition="$_SESSION['mid'] eq ''">
+                        href="javascript:;" onClick="login_box();"
+                        <else/>
+                        href="{:U('school/User/setInfo')}" target="_blank"
+                    </if> >
+                        <i class="icon icon-jigou1"></i>
+                            <span>
+                                <h3>入驻机构</h3>
+                                <small>打造专属的在线课堂</small>
+                            </span>
+                    </a>
+                </li>
+            </ul>
+
+            <!--热门资讯-->
+            <div class="hot-news">
+                <h4>热门资讯：</h4>
+                <ul>
+                    <volist name="topic" id="tpc">
+                        <li><i class="icon icon-dian"></i><a href="{:U('classroom/Topic/view',array('id'=>$tpc['id']))}">{$tpc['title']|msubstr=0,18,'utf-8',true}</a></li>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+
+    <!-- 首页模块 -->
+    <volist name="config_index.item" id="item_name">
+
+        <eq name="item_name" value="live">
+            <!--直播预告 start-->
+            <div class="body01 Trailer">
+                <h1>直播预告</h1>
+                <div class="slideTxtBox">
+                    <a class="prev icon icon-zuojiantou"></a>
+                    <div class="bd">
+                        <volist name="live" id="le" offset="0" length='4'>
+                            <ul>
+                                <volist name="le" id="vo" offset="0" length='4'>
+                                    <li>
+                                        <div class="pic">
+                                            <a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
+                                                <img src="{:cutImg($vo['cover'] ,250 , 160 )}" />
+                                            </a>
+                                        </div>
+                                        <div class="title">
+                                            <h5><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:limitNumber($vo['video_title'],12)}</a></h5>
+                                            <b><i><a href="{$vo['school']['domain']}">{:limitNumber($vo['school']['title'],16)}</a></i></b>
+                                            <span><strong><if condition="$vo['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vo['t_price']}</if></strong><small>{$vo['video_order_count']}人购买</small></span>
+                                        </div>
+                                    </li>
+                                </volist>
+                            </ul>
+                        </volist>
+                    </div>
+                    <!-- 前/后按钮 -->
+                    <span class="arrow">
+                        <a class="next icon icon-youjiantou"></a>
+                    </span>
+                    <div class="hd">
+                        <ul>
+                            <volist name="live_ctime" id="time" offset="0" length='4'>
+                                <li><em class="icon icon-yuandian"></em><p>{:date('m',$time)}月{:date('d',$time)}日</p></li>
+                            </volist>
+                            <!--<li><em class="icon icon-yuandian"></em><p>{:date('m',$live_ctime['time'])}月{:date('d',$live_ctime['time'])}日</p></li>-->
+                            <!--<li><em class="icon icon-yuandian"></em><p>{:date('m',$live_ctime['atTime'])}月{:date('d',$live_ctime['atTime'])}日</p></li>-->
+                            <!--<li><em class="icon icon-yuandian"></em><p>{:date('m',$live_ctime['tdlTime'])}月{:date('d',$live_ctime['tdlTime'])}日</p></li>-->
+                            <!--<li><em class="icon icon-yuandian"></em><p>{:date('m',$live_ctime['thdlTime'])}月{:date('d',$live_ctime['thdlTime'])}日</p></li>-->
+                        </ul>
+                    </div>
+                </div>
+                <!--查看更多-->
+                <div class="all-buy">
+                    <a href="{:U('live/Index/index')}"  class="look-all">查看更多</a>
+                </div>
+            </div>
+        </eq>
+
+        <eq name="item_name" value="bestCourse">
+        <!--精选课程 start-->
+        <div class="body01">
+            <h1>精选课程</h1>
+            <div class="body01-content">
+                <ul>
+                    <volist name="bestVideo" id="vo" offset="0" length='8'>
+                    <li>
+                        <a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+                            <img src="{:cutImg($vo['cover'] ,270 , 192 )}" alt="" />
+                        </a>
+                        <div class="title">
+                            <h5><a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>{$vo.video_title|msubstr=0,12,'utf-8',true}</a></h5>
+                            <b><i><a href="{$vo['school']['domain']}">{:limitNumber($vo['school']['title'],16)}</a></i></b>
+                            <span><strong><if condition="$vo['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vo['t_price']}</if></strong><small>{$vo.video_order_count}人购买</small></span>
+                        </div>
+                    </li>
+                    </volist>
+                </ul>
+            </div>
+            <!--查看更多-->
+            <div class="all-buy">
+                <a href="{:U('classroom/Video/index',array('best'=>1))}"  class="look-all">查看更多</a>
+            </div>
+        </div>
+        <!--精选课程 end-->
+        </eq>
+
+        <eq name="item_name" value="newCourse">
+        <!--最新课程 start-->
+        <div class="body01">
+            <h1>最新课程</h1>
+            <div class="body01-content">
+                <ul>
+                    <volist name="video" id="vo" offset="0" length='8'>
+                        <li>
+                            <a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+                                <img src="{:cutImg($vo['cover'] ,270 , 192 )}" alt="" />
+                            </a>
+                            <div class="title">
+                                <h5><a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>{$vo.video_title|msubstr=0,12,'utf-8',true}</a></h5>
+                                <b><i><a href="{$vo['school']['domain']}">{:limitNumber($vo['school']['title'],16)}</a></i></b>
+                                <span><strong><if condition="$vo['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vo['t_price']}</if></strong><small>{$vo.video_order_count}人购买</small></span>
+                            </div>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+            <!--查看更多-->
+            <div class="all-buy">
+                <a href="{:U('classroom/Video/index',array('orderBy'=>'new'))}"  class="look-all">查看更多</a>
+            </div>
+        </div>
+        <!--最新课程 end-->
+        </eq>
+
+    </volist>
+
+        <!--footer start-->
+        <div class="post-service yensen">
+            <div class="post-service-box">
+                <div class="other-service">
+                    <volist name="pageCategory" id="vo" offset="0" length="5">
+                        <div class="service-class" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
+                            <span>{$key}</span>
+                            <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                                <a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
+                            </volist>
+                        </div>
+                    </volist>
+                    <div class="tel-box">
+                        <div class="tel-icon">
+                            <img src="{:getCover($site['wx_qrcode'],120,120)}">
+                        </div>
+                        <div class="week">关注官方微信</div>
+                    </div>
+                </div>
+                <div class="post-service-pers">
+                    <!--
+                    <div class="about">
+                        <a href="javascript:;">关于我们</a>
+                        <a href="javascript:;">联系我们</a>
+                        <a href="javascript:;">联系客服</a>
+                        <a href="javascript:;">商家入驻</a>
+                        <a href="javascript:;">帮助中心</a>
+                        <a href="javascript:;">手机{$site['site_keyword']}</a>
+                        <a href="javascript:;">友情链接</a>
+                        <a href="javascript:;">代理合作</a>
+                        <a href="{:U('group/Index/index')}" style="border:none;">{$site['site_keyword']}社区</a>
+                    </div>
+                    -->
+                    <div class="copyright-box">
+                        {$site['site_footer']}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--footer end-->
+
+        <div class="sidernav">
+            <ul>
+                <li class="share-alls">
+                    <a href="javascript:;">
+                        <i class="icon-01"></i>
+                    </a>    
+                    <div class="qq_and_phone_info_div">
+                        <div class="siderbox">
+                            <p>分享到：</p>
+                           <div class="bdsharebuttonbox">
+                                <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                                <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+
+                            <script>window._bd_share_config={"common":{"bdSnsKey":{"tqq":"http://share.baidu.com/code#"},"bdText":"","bdMini":"2","bdMiniList":["tsina","weixin","qzone","sqq","renren","copy"],"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{},"image":{"viewList":["tsina","weixin","qzone","sqq"],"viewText":"分享到：","viewSize":"0"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                           </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!--<li>-->
+                    <!--<a href="javascript:;">-->
+                        <!--<i class="icon-02"></i>-->
+                    <!--</a>-->
+                    <!--<div class="xiala">-->
+                        <!--<img src="{:getCover($site['app_qrcode'],120,120)}" alt="">-->
+                        <!--<p>扫描下载APP</p>-->
+                    <!--</div>-->
+                <!--</li>-->
+
+                <li>
+                    <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">
+                        <i class="icon-03"></i>
+                    </a>
+                    <div class="qq_and_phone_info_div">
+                        <div class="siderbox">
+                            <dl>
+                                <dt class="qq_info_dt">
+                                    <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes" >
+                                        <span class="icon-qq"></span>QQ在线咨询</a>
+                                </dt>
+                            </dl>
+                            <dl>
+                                <dt><span class="icon-ph"></span>咨询热线：</dt>
+                                <dd style="color:#188eee;">{$site.site_phone}</dd>
+                                <dd style="color:#25c151;">{$site.site_phone_two}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </li>
+
+                <li><a href="{:U('exam/Index/index')}">
+                    <i class="icon-04"></i>
+                </a></li>
+
+                <li>
+                    <a href="javascript:;">
+                        <i class="icon-05"></i>
+                    </a>
+                    <div class="xiala">
+                        <img src="{:getCover($site['wb_qrcode'],120,120)}" alt="">
+                        <p>扫一扫关注官方<span style="color: #FB7D30">微博</span></p>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="javascript:;">
+                        <i class="icon-06"></i>
+                    </a>
+                    <div class="xiala">
+                        <img src="{:getCover($site['wx_qrcode'],120,120)}" alt="">
+                        <p>扫一扫关注官方<span style="color: #8BDA64">微信</span></p>
+                    </div>
+                </li>
+
+                <li class="backtop" style="display: none;"><a href="javascript:;"><i class="icon-07"></i></a></li>
+            </ul>
+        </div>
+
+        <!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+        <div id="site_analytics_code" style="display:none;">
+        {$site.site_analytics_code|base64_decode}
+        </div>
+        <eq name='site.site_online_count' value='1'>
+        <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+        </eq>
+
+
+        <!--&lt;!&ndash;百度推广网页转化&ndash;&gt;-->
+        <!--<script type="text/javascript">-->
+        <!--var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");-->
+        <!--document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F9efa5e6b982a815a97700d8e78129b16' type='text/javascript'%3E%3C/script%3E"));-->
+        <!--</script>-->
+
+        <script src="__THEMENEW__/js/index_2.0.js"></script>
+        <script src="__THEMENEW__/js/load_img.js"></script>
+        <script src="__THEMENEW__/js/jquery.SuperSlide.2.1.1.js"></script>
+        <script src="__THEMENEW__/js/swiper.min.js"></script>
+    </body>
+</html>

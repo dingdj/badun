@@ -1,0 +1,63 @@
+<if condition="$goods">
+    <volist name="goods" id="vo">
+        <li  class="li">
+            <div class="discusslist">
+                <div class="detailmeg">
+                    <div class="mynote"><a target="_blank" class="otherHead" ><img width="40" height="40" src="{:getCover($vo['goods_info']['cover_id'],40,40)}"></a>
+                        <em>商品名称:</em> <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_info']['goods_id']))}" target="_blank">{$vo.goods_info.title}</a>&nbsp;&nbsp;
+                        <em>所用积分:</em><a>{$vo.price}积分</a>&nbsp;&nbsp;
+                        <em>兑换数量:</em><a>{$vo.count}</a>&nbsp;&nbsp;
+                        <em>运费:</em><a>{$vo.fare}积分</a>&nbsp;&nbsp;
+                    </div>
+                    <div class="fbtime">
+                        <em>收货人:</em><a>{$vo.address_info.name}</a>
+                        <em>联系方式:</em><a>{$vo.address_info.phone}</a>
+                        <em>收货地址:</em><a>{$vo.address_info.location}&nbsp;&nbsp;{$vo.address_info.address}</a>
+                        兑换时间：
+                        <span>{$vo.ctime|date="Y/m/d H:i",###}</span>
+                        <div class="Operation-wd">
+                            <a href="javascript:;" onclick="ui.confirm(this,'确定要删除该商品兑换记录吗？');return false;" callback="delGoodsOrder({$vo['goods_order_id']})" ><i></i><span>删除</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </volist>
+    <if condition="$data['totalPages'] gt 1">
+    <div class="page">
+        <div class="pagebox">
+            {$data.html}
+        </div>
+    </div>
+    </if>
+    <script>
+        $(function() {
+            $(".pagebox a").click(function(e){
+                e = e || window.event;
+                if(e.preventDefault) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }else{
+                    e.returnValue = false;
+                    e.cancelBubble = true;
+                }
+                var p = $(this).attr('p');
+                if(p >= 1){
+                    fallBang(p);
+                }
+            });
+            $('.goto').click(function () {
+                var totalPages = "{$data.totalPages}";
+                var p = $('#goto_page').val();
+                if(p >= 1){
+                    if(p > totalPages){
+                        p = totalPages;
+                    }
+                    fallBang(p);
+                }
+            });
+        });
+
+    </script>
+</if>
+

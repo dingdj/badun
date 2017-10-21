@@ -1,0 +1,107 @@
+<include file="__THEME__/public_header" />
+<include file="__THEME__/editor" />
+
+<include file="../User/public/_top" />
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>3))}">我的经历</a>
+
+                    <php>if(!$details){</php>
+                        <a class="on" onclick="navClick(this,'updateDetails')" href="javascript:;">添加经历</a>
+                    <php> }else{ </php>
+                        <a class="on" onclick="navClick(this,'updateDetails')" href="javascript:;">修改经历</a>
+                    <php> }</php>
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all">
+                <form method="POST"  action="{:U('classroom/User/doUpdateDetails',array('id'=>$_GET['id']))}" id="detail_form" name="detail_form" class="infobox">
+                     <dl>
+                        <dt><span>*</span>开始时间：</dt>
+                        <dd>
+                            <input type="text" class="inp01" name="Time" id="Time" value="{$details.Time}">
+                        </dd>
+                    </dl> <dl>
+                        <dt><span>*</span>标题：</dt>
+                        <dd>
+                            <input type="text" class="inp01" name="title" id="title" value="{$details.title}">
+                        </dd>
+                    </dl> <dl>
+                        <dt><span>*</span>类型：</dt>
+                        <dd>
+                            <input class="type" type="radio" name="type" value="1" <php>if($details['type'] == 1){</php> checked="checked" <php>}</php>>过往经历
+                            <input class="type" type="radio" name="type" value="2" <php>if($details['type'] == 2){</php> checked="checked"<php>}</php>>相关案例
+                        </dd>
+                    </dl> <dl>
+                        <dt><span>*</span>内容：</dt>
+                        <dd>
+                            <textarea id="content" class="tex01" name="content">{$details['content']}</textarea>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <input  class="btn" type="submit" style="line-height: 0;" value="保 存">
+                        </dd>
+                    </dl>
+                </form>
+            </div>
+        </div>
+
+        <!--左-->
+        <include file="../User/public/_right" />
+    </div>
+</div>
+
+<script type="text/javascript">
+$("form[name='detail_form']").submit(function(evt){
+	var e = evt || window.event; 
+	window.event?e.returnValue = false:e.preventDefault(); 
+	window.event?e.cancelBubble=true:e.stopPropagation(); 
+    //$("textarea[name='content']").html(E.getData());
+    var content = $("textarea[name='content']").val();
+	if($("#Time").val()==""){
+      ui.error("请输入开始时间!");
+      return false;
+    }
+    if($("#title").val()==""){
+      ui.error("请输入标题!");
+      return false;
+    }
+    if(!$("input[type='radio']:checked").val()){
+      ui.error("请选择类型!");
+      return false;
+    }
+    if(!content){
+      ui.error("请输入内容!");
+      return false;
+    }
+	var detail_form = $("form[name='detail_form']");
+    $.ajax({
+        type: detail_form.attr('method') || 'POST',
+        url:detail_form.attr("action"),
+        data:detail_form.serialize(),
+        dataType:"json",
+        cache: false,
+        success: function(res){
+        if(res.status == 1){
+    			notes(res.info, 'success');
+    			setTimeout(function(){
+    				location.href = res.url;
+    			},'1500');
+    		}else{
+    			notes(res.info, 'failure');
+    			return false;
+    		}
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          ui.error("未知错误!");
+        }
+    });
+	return false;
+});
+  </script>
+<include file="__THEME__/public_footer" />

@@ -1,0 +1,35 @@
+<if condition="$data">
+<foreach name="data" item="l">
+    <li>
+        <!--<h2><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.course_name}</a></h2>-->
+        <div class="position-rt">
+            <div class="user-imglistbt">
+                课程名称：<a href="{:U('classroom/LineClass/view',array('id'=>$l['video_id']))}">{:msubstr($l['course_name'], 0, 10)}</a><br/>
+                学生名称: {$l.student_name}&nbsp;&nbsp;性别：<if condition="$l.user_info.sex eq 1">男<else/>女</if><br/>
+                联系方式：<font color="#2388c0">
+                <if condition="$l['phone']">
+                        {$l.phone}
+                        <elseif condition="$l['email']"/>
+                        {$l.email}
+                    <else/>
+                      暂无联系方式
+                    </if>  
+                </font><br/>
+                授课方式：线下授课<br/>
+                订单状态：{$l.pay_status}<br/>
+                订单时间：{:date("Y-m-d H:i",$l['ctime'])}<br/>
+                <!--价格：<font color="#2388c0">{$l.price}</font>/小时<br/>-->
+            </div>
+        </div>
+        <if condition="$l['learn_status'] == 1">
+            <a href="javascript:;"  class="finish" onclick="saveFinished('{$l.id}',2)" style="margin: 0 5px 5px 5px;display: block;">确定完成</a>
+            <else/>
+            <if condition="$l['learn_status'] != 2">
+                <a href="javascript:;"  class="finish" style="margin: 0 5px 5px 5px;color: #898a8b;">待学生确认</a>
+            </if>
+        </if>
+    </li>
+</foreach>
+<else/>
+    <li style="border: none;box-shadow: none;">你还没有相对应的约课。。</li>
+</if>

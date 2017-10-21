@@ -1,0 +1,970 @@
+<include file="__THEME__/public_header" />
+<style>
+.back a.edit {
+        margin-right: 0; 
+    }
+    .livemain_item .title a {
+        font-size: 15px;
+        color:#656565;
+}
+</style>
+<div class="mask"></div>
+<!--content start-->
+<div class="page-palce">
+	<div class="wrap">
+        <div class="content-place">
+            <div class="wrap">
+
+                <a href="/">首页</a><span> &gt;</span>
+
+                <volist name="data.video_category_name" id="cate">
+                    <a href="{:U('classroom/Video/index',array('cateId'=>$cate['key']))}">{:msubstr(t($cate['name']),0,10,'utf-8',true)}</a>
+                    <span>&gt;</span>
+                </volist>
+                <span>{:msubstr(t($data['video_title']),0,10,'utf-8',true)}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="topbox bgf7" style="background: #fff!important;">
+    <div class="wrap">
+        <div class="livetopbox">
+            <div class="left">
+                <img src="{:getCover($data['cover'] ,520 , 320 )}" alt="" class="style-btn">
+
+                <php>if($data['is_buy']){</php>
+                    <a href="{:U('live/Index/watch',array('id'=>$lid))}" class="sign">
+                        <b><i class="icon-01"></i>进入直播</b>
+                    </a>
+                <php>}else if($enough == 1){</php>
+                <a href="javascript:;" class="sign" >报名{$data['video_order_count']}人已满</a>
+                <php>}else {</php>
+                    <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                        <input type="hidden" value="{$data['id']}" name="vid" />
+                        <input type="hidden" value="zy_live" name="check_type" />
+                        <input type="hidden" value="直播：{$data['video_title']}" name="title" />
+                        <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                    </form>
+                    <a href="javascript:;" class="sign" id="charge_video01"><!-- 报名{$data['video_order_count']}人<em>|</em> --><b><i class="icon-01"></i>进入直播</b>
+                    </a>
+                <php>}</php>
+                <!-- <div class="tip">
+                    服务承诺：<em>资</em><span>资金安全</span>
+                </div> -->
+            </div>
+            <div class="right">
+                <h3>{:msubstr(t($data['video_title']),0,25,'utf-8',true)}</h3>
+                <div class="livetopitem" style="border-bottom: 1px solid #eee;padding-bottom: 14px;">
+                    <strong><i class="icon-01"></i>已报名<span>{$data['video_order_count']}</span></strong>
+                    <strong><i class="icon-02"></i>课时数<span>{$data['sectionNum']}</span></strong>
+                    <strong><i class="icon-03"></i>浏览量<span>{$data['view_nums']}</span></strong>
+                </div>
+                <div class="livetopitem txt-style">
+                    <div class="f1" style="float: left;">主讲人：</div><div class="fl">{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</div>
+                </div>
+                <div class="livetopitem txt-style">
+                    <div class="fl">上架周期：</div>
+                    <div class="f1">{$data['tevl']}天</div>
+                    <!--<a class="kclist" href="{:U('live/Index/watch',array('id'=>$lid))}">查看课程</a>-->
+                </div>
+                <div class="livetopitem txt-style">
+                    <div class="fl">周期：</div>
+                    <div class="f1">
+                        <php>echo date('m-d',$live_bef['beginTime']);</php>开课-<php>echo date('Y-m-d',$live_end['endTime'])</php>结课
+                    </div>
+                </div>
+               <!--<div class="livetopitem tips">
+                   <div class="tip tip01"><em>实</em><span>实名认证</span></div>
+                   <div class="tip tip02"><em>资</em><span>资金安全</span></div>
+                   <div class="tip tip03"><em>退</em><span>限时退班</span></div>
+                   <div class="tip tip04"><em>插</em><span>随时插班</span></div>
+               </div> -->
+                <div class="price">
+                 <php> if($data['t_price'] == 0 ||  $data['is_charge'] == 1  ||  $is_free == 1) {</php>  <div class="new_price"><span  style="color: #56b02a;">免费</span></div> <php> } else {</php> <div class="new_price">¥<span>{$data['t_price']}</span></div><php>}</php>
+                    <div class="old_price">原价：<span>¥{$data['v_price']}</span></div>
+                </div>
+                <div class="livetopitem btn" style="padding: 0">
+                    <php>if($data['is_buy']){</php>
+                        <a href="{:U('live/Index/watch',array('id'=>$lid))}" class="sign">进入直播</a>
+                    <php>}else if($enough == 1){</php>
+                    <a href="javascript:;" class="sign" >报名{$data['video_order_count']}人已满</a>
+                    <php>}else {</php>
+                        <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                            <input type="hidden" value="{$data['id']}" name="vid" />
+                            <input type="hidden" value="zy_live" name="check_type" />
+                            <input type="hidden" value="直播：{$data['video_title']}" name="title" />
+                            <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                        </form>
+                        <a href="javascript:;" class="sign" id="charge_video"><!-- 报名{$data['video_order_count']}人<em>|</em> -->立即报名</a>
+                        <div class="live-date-count-down-box">
+
+                        </div>
+                    <php>}</php>
+
+                    <!--<a href="#" class="join">加入我的直播课</a>-->
+                    <!-- <div class="zx">
+                        <p>免费咨询</p>
+                        <p>400-820-8829</p>
+                    </div> -->
+                </div>
+                <div class="livetopitem info">
+                    <div class="fr ewm1" style="float: right;">
+                        <i class="icon-07"></i>手机查看
+                        <div class="qrcode-wrap">
+                            <span></span>
+                            <div id="qrcode" class="fxp"></div>
+                        </div>
+                    </div>
+                    <!-- <div class="f1"><a href="#"><i class="icon-06"></i>纠错</a></div> -->
+                    <!--<div class="fr">-->
+                        <!--<input type="checkbox" checked="checked">-->
+                        <!--<a href="javascript:;" class="addtochart" kid="{$lid}" >加入购物车</a>-->
+                    <!--</div>-->
+                    <php>if($data['iscollect']){</php>
+                    <a href="javascript:;"onClick="collectVideo(this,{$lid},0)" class="f1"><i class="icon-08"></i>已收藏</a>
+                    <php>}else{</php>
+                    <a href="javascript:;"onClick="collectVideo(this,{$lid},1)" class="f1"><i class="icon-04"></i>收藏</a>
+                    <php>}</php>
+                    <div class="f1 zhuang-left" style="position: relative;" ><a href="javascript:;"  style="position: relative;"><i class="icon-05"></i>分享</a>
+                        <div class="_share_my_firends" >
+                            <div class="_share_all_channel">
+                                <i class="side-ills-fell"></i>
+                                <p  style="padding-top: 4px; text-indent: 10px;">分享到：</p>
+                                <div class="bdsharebuttonbox"  data-tag="share_1">
+                                    <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>
+                                    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>
+                                    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>
+                                    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>
+                                </div>
+                                <script>
+                                    var share_url = "{$share_url}";
+                                    window._bd_share_config={"common":{
+                                        bdUrl:share_url,
+                                        bdText:"",
+                                        bdMini:"2",
+                                        bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],
+                                        bdPic:"",
+                                        bdSize:"24"
+                                    },
+                                        share:{},
+                                        image:{"viewList":["tsina","weixin","qzone","sqq"],
+                                            viewText:"分享到：","viewSize":"0"}};
+                                    with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<div class="content pt40 bgf7">
+    <div class="wrap">
+        <div class="livemain">
+            <div class="livemain-hd" id="view_main_nav">
+                <ul id="view_main_ul">
+                    <li class="on"><a href="javascript:;"onclick="switchnav(this,'xiangqing')">课程详情</a></li>
+                    <li><a href="javascript:;"onclick="switchnav(this,'dagang')">教学大纲</a></li>
+                    <li><a href="javascript:;"onclick="switchnav(this,'pingjia')">课程评价</a></li>
+                </ul>
+
+                <div class="livetopitem btn livetopitem_btn" style="margin-right: 0px;">
+                    <div class="classtopitem_price">
+                        <div class="new_price">¥{$data['t_price']}</span></div>
+                        <div class="old_price">¥<span>{$data['v_price']}</span></div>
+                    </div>
+
+                    <!--<php>if($data['is_buy']){</php>-->
+                        <!--<a href="{:U('live/Index/watch',array('id'=>$lid))}" class="sign xf_a" >报名{$data['video_order_count']}人<em>|</em>已报名</a>-->
+                    <!--<php>}else if($enough == 1){</php>-->
+                        <!--<a href="javascript:;" class="sign xf_a" >报名{$data['video_order_count']}人<em>|</em>已满</a>-->
+                    <!--<php>}else {</php>-->
+                    <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" id="pay_form">
+                        <input type="hidden" value="{$data['id']}" name="vid" />
+                        <input type="hidden" value="zy_live" name="check_type" />
+                        <input type="hidden" value="直播：{$data['video_title']}" name="title" />
+                        <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                    </form>
+                    <!--<a href="javascript:;" class="sign xf_a" id="charge_video2">报名{$data['video_order_count']}人<em>|</em>立即报名</a>-->
+                    <php>}</php>
+                    <!--<a href="#" class="join">加入我的直播课</a>-->
+                    <!--<div class="zx" style="float: right;margin: 7px 0 0 20px;line-height: 16px;">
+                        <p>免费咨询</p>
+                        <p>{$site.site_phone}</p>
+                    </div>-->
+                </div>
+            </div>
+            <div class="livemain-bd">
+                <div class="livemain_con">
+
+                    <div class="livemain_item coursedetail" id="xiangqing">
+                        <div class="title">课程详情</div>
+                        <div class="details">
+                            <!--<img src="images/p22222.jpg" alt="">-->
+                            {$data.video_intro}
+                        </div>
+                    </div>
+
+                    <div class="livemain_item teachoutline"id = "dagang">
+                        <php>if($live_menu){</php>
+                            <div class="title">教学大纲（{$live_end['count']}）</div>
+                            <div class="timearrange"> <php>echo date('m-d',$live_bef['beginTime']);</php>开课－<php>echo date('Y-m-d',$live_end['endTime'])</php>结课 共{$live_end['count']}节,已上{$live_end['endCount']}节</div>
+                            <div class="details">
+                                <table><tbody>
+                                <volist name="live_menu" id="vo" key="k">
+                                    <if condition="$vo.notestate eq 1"> <tr class="classOver"><else /><tr></if>
+                                    <tr class="classOver">
+                                        <td>第{$k}节&nbsp;&nbsp;&nbsp;</td><td>{:msubstr(t($vo['title']),0,20,'utf-8',true)}</td>
+                                        <td><php>echo date('Y-m-d H:i',$vo['startDate']);</php> - <php>echo date('Y-m-d H:i',$vo['invalidDate']);</php></td>
+                                        <td>{$vo['note']}</td>
+                                    </tr>
+                                    <if condition="$vo['count_down']">
+                                        <script>
+                                            $(function(){
+                                                var countDownBox = $("#countDown_{$vo['id']}");
+                                                setInterval(function show(){
+                                                    var time = parseInt(countDownBox.data('time')) - 1;
+                                                    if(time > 0){
+                                                        countDownBox.html(formatSeconds(time));
+                                                        countDownBox.data('time',time);
+                                                    }else{
+                                                        clearTimeout(show());
+                                                    }
+                                                },1000);
+                                                function formatSeconds(value) {
+                                                    var leftsecond = parseInt(value);
+                                                    var day1=Math.floor(leftsecond/(60*60*24));
+                                                    var hour=Math.floor((leftsecond-day1*24*60*60)/3600);
+                                                    var minute=Math.floor((leftsecond-day1*24*60*60-hour*3600)/60);
+                                                    var second=Math.floor(leftsecond-day1*24*60*60-hour*3600-minute*60);
+                                                    return day1+"天"+hour+"时"+minute+"分"+second+"秒";
+                                                    var theTime = parseInt(value);// 秒
+                                                    var theTime1 = 0;// 分
+                                                    var theTime2 = 0;// 小时
+                                                    if(theTime > 60) {
+                                                        theTime1 = parseInt(theTime/60);
+                                                        theTime = parseInt(theTime%60);
+                                                        if(theTime1 > 60) {
+                                                            theTime2 = parseInt(theTime1/60);
+                                                            theTime1 = parseInt(theTime1%60);
+                                                        }
+                                                    }
+                                                    var result = ""+parseInt(theTime)+"秒";
+                                                    if(theTime1 > 0) {
+                                                        result = ""+parseInt(theTime1)+"分"+result;
+                                                    }
+                                                    if(theTime2 > 0) {
+                                                        result = ""+parseInt(theTime2)+"小时"+result;
+                                                    }
+                                                    return result;
+                                                }
+                                            });
+                                        </script>
+                                    </if>
+                                </volist>
+                                </tbody></table>
+                            </div>
+                            <div class="viewAll">查看全部</div>
+                        <php>}else{</php>
+                            <div class="viewAll">暂时还没有直播课程目录哟！</div>
+                        <php>}</php>
+                    </div>
+                    <div class="livemain_item course-comment" id="pingjia">
+                        <div class="title">课程评价</div>
+                        <ul class="course-tab-nav">
+                            <li class="active"><a href ="javascript:;" onclick="navClick(this,'all')">全部评价（{$data['reviewCount']}）</a></li>
+                            <li><a href ="javascript:;" onclick="navClick(this,'good')">好评（{$reviews['good']}）</a></li>
+                            <li><a href ="javascript:;" onclick="navClick(this,'middle')">中评（{$reviews['middle']}）</a></li>
+                            <li><a href ="javascript:;" onclick="navClick(this,'bad')">差评（{$reviews['bad']}）</a></li>
+                        </ul>
+                        <div class="details">
+                            {:W('Resource',array('type'=>2,'ispage'=>true,'kztype'=>1,'kzid'=>$lid,'switch'=>$switch,'template'=>'album_review'))}
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="livemain_item coursedetail" id="xiangqing">
+
+                        <div class="title">直播须知</div><ul><li>1、请事先熟悉{$site['site_keyword']}直播课听课流程，注意开课时间，建议直播前半小时进入课堂，等待课程直播</li>
+                        <li>2、建议首选联通、电信4M以上独享网络，上课时建议用网线非WIFI连接，避免直播卡顿，无法进入直播等情况</li>
+                        <li>3、使用电脑观看直播效果最为流畅</li>
+                        <li>4、{$site['site_keyword']}支持手机观看直播，手机操作系统为android-4.0以上，ios-6.0以上， <a class="download" href="http://http://www.igenwoxue.com/static/app" target="_blank">点击下载</a></li>
+                        <li>5、报班学员请严格遵守课堂秩序，保证老师正常直播授课，如对直播课造成影响，{$site['site_keyword']}有权禁止发言或取消听课资格不予退费</li>
+                        <li>6、{$site['site_keyword']}直播课程视频仅供注册学员学习使用，未经{$site['site_keyword']}许可以拷贝、录屏、反向工程、技术下载等手段获取直播课程视频的行为构成侵权，{$site['site_keyword']}立即封号处理，并保留追究注册学员法律责任</li>
+                </div>
+                -->
+
+            </div>
+        </div>
+        <div class="liveside sideBar">
+
+            <php>$data['user'];</php>
+            <php>if($data['user']){</php>
+            <div class="teacher card" style="margin-top: 0px;">
+                <h3 class="title">主讲老师</h3>
+                <div class="details">
+                    <div class="photo"><a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}" target="_blank"><img src="{:getCover($data['user']['head_id'] ,80 , 80 )}" width="80" height="80"></a></div>
+                    <div class="right">
+                        <div class="name"><a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}" target="_blank">{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</a><i class="icon icon-vip-cvip"></i><php>if($data['user']['teacher_title_cover']){</php><img src="{$data.user.teacher_title_cover}" width="19" height="19"><php>}</php></div>
+                        <div class="info"><p>{:limitNumber($data['user']['inro'],15)}</p></div><div class="consult chat-label"><a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">预约名师咨询</a></div>
+                    </div>
+                </div>
+            </div>
+            <php>}</php>
+            <div class="org card">
+                <h3 class="title">所属机构</h3>
+                <div class="details">
+                    <div class="photo"><a href="{$mhmData.domain}" target="_blank"><img src="{$mhmData['logo']}" width="80" height="80"></a></div>
+                    <div class="right">
+                        <div class="name"><a href="{$mhmData.domain}" target="_blank">
+                            {:msubstr(t($mhmData['title']),0,20,'utf-8',true)}</a><i class="icon icon-vip-cvip"></i><php>if($mhmData['school_vip_cover']){</php><img src="{$mhmData.school_vip_cover}" width="19" height="19"><php>}</php></div>
+                        <div class="info"><p>{:limitNumber($mhmData['info'],15)}</p></div><div class="consult chat-label"><a href="{$mhmData.domain}">咨询课程顾问</a></div>
+                    </div>
+                </div>
+            </div>
+            <php>if($othervideo){</php>
+            <div class="otherCourses card">
+                <h3 class="title">老师其他课程</h3>
+                <div class="lists">
+                    <volist name="othervideo" id="vo">
+                        <div class="item">
+                            <php>if($vo['type'] == '2'){ </php>
+                            <div class="photo"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
+                            <div class="description"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
+                          <php>  }</php>
+                            <php>if($vo['type'] == '1'){ </php>
+                            <div class="photo"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
+                            <div class="description"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
+                            <php>  }</php>
+                            <div class="moreInfo"><p><span class="rmb">￥</span><span>{$vo['v_price']}</span>&nbsp;|&nbsp;{$vo['video_order_count']}人学习</p></div>
+                        </div>
+                    </volist>
+                </div>
+            </div>
+            <php>}</php>
+            <div class="otherCourses card">
+                <h3 class="title">相关课程</h3>
+                <div class="lists">
+                    <php>if(!$samevideo)    {</php>
+                    <h3 class="title">无</h3>
+                    <php>}</php>
+                    <php>if($samevideo)    {</php>
+                    <volist name="samevideo" id="val">
+                        <div class="item">
+                            <div class="photo"><a href="{:U('live/Index/view',array('id'=>$val['id']))}" rel="nofollow"><img src="{:getCover($val['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
+                            <div class="description"><span class="price"><span class="rmb">￥{$val['v_price']}</span></span><a href="{:U('live/Index/view',array('id'=>$val['id']))}">{:msubstr(t($val['video_title']),0,15,'utf-8',true)}</a></div>
+                        </div>
+                    </volist>
+                    <php>}</php>
+                </div>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+        <php>if($guess_you_like){</php>
+        <div class="guess_like">
+            <h3 class="guess_like_tit">猜你喜欢</h3>
+            <ul class="classlist02 clearfix">
+                <volist name="guess_you_like" id="vol">
+                    <li>
+                        <php>if($vol['type'] == 1){</php>
+                    <div class="pic">
+                        <a href="{:U('classroom/Video/view',array('id'=>$vol['id']))}"><img src="{:getCover($vol['cover'] ,220 , 124 )}" alt=""></a>
+
+                    </div>
+                    <h3><a href="{:U('classroom/Video/view',array('id'=>$vol['id']))}">{:limitNumber($vol['video_title'],7)}|{$vol['live']['count']}节课</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span></h3>
+                    <!--<div class="name">{:msubstr(t($vol['mhmName']),0,20,'utf-8',true)}</div>-->
+                    <div class="info">
+                        <div class="fr">{:msubstr(t($vol['teacherInfo']['name']),0,10,'utf-8',true)}</div>
+                        <php>if($vol['pe']){</php>
+                        <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
+                        <php>}else{</php>
+                        <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
+                        <php>}</php>
+                    </div>
+                        <php>}</php>
+
+                        <php>if($vol['type'] == 2){</php>
+                        <div class="pic">
+                            <a href="{:U('live/Index/view',array('id'=>$vol['id']))}"><img src="{:getCover($vol['cover'] ,220 , 124 )}" alt=""></a>
+
+                            <div class="txt">
+                                <div class="fl orange class">直播中</div>
+                                <span class="fl">进度：{$vol['live']['now']}/{$vol['live']['count']}节</span>
+                            </div>
+
+                        </div>
+                        <h3><a href="{:U('live/Index/view',array('id'=>$vol['id']))}">{:limitNumber($vol['video_title'],9)}|{$vol['live']['count']}节课</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span></h3>
+                        <div class="info">
+                            <div class="fr">{:msubstr(t($vol['teacherInfo']['name']),0,10,'utf-8',true)}</div>
+                            <php>if($vol['pe']){</php>
+                            <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
+                            <php>}else{</php>
+                            <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
+                            <php>}</php>
+                        </div>
+                        <php>}</php>
+
+                </li>
+                </volist>
+            </ul>
+        </div>
+        <php>}</php>
+    </div>
+</div>
+
+<!--消息提示框-->
+<div class="message_prompt_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>分享成功，快去个人中心查看吧~~~</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">祝您:购物愉快 !</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn">确　定</a>
+    </div>
+</div>
+<div class="message_add_order_box">
+    <div class="w-close"><a class="mr15 mt5">×</a></div>
+    <div class="w-notice">
+        <h4>加入我的看单</h4>
+    </div>
+    <div class="agreement blue">
+        <span class="tips_info">该直播课程需要加入我的看单后方可学习，确定加入？</span>
+    </div><br>
+    <div class="buy-btn">
+        <a class="quer_btn shou_mount add_order_live" style="color: #fff;background: rgb(101, 173, 221);" >确　定</a>
+        <a class="quer_btn close_btn">取　消</a>
+    </div>
+</div>
+<script src="__THEME__/js/qrcode.js"></script>
+<script>
+    var view_main_nav = document.getElementById('view_main_nav');
+
+    window.onload=function(){
+        window.onscroll = function(){
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+            if(scrollTop <= 673){
+                $('.livetopitem_btn').hide();
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop && scrollTop <= 673){
+                $('#view_main_nav').removeAttr("style");
+            }else if(scrollTop > view_main_nav.offsetTop){
+                $('.livetopitem_btn').show();
+                $('#view_main_nav').attr("style","position: fixed;top: 0;z-index: 9;width:1200px;");
+            }else{
+                $('#view_main_nav').removeAttr("style");
+            }
+        }
+    };
+
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : 100,
+        height : 100
+    });
+
+    function makeCode () {
+        var elText = '{$url}';
+        qrcode.makeCode(elText);
+    }
+    makeCode();
+    var id = '{$mid}';
+
+
+
+
+    //分享
+    function shareVideo(obj,lid) {
+
+        if(id<=0){
+            /*ui.error("请先登录");*/
+            reg_login();
+            return false;
+        }
+
+        if(!lid){
+            ui.error("参数错误");
+            return false;
+        }
+
+        $.post("{:U('classroom/VideoShare/addVideoShare')}", {vid:lid,type:2}, function (e) {
+
+            if(e.status == 1){
+                $('.message_prompt_box').show();
+                e.allinfo ="分享成功！您的分享链接为："+e.info;
+                $('.tips_info').html( e.allinfo);
+                $('.mask').show();
+                $('.quer_btn').click(function () {
+                    $('.message_prompt_box,.mask').hide();
+                    $('#urlcopy').val(e.info);
+                    var text=document.getElementById("urlcopy");
+                    text.select(); // 选择对象
+                    document.execCommand("Copy"); // 执行浏览器复制命令
+                    window.location.reload();
+                    ui.success("你已经成功复制链接！");
+                });
+
+                $('.message_prompt_box').click(function () {
+                    $('.message_prompt_box,.mask').hide();
+                    window.location.reload();
+                });
+
+            }else{
+                ui.error(e.info);
+            }
+        }, 'json');
+
+    }
+
+
+    //加入购物车
+    $(".addtochart").click(function () {
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+        $.post("{:U('classroom/VideoCart/addVideoMerge')}", {id: $(this).attr('kid'),type:2}, function (txt) {
+//        if (txt.status) {
+////            $("#showStatus").removeClass('text_wrong');
+////            $("#showStatus").addClass('text_true');
+////            //window.href="{:U('classroom/Video/merge')}";
+//        }
+        }, 'json');
+    });
+
+    //头部点击事件
+    function navClick(cate,type){
+        $('#ordertype').val(type);
+        $(".user-wenda").html("");
+        type = type;
+        $("li").removeClass("active");
+        $(cate).parent("li").addClass("active");
+        p=1;
+        getReview(type,type);
+    }
+</script>
+<script type="text/javascript">
+	var uid = '{$mid}';
+    var liveid = '{$lid}';
+    var arr=['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
+    $(function(){
+
+        function randomString(len) {
+            len = len || 32;
+            var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+            var maxPos = $chars.length;
+            var pwd = '';
+            for (i = 0; i < len; i++) {
+                pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+            }
+            return pwd;
+        }
+
+		//点击购买
+        $('#charge_video,#charge_video2,#charge_video01').click(function () {
+            if(uid<=0){
+                reg_login();
+                return false;
+            }
+            var form  = $('#pay_form');
+            var vid = form.find('input:hidden[name="vid"]').val();
+            var vtype = form.find('input:hidden[name="check_type"]').val();
+
+            if(!vid || !vtype){
+                ui.error('参数错误');
+                return false;
+            }
+
+            var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+            var money = form.find('input:hidden[name="money"]').val();
+            if(money <= 0){
+                $('.message_add_order_box').show();
+                $('.mask').show();
+                return false;
+            }
+            if(rechange_base>0 && money%rechange_base != 0){
+                if(rechange_base == 1){
+                    ui.error('购买金额必须为整数');
+                }else{
+                    ui.error('购买金额必须为'+rechange_base+'的倍数');
+                }
+                return false;
+            }
+
+            $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
+                var mount_url = "{$mount_str}";
+                if(data.status == 1){
+                    if(mount_url){
+                        window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2)+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+                    }else{
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                        window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+                    }
+
+                } else if(data.status == 9){
+                    ui.error(data.info);
+                    window.location.reload();
+                } else {
+                    ui.error(data.info);
+                    return false;
+                }
+            },'json');
+        });
+
+        $('.add_order_live').click(function () {
+            var form  = $('#pay_form');
+            var vid = form.find('input:hidden[name="vid"]').val();
+            var vtype = form.find('input:hidden[name="check_type"]').val();
+
+            $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype},function(data){
+                if(data.status == 1){
+                    $('.message_add_order_box').hide();
+                    ui.success(data.info);
+                    window.location.reload();
+                } else {
+                    ui.error(data.info);
+                    return false;
+                }
+            },'json');
+        });
+
+        $('.message_add_order_box .w-close a,.close_btn').click(function () {
+            $('.message_add_order_box').hide();
+            $('.mask').hide();
+        });
+
+		//同意协议
+		$('.agreement #protocol').click(function(){
+			var type = $(this).attr('class');
+			if(type == 'no-agree'){
+				$(this).attr('class','agree');
+			}else{
+				$(this).attr('class','no-agree');	
+			}
+		});
+
+		//进入直播
+		$('#go_live').click(function(){
+			if(id <= 0){
+				/*ui.error('请先登录');*/
+                reg_login();
+				return false;
+			}
+			
+		});
+
+      	//显示更多
+	    $('.qa-reply-more .loadMore').live('click',function(){
+	          var id = $(this).attr('more_id');
+	          var moreType = $(this).attr('type');
+	          var page = $(this).attr('page');
+	          eval('var moreTypes='+moreType+'_type');  //分类类型 1:提问,2:点评,3:笔记
+	          eval('var limit='+moreType+'_limit');  //查询条数
+	          $.post("{:U('widget/Resource/getListForId')}",{id:id,type:moreTypes,limit:limit,p:page},function(txt){
+	              showComment(txt.data,moreType,id,txt.nowPage,txt.count);
+	          },'json');
+	     });
+    });//控制回答别人回复下面的textarea 提交按钮
+
+	//上边的js什么的是以前的
+
+    $(function(){
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+    });
+    function dashangToggle(){
+        $('.mask').hide();
+        $(".hide_box").fadeToggle();
+        $(".shang_box").fadeToggle();
+    }
+
+    (function(){
+        $('#xiangqing').css('display','block');
+        $('#dagang').css('display','none');
+        $('#pingjia').css('display','none');
+    })();
+
+    //收藏课程
+    function collectVideo(cate,vid,type){
+        if(UID=='0'){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Public/collect')}",
+            data:{type:type,sctype:2,source_id:vid,is_video:2},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    ui.error(data.info);
+                } else {
+                    ui.success(data.info);
+                    window.location.reload();
+                }
+            },
+        });
+    }
+    function switchnav(obj , id){
+        $('body,html').animate({scrollTop:633},200);//673
+
+        $('li').removeClass('on');
+        $(obj).parent().addClass('on');
+        if( id == 'xiangqing') {
+            $('#xiangqing').css('display','block');
+            $('#dagang').css('display','none');
+            $('#pingjia').css('display','none');
+        }
+        if( id == 'dagang') {
+            $('#dagang').css('display','block');
+            $('#xiangqing').css('display','none');
+            $('#pingjia').css('display','none');
+        }
+        if( id == 'pingjia') {
+            $('#pingjia').css('display','block');
+            $('#dagang').css('display','none');
+            $('#xiangqing').css('display','none');
+        }
+    }
+    $(document).ready(function(){
+    //显示/隐藏 问题、笔记、点评输入框
+        $('.title a,.js-ipt-cancel').click(function(){
+            if(id<=0){
+                reg_login();
+                return false;
+            }
+            var types = $(this).attr('type');
+            $('#'+types+'-comments').toggle();
+        });
+    $(".js-reply-ipt-default").mousedown(function(){
+        $(".qa-reply-footright").css("display","block");
+    });
+    $("#video_insearch").mousedown(function(){
+        $(".qa-reply-footright").css("display","block");
+    });
+
+    //点击评论取消按钮
+    $('.js-ipt-cancel').live('click',function(){
+        var cancel_id = $(this).siblings('button.js-ipt-submit').attr('sub_id');
+        var cancel_type = $(this).siblings('button.js-ipt-submit').attr('type');
+        $("#"+cancel_type+'_'+cancel_id).prev().find('.js-qa-tr-num').show();
+        $("#"+cancel_type+'_'+cancel_id).prev().find('.qa-tr-up').hide();
+        $("#"+cancel_type+'_'+cancel_id).hide();
+
+
+        //背景样式
+        $("#"+cancel_type+'_'+cancel_id).prev().find(".qa-total-reply.qa-icon").css("background-position","-25px -83px");
+        $("#"+cancel_type+'_'+cancel_id).prev().find(".js-qa-tr-num").css("display", "inline");
+    });
+    //点击收起评论
+    $('.qa-total-reply span.qa-tr-up').live('click',function(){
+        var cancel_id = $(this).attr('cancel_id');
+        var ctype = $(this).attr('type');
+        $("#"+ctype+"_"+cancel_id).hide();
+
+        $(this).css("display", "none");
+        $(this).siblings(".qa-total-reply .qa-icon").css("background-position","-25px -83px");
+        $(this).siblings(".js-qa-tr-num").css("display", "inline");
+    });
+
+
+    //显示评论
+    $('.qa-total-reply .js-qa-tr-num').live('click',function(){
+        if(MID ==0){
+            reg_login();
+            return;
+        }
+        $(this).css("display", "none"); //隐藏js-qa-tr-num
+        $(this).siblings(".qa-icon").css("background-position","-25px -107px"); //显示js-qa-tr-num同级的qa-icon  hover事件
+        $(this).siblings(".qa-tr-up").css({"display":"inline","color":"#333333"}); //显示js-qa-tr-num同级的qa-tr-up
+        var show_id = $(this).attr('show_id');
+        var stype = $(this).attr('type');
+        eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:套餐;
+        eval('var kzid='+stype+'_kzid');  //课程或者套餐ID
+        eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
+        // eval('var limit='+stype+'_limit');  //查询条数
+        eval('var page='+stype+'_page');  //当前分页
+        $("#"+stype+"_"+show_id).show();
+        $.post("{:U('widget/Resource/getListForId')}",{id:show_id,type:type,limit:6},function(txt){
+            showComment(txt.data,stype,show_id,txt.nowPage,txt.count);
+
+        },'json');//post
+    });
+
+
+    //显示更多
+    $('.qa-reply-more .loadMore').live('click',function(){
+        var id = $(this).attr('more_id');
+        var moreType = $(this).attr('type');
+        var page = $(this).attr('page');
+        eval('var moreTypes='+moreType+'_type');  //分类类型 1:提问,2:点评,3:笔记
+        eval('var limit='+moreType+'_limit');  //查询条数
+        $.post("{:U('widget/Resource/getListForId')}",{id:id,type:moreTypes,limit:limit,p:page},function(txt){
+            showComment(txt.data,moreType,id,txt.nowPage,txt.count);
+        },'json');
+    });
+
+
+
+    //@回复
+    $('.qst_reply').live('click',function(){
+        var atype = $(this).attr('type');
+        var reply_id = $(this).attr('reply_uid');
+        var id = $(this).attr('reply_id');
+        var name = $(this).parents('.qa-reply-item-foot').siblings('.username').find('a').text();
+        $('#'+atype+'f_'+id).val('回复@'+name+':');
+        $(this).parents('.qa-reply-c').siblings('.qa-reply-ibox').find('.reply_uid').val(reply_id);
+        //$('#'+atype+'_'+reply_id).val(reply_uid).attr('checktxt','回复@'+name);
+    });
+
+
+    //点评前判断
+    $('.js-reply-ipt-default').live('click',function(){
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+    });
+    //提交评论
+    $('button.js-ipt-submit').live('click',function(){
+        if(id<=0){
+            reg_login();
+            return false;
+        }
+        var sub_id = $(this).attr('sub_id');
+        var stype = $(this).attr('type');
+        var sub_this = $(this);
+        eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
+        var content = $("#"+stype+'f_'+sub_id).val();
+        //@用户id
+        var reply_uid = parseInt($("#"+stype+'f_'+sub_id).siblings('.reply_uid').val());
+        var checktxt = $("#"+stype+'f_'+sub_id).siblings('.reply_uid').attr('checktxt');
+        content=content.replace(/&nbsp;/ig, "");
+        content = content.replace(/[ ]/g,"");//去除空格
+        content = content.replace(/<[^>].*?>/g,"");//去html标签
+        //@用户验证
+        if(reply_uid != 0){
+            content = content.replace(/^回复@[^:：\s]*[:：\s]*/, '');
+        }
+        if(content == ""){
+            notes('请输入评论!','failure');
+            return false;
+        }
+        for(var i=0; i<arr.length; i++)
+        {
+            if(content.indexOf(arr[i])>-1)
+            {
+                notes('评论不得包含敏感词!','failure');
+                return false;
+            }
+        }
+        $.post("{:U('classroom/Index/dowrite')}",{rid:sub_id,content:content,type:type,rep_uid:reply_uid},function(txt){
+            if(txt.status == 1){
+                var  html = '';
+                html += '<div class="qa-reply-item">';
+                html += '<a class="qa-reply-item-author" href="'+txt.data.user_src+'" title="'+txt.data.username+'"><img width="40" height="40" src="'+txt.data.userface+'"></a>';
+                html += '<div class="qa-reply-item-inner">';
+                html += '<p class="username"> <a href="'+txt.data.user_src+'" class="qa-reply-nick">'+txt.data.username+'</a> : </p>';
+                html += '<p class="q-reply-item-c">'+txt.data.description+' </p>';
+                html += '<div class="qa-reply-item-foot clearfix"> <span class="reply-item-index r">#</span> <span>'+txt.data.strtime+'</span> <span class="qa-reply-item-reply js-reply-item-reply qst_reply" reply_uid="'+txt.data.uid+'" type="'+stype+'" reply_id="'+txt.data.parent_id+'"><i class="qa-icon"></i>回复</span> </div>';
+                html += '</div>';
+                html += '</div>';
+                if($("#"+stype+'_'+sub_id+' .qa-reply-c .qa-reply-item').size() <= 0){
+                    $("#"+stype+'_'+sub_id+' .qa-reply-c').append(html);
+                }else{
+                    $("#"+stype+'_'+sub_id+' .qa-reply-c .qa-reply-item').first().before(html);
+                }
+                //评论条数+1
+                var com_num = parseInt($("#"+stype+'_'+sub_id).prev().find('span.com_num').text())+1;
+                $("#"+stype+'_'+sub_id).prev().find('span.com_num').text(com_num);
+                $("#"+stype+'f_'+sub_id).val('');
+            }else{
+                notes(txt.info,'xq_transparent');
+            }
+        },'json');
+    });
+
+
+    //设置首页轮播
+    //        setInterval("nextBang()",5000);
+    });//控制回答别人回复下面的textarea 提交按钮
+    function showComment(data,type,id,nowPage,count){
+        var html = '';
+        $.each(data,function(i,k){
+            html += '<div class="qa-reply-item">';
+            html += '<a class="qa-reply-item-author" href="'+k.user_src+'" title="&#12288;"><img width="40" height="40" src="'+k.userface+'"></a>';
+            html += '<div class="qa-reply-item-inner">';
+            html += '<p class="username"> <a href="'+k.user_src+'" class="qa-reply-nick">'+k.username+'</a> : </p>';
+            if(k.reply_user != ''){
+                html += '<p class="q-reply-item-c">回复@<span class="user-reply">'+k.reply_user+'</span>:'+k.content+' </p>';
+            }else{
+                html += '<p class="q-reply-item-c">'+k.content+' </p>';
+            }
+            html += '<div class="qa-reply-item-foot clearfix"> <span class="reply-item-index r">#</span> <span>'+k.strtime+'</span> <span class="qa-reply-item-reply js-reply-item-reply qst_reply" reply_uid="'+k.uid+'" type="'+type+'" reply_id="'+k.parent_id+'"><i class="qa-icon"></i>回复</span> </div>';
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '<div class="qa-reply-more"><a page="'+(parseInt(nowPage)+1)+'" class="loadMore" type="'+type+'" more_id="'+id+'" href="javascript:;">击显示更多</a></div>';
+        if(nowPage <= 1){
+            $("#"+type+"_"+id).find('.qa-reply-c').html('');
+        }
+        $("#"+type+"_"+id).find('.qa-reply-c').append(html);
+        $("#"+type+"_"+id).show();
+        if(count <= $("#"+type+"_"+id).find('.qa-reply-item').size()){
+            $("#"+type+"_"+id).find('div.qa-reply-more').hide();
+        }
+    }
+</script>
+
+
+<style>
+
+    .zhuang-left:hover ._share_my_firends{display: block;}
+    ._share_my_firends {
+        height: 62px;
+        position: absolute;
+        right: 44px;
+        bottom: 3px;
+        width: 168px;
+        top: 0px;
+        left: 0;
+        display: none;
+        margin-top: 20px
+    }
+
+    ._share_all_channel {
+        margin-top: 13px;
+        width: 155px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(83,87,88,.2);
+        margin-top: 10px;
+    }
+
+
+    .side-ills-fell {
+        width: 0!important;
+        position: absolute;
+        height: 0!important;
+        top: 5px;
+        left: 11px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 5px solid #FFF;
+    }
+
+</style>
+
+
+<!--footer-->
+<include file="__THEME__/public_footer" />
+<!-- <input type ="text"   id="urlcopy"   style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"  > -->

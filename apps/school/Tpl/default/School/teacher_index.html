@@ -1,0 +1,152 @@
+<include file="../School/public/school_header" />
+
+<style type="text/css">
+    .wrap{
+        width:1170px
+    }
+    .center_right_tit a {
+        float:left;
+    }
+    .teacherlist{
+        float: left;
+        width: 100%;
+        padding-bottom: 30px;
+    }
+    .teacherlist li{
+        width:540px;
+        height: 200px;
+        float: left;
+        margin-left:30px;
+        margin-top: 20px;
+    }
+    .teacherlist .teacher-info{
+        width:410px;
+    }
+    .teacherlist .teacher-info .sc{
+        top:5px;
+    }
+    .teacherlist li:hover{
+        background-color: transparent;
+    }
+    .teacherlist li:hover .name{
+        color: #00bed4;
+    }
+    .teacherlist .intro{
+        white-space: nowrap;
+        text-overflow:ellipsis;
+        overflow: hidden;
+    }
+    .teacherlist p{
+        margin: 30px 0 30px 30px;
+    }
+</style>
+
+<div class="content">
+    <div class="wrap">
+        <div class="left-all">
+            <div class="center_right">
+                <div class="center_right_tit">
+                    <div class="user-con-title">
+                        <button class="on">综合排序</button>
+                        <!--<button>评分</button>-->
+                    </div>
+                </div>
+                <ul class="teacherlist">
+                    <!--最多显示六条-->
+                    <if condition="$listData">
+                        <volist name="listData" id="vo">
+                            <li>
+                                <div class="teacher-photo"><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['head_id'],100,100)}" class="lazyloading" alt="{$vo.name}"></a></div>
+                                <div class="teacher-info">
+                                    <div><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">{:msubstr(t($vo['name']),0,10,'utf-8',true)}</a><span class="school">{:msubstr(t($school['title']),0,10,'utf-8',true)}</span></div>
+                                    <div class="intro">{:msubstr(t($vo['inro']),0,25,'utf-8',true)}</div>
+                                    <div class="info">
+                                        <div class="score">
+                                            <if condition="$vo['star'] GT 0 "> <i class="icon-star"></i>
+                                                <else /><i class="icon-star_no"></i></if>
+                                            <if condition="$vo['star'] GT 1 "> <i class="icon-star"></i>
+                                                <else /><i class="icon-star_no"></i></if>
+                                            <if condition="$vo['star'] GT 2 "> <i class="icon-star"></i>
+                                                <else /><i class="icon-star_no"></i></if>
+                                            <if condition="$vo['star'] GT 3 "> <i class="icon-star"></i>
+                                                <else /><i class="icon-star_no"></i></if>
+                                            <if condition="$vo['star'] GT 4 "> <i class="icon-star"></i>
+                                                <else /><i class="icon-star_no"></i></if>
+                                        </div>
+                                        <div class="review">({$vo.review_count})人&nbsp;&nbsp;</div>
+                                        <div class="address">|&nbsp;&nbsp;<i class="icon-address"></i>{$vo.Teacher_areas}</div>
+                                        <div class="follow">|&nbsp;&nbsp;{$vo.follow_count}人关注</div>
+                                        <div class="video">|&nbsp;&nbsp;{$vo.video_count}门课程</div>
+                                    </div>
+                                    <div class="tag">
+                                        <span>{$vo.teacher_age}年教龄</span>
+                                        <span>{$vo.teacher_title_category}</span>
+                                        <php>foreach($vo['label'] as $k=>$v){</php>
+                                        <php>if($k < 4){</php><span>{:msubstr(t($v),0,10,'utf-8',true)}</span><php>}</php>
+                                        <php>}</php>
+                                        <span>{:msubstr(t($vo['teach_evaluation']),0,10,'utf-8',true)}</span>
+                                    </div>
+
+                                    <div class="list">热门课程：
+                                        <php>if($vo['video']){</php>
+                                        <a href="{:U('classroom/Video/view',array('id'=>$vo['video']['id']))}">{:getShort($vo['video']['video_title'],15)}</a>&nbsp;&nbsp;
+                                        <span>播放{$vo['video']['video_order_count']}</span>次&nbsp;&nbsp;
+
+                                        <php>if($vo['video']['t_price'] == 0){</php><span style="color:green ;">免费</span>
+                                        <php>}else{</php><span>￥{$vo['video']['t_price']}</span>元<php>}</php>
+                                        <php>}else{</php>
+                                        <span> 无</span>
+                                        <php>}</php>
+                                    </div>
+                                    <php>if($vo['collection'] > 0){</php>
+                                    <a href="javascript:;" onClick="collectTeacher(this,0,{$vo['id']})" class="sc on"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
+                                    <php>}else{</php>
+                                    <a href="javascript:;" onClick="collectTeacher(this,1,{$vo['id']})" class="sc"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
+                                    <php>}</php>
+                                </div>
+                            </li>
+                        </volist>
+                        <else/>
+                        <p>该机构还没有讲师。。</p>
+                    </if>
+                </ul>
+                <div class="page">
+                    <div class="pagebox">
+                        {$data.html}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $(".teacherlist .teacher-info .sc").on("click",function(){
+            $(this).children("i").css("background-position"," -115px -265px");
+        });
+    })
+    //收藏讲师
+    function collectTeacher(cate,type,tid){
+        if(UID=='0'){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Teacher/collect')}",
+            data:{type:type,source_id:tid,uid:UID},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    notes(data.info,'failure');
+                    window.location.reload();
+                } else {
+                    notes(data.info,'');
+                    window.location.reload();
+                }
+            },
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

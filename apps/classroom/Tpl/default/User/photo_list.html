@@ -1,0 +1,281 @@
+<include file="__THEME__/public_header"/>
+<link href="__APP__/css/teacher.css" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+    .ico_top, .ico_btm {
+        background: url("__THEME__/admin/image/ico_top_btm.gif") no-repeat scroll 0 0 transparent;
+        height: 14px;
+        width: 12px;
+    }
+
+    .ico_top, .ico_btm {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .ico_top {
+        background-position: -12px 0;
+    }
+
+    .ico_btm {
+        background-position: -24px 0;
+    }
+
+    .ico_top:hover {
+        background-position: 0 0;
+    }
+
+    .ico_btm:hover {
+        background-position: -35px 0;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .position-rt-float{
+        width:248px;
+    }
+    .user-imglist li .img{
+        height: 138px;
+    }
+    .user-imglist .position-rt{
+        width:248px;
+        height: 138px;
+    }
+    .user-imglist li h2{
+        padding: 0 20px;
+    }
+    .user-con-title .on{
+        color:#00BED4;
+    }
+    .user-imglist li{
+        margin: 0px 0 0 30px;
+    }
+    .user-imglist li .position-lt-float{
+        margin-left: 189px;margin-top: 99px;
+    }
+    #vplayer{
+        height: 600px;
+    }
+</style>
+
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left_setting"/>
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <a href="{:U('classroom/User/teacherDeatil')}">我的教师信息</a>
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>1))}">我的文章</a>
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>2))}" class="on">我的相册</a>
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>3))}">我的经历</a>
+                </div>
+            </div>
+
+            <div class=" Manage_all" style="display:block;">
+                <div class="user-wenda hideWatch" style="font-size: 15px;margin-bottom: 0px;" >
+                    <a href="{:U('classroom/User/updateStyle',array('photo_id'=>$photo_id,'type'=>1))}" class="fl" >上传照片</a>
+                    <a href="{:U('classroom/User/updateStyle',array('photo_id'=>$photo_id))}" class="fl" >上传视频</a>
+                    <a href="{:U('classroom/User/teacherDeatil',array('tab'=>2))}" class="fr" >返回相册首页</a></div>
+                <php>if(!$photos_detail){</php><div  class="user-imglist" style="margin: 40px;">暂时没有图片</div><php>}</php>
+                <ul class="user-imglist hideWatch" >
+                    <foreach name="photos_detail" item="l">
+                        <php>if($l['type'] == 1){</php>
+                        <li>
+                            <div class="position-rt">
+                                <div class="position-lt-float">
+                                    <span class="position-rt-float-a" onclick="delTeacherPhoto({$l.pic_id},'图片')">删除</span>
+                                </div>
+                                <a class="img"><img src="{:getCover($l['resource'], 266,148)}" class="lazyloading"></a>
+                            </div>
+                            <h2><a>{$l.title}</a></h2>
+                        </li>
+                        <php>}else if($l['type'] == 2){</php>
+                        <li>
+                            <div class="position-rt">
+                                <div class="position-lt-float">
+                                    <span class="position-rt-float-a" onclick="delTeacherPhoto({$l.pic_id},'视频')">删除</span>
+                                </div>
+                                <a href="javascript:void(0);" data-id="{$l['pic_id']}" class="img opeanVideo"><img src="{:getCover($l['cover'], 266,148)}" class="lazyloading"><i></i></a>
+                            </div>
+                            <h2><a>{$l.title}</a></h2>
+                        </li>
+                        <php>}</php>
+                    </foreach>
+                </ul>
+                <div class="g-mn2c m-courselb showWatch" >
+                    <div id="video_play1" class="m-courselearn">
+                        <div class="video-top">
+                            <div class="video-top-con">
+                                <a class="cl-pre" id="j-prev" href="#"></a>
+                                <h2>{$photos_title}</h2>
+                                <a class="cl-next" id="j-next" href="#"></a>
+                            </div>
+                            <div class="video-top-r">
+                                <a href="javascript:void(0);" class="closeVideo" style="display: none;" ><i class="video-fh"></i><span>&nbsp;&nbsp;&nbsp;返回相册<span></a>
+                            </div>
+                        </div>
+                        <!-- zhangr - start - video -->
+                        <div class="learn-box" id="video_stop"></div>
+                        <div id="vplayer" class="learn-box"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="__THEME__/js/ccuploader/js/swfobject.js"></script>
+<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".opeanVideo").click(function(){
+            $(".showWatch").show();
+            $(".closeVideo").show();
+            watch($(this));
+            $(".hideWatch").hide();
+        });
+        $(".closeVideo").click(function(){
+            $(".hideWatch").show();
+            $(".showWatch").hide();
+            CKobject.getObjectById('ckvideo').videoClear();
+        });
+    })
+    //加载视频
+    function watch(_this) {
+        var id = _this.data('id');
+        if (!id) return false;
+        $.post("{:U('classroom/User/getVideoAddress')}", {pic_id: id}, function (data) {
+            var data = jQuery.parseJSON(data);
+            if (data.status == '1') {
+                if (data.data.video_type == 1) {
+                    loadCkVideo(data.data.address);
+                } else if (data.data.video_type == 4) {
+                    loadCCVideo(data.data);
+                }
+            } else {
+                notes(data.message);
+            }
+        });
+    }
+    //ckplayer播放器
+    function loadCkVideo(video_address){
+        var flashvars={
+            f:video_address,
+            c:0,
+            p:1,
+            loaded:'loadedHandler'
+        };
+
+        function loadedHandler(){
+            if(CKobject.getObjectById('ckvideo').getType()){
+                //说明使用html5播放器
+                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
+            }else{
+                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+            }
+        }
+        var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:"transparent"};
+        var video=[video_address];
+        CKobject.embed('__ROOT__/player/ckplayer/ckplayer.swf','vplayer','ckvideo','880','600',false,flashvars,video,params);
+    }
+
+    //CC播放器
+    function loadCCVideo(photo_data){
+        //	功能：创建播放器flash，需传递所需参数，具体参数请参考api文档
+        var swfobj = new SWFObject('http://union.bokecc.com/flash/player.swf', 'playerswf', '100%', '100%', '8');
+        swfobj.addVariable( "userid" , photo_data.address.cc_userid);	//	partnerID,用户id
+        swfobj.addVariable( "videoid" , photo_data.videokey);	//	spark_videoid,视频所拥有的 api id
+        swfobj.addVariable( "mode" , "api");	//	mode, 注意：必须填写，否则无法播放
+        swfobj.addVariable( "autostart" , "true");	//	开始自动播放，true/false
+        swfobj.addVariable( "jscontrol" , "false");	//	开启js控制播放器，true/false
+
+        swfobj.addParam('allowFullscreen','true');
+        swfobj.addParam('allowScriptAccess','always');
+        swfobj.addParam('wmode','transparent');
+        swfobj.write('vplayer');
+
+        //	-------------------
+        //	调用者：flash
+        //	功能：播放器加载完毕时所调用函数
+        //	时间：2014-04-18
+        //	说明：用户可以加入相应逻辑
+        //	-------------------
+        function on_spark_player_ready() {
+            //alert("播放器加载完毕");
+        }
+
+        //	-------------------
+        //	调用者：flash
+        //	功能：播放器开始播放时所调用函数
+        //	时间：2014-04-18
+        //	说明：用户可以加入相应逻辑
+        //	-------------------
+        function on_spark_player_start() {
+            //alert('开始播放');
+        }
+
+        //	-------------------
+        //	调用者：flash
+        //	功能：播放器暂停时所调用函数
+        //	时间：2014-04-18
+        //	说明：用户可以加入相应逻辑
+        //	-------------------
+        function on_spark_player_pause() {
+            //alert('暂停播放');
+        }
+
+        //	-------------------
+        //	调用者：flash
+        //	功能：播放器暂停后，继续播放时所调用函数
+        //	时间：2014-04-18
+        //	说明：用户可以加入相应逻辑
+        //	-------------------
+        function on_spark_player_resume() {
+            //alert('暂停后继续播放');
+        }
+
+        //	-------------------
+        //	调用者：flash
+        //	功能：播放器播放停止时所调用函数
+        //	时间：2014-04-18
+        //	说明：用户可以加入相应逻辑
+        //	-------------------
+        function on_spark_player_stop() {
+            //alert('播放停止');
+        }
+        function player_play() { //	调用播放器开始播放函数
+            document.getElementById("playerswf").spark_player_start();
+        }
+        function player_pause() { //	调用播放器暂停函数
+            document.getElementById("playerswf").spark_player_pause();
+        }
+        function player_resume() { //	调用播放器恢复播放函数
+            document.getElementById("playerswf").spark_player_resume();
+        }
+    }
+    //删除 讲师文章/相册/经历
+    function delTeacherPhoto(id,type){
+        var id=id;
+        if(confirm("确定要删除该"+type+"吗？")){
+            $.post("{:U('classroom/User/delTeacherPhoto')}",{id:id}, function(res){
+                if(res==200){
+                    notes('删除成功');
+                    location.reload();
+                    $("body").animate({scrollTop:$(".header").height()});
+                }else{
+                    notes('对不起，删除失败请重试!','failure');
+                }
+            });
+        }
+    }
+</script>
+<include file="__THEME__/public_footer"/>

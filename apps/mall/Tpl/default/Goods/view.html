@@ -1,0 +1,200 @@
+<include file="__THEME__/public_header" />
+<style>.hd{width: 400px;}</style>
+<div class="content bgf7">
+	<div class="wrap">
+    	<div class="content-place">
+            <ul>
+                <li><a href="{:U('mall/Index/index')}">积分商城</a><span>&gt;</span><a href="javascript:;">{:msubstr(t($data['title']),0,15,'utf-8',true)}</a></li>
+            </ul>
+        </div>
+        <div class="productbox">
+        	<div class="pic"><img src="{:getCover($data['cover_id'],580,370)}" alt="{$data.title}" /></div>
+            <div class="info">
+            	<div class="title">
+                    <span class="mb">手机浏览</span>{$data.title}
+                    <div id="qrcode" class="fxp"></div>
+                </div>
+                <div class="jfen">
+                	<ul>
+                    	<li><p>{$data.goods_count}</p>兑换人数</li>
+                		<li><p>{$data.stock}</p>仓库剩余</li>
+                    </ul>
+                	<div class="fl">所需积分<input type="hidden" id="price" name="price" value="{$data.price}" /><span class="num">{$data.price}</span></div>
+                </div>
+                <div class="item">
+                	<label>配送</label>
+                    <php>if($uid){</php>
+                        <php>if($address['location']){</php>
+                            <div class="con"><em id="old">{$address.location}&nbsp;&nbsp;{$address.address}</em>&nbsp;&nbsp;<a class="address" href="javascript:void(0);" id="charge_address">更换地址</a>
+                            <input class="address_id" name="address_id" value="{$address.id}" type="hidden" /></div>
+                        <php>}else{</php>
+                            <a href="{:U('classroom/User/address')}" style="color: #188eee;">新增地址</a>
+                        <php>}</php>
+                    <php>}else{</php>
+                        <div class="con"><em>北京市</em></div>
+                    <php>}</php>
+                    <div>快递费<span class="num">{$data.fare}</span>积分</div>
+                </div>
+                <div class="item">
+                	<label>简介</label>
+                    <div class="con">{$data.info|msubstr=0,87,'utf-8',true|default="暂无相关简介。。"}<php>if(mb_strlen($data['info'],'utf-8') > 87 ){</php><a href="javascript:void(0);" class="showInfo" style="float: right;">展开全部</a><php>}</php></div>
+                    <div class="con close" style="display:none;">{$data.info}<a href="javascript:void(0);" class="hideInfo" style="float: right;">收起全部</a></div>
+                </div>
+                <div class="item">
+                	<label>数量</label>
+                    <div class="con">
+                    	<a class="adbtn minus" href="javascript:;">-</a>
+                        <input id="count" name="count" type="text" value="1" onkeyup="formatMoneyWith6digts(this);"/>
+                        <a class="adbtn add" href="javascript:;">+</a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="con"><a class="btn" href="javascript:;" onclick="saveGoods();">兑换</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="productinfo">
+        	<div class="productleft">
+            	<div class="title">详情</div>
+                <div class="box" style="font-size: 13px;">
+                    <php>if(!$data['details']){</php>
+                      <p>暂时没有该商品的详情介绍</p>
+                    <php>}else{</php>
+                      {$data.details}
+                    <php>}</php>
+                </div>
+            </div>
+            <div class="productright">
+            	<div class="title">兑换记录</div>
+                <div class="box">
+                	<ul class="recordlist">
+                        <php>if(!$goodsOrder){</php>
+                            <li><span style="font-size: 14px;">暂时还没有人兑换过该商品</span></li>
+                        <php>}else{</php>
+                            <foreach name="goodsOrder" item="list">
+                            <li>
+                                <img src="{:getUserFace($list['uid'],'m')}" class="lazyloading" alt="{$list.uname}" />
+                                <h3><span>{$list.ctime}</span><a href="{:U('classroom/UserShow/index',array('uid'=>$list['uid']))}">{$list.uname}</a></h3>
+                                <p>兑换了{$list.count}个<a href="">{$list['goods_info'].title}</a></p>
+                            </li>
+                            </foreach>
+                        <php>}</php>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__THEME__/js/qrcode.js"></script>
+<script>
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : 100,
+        height : 100
+    });
+
+    function makeCode () {
+        var elText = '{$url}';
+        qrcode.makeCode(elText);
+    }
+    makeCode();
+</script>
+<script type="text/javascript">
+$(function(){
+    $(".showInfo").click(function(){
+        $(".hideInfo").parent().show();             
+        $(this).parent().hide();
+    });
+    $(".hideInfo").click(function(){         
+        $(this).parent().hide();          
+        $(".showInfo").parent().show();
+    });
+	var total_count = '{$data.stock}';
+    if(total_count < 1){
+        total_count = 1;
+    }
+    $(".add").click(function(){
+        var t =$(this).prev("input");
+		var	num = parseInt(t.val());
+        if( num >= total_count){
+            t.val(total_count);
+        }else{
+            t.val(num+1);
+        }
+    });
+	
+    $(".minus").click(function(){
+        var inputObj = $(this).next("input");
+        var t=parseInt(inputObj.val());
+        if(t <= 1){
+            inputObj.val(1);
+        }else{
+		  inputObj.val(t-1);
+        }
+    });
+    //地址选择操作
+    $("#charge_address").click(function(){
+        ui.box.load(U('mall/Goods/getAddress'),'选择收货地址');
+    });
+});
+    function formatMoneyWith6digts( obj ){
+        obj.value = obj.value.replace(/\D/g,'')
+        var stock = parseInt('{$data.stock}');
+        if(stock < 1){
+            stock = 1;
+        }
+        if(obj.value < 1){
+            obj.value = 1;
+        }
+        if(obj.value > stock){
+            obj.value = stock;
+        }
+    }
+
+    var uid = '{$uid}';
+    function saveGoods(){
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+        var price = $("#price").val();
+        var count = $("#count").val();
+        var fare = "{$data.fare}";
+        var total = price * count;
+        var goods_id = "{$Think.get.id}";
+        var address_id = $(".address_id").val();
+        if(!address_id){
+            ui.error("请选择收货地址");
+            return false;
+        }
+
+     if(confirm("是否确认花费"+total+"积分兑换"+count+"个{$data.title}？")){
+            $.ajax({
+                type: "POST",
+                url:"{:U('mall/Goods/doSaveGoods')}",
+                data:{
+                    count:count,
+                    total:total,
+                    fare:fare,
+                    goods_id:goods_id,
+                    address_id:address_id,
+                },
+                dataType:"json",
+                success:function(res){
+                var res = getResponseData(res);
+                if(res.status == 1){
+                    ui.success(res.message);
+                    setTimeout(function(){
+                        location.reload();
+                    },'1500');
+                }else{
+                    ui.error(res.message);
+                    return false;
+                }
+                }
+            });
+        }
+    }
+    
+</script>
+
+<include file="__THEME__/public_footer" />

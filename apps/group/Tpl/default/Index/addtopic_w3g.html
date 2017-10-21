@@ -1,0 +1,132 @@
+<include file="__THEME__/public_header_twolevel"/>
+<div class="content">
+
+
+    <form>
+        <div class="header2">
+            <a href="{:U('group/Index/view',array('gid'=>$_GET['gid']))}" class="icon-back"></a>
+            <div>发布新帖</div>
+
+            <a href="javascript:;" class="save"  type="submit"  onclick="subtopic(this)">保存</a>
+</div>
+
+
+        <div class="jgzlbox">
+
+            <dl>
+                <dt>标题：</dt>
+                <dd><input type="text"  name="topcititle"    id ="topcititle" ></dd>
+            </dl>
+
+            <!--<dl>-->
+
+                <!--<dt>分类</dt>-->
+
+                <!--<style>-->
+                    <!--dl select {-->
+                        <!--min-width: 70px;-->
+                        <!--border-radius: 4px;-->
+                        <!--border: solid 1px #b6c7d6;-->
+                        <!--line-height: 34px;-->
+                    <!--}-->
+                <!--</style>-->
+
+                <!--<select name="group_id" id="group_id"   onchange = "selectvideo()">-->
+
+                    <!--<foreach name="group" item="vo" key="k">-->
+                        <!--<option <eq name="group_id" >selected="selected"</eq>value="{$vo.gid}">{$vo.groupname}</option>-->
+                    <!--</foreach>-->
+
+                    <!--<option selected value="">　　请选择</option>-->
+
+                <!--</select>-->
+
+            <!--</dl>-->
+
+            <input type="hidden"  name="group_id"    id ="group_id"  value="{$gid}">
+
+            <dl>
+                <dt>内容：</dt>
+                <textarea id="intro" class="user-textarea"  id ="intro"   name="intro"></textarea>
+            </dl>
+
+            <!--<dl>-->
+                <!--<dt>请输入验证码：</dt>-->
+                <!--<input id="verify" name ="verify" placeholder="请输入验证码">-->
+            <!--</dl>-->
+
+            <!--<dl>-->
+                <!--<dt>验证码：</dt>-->
+                <!--<img class="verifyimg" src="{:U('group/Index/verify')}" title ="点击刷新验证" style="height: 40px;  margin-top: 10px ; height: 32px;" />-->
+            <!--</dl>-->
+
+        </div>
+    </form>
+</div>
+
+<script>
+    $('.header').hide();
+
+    $('.verifyimg').click(function (){
+        var url = "{:U('wenda/Index/verify')}";
+        $('.verifyimg').removeAttr('src');
+        $('.verifyimg').attr('src',url);
+    });
+
+    function  subtopic(o)
+    {
+
+
+        var intro = $('#intro').val();
+        var topcititle = $('#topcititle').val();
+//        var  group_id =  $('#group_id').find('option:selected').attr('value');
+        var  group_id =  $('#group_id').val();
+        var verify = $('#verify').val();
+
+        if($("#topcititle").val() == '') {
+            alert("标题名称不能为空","failure");
+            return;
+        }
+
+
+
+//        if(!group_id)
+//        {
+//            alert('请选择小组分类');
+//            return;
+//        }
+
+
+        if($("#intro").val() == '') {
+            alert("内容不能为空","failure");
+            return;
+        }
+
+
+
+
+
+        $.ajax({
+            type: "POST",
+            url:"{:U('group/Index/doaddtopic')}",
+            data:"topcititle="+topcititle+"&intro="+intro+"&group_id="+group_id+"&verify="+verify,
+            dataType:"text",
+            success:function(data){
+                if(isNaN(data)){
+                    alert(data,"failure");
+                }else{
+                    alert("恭喜，发布成功！","success");
+                    var iddata = data;
+                    location.href = U('group/Index/detail')+'&id='+iddata;
+                }
+
+            }
+        });
+
+    }
+
+
+
+</script>
+
+<include file="__THEME__/public_footer_twolevel"/>

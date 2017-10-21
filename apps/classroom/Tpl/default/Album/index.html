@@ -1,0 +1,403 @@
+<include file="__THEME__/public_header" />
+<div class="content">
+    <div class="wrap">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/">首页</a><span>&gt;</span>
+                    <a href="{:U('classroom/Album/index')}">套餐</a>
+                </li>
+            </ul>
+        </div>
+        <div class="search-box">
+            <dl class="card-body taoke J_search">
+                <dt class="J_select" data-type="cid">
+                    <span>按分类：</span>
+                    <ul class="select-list">
+                        <li class="<if condition="$_GET['cid'] eq ''">selected</if>">
+                            <a data-id="0" data-type="cid" href="{:U('classroom/Album/index')}">全部</a>
+                        </li>
+                        <volist name="category" id="cvo">
+                          <li class="<if condition="$_GET['cid'] eq $cvo['zy_package_category_id']">selected</if>">
+                              <a data-id="{$cvo['zy_package_category_id']}" data-type="cid" href="javascript:;">{:msubstr($cvo['title'],0,10)}</a>
+                          </li>
+                        </volist>
+                    </ul>
+                </dt>
+                <dd class="clearfix J_select" data-type="tid">
+                    <span>按讲师：</span>
+                    <ul class="select-list J_teach_more">
+                        <li class="<if condition="$_GET['tid'] eq ''">selected</if>">
+                            <a data-id="0" data-type="tid" href="javascript:;">全部</a>
+                        </li>
+                        <volist name="teachers" id="tVo">
+                            <li class="<if condition="$tVo['id'] eq $_GET['tid']">selected</if>" >
+                                <a data-id="{$tVo['id']}" data-type="tid" href="javascript:;">{$tVo['name']}</a>
+                            </li>
+                        </volist>
+                        <a class="select_hide" href="javascript:;">更多↓</a>
+                    </ul>
+                </dd>
+                <php>if(!empty($user_vip)){</php>
+                <!--<dd class="clearfix J_select" data-type="vid">-->
+                    <!--<span>按会员:</span>-->
+                    <!--<ul class="select-list" style="height:auto">-->
+                        <!--<li class="<if condition="$_GET['vid'] eq ''">selected</if>">-->
+                            <!--<a data-id="0" data-type="vid" href="javascript:;">不限</a>-->
+                        <!--</li>-->
+                        <!--<volist name="user_vip" id="vo">-->
+                            <!--<li class="<if condition="$_GET['vid'] eq $vo['id']">selected</if>">-->
+                                <!--<a data-id="{$vo['id']}" data-type="vid" href="javascript:;">{$vo['title']}</a>-->
+                            <!--</li>-->
+                        <!--</volist>-->
+                    <!--<a class="select_hide" href="javascript:;" style="display:none;">更多↓</a>-->
+                    <!--</ul>-->
+                <!--</dd>-->
+                <php>}</php>
+                <php>if(!empty($years)){</php>
+                <dd class="clearfix J_select" data-type="ctime">
+                    <span>按年份：</span>
+                    <ul class="select-list" style="height:auto">
+                    <volist name="years" id="yvo">
+                        <li><a data-id="{$yvo}" href="javascript:;">{$yvo}</a></li>
+                    </volist>
+                    <a class="select_hide" href="javascript:;" style="display:none;">更多↓</a>
+                    </ul>
+                </dd>
+                <php>}</php>
+            </dl>
+        </div>
+        <div class="content-card">
+            <dl class="card-body">
+                <dt>
+                    <div class="nav-item <if condition="$_GET['order'] eq '' ">active</if>">
+                        <a data-id="" data-type="order" href="javascript:;" id="order">综合排序</a>
+                    </div>
+                    <div class="nav-item <if condition="$_GET['order'] eq 'new' ">active</if>">
+                        <a data-id="new" data-type="order" href="javascript:;">最新</a>
+                    </div>
+                    <div class="nav-item price_btn <if condition="($_GET['sort'] eq 'price_up') or ($_GET['sort'] eq 'price_down')">active</if>">
+                        <if condition="$_GET['sort'] neq ''">
+                            <if condition="$_GET['sort'] eq 'price_up'">
+                                <a href="javascript:;" data-type="sort" data-id="price_down" <if condition="($_GET['sort'] eq 'price_up') or ($_GET['sort'] eq 'price_down')">active</if>">从低到高</a>
+                                <elseif condition="$_GET['sort'] eq 'price_down'"/>
+                                <a href="javascript:;" data-type="sort" data-id="price_up" <if condition="($_GET['sort'] eq 'price_up') or ($_GET['sort'] eq 'price_down')">active</if>">从高到低</a>
+                                <else/>
+                                <a href="javascript:;">价格排序</a>
+                            </if>
+                            <else/>
+                            <a href="javascript:;">价格排序</a>
+                        </if>
+
+                        <div class="price_sort_box">
+                            <ul class="price_ara_ul">
+                                <if condition="$_GET['sort'] eq 'price_up'">
+                                    <li data-type="sort" data-id="price_down">从高到低</li>
+                                    <elseif condition="$_GET['sort'] eq 'price_down'"/>
+                                    <li data-type="sort" data-id="price_up">从低到高</li>
+                                    <else/>
+                                    <li data-type="sort" data-id="price_up">从低到高</li>
+                                    <li data-type="sort" data-id="price_down">从高到低</li>
+                                </if>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="nav-item price_ara">
+                        <a href="javascript:;">价格区间<i class="icon-02"></i></a>
+                        <div class="price_ara_box">
+                            <ul class="price_ara_ul">
+                                <li data-type="lower" class="<if condition="$lower eq '1'">selected</if>" data-id="1">不限</li>
+                                <li data-type="lower" class="<if condition="$lower eq '1,99'">selected</if>" data-id="1,99">￥1-99</li>
+                                <li data-type="lower" class="<if condition="$lower eq '100,499'">selected</if>" data-id="100,499">￥100-499</li>
+                                <li data-type="lower" class="<if condition="$lower eq '500,1000'">selected</if>" data-id="500,1000">￥500-1000</li>
+                                <li data-type="lower" class="<if condition="$lower eq '1000'">selected</if>" data-id="1000">￥1000以上</li>
+                            </ul>
+                            <div class="price_ara_sw">
+                                <input placeholder="￥" type="text" name="lower">
+                                <span>-</span>
+                                <input placeholder="￥" type="text" name="toper">
+                                <a class="sub" data-type="lower" href="javascript:;">确定</a>
+                            </div>
+                        </div>
+                    </div>
+                </dt>
+            </dl>
+            
+        </div>
+        <div class="taoke_box">
+            <ul class="taokelist J_list">
+                <php>if($album_list['data']){</php>
+                <volist name="album_list.data" id="vo">
+                    <li>
+                        <div class="info">
+                            <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
+                                <input type="hidden" value="{$vo['id']}" name="vid" />
+                                <input type="hidden" value="zy_album" name="check_type" />
+                                <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                                <input type="hidden" id="money" value="{$vo['price']}" name="money" />
+                            </form>
+                            <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],530,260)}" alt=""></a>
+                            <i class="taoke_bg"></i>
+                            <div class="txt">
+                                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[套餐]  {:msubstr($vo['album_title'],0,20)}</a></h3>
+                                <p>{:msubstr($vo['album_intro'],0,50)}</p>
+                                <div class="price">
+                                    <span class="c1">套餐价格：</span>
+                                    <span class="c2"><em>¥</em> {$vo['price']}</span>
+                                    <span class="c3">原价：¥ {$vo['oPrice']}</span>
+                                </div>
+                                <div class="intro">
+                                    <div class="fl">讲师：
+                                        <volist name="vo.teachers" id="tvo">
+                                            <span>{:msubstr(t($tvo['name']),0,10,'utf-8',true)}</span>
+                                        </volist>
+                                    </div>
+                                </div>
+                                <div class="intro">
+                                    <div class="fl">收藏数：<span>{$vo['collect_count']}次</span></div>
+                                    <div class="fl">评论数：<span>{$vo['comment_count']}次</span></div>
+                                    <div class="fl">购买数：<span>{$vo['order_count']}次</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <ul class="leftlist">
+                                <volist name="vo.video" id="val">
+                                    <li <if condition="$key eq (count($vo['video']) - 1)"> style="background: none;"</if> >
+                                    <if condition="$val['type'] eq 2">
+                                        <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                            <else />
+                                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                    </if>
+                                    <img src="{:cutImg($val['cover'],94,70)}" alt="{$val['video_title']}">
+                                    </a>
+                                    <p>{:msubstr($val['video_title'],0,10)}</p>
+                                    </li>
+                                </volist>
+                            </ul>
+                            <div class="rightbox">
+                                <div class="rightbox-item">共有 <php>echo count($vo['video']);</php> 门课程组合</div>
+                                <div class="rightbox-item">套餐价格：<span class="price">¥ <em>{$vo['price']}</em></span></div>
+                                <div class="rightbox-item">原价：<span class="del">¥{$vo['oPrice']}</span></div>
+                                <div class="rightbox-item">立即节省：  ¥{$vo['disPrice']}</div>
+                                <div class="rightbox-item">
+                                    <php>if($vo['price'] < 0 ){</php>
+                                    <a href="javascript:;">免费套餐</a>
+                                    <php>}else{</php>
+                                    <eq name="vo.isBuy" value="0">
+                                        <a href="javascript:;" class="charge_video">立即购买</a>
+                                        <else />
+                                        <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">已购买</a>
+                                    </eq>
+                                    <php>}</php>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bot">
+                            <ul>
+                                <li>课程数：<php>echo count($vo['video']);</php>个</li>
+                                <li>套餐价格： <span>¥{$vo['price']}</span></li>
+                                <li>
+                                    <gt name="vo.isCollect" value="0">
+                                        <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="0">取消收藏</a>
+                                        <else />
+                                        <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="1">收藏套餐</a>
+                                    </gt>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </volist>
+                <php>}else{</php>
+                <span>没有相关套餐。。</span>
+                <php>}</php>
+            </ul>
+            <div class="page">
+                <div class="pagebox">
+                    {$album_list.html}
+                </div>
+            </div>
+        </div>
+        
+        <div class="clear"></div>
+        <php>if($like){</php>
+        <div class="guess_like">
+            <h3 class="guess_like_tit">猜你喜欢</h3>
+            <ul class="classlist02 clearfix">
+                <volist name="like" id="val" offset="3" length="5">
+                    <li>
+                        <div class="pic">
+                            <php>if($val['type'] == 2){</php>
+                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
+                                <div class="txt">
+                                    <div class="fl orange class">直播中</div>
+                                    <span class="fl">进度：{$val['live']['now']}/{$val['live']['count']}节</span>
+                                </div>
+                            <php>}else{</php>
+                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
+                            <php>}</php>
+                        </div>
+                        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],10)}</a></h3>
+                        <div class="info">
+                            <div class="price"><php>if($val['t_price'] == 0) {</php><span style="color: #56b02a;">免费</span><php>} else {</php>￥{$val['t_price']}<php>}</php>
+                                <if condition="$val['free_status']"><span class="sx">{$val['free_status']}</span></if>
+                            </div>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+        <php>}</php>
+    </div>
+</div>
+<script type="text/javascript">
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+    //购买操作
+    $('a.charge_video').on('click',function () {
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+        var form  = $(this).parents('.group').siblings('.info').find('.pay_form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+
+        if(!vid || !vtype){
+            ui.error('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+        if(money <= 0){
+            ui.error('该课程不需要您购买');
+            return false;
+        }
+        if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                ui.error('购买金额必须为整数');
+            }else{
+                ui.error('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }
+
+        $.post(U("classroom/PayVideo/checkPay"),form.serialize(),function(data){
+            if(data.status == 1){
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+//                window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+            } else if(data.status == 9){
+                ui.error(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+    var uid = '{$uid}';
+
+    //隐藏显示 加载更多
+    $(function(){
+        $('.J_search dd').each(function(index, element) {
+            $(element).attr('data-height',$(element).height());
+            if($(element).find('ul').height()>46){
+                $(element).find('.select_hide').show();
+                $(element).find('ul').css({'height':'46px'});
+                $(element).find('.select_hide').click(function(e) {
+                    if($(element).find('ul').height()>46){
+                        $(element).find('ul').animate({'height':'46px'});
+                        $(element).find('.select_hide').html('更多↓');
+                    }else{
+                        $(element).find('ul').animate({'height':($(element).attr('data-height'))+'px'});
+                        $(element).find('.select_hide').html('收起↑');
+                    }
+                });
+            }
+        });
+    });
+
+    //分页
+    $(".pagebox a").click(function(e){
+        e = e || window.event;
+        if(e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            e.returnValue = false;
+            e.cancelBubble = true;
+        }
+        $(this).removeAttr('href');
+        var type = 'p',
+                value = $(this).attr('p'),
+                replace = {p:value},
+                baseUrl = "{:U('classroom/Album/index')}";
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+
+    //同步请求
+    $(".select-list li a,.card-body .nav-item a,.price_ara_ul li").click(function(){
+        var _this = this;
+        var type = $(_this).data("type"),
+                value = $(_this).data("id"),
+                baseUrl = "{:U('classroom/Album/index')}",
+                replace = {p:1};
+        if(type == 'lower'){
+            if(!value){
+                var up = $("input[name='lower']").val();
+                var down = $("input[name='toper']").val();
+                if(up.match(/^\d+$/) && down.match(/^\d+$/)){
+                    value = up+','+down;
+                }else{
+                    ui.error("请输入数字");
+                    return false;
+                }
+            }
+        }
+        window.location.href = getRequestUrl(type,value,baseUrl,replace);
+    });
+
+    //收藏套餐
+    function collectAlbum(cate,id){
+        if(uid<=0){
+            reg_login();
+            return;
+        }
+        var type = $(cate).attr('data-type');
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Public/collect')}",
+            data:{type:type,sctype:1,source_id:id,is_video:3},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    ui.error(data.info);
+                } else {
+                    ui.success(data.info);
+                    //$(cate).removeClass().addClass("wenda-gz-Toggle");
+                    if(type == 1){ //收藏
+                        $(cate).html('取消收藏');
+                        $(cate).attr('data-type',0);
+                    }else{
+                        $(cate).html('收藏套餐');
+                        $(cate).attr('data-type',1);
+                    }
+                }
+            },
+        });
+    }
+
+</script>
+<include file="__THEME__/public_footer" />

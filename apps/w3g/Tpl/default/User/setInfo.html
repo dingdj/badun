@@ -1,0 +1,89 @@
+<include file="../Public/_header" />
+<include file="_nav"/>
+<!--container-->
+<div class="container"> 
+    <form action="" method="post" onsubmit="return false;">
+    <div class="teacher_type">
+        <div class="item_box">
+            <dl class="management_dl">
+                <dt><span>*</span>登录账号</dt>
+                <dd>{$user.login}</dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>昵称</dt>
+                <dd><input class="management_input" name="uname" type="text" placeholder="" value="{:strpos($user['uname'],'@')?'':$user['uname']}"></dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>手机号码</dt>
+                <dd>
+                    <php>;$phone = $user['phone']?substr($user['phone'],0,3).'****'.substr( $user['phone'] , 7):'未设置'</php>
+                    <div class="user-tex"><span>{$phone}</span></div>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>常用邮箱</dt>
+                <dd>
+                    <div id="modify_pe_show" class="user-tex"><span><if condition="$user['email']">{$user.email}<else/>未设置</if></div>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt><span>*</span>性别</dt>
+                <dd>
+                    <label><input type="radio" value="男" name="sex" {$user['sex']==1?'checked':''}>男</label>
+                    <label><input type="radio" value="女" name="sex" {$user['sex']==2?'checked':''}>女</label>
+                </dd>
+            </dl>
+            <dl class="management_dl">
+              <dt><span>*</span>地区</dt>
+                <dd>
+                    {:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}
+                </dd>
+            </dl>
+            <dl class="management_dl">
+              <dt>职业</dt>
+                <dd>
+                    <input class="management_input" name="profession" type="text" placeholder="" value="{$user['profession']}">
+                </dd>
+            </dl>
+            <dl class="management_dl">
+                <dt>个人简介</dt>
+                <dd>
+                    <textarea name="intro">{$user.intro}</textarea>
+                </dd>
+            </dl>
+          <a class="management_btn" href="javascript:;" onclick="setUserInfo(this)">保存</a>
+        </div>
+    </div>
+    </form>
+</div>
+<script src="__THEME__/js/gjwjs/jquery.mzcategory.js" type="text/javascript"></script>
+<script type="text/javascript">
+function setUserInfo(a){
+    var form = $(a).parents('form');
+    var province = form.find('select#province option:selected').val();
+    var city     = form.find('select#city option:selected').val();
+    var uname    = form.find('input[name=uname]');
+    if(!$.trim(uname.val())){
+        alert('昵称必须要填写');
+        uname.focus(); return false;
+    }
+    if(!/^[\u4E00-\u9FA5\w]{1,}$/.test(uname.val())){
+        alert('昵称仅支持中英文、数字、下划线');
+        uname.focus(); return false;
+    }
+    if(province<=0||city<=0){
+        alert('请先选择地区');
+        return false;
+    }
+    $.post(U('w3g/User/saveUser'), form.serialize(), function(data){
+        if(data.status){
+            alert('基本信息更改成功');
+            window.location.href=window.location.href;
+        }else{
+            alert(data.info);
+        }
+    }, 'json');
+}
+</script>
+<!--footer-->
+<include file="../Public/_footer" />

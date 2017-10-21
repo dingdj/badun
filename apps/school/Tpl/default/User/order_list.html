@@ -1,0 +1,201 @@
+<if condition="$data neq ''">
+
+    <table class="adrtable line" width="100%" border="0">
+        <colgroup width="17%;"></colgroup>
+        <colgroup width="20%;"></colgroup>
+        <colgroup width="13%;"></colgroup>
+        <colgroup width="12%;"></colgroup>
+        <colgroup width="12%;"></colgroup>
+        <colgroup width="12%;"></colgroup>
+        <colgroup width="14%;"></colgroup>
+
+        <foreach name="data" item="l" key="k">
+            <tbody>
+            <tr>
+                <th colspan="7"><label>
+                    <!--<input  type="checkbox">-->
+                    <b>{$l.ctime|date="Y-m-d",###}</b><span>订单号：{$l.id}</span><span>{$l.uname}</span></label></th>
+            </tr>
+            <tr>
+
+               <php>if($playtype == '2') {</php><td> <a href="{:U('live/index/view',array('id'=>$l['live_id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a></td><php>}</php>
+               <php>if($playtype == '1') {</php><td> <a href="{:U('classroom/Video/view',array('id'=>$l['video_id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a></td><php>}</php>
+               <php>if($playtype == '3') {</php><td> <a href="{:U('classroom/Album/view',array('id'=>$l['album_id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a></td><php>}</php>
+                   <php>if($playtype == '4') {</php><td> <a href="{:U('classroom/Teacher/view',array('id'=>$l['tid']))}"><img src="{:getCover($l['head_id'],266,138)}" alt=""></a></td><php>}</php>
+               <php>if($playtype == '5') {</php><td>　　　　</td><php>}</php>
+                <php>if($l['video_name']) {</php> <td><a>{$l.video_name}</a></td><php>}</php>
+                <!--<php>if($l['video_title']) {</php> <td><a>{$l.video_title}</a></td><php>}  else {</php> <td> </td><php>}</php>-->
+                <php>if($l['connums']) {</php> <td>x{$l.connums}</td><php>}  else {</php> <td>x1</td><php>}</php>
+
+
+
+                <!--<php>if($check_type == 'zy_video'  ||  $check_type == 'zy_live') {</php> <td>¥{$l['mzprice']['price']}</td>  <php>}  else {</php><td>¥{$l.price}</td><php>}</php>-->
+                <td>¥{$l.price}</td>
+                <td style="padding: 10px 17px;">
+                    <php>if($l['pay_status'] == 1) {</php>未支付<php>}</php>
+                    <php>if($l['pay_status'] == 3) {</php>已支付<php>}</php>
+                </td>
+
+            </tr>
+            </tbody>
+        </foreach>
+
+    </table>
+    <else/>
+    <li>您还没有订单。。</li>
+</if>
+
+<script type="text/javascript">
+    var uid = '{$uid}';
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //购买操作
+    $('#charge_video,#charge_video2').click(function () {
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+        var form = $(this).parents('form');
+        var vid = form.find('input:hidden[name="vid"]').val();
+        var vtype = form.find('input:hidden[name="check_type"]').val();
+        var cid = $(this).data("id");
+
+        if(!vid || !vtype){
+            ui.error('参数错误');
+            return false;
+        }
+
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var money = form.find('input:hidden[name="money"]').val();
+
+        if(money <= 0){
+            ui.error('此课程不需要您购买');
+//            $('.message_add_order_box').show();
+//            $('.mask').show();
+            return false;
+        }
+
+        /*if(rechange_base>0 && money%rechange_base != 0){
+            if(rechange_base == 1){
+                ui.error('购买金额必须为整数');
+            }else{
+                ui.error('购买金额必须为'+rechange_base+'的倍数');
+            }
+            return false;
+        }*/
+
+        $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
+            var mount_url = "{$_GET['mid']}";
+            if(data.status == 1){
+                if(mount_url){
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2)+"%2C"+cid+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+mount_url+"%2C"+randomString(2);
+                }else{
+                    window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C%2C"+randomString(2)+"%2C"+cid+".html";
+//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+                }
+            } else if(data.status == 9){
+                ui.error(data.info);
+                window.location.reload();
+            } else {
+                ui.error(data.info);
+                return false;
+            }
+        },'json');
+    });
+
+
+    //分享
+    function checkResigInfo(id,type) {
+        if(uid<=0){
+            reg_login();
+            return false;
+        }
+
+        if(!id){
+            ui.error("参数错误");
+            return false;
+        }
+        $.post("{:U('classroom/Home/getrejectinfo')}", {id:id,type:type}, function (e) {
+
+            if(e.status == 1){
+                $('.message_rejectinfo_box').show();
+                e.allinfo ="驳回原因："+e.info;
+                $('.tips_info').html(e.allinfo);
+                $('.mask').show();
+                $('.quer_btn').click(function () {
+                    $('.message_rejectinfo_box,.mask').hide();
+                });
+
+                $('.message_rejectinfo_box').click(function () {
+                    $('.message_rejectinfo_box,.mask').hide();
+
+                });
+
+            }else{
+                ui.error(e.info);
+            }
+        }, 'json');
+    }
+
+
+
+
+
+    function operatOrder(obj,order_id,type){
+        ordertype = $('#ordertype').val();
+        if(!order_id || !type){
+            ui.error("参数错误");
+        }
+        if(type == 'cancel' ){
+            $info = '取消付款';
+        }
+        if(type == 'del' ){
+            $info = '删除订单';
+        }
+        if(type == 'refund' ){
+            $info = '申请退款';
+        }
+        if(confirm("确定要"+$info+"该订单吗？")){
+            $.post(U('classroom/Home/operatOrder'),{order_id:order_id,type:type,ordertype:ordertype},function(msg){
+                if(msg.status==0){
+                    ui.error(msg.info);
+                }else{
+                    ui.success(msg.info);
+                    window.location.href = window.location.href;
+                }
+            },'json');
+        }
+    }
+
+
+
+    $(document).on('click','[name="slt-list"] .btn-default',function(){
+        $(this).parent().addClass('focus');
+        $(this).parent().find('.dropdown-menu').css('display','block');
+        return false;
+    });
+
+    $(document).on('click','[name="slt-list"] .dropdown-menu li',function(){
+        var val = $(this).attr('data-value');
+        $(this).addClass('active').siblings().removeClass('active');
+        $(this).parent().siblings('.btn-default').find('.txt').text(val);
+        $(this).parent().css('display','none');
+        $(this).parent().parent().removeClass('focus');
+        return false;
+    });
+
+
+</script>
+
+
+
