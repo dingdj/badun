@@ -1138,6 +1138,7 @@ class AdminLiveAction extends AdministratorAction
             if(!is_numeric($_POST['studentClientToken'])){$this->error('学生口令必须为数字');}
             if(strlen($_POST['studentClientToken'])< 6 || strlen($_POST['studentClientToken']) >15 ){$this->error('学生口令只能为6-15位数字');}
             if(empty($_POST['description'])){$this->error('直播课时信息不能为空');}
+            if(empty($_POST['url'])){$this->error('直播地址不能为空');}
             $roomid = M('zy_live_cc')->where('id='.intval($_GET['id']) )->getField('roomid');
 
 
@@ -1194,9 +1195,11 @@ class AdminLiveAction extends AdministratorAction
                 $data['teacherJoinUrl'] = $live_url_info_res['clientLoginUrl'];
                 $data['assistantJoinUrl'] = explode('?',$live_url_info_res['assistantLoginUrl'])[0].'/login?'.explode('?',$live_url_info_res['assistantLoginUrl'])[1];
                 $data['studentJoinUrl'] = $live_url_info_res['viewUrl'];
-
+                $data['studentJoinUrl'] = $live_url_info_res['viewUrl'];
+                $data['url']    = $_POST['url'];
+                //dd($data);
                 $result = M('zy_live_cc')->save($data);
-
+                //$sql = M('zy_live_cc')->getLastSql();dd($sql);
                 if(!$result){$this->error('编辑失败!');}
                 $this->assign( 'jumpUrl', U('live/AdminLive/ccLiveRoom',array('id'=>intval($_GET['live_id']))) );
                 $this->success('编辑成功');
@@ -1221,7 +1224,7 @@ class AdminLiveAction extends AdministratorAction
 
 
             $this->pageKeyList   = array('subject','speaker_id','startDate','invalidDate','maxAttendees','clientJoin',
-                'teacherToken','assistantToken','studentClientToken' ,'description');
+                'teacherToken','assistantToken','studentClientToken' ,'description','url');
             $this->notEmpty = array('subject','speaker_id','startDate','invalidDate','maxAttendees','uiMode','clientJoin',
                 'webJoin','teacherToken','assistantToken','studentClientToken' ,'description');
 
@@ -1434,7 +1437,6 @@ class AdminLiveAction extends AdministratorAction
             }
             // 数据的格式化
             $live_room_data = M('zy_live_thirdparty')->where('id='.intval($_GET['id']) )->find();
-
             $this->pageTitle['editWhLiveRoom'] = $liveInfo['title'].' 直播课堂—修改直播课时:'.$live_room_data['subject'];
 
             $live_room_data['startDate'] = date('Y-m-d H:i:s',$live_room_data["startDate"]);

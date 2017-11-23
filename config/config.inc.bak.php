@@ -11,5 +11,5 @@
   'DB_CHARSET' => 'utf8',
   'SECURE_CODE' => '2506957b1ea89b71ea',
   'COOKIE_PREFIX' => 'el_',
-  'COOKIE_DOMAIN' => $_SERVER['HTTP_HOST]
+  'COOKIE_DOMAIN' => $_SERVER['HTTP_HOST']
 );

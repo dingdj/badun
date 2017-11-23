@@ -1228,7 +1228,7 @@ function fetch($templateFile = '', $tvar = array(), $charset = 'utf-8', $content
 
     //模版缓存文件
     $templateCacheFile = C('TMPL_CACHE_PATH') . '/' . APP_NAME . '_' . tsmd5($templateFile) . '.php';
-
+    //dd($templateCacheFile);
     //载入模版缓存
     if (!$ts['_debug'] && file_exists($templateCacheFile)) {
         //if(1==2){ //TODO  开发
@@ -4222,4 +4222,9 @@ function showCatetreeForHtml($data,$config,$id = 'id',$selected_id = 0){
     }
     return $html;
 
+}
+
+function dd() {
+    array_map(function($x) { echo "<pre>";var_dump($x); }, func_get_args());
+    die;
 }

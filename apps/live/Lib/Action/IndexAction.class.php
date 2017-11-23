@@ -1439,7 +1439,7 @@ class IndexAction extends CommonAction {
             $res = M( 'zy_live_cc' )->where ( $map)->order('startDate ASC')->find();
             $unmae = getUserName($this->mid);
             if( !$res ) {
-                $this->error ( '直播未开始或已经结束' );
+                //$this->error ( '直播未开始或已经结束' );
             }
             if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
                 if($info['price'] > 0 && $is_buy <= 0){
@@ -1461,7 +1461,7 @@ class IndexAction extends CommonAction {
             $res = M('zy_live_thirdparty')->where($map)->order('startDate ASC')->find();
             $user_info = M('user')->where("uid={$this->mid}")->field('uname,email')->find();
             if (!$res) {
-                $this->error('直播未开始或已经结束');
+                //$this->error('直播未开始或已经结束');
             }
             if (($this->mid != $res['speaker_id']) && !is_admin($this->mid)) {
                 if ($info['price'] > 0 && $is_buy <= 0) {
@@ -1477,6 +1477,7 @@ class IndexAction extends CommonAction {
             $user_info['email'] ?: $user_info['email'] = "eduline@eduline.com";
             $url = "{$res['studentJoinUrl']}?email={$user_info['email']}&name={$user_info['uname']}";
         }
+        $url = M('zy_live_cc')->where(array('live_id'=>$id))->getField('url');
         $this->assign('url' , $url);
         $this->display();
     }

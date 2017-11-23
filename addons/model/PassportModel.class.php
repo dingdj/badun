@@ -129,7 +129,7 @@ class PassportModel {
 	 * @return array|boolean 成功获取用户数据时返回用户信息数组，否则返回false
 	 */
 	public function getLocalUser($login, $password) {
-		
+
 		$login = addslashes($login);
 		$password = addslashes($password);
 
