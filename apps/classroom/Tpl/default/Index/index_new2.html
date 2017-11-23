@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+
+    <link rel="stylesheet" type="text/css" href="__THEMENEW__/css/index_new2.css" />
+    <meta name="viewport" charset="UTF-8" content="user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="__THEMENEW__/css/lrtk.css">
+    <link rel="stylesheet" type="text/css" href="__THEMENEW__/css/base.css">
+	<script src="__THEMENEW__/js/jquery1.42.min.js" type="text/javascript"></script>
+	<script src="__THEMENEW__/js/jquery.SuperSlide.2.1.1.js" type="text/javascript"></script>
+	<script src="__THEME__/js/core.js" type="text/javascript"></script>
+	<script src="__THEME__/js/ui.core.js" type="text/javascript"></script>
+	<script src="__THEME__/js/ui.draggable.js" type="text/javascript"></script>
+	<script>
+        //全局变量
+        var MID		  = '<php> echo $mid;</php>';
+        var UID		  = '<php> echo $uid;</php>';
+        var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
+        //退出登录
+        var LOGINOUT_ADDRESS="{:U('public/Passport/logout')}";
+
+        function closeMsg(obj){
+            $(".news-msg").remove();
+        }
+
+        /**
+         * 退出成功
+         */
+        function logout(){
+            $.ajax({
+                type: "POST",
+                async:false,
+                url:LOGINOUT_ADDRESS,
+                dataType:"json",
+                success:function(data){
+                    ui.success("退出成功！");
+                    location.reload();
+                }
+            });
+        }
+
+        $(function(){
+            $('.backtop').click(function(){
+                $('body,html').animate({scrollTop:0},300);
+                return false;
+            });
+            $('.full-course').hover(function(){
+                $(this).addClass('hover');
+            },function(){
+                $(this).removeClass('hover');
+            });
+
+        });
+        
+        $(window).scroll(function(){
+            if($(window).scrollTop()>300){
+                $('.backtop').fadeIn(300);
+            }else{
+                $('.backtop').fadeOut(200);
+            }
+        });
+
+        if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+            $(window).load(function () {
+                $('.modular,.logos,.window-box').show();
+                $('.users').attr('style','display:block');
+            });
+        }
+    </script>
+</head>
+<body>
+	<if condition="$_SESSION['mid'] eq ''">
+	    <include file="__THEME__/reg_login" />
+	</if>
+		<div class="top">
+			<div class="top1">
+				<div class="top1img">
+				 	<a href="/" title="{$site['site_keyword']}在线教育系统" style="display: block;float: left;"><img src="{$site.logo_head}" width="150"/></a>
+				</div>
+			</div>
+
+			<div class="top2">
+				<div class="nav">
+					<ul>
+						<volist name="site_top_nav" id="vo" key="k" offset="0" length="4">
+		                    <li <php>if(APP_NAME == lcfirst( $vo['app_name'] ) || ( APP_NAME == 'classroom' && MODULE_NAME == ucfirst( $vo['app_name'] ) ) ){echo "class='active'";}</php>>
+		                        <a href="{$vo['url']}" target="{$vo['target']}">{$vo['navi_name']}<i class="course_logo_img"></i></a>
+								<div class="menu_item_box">
+									<div class="menu_item_auto">
+										<dl>
+											<dt><h4>公开课</h4></dt>
+											<dd>
+												<ul>
+													<li><a href="#">名校状元说</a></li>
+													<li><a href="#">名师专家说</a></li>
+													<li><a href="#">名校校长说</a></li>
+												</ul>
+											</dd>
+										</dl>
+										<dl>
+											<dt><h4>学科教育</h4></dt>
+											<dd>
+												<ul>
+													<li><a href="#">英语专项</a></li>
+													<li><a href="#">数学</a></li>
+													<li><a href="#">英语</a></li>
+													<li><a href="#">阅读写作</a></li>
+												</ul>
+											</dd>
+										</dl>
+										<dl class="sigin_two">
+											<dt><h4>素质教育</h4></dt>
+											<dd>
+												<ul>
+													<li><a href="#">创客科技</a></li>
+													<li><a href="#">音乐</a></li>
+													<li><a href="#">舞蹈</a></li>
+													<li><a href="#">国学</a></li>
+													<li><a href="#">礼仪</a></li>
+													<li><a href="#">美学</a></li>
+													<li><a href="#">体育竞技</a></li>
+													<li><a href="#">研学游泳</a></li>
+												</ul>
+											</dd>
+										</dl>
+										<dl>
+											<dt><h4>留学规划</h4></dt>
+											<dd>
+												<ul>
+													<li><a href="#">欧洲留学</a></li>
+													<li><a href="#">北美洲留学</a></li>
+												</ul>
+											</dd>
+										</dl>
+									</div>
+								</div>
+		                        <if condition="$vo.child neq ''">
+		                            <span class="course-class" style="display: none;">
+		                            <volist name="vo.child" id="child" key="k" offset="0" length="20">
+		                                <a href="{$child['url']}" target="{$child['target']}">{$child['navi_name']}</a>
+		                            </volist>
+		                            </span>
+		                        </if>
+		                    </li>
+		                </volist>
+						<!-- <li><a href="index.html">优势</a></li>
+						<li><a href="#">课程</a></li>
+						<li><a href="tech.html">专家智库</a></li>
+						<li><a href="our.html">关于我们</a></li> -->
+					</ul>
+				</div>
+			</div>
+				
+			<div class="top3">
+				<div class="nav1">
+					<ul class="page_header_adiv">
+					<if condition="$_SESSION['mid']">
+						<li class="header_top_nav">
+							<a href="{:U('classroom/User/setInfo')}">{:getUserName($_SESSION['mid'])}</a>
+                    		<i class="icon-nav-arrow"></i>
+						</li>
+                        <dl class="login-after-position">
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/User/index')}">个人中心</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/Home/order')}">账户中心</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/User/setInfo')}">我的设置</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('public/Message/index')}">我的消息</a></dd>
+                        
+                            <if condition="$is_school and $school_info">
+                                <dd class="login-after-bdbt">
+                                    <a href="{:U('school/School/index',array('id'=>$school_info['id'],'doadmin'=>$school_info['doadmin']))}">我的网校</a>
+                                </dd>
+                            </if>
+                        
+                            <if condition="$is_school and $school_info">
+                                <dd class="login-after-bdbt"><a href="{:U('school/User/index')}">网校设置</a></dd>
+                            </if>
+                        
+                            <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid'])  ) {</php>
+                                <if condition="$is_school and $school_info"><dd class="login-after-bdbt"><a href="{:U('classroom/Mount/index')}">课程挂载申请</a></dd></if>
+                            <php>}</php>
+                        
+                            <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid']) || CheckPermission('admin_login') ) {</php>
+                                <dd class="login-after-bdbt"><a href="{:U('admin')}"><if condition="$is_school and $school_info">网校</if>后台管理</a></dd>
+                            <php>}</php>
+                        
+                            <dd class="login-after-bdbt"><a href="javascript:;" onClick="logout()">退出</a></dd>
+                        </dl>
+                    <!--消息提示-->
+                    <!-- <ul class="news-msg"
+                    <php>if(!empty($mid) &&(!empty($unreadnum) || !empty($systemnum) || !empty($commentnum))){</php>
+                    style="display:block;"
+                    <php>}else{</php>
+                    style="display:none;"
+                    <php>}</php> >
+                    
+                    <a class="shanchu-ico" href="javascript:;" onClick="closeMsg(this)">×</a>
+                    
+                    <php>if(!empty($unreadnum) && !empty($mid)){</php>
+                    <li>{$unreadnum}条新的私信，&nbsp;<a href="{:U('public/Message/index')}">查看消息</a></li>
+                    <php>}</php>
+                    
+                    <php>if(!empty($systemnum) && !empty($mid)){</php>
+                    <li>{$systemnum}条新的系统消息，&nbsp;<a href="{:U('public/Message/notify')}">查看消息</a></li>
+                    <php>}</php>
+                    
+                    <php>if(!empty($commentnum) && !empty($mid)){</php>
+                    <li>{$commentnum}条新的评论消息，&nbsp;<a href="{:U('public/Message/comment')}">查看消息</a></li>
+                    <php>}</php>
+                    </ul> -->
+                	<else/>
+						<li><a href="{:U('public/Passport/login_g')}">登录</a></li>
+						<li>丨</li>
+						<li><a href="{:U('public/Passport/reg')}">注册</a></li>
+					</if>
+					</ul>
+				</div>
+
+				<div class="nav2">
+					<if condition="$_SESSION['mid'] eq ''">
+	                    <a class="page_header_adiv" href="{:U('public/Passport/login_g')}"><img src="__THEMENEW__/image/top3.jpg"></a>
+	                    <else/>
+	                    <a class="page_header_adiv" href="{:U('school/User/setInfo')}" target="_blank"><img src="__THEMENEW__/image/top3.jpg"></a>
+	                </if>
+				</div>
+			</div>
+		</div>
+		<div class="top4">
+		</div>
+		<!--banner轮播-->
+		<div class="banner">
+			<div class="banner1">
+    			<ul class="banner2">
+    				<volist name="ad_list" id="adlt">
+    					<li><a href="{$adlt['bannerurl']}" title="{$adlt['banner_title']}" target="_blank"><img src="{:getCover($adlt['banner'],1920,435)}" style="height: 435px;" alt="{$adlt['banner_title']}"/></a></li>
+                    </volist>
+    			</ul>
+    			 <a class="prev" href="javascript:void(0)"></a>
+   				 <a class="next" href="javascript:void(0)"></a>
+    			<div class="num">
+    				<ul></ul>
+   				 </div>
+			</div>			
+		</div>
+<script>
+$(".banner1").hover(function(){
+	$(this).find(".prev,.next").fadeTo("show",0.1);
+},function(){
+	$(this).find(".prev,.next").hide();
+})
+$(".prev,.next").hover(function(){
+	$(this).fadeTo("show",0.4);
+},function(){
+	$(this).fadeTo("show",0.1);
+})
+$(".banner1").slide({ titCell:".num ul" , mainCell:".banner2" , effect:"fold", autoPlay:true, delayTime:700 , autoPage:true, });
+</script>
+			
+	<!--三大特点介绍-->
+		<div class="three">
+			<div class="three-all">
+				<div class="three">
+						<img src="__THEMENEW__/image/three1.png">
+						<h1>个性化定制</h1>
+						<h2>根据孩子天性、习惯、爱好、成绩等<br>为其高端定制成长规划。</h2>
+				</div>	
+				<div class="three">
+						<img src="__THEMENEW__/image/three2.png">
+						<h1>线上线下结合</h1>
+						<h2>采用线上+线下授课方式，全方位服<br>务孩子，满足孩子的成长需求。</h2>
+			    </div>
+					<div class="three">
+						<img src="__THEMENEW__/image/three3.png">
+						<h1>精英社群</h1>
+						<h2>营造高端精英社群，让孩子与家长浸<br>润精英圈层，共同成长。</h2>
+					</div>	
+			</div>
+		</div>
+
+	    <volist name="config_index.item" id="item_name">
+
+	<!--进阶之路介绍-->
+        <eq name="item_name" value="six">
+			<div class="six">
+				<h1>孩子的进阶之路</h1>
+				<div class="six1">
+					<img src="__THEMENEW__/image/cur.png">
+				</div>		
+			</div>
+		</eq>
+
+	<!--公开课-->
+		<eq name="item_name" value="open">
+			<div class="open">
+				<div class="open-cen">
+				<h1>{$site['site_keyword']}公开课</h1>
+					<div class="cur">
+						<ul>
+							<volist name="video.data" id="vo" offset="0" length='3'>
+								<li>
+									<a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+			                            <img src="{:getCover($vo['cover'] ,334 , 232 )}" alt="" />
+			                        </a>
+									<div class="title">
+										<h5><a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</a></h5>
+									</div>
+								</li>
+		                    </volist>
+							<!-- <li><a href="#"><img src="__THEMENEW__/image/open1.jpg"></a>
+								<div class="title">
+									<h5><a href="#">名校状元说</a></h5>
+								</div>
+							</li>
+							<li><a href="#"><img src="__THEMENEW__/image/open2.jpg">
+								<div class="title">
+									<h5><a href="#">名校专家说</a></h5>
+								</div>
+							</li>	
+							<li><a href="#"><img src="__THEMENEW__/image/open3.jpg">
+								<div class="title">
+									<h5><a href="#">名校校长说</a></h5>
+								</div>
+							</li> -->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</eq>
+
+	<!--热门课程-->
+		<eq name="item_name" value="hotVideo">
+			<div class="curriculum">
+				<div class="cur-cen">
+					<h1>热门课程</h1>
+					<div class="cur">
+						<ul>
+							<volist name="hotVideo.data" id="vo" offset="0" length='3'>
+								<li>
+									<a class="imgbox" <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+			                            <img src="{:getCover($vo['cover'] ,334 , 232 )}" alt="" />
+			                        </a>
+									<div class="title">
+										<h5><a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</a></h5>
+									</div>
+								</li>
+		                    </volist>
+							<!-- <li><a href="#"><img src="image/cur1.jpg"></a>
+								<div class="title">
+									<h5><a href="#">创客机器人</a></h5>
+								</div>
+							</li>
+							<li><a href="#"><img src="image/cur2.jpg">
+								<div class="title">
+									<h5><a href="#">马术基础课</a></h5>
+								</div>
+							</li>
+							<li><a href="#"><img src="image/cur3.jpg">
+								<div class="title">
+									<h5><a href="#">英语篮球</a></h5>
+								</div>
+							</li> -->
+						</ul>
+					</div>
+				</div>
+				<div class="cur1">
+					<a href="{:U('classroom/Video/index')}" class="cur2">更多课程</a>
+				</div>
+			</div>
+		</eq>
+
+	<!--直播早知道-->
+		<eq name="item_name" value="live_new">
+			<div class="broadcast">
+				<h1>直播早知道</h1>
+				<div class="bro1">
+					<ul>
+					<php>if(empty($live) == false){</php>
+						<volist name="live_ctime" id="time" key="k" offset="0" length='5'>
+							<php>if($time != $nowTime){</php>
+	                        	<li><a href="javascript:;" onClick="showLive(this,{$k})">{:date('m',$time)}月{:date('d',$time)}日</a></li>
+							<php>}else{</php>
+								<li><a href="javascript:;" onClick="showLive(this,{$k})">今日</a></li>
+	                        <php>}</php>
+	                    </volist>
+	                <php>}else{</php>
+	                    <li>暂时没有直播数据</span>
+	                <php>}</php>
+						<!-- <li><a href="#">9月17日</a></li>
+						<li><a href="#">9月18日</a></li>
+						<li><a href="#">今日</a></li>
+						<li><a href="#">9月20日</a></li>
+						<li><a href="#">9月21日</a></li> -->
+					</ul>
+				</div>
+				<php>if(empty($live) == false){</php>
+				<div class="bro2">
+					<volist name="live" id="le"  key='k' offset="0" length="5">
+	                    <ul class="live_{$k}" style="display: none;">
+	                        <volist name="le" id="vo" offset="0" length="3">
+		                        <li><a href="{:U('live/Index/view',array('id'=>$vo['id']))}" class="imgbox"><img src="{:cutImg($vo['cover'] ,300, 208 )}"></a>
+									<div class="bro3">
+										<h5><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,7,'utf-8',true)}</a><small>{$vo['video_order_count']}人已预约</small></h5>
+									</div>
+								</li>
+	                        </volist>
+	                    </ul>
+	                </volist>
+					<!-- <ul>
+						<li><a href="#"><img src="image/bro1.jpg"></a>
+							<div class="bro3">
+								<h5><a href="#">游学学英语</a></h5>
+							</div>
+							<div class="bro4">
+								<h5><a href="#">20人已预约</a></h5>
+							</div>
+						</li>
+						<li><a href="#"><img src="image/bro2.jpg">
+							<div class="bro3">
+								<h5><a href="#">游学学英语</a></h5>
+							</div>
+							<div class="bro4">
+								<h5><a href="#">20人已预约</a></h5>
+							</div>
+						</li>
+						<li><a href="#"><img src="image/bro3.jpg">
+							<div class="bro3">
+								<h5><a href="#">游学学英语</a></h5>
+							</div>
+							<div class="bro4">
+								<h5><a href="#">20人已预约</a></h5>
+							</div>
+						</li>
+					</ul> -->
+				</div>
+	            <php>}</php>
+			</div>
+		</eq>
+
+	<!--名师阵容-->
+		<eq name="item_name" value="teacher_new">
+			<div class="teacher">
+				<h1>名师阵容</h1>
+				<div class="teacher1">
+					<ul>
+						<volist name="teacher" id="tea" offset="0" length="3">
+	                        <li>
+	                            <a href="{:U('classroom/Teacher/view',array('id'=>$tea['id']))}" class="imgbox"><img src="{:getCover($tea['head_id'],321,321)}"></a>
+	                            <div class="teacher2">
+									<h5><a href="{:U('classroom/Teacher/view',array('id'=>$tea['id']))}">{:msubstr(t($tea['name']),0,5,'utf-8',true)}</a><small>{:msubstr(t($tea['teacher_title_category']),0,7,'utf-8',true)}</small></h5>
+								</div>
+								<span>
+									<h4><a href="{:U('classroom/Teacher/view',array('id'=>$tea['id']))}" style="color: #fff;">{:msubstr(t($tea['name']),0,5,'utf-8',true)}</a></h4>
+									<p>{:msubstr(t($tea['inro']),0,100,'utf-8',true)}</p>
+								</span>
+	                        </li>
+	                    </volist>
+						<!-- <li><a href="#"><img src="image/tea1.jpg"></a>
+							<div class="teacher2">
+								<h5><a href="#">王明</a></h5>
+							</div>
+							<div class="teacher3">
+								<h5><a href="#">前国家运动员</a></h5>
+							</div>
+						</li>
+						<li><a href="#"><img src="image/tea2.jpg">
+							<div class="teacher2">
+								<h5><a href="#">王明</a></h5>
+							</div>
+							<div class="teacher3">
+								<h5><a href="#">前国家运动员</a></h5>
+							</div>
+						</li>
+						<li><a href="#"><img src="image/tea3.jpg">
+							<div class="teacher2">
+								<h5><a href="#">王明</a></h5>
+							</div>
+							<div class="teacher3">
+								<h5><a href="#">前国家运动员</a></h5>
+							</div>
+						</li> -->
+					</ul>
+				</div>
+				<div class="ciroles"></div>
+			</div>
+		</eq>
+
+	<!--明星学员-->
+		<eq name="item_name" value="starUser">
+			<div class="student">
+				<h1>明星学员</h1>
+				<div class="cut">
+					<ul>
+						<volist name="star_user" id="user" offset="0" length="3">
+	                        <li>
+	                            <a href="{:U('classroom/UserShow/index',array('uid'=>$user['uid']))}" class="imgbox"><img src="{:getUserFace($user['uid'],b)}"></a>
+								<div class="stu">
+									<h5><a href="{:U('classroom/UserShow/index',array('uid'=>$user['uid']))}">{:msubstr(t($user['uname']),0,10,'utf-8',true)}</a></h5>
+								</div>
+								<span>
+									<h4><a href="{:U('classroom/UserShow/index',array('uid'=>$user['uid']))}" style="color: #fff;">{:msubstr(t($user['uname']),0,10,'utf-8',true)}</a></h4>
+									<p>{:msubstr(t($user['intro']),0,100,'utf-8',true)}</p>
+								</span>
+	                        </li>
+	                    </volist>
+						<!-- <li><a href="#"><img src="image/stu1.jpg"></a>
+							<div class="stu">
+								<h5><a href="#">李丽</a></h5>
+							</div>
+						</li>
+						<li><a href="#"><img src="image/stu2.jpg">
+							<div class="stu">
+								<h5><a href="#">司马元</a></h5>
+							</div>
+						</li>	
+						<li><a href="#"><img src="image/stu3.jpg">
+							<div class="stu">
+								<h5><a href="#">李云迪</a></h5>
+							</div>
+						</li> -->
+					</ul>
+				</div>
+			</div>
+		</eq>
+
+		</volist>
+
+	<!--背景图-->
+		<div class="logo">
+			<a href="/"><img src="__THEMENEW__/image/logo1.jpg"></a>
+		</div>
+	<!--底部介绍-->
+		<div class="bottom">
+			<div class="footer_introduce">
+				<div class="bot1">
+					<h1>咨询热线</h1>
+					<h2>{$site.site_phone}</h2>
+					<div class="bot11">
+						<ul>
+							<li><a href="javascript:;"><img src="{:getCover($site['wx_qrcode'],120,120)}"></a>
+								<div class="bot12">
+								<h5>{$site['site_keyword']}教育研究院</h5>
+								</div>
+							</li>
+							<li><a href="javascript:;"><img src="{:getCover($site['wb_qrcode'],120,120)}"></a>
+								<div class="bot12">
+									<h5>{$site['site_keyword']}教育联盟</h5>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="bot3">
+					<volist name="pageCategory" id="vo" offset="0" length="5">
+						<div class="bot2" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
+							<a href="javascript:;"><span>{$key}</span></a>
+							<volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+								<a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
+							</volist>
+						</div>
+					</volist>
+				</div>
+			</div>
+		</div>
+	<!--底部-->
+		<div class="record">
+			<a href="http://www.miitbeian.gov.cn/"><p>{$site['site_footer']}</p></a>
+		</div>
+	<!--备案信息-->
+	<div class="float-right">
+		 <a href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">在线沟通
+			 <img src="__THEMENEW__/image/flo1.png">
+			 <span>
+				 <strong>
+					 <button>QQ在线沟通</button>
+					 <h6>资讯热线：</h6>
+					 <p>010-58406161</p>
+				 </strong>
+			 </span>
+		 </a>
+   	     <a href="javascript:;" >免费测评
+			 <img src="__THEMENEW__/image/flo2.png" style="margin-top:3px;">
+		 </a>
+   		 <a href="javascript:;" >关注微信
+			 <img src="__THEMENEW__/image/flo3.png" style="margin-top:3px;">
+			 <span style="padding: 0;background: #fff;right: 55px;height: 140px;">
+				 <img src="http://t.el3.51eduline.com/data/upload/2017/0907/14/59b0e5224949c_120_120_120_120.jpg">
+				 <h5>扫一扫关注官方微信</h5>
+			 </span>
+		 </a>
+   		 <a href="javascript:;" class="backtop">回到顶部
+			 <img src="__THEMENEW__/image/flo4.png" style="margin-top:8px;">
+		 </a>
+
+	</div>
+	<!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+    <div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+    </div>
+    <eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+    </eq>
+
+<script>
+	var lanren = {
+		navFast:function(){
+			var defaultTop = (window.screen.height - $('.float-right').height())/2 - 100; 
+			//默认顶部保持上下居中，再往上去100像素
+			$(window).scroll(function(){
+				var offsetTop = defaultTop + $(window).scrollTop()+'px';
+				$('.float-right').animate({top:offsetTop},
+				{	duration: 600,	//滑动速度
+     				queue: false    //此动画将不进入动画队列
+     			});						  
+			});
+		}
+	};
+	lanren.navFast();
+
+	$(function(){
+		$(".live_1").show();
+	});
+	$(".bro1 li:first-child").addClass("on");
+	function showLive(cate,id){	
+		$(cate).parent().addClass('on').siblings().removeClass('on');
+		$(".live_"+id).show().siblings().hide();
+	}
+
+	for(var k=0;k<$(".teacher1").length;k++) {
+		var slixs = "<i></i>";
+		$(".ciroles").append(slixs);
+	}
+	$(".teacher1 ul:first-child").show();
+	$(".teacher .ciroles i:first-child").css("background","rgba(255,255,255,1)")
+	$(".teacher .ciroles i").click(function(){
+		$(this).css("background","rgba(255,255,255,1)").siblings().css("background","rgba(204,204,204,0.6)");
+		var i = $(this).index();
+		$(".teacher1 ul").hide();
+		$(".teacher1 ul").eq(i).show();
+	});
+
+	$(window).scroll(function() {
+		var wins =  $(document).scrollTop();
+		if(wins>100){
+			$(".top").css("box-shadow","0 2px 10px 0 rgba(121,129,143,0.4)");
+		}else{
+			$(".top").css("box-shadow","0 0 0 0 transparent");
+		}
+	});
+
+</script>
+	<!--右侧滑动-->
+</body>
+
+
+
+</html>

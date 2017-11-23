@@ -1,0 +1,35 @@
+<volist name="answer_key" id="ans">
+	<switch name="question_type_key">
+		<case value="radio">
+			<div <php>if($i !=1 || count($answer_key) == 1){echo 'class="clear"';}</php>>
+                <p><input type="radio" name="answer_true_option" value="{$ans}">{$ans}.</p>
+                {:W('Editor',array('width'=>'99%','height'=>'200','contentName'=>"answer_options_".$ans,'value'=>'','type'=>'simple','maximumWords'=>'1000'))}
+            </div>
+		</case>
+		<case value="multiselect">
+			<div <php>if($i !=1 || count($answer_key) == 1){echo 'class="clear"';}</php>>
+                <p><input type="checkbox" name="answer_true_option[]" value="{$ans}">{$ans}.</p>
+                <div>
+                	{:W('Editor',array('width'=>'99%','height'=>'200','contentName'=>"answer_options_".$ans,'value'=>'','type'=>'simple','maximumWords'=>'1000'))}
+                </div>
+            </div>
+		</case>
+		<case value="judge">
+            <p><input type="radio" name="answer_true_option" value="A">正确</p>
+            <p><input type="radio" name="answer_true_option" value="B">错误</p>
+            <input type="hidden" name="answer_options_A" value="正确">
+            <input type="hidden" name="answer_options_B" value="错误">
+		</case>
+		<case value="completion">
+            <p><input type="text" name="answer_true_option[]"></p>
+		</case>
+		<case value="essays">
+			
+		</case>
+	</switch>
+</volist>
+<php>if($answer_key && !in_array($question_type_key,['essays','judge'])){</php>
+<div class="clear">
+	<div class="add_options btn_b">添加选项</div>
+</div>
+<php>}</php>

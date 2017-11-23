@@ -1,0 +1,117 @@
+/* 导航筛选 */
+.nav-screen{height:45px;background-color:#fff;border-top:1px solid #E5E5E5;border-bottom:1px solid #E5E5E5;position:relative}
+.cover{position:fixed;top:103px;width:100%;height:100%;background-color:rgba(0,0,0,.4);display:none}
+.nav-screen-all{float:left;width:100%}
+.nav-screen-content{position:absolute;width:100%;top:46px}
+.nav-screen-head{width:33.33%;font-size:14px;color:#333;text-align:center;float:left;line-height:45px;position:relative}
+.nav-screen-head i{margin:0 5px;font-size:14px;display:inline-block;transition:transform .2s}
+.one-nav-layer{max-height:287px;overflow-y:auto;background-color:#fff;width:100%;font-size:14px;display:none}
+.one-nav-layer li{float:left;width:100%}
+.one-nav-layer li:hover .two-nav-layer{display:block}
+.one-nav-layer a{display:block;line-height:40px;border-bottom:1px solid transparent;color:#757575;padding:0 0 0 10px}
+.two-nav-layer{position:absolute;background-color:#f9f9f9;width:100%;left:33.33%;top:0;height:287px;overflow-y:auto;display:none}
+.two-nav-layer li:hover .three-nav-layer{display:block}
+.two-nav-layer dd{float:left;width:100%}
+.three-nav-layer{position:absolute;left:33.33%;top:0;width: 36%;height:100%;overflow-y:auto;background-color:#f4f4f4;display:none}
+
+/* 筛选条件 */
+.date-layer{width:90%;float:left;padding:10px 5%;padding-left:5%;border-bottom:1px dotted #E5E5E5}
+.date-layer h4{color:#333;font-size:14px}
+.date-layer h4 small{color:#888;font-size:12px}
+.date-layer dd,.date-layer i{float:left;margin-top:10px}
+.date-layer i{font-size:16px;color:#656565;padding:0 5px}
+.date-layer dd{width:24%}
+.date-layer dd input{width:100%;height:24px;background-color:#f4f4f4;border-radius:4px;border:0;text-indent:10px;color:#656565}
+.date-condition dd{width:auto;margin-right:13px;margin-bottom:5px}
+.date-condition dd button{font-size:14px;color:#656565;background-color:#f4f4f4;border-radius:4px;border:0;padding:4px 10px;border:1px solid transparent}
+.date-condition dd button:hover{border-color:#00bdd6;background-color:#b0eaf2;color:#118594}
+.deta-cancel{width:90%;padding:15px 5%;float:left}
+.deta-cancel dd{float:right;margin-left:15px}
+.deta-cancel dd button{padding:5px 15px;border-radius:4px;border:0}
+.deta-cancel .btn01{color:#656565;border:1px solid #E5E5E5;background-color:#fff}
+.deta-cancel .btn02{color:#fff;background-color:#00BED4;border:1px solid transparent}
+
+/* 线下课列表 */
+.line-course-all-tab ul{float:left;padding:0 2%}
+.line-course-all-tab li{background-color:#fff;float:left;margin-top:10px;width: 100%;}
+.line-course-all-tab li img{width: 100%;}
+.line-course-img-txt{width:100%;float:left}
+.line-course-img-txt a{display:block;float:left;width: 100%}
+.line-course-img-txt a span{float:left;width:46%;overflow:hidden;padding:2%}
+.line-course-img-txt a .txt{float:right}
+.line-course-img-txt a .txt h4{color:#333;font-size:14px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.line-course-img-txt a .txt b{color:#fe575f;font-size:16px;line-height:34px}
+.line-course-img-txt a .txt p{color:#656565;font-size:12px;line-height:20px}
+.line-course-service{width:100%;float:left}
+.line-course-service a{display:block;float:left;width:45%;margin:0 2% 6px;line-height:30px;border-radius:3px;border:1px solid #00BED4;color:#00BED4;font-size:14px;text-align:center}
+.line-course-service a:last-child{float:right}
+
+/* 线下课详情页 */
+.course-deta .img-box{width:100%;height:190px;overflow:hidden}
+.course-deta .img-box img{width:100%}
+.course-deta-per-box{padding:10px 2%}
+.course-deta-per-box dt h3{color:#333;font-size:16px;font-weight:600}
+.course-deta-per-box dd .top01{margin-top:10px}
+.course-deta-per-box dd p{font-size:12px;color:#656565;line-height:24px}
+.course-deta-per-box dd p small{text-decoration:line-through}
+.course-deta-per-box dd b{font-size:20px;color:#fe575f}
+.course-deta-per-box dd b strong{font-size:14px}
+.course-deta-service button{width:55%;line-height:36px;border-radius:3px;border:1px solid #00BED4;color:#00BED4;font-size:14px;background-color:#fff}
+.course-deta-service{margin-top:10px}
+.course-deta-service span{float:right}
+.course-deta-service span i{width:10%;font-size:18px;color:#656565;line-height:36px;margin-left:20px}
+hr{height:10px;background-color:#f0f0f2;float:left;width:100%;border:0}
+
+/* 课程详情 and 课程评价 */
+.course-evaluate{width:100%;float:left}
+.course-evaluate-head{float:left;padding:0 2%;width:96%;border-bottom:1px solid #E5E5E5}
+.course-evaluate-head li{float:left;color:#888;font-size:14px;line-height:44px;padding:0 3%;border-bottom:2px solid transparent}
+.course-evaluate-content{width:100%;float:left;}
+.course-evaluate-content .somle{display:none;float: left;width: 100%;}
+.course-evaluate-content .som01 p{color:#656565;font-size:14px;line-height:24px;padding:15px 2%;}
+.somle dl{display:flow-root;width:100%}
+.somle dl dd{display:flow-root;border-bottom:1px solid #E5E5E5;position:relative}
+.somle .somle-head{display:flow-root;width:96%;padding:0 2% 12px;border-bottom:1px solid #E5E5E5}
+.somle .somle-head .level{float:left}
+.somle .somle-head .level small{color:#656565;font-size:13px;margin-top:12px;display:block}
+.somle .somle-head .level b{color:#FF6813;font-size:18px}
+.somle .somle-head .level b{display:block;margin-top:2px}
+.somle .somle-head .comment-box{float:right;color:#776e6e;font-size:14px;line-height:55px}
+.somle .somle-head .comment-box i{padding-right:5px}
+.somle dl span{width:10%;float:left;margin-top:16px}
+.somle dl span img{width:30px;height:30px;border-radius:50%}
+.somle-head-txt{float:right;width:89%}
+.somle-head-txt h1{line-height:30px}
+.somle-head-txt a{color:#333;font-size:13px}
+.somle-head-txt h1 i{color:#FF6813;font-size:14px}
+.somle-head-txt p{color:#656565;font-size:12px;line-height:22px}
+.somle-head-txt small{font-size:10px}
+.somle-head-txt strong{font-size:12px;color:#888;margin-left:12%}
+.clus-mouing-all{color:#888;line-height:30px}
+.somle-head-txt em{float:right;font-size:12px;margin-left:6%}
+.somle-head-txt em i{font-size:14px;padding:0 5px}
+.somle dl dd ul{background-color:#f0f0f2;float:left;width:96%;padding:0 2%;border-radius:3px;margin-bottom:20px;display:none}
+.somle dl dd ul:after{content:'';position:absolute;right:69px;top:110px;width:8px;height:8px;background-color:#f0f0f2;transform:rotate(45deg)}
+.somle dl dd ul li{display:flow-root;border-bottom:1px solid #E5E5E5}
+.somle dl dd ul li:last-child{border-bottom:1px solid transparent}
+.course-evaluate button{width:100%;border:0;background:0 0;font-size:13px;color:#888;line-height:36px}
+.course-evaluate button i{padding:0 5px 0 0;font-size:14px}
+.text-speak{width:96%;background-color:#fff;position:fixed;bottom:0;padding:0 2%;z-index:200;display:none}
+.text-speak textarea{width:81%;height:26px;max-height:61px;resize:none;background-color:#fafafa;border-radius:5px;border:1px solid #e5e5e5;outline:0;font-size:13px;max-height:72px;padding:10px 2% 0;float:left}
+.com-star{margin-top:10px}
+.com-star i{color:#ccc}
+.com-star small{color:#656565;font-size:14px}
+.textarea-box{float:left;width:100%;margin:10px 0}
+.text-speak button{color:#888;font-size:14px;line-height:34px;float:right;border:0;background:0 0}
+
+/* 联系我们 */
+.course-evaluate{width:96%;padding:0 2%}
+.contact-us{float: left;width: 100%;}
+.contact-us-home{float: left;width: 100%;padding-bottom: 30px;}
+.course-evaluate h4{width:100%;float:left;color:#888;font-size:14px;line-height:44px;border-bottom:1px solid #E5E5E5}
+.contact-us-home p{font-size:13px;color:#656565;margin-top:15px;float:left;width:100%}
+.contact-us-home p i{font-size:18px;padding:0 8px 0 0}
+.contact-us-home b,.contact-us-home button{display:block;margin:auto;text-align:center;margin-top:15px}
+.contact-us-home b{font-size:18px;color:#fe575f}
+.contact-us-home button{width:60%;line-height:44px;border-radius:3px;border:0;color:#fff;font-size:16px;background-color:#00BED4}
+

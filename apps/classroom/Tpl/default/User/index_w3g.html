@@ -1,0 +1,89 @@
+<include file="__THEME__/public_header_w3g"/>
+<link  href="__APP__/icon/iconfont.css" rel="stylesheet" type="text/css">
+<link  href="__APP__/css/style_media.css" rel="stylesheet" type="text/css">
+<style>
+    header{width: 100%;}
+    .center-box{width: 100%;}
+    .icon{background: transparent;}
+    .center-box{background: url(__THEME__/icon/bg2.jpg) center no-repeat;}
+</style>
+<body style="background:#f0f0f2">
+    <header>
+        <i class="icon icon-zuojiantou"></i>
+        <h3>个人中心</h3>
+    </header>
+    <!--center-box-->
+    <div class="center-box">
+        <dl>
+            <dt>
+                <img src="{:getUserFace($user['uid'],'b')}">
+            </dt>
+            <dd>
+                <h5>{:strip_tags(getUserSpace($user['uid']))}</h5>
+                <ul>
+                    <li>积分：{$credit['credit']['score']['value']|default=0}</li>
+                    <li>粉丝：{$tmp[$uid]['follower']|default=0}</li>
+                    <li>课程：{$videocont|default=0}</li>
+                </ul>
+            </dd>
+        </dl>
+        <a href="{:U('classroom/User/setInfo')}" class="set-up"><i class="icon icon-youjiantou"></i></a>
+    </div>
+    <div class="col-all-box">
+        <ul class="first-cate-icons">
+            <li>
+                <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">
+                    <i class="icon icon-mingpian"></i>
+                    <p>个人主页</p>
+                </a>
+            </li>
+            <li>
+                <a href="{:U('classroom/Home/video')}">
+                    <i class="icon icon-kecheng2"></i>
+                    <p style="line-height: 11px">我的课程</p>
+                </a>
+            </li>
+            <li>
+                <a href="{:U('classroom/Home/live')}">
+                    <i class="icon icon-zhibo"></i>
+                    <p style="line-height: 7px">我的直播</p>
+                </a>
+            </li>
+            <li>
+                <a href="{:U('classroom/Home/order')}">
+                    <i class="icon icon-dingdan"></i>
+                    <p style="line-height: 12px">我的订单</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!--my-service-->
+    <div class="col-all-box my-service">
+        <ul>
+            <li><a href="{:U('classroom/Home/wenti')}"><i class="icon icon-tiwen"></i>我的提问</a> </li>
+            <li><a href="{:U('classroom/Home/review')}"><i class="icon icon-xiedianping"></i>我的点评</a> </li>
+            <li><a href="{:U('classroom/Home/note')}"><i class="icon icon-biji"></i>我的笔记</a> </li>
+            <li><a href="{:U('classroom/Home/share')}"><i class="icon icon-fenxiang1"></i>我的分享</a> </li>
+        </ul>
+    </div>
+    <div class="col-all-box my-service">
+        <ul>
+            <li><a href="{:U('classroom/User/account')}"><i class="icon icon-yue"></i>我的余额</a></li>
+            <li><a href="{:U('classroom/User/spilt')}"><i class="icon icon-tubiao-"></i>我的收入</a></li>
+            <li><a href="{:U('classroom/User/credit')}"><i class="icon icon-iconfont"></i>我的积分</a></li>
+            <li><a href="{:U('classroom/User/recharge')}"><i class="icon icon-tubiao-"></i>会员充值</a> </li>
+            <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+            <li><a href="{:U('classroom/User/teacherVideo')}"><i class="icon icon-shangchuan"></i>上传课程</a></li>
+            <php>}</php>
+            <li><a href="{:U('classroom/User/videoCoupon')}"><i class="icon icon-youhuiquan"></i>优惠券</a> </li>
+        </ul>
+    </div>
+    <div class="col-all-box my-service">
+        <ul>
+            <li><a href="{:U('classroom/User/address')}"><i class="icon icon-dizhi"></i>收货地址</a> </li>
+            <li><a href="{:U('classroom/User/changepsw')}"><i class="icon icon-mima"></i>修改密码</a> </li>
+        </ul>
+    </div>
+</body>
+<include file="__THEME__/public_footer_w3g"/>

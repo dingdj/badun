@@ -1,0 +1,45 @@
+<dl class="pop-area">
+  <dt class="mb10" style="overflow:hidden;*zoom:1;">
+      <div class="l">试题个数：</div>
+      <div class="r">
+        <input type="text" id="questions_count" value="" class="s-txt" style="width:245px;">
+      </div>
+  </dt>
+  <p>当前符合该试卷的试题总数：<font style="color: #3695ff;">{$count}</font></p>
+  <dd>
+    <input type="button" class="btn_b" onclick="autoAddQuestion()" value="确定" />
+    <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
+  </dd>
+  <div class="clear"></div>
+</dl>
+
+<script type="text/javascript">
+function autoAddQuestion(){
+    var count = parseInt($("#questions_count").val());
+    if(count <= 0 || count > '{$count}'){
+      ui.error('试题个数不能小于或大于当前符合条件数目');
+      return false;
+    }
+    $.post(U('exams/AdminPaper/doAssembly'),{
+        type:2,
+        question_type:'{$Think.get.question_type}',
+        paper_id:'{$Think.get.paper_id}',
+        questions_count:count
+    },function(res){
+        if(typeof(res) != 'object'){
+          try{
+          var res = JSON.parse(res);
+        }catch(e){
+          ui.error("处理失败,请重新尝试");
+          return false;
+        }
+      }
+      if(res.status == 1){
+        window.location.reload();
+      }else{
+        ui.error(res.message);
+        return false;
+      }
+    },'json');
+}
+</script>

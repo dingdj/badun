@@ -1,0 +1,207 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
+<style>
+    .full-course:hover ul{
+        display: block;
+    }
+    .full-course ul{
+        display: none;
+    }
+</style>
+<!-- 面包屑导航 start -->
+<div class="topbox bg3f">
+    <div class="screen-outer">
+        <ul class="position-label-find">
+            <li>
+                <a href="/">首页></a>
+                <a href="{:U('exams/Index/index')}">考试系统></a>
+                <a href="javascript:;">{$paper.exams_paper_title}</a>
+            </li>
+        </ul>
+        <!--考试结果-->
+        <div class="exam-score">
+            <div class="exam-score-head">考试结果</div>
+            <h3>{$paper.exams_paper_title}</h3>
+            <p>交卷时间：{:date('Y-m-d H:i:s',$answerData['update_time'])}</p>
+            <ul>
+                <li class="bg01">
+                    <h5>得分</h5>
+                    <p>{$answerData.score|default='0'}</p>
+                </li>
+                <li class="bg02">
+                    <h5>用时</h5>
+                    <p>{:ceil($answerData['anser_time']/60)}分{:$answerData['anser_time'] % 60}秒</p>
+                </li>
+                <li class="bg03">
+                    <h5>完成率</h5>
+                    <p>{$answerData.completion_rate}</p>
+                </li>
+                <li class="bg04">
+                    <h5>错题数量</h5>
+                    <p>{$answerData.wrong_count}</p>
+                </li>
+
+            </ul>
+        </div>
+        <div class="screen-outer">
+            <div class="score-left">
+               <!--错题列表-->
+                <div class="error-exam">
+                    <dl>
+                        <dt>错题记录</dt>
+                        <dd>
+                            <php>$q_count = 1;</php>
+                            <volist name="paper_options.options_type" id="options_type">
+                                <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+                                    <php>if($_GET['joinType'] == 3 && !in_array($question['exams_question_id'],$inQuestions)) continue;</php>
+                                    <a href="#ex{$question.exams_question_id}"<php>if(in_array($question['exams_question_id'],$wrongList)){</php>class="on"<php>}</php>>{$q_count}</a>
+                                    <php>$q_count++;</php>
+                                </volist>
+                            </volist>
+                        </dd>
+                        <php>if(count($wrongList) > 0){</php><label><input type="checkbox" id="onlyShowWrong">只显示错题</label><php>}</php>
+                    </dl>
+                </div>
+                <!--排名-->
+                <div class="ranking-exam">
+                    <h3>排行榜</h3>
+                    <p>您当前排名为第{$rank.now.rank|default='1'}名</p>
+                    <ul>
+                        <volist name="rank.list" id="item">
+                            <li>
+                                <a href="{:U('classroom/UserShow/index',['uid'=>$item['uid']])}" class="head" title="{:getUsername($item['uid'])}">
+                                    <img src="{:getUserFace($item['uid'])}" />
+                                    <php>if($i <= 3){</php><i class="num0{$i}"></i><php>}</php>
+                                </a>
+                                <span>
+                                    <a href="{:U('classroom/UserShow/index',['uid'=>$item['uid']])}">{:getUsername($item['uid'])}</a>
+                                    <em>{$item.score}分</em>
+                                </span>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+            <!--答题-->
+            <div class="score-content">
+                <ul class="test-paper-box">
+                    <h4>试题解析</h4>
+                    <!--单选题-->
+                    <php>$question_num = 1;</php>
+                    <volist name="paper_options.options_type" id="options_type">
+                        <switch name="options_type.question_type_key">
+                            <case value="radio|multiselect|judge">
+                                <!-- 单多选 -->
+                                <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+                                    <php>if($_GET['joinType'] == 3 && !in_array($question['exams_question_id'],$inQuestions)) continue;</php>
+                                    <li class="test-paper<php>if(in_array($question['exams_question_id'],$wrongList)){</php> wrong<php>}</php>" id="ex{$question.exams_question_id}">
+                                        <h5><small>{$question_num}</small>（{$options_type.type_info.question_type_title}）</h5>
+                                        <p>{$question.content}</p>
+                                        <ul class="answer">
+                                            <volist name="question.answer_options" id="answer">
+                                                <li><b>{$key}、</b>{$answer}</li>
+                                            </volist>
+                                        </ul>
+                                        <div class="choice">
+                                            <div class="collection">
+                                                <php>if($question['is_collect'] == 1){</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                                <php>}else{</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                                <php>}</php>
+                                            </div>
+                                        </div>
+                                        <div class="lu-ms-tim block">
+                                            <php>
+                                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+                                            </php>
+                                            <em class="bgco">您的答案<strong><php>if(!$content){</php>未作答<php>}</php><volist name="content" id="ans">{$ans|default='未作答'}</volist></strong></em>
+                                            <em>正确答案<strong><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></strong></strong></em>
+                                        </div>
+                                        <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                        <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                                    </li>
+                                    <php>$question_num++;</php>
+                                </volist>
+                            </case>
+                            <case value="completion">
+                                <!-- 填空 -->
+                                <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+                                    <li class="test-paper<php>if(in_array($question['exams_question_id'],$wrongList)){</php> wrong<php>}</php>" id="ex{$question.exams_question_id}">
+                                        <php>if($_GET['joinType'] == 3 && !in_array($question['exams_question_id'],$inQuestions)) continue;</php>
+                                        <h5><small>{$question_num}</small>（{$options_type.type_info.question_type_title}）</h5>
+                                        <p>{$question.content}</p>
+                                        <div class="choice">
+                                            <div class="collection">
+                                                <php>if($question['is_collect'] == 1){</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                                <php>}else{</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                                <php>}</php>
+                                            </div>
+                                        </div>
+                                        <div class="lu-ms-tim block">
+                                            <em class="blank-cls bgco">您的答案
+                                                <ul>
+                                                    <php>
+                                                        $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+                                                    </php>
+                                                    <volist name="question.answer_true_option" id="answer">
+                                                        <li <php>if($content[$i-1] != $answer){</php>class="co"<php>}</php>><span><b>{$i}</b>、{$content[$i-1]|default='未作答'}</span></li>
+                                                    </volist>
+                                                </ul>
+                                            </em>
+                                            <em class="blank-cls">正确答案
+                                                <ul>
+                                                    <volist name="question.answer_true_option" id="answer_true">
+                                                    <li><span><b>{$i}</b>、{$answer_true}</span></li>
+                                                    </volist>
+                                                </ul>
+                                            </em>
+                                        </div>
+                                        <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                        <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                                    </li>
+                                    <php>$question_num++;</php>
+                                </volist>
+                            </case>
+                            <case value="essays">
+                                <!-- 解答 -->
+                                <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+                                    <php>if($_GET['joinType'] == 3 && !in_array($question['exams_question_id'],$inQuestions)) continue;</php>
+                                    <li class="test-paper<php>if(in_array($question['exams_question_id'],$wrongList)){</php> wrong<php>}</php>" id="ex{$question.exams_question_id}">
+                                        <h5><small>{$question_num}</small>（{$options_type.type_info.question_type_title}）</h5>
+                                        <p>{$question.content}</p>
+                                        <div class="choice">
+                                            <div class="collection">
+                                                <php>if($question['is_collect'] == 1){</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                                <php>}else{</php>
+                                                    <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                                <php>}</php>
+                                            </div>
+                                        </div>
+                                        <div class="lu-ms-tim block">
+                                            <php>
+                                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+                                            </php>
+                                            <em class="blank-cls bgco">您的答案<p>{$content[0]|default='未作答'}</p></em>
+                                        </div>
+                                        <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                        <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                                    </li>
+                                    <php>$question_num++;</php>
+                                </volist>
+                            </case>
+                        </switch>
+                    </volist>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__APP__/js/exercise.js"></script>
+<script src="__APP__/js/score.js"></script>

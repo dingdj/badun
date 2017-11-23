@@ -1,0 +1,76 @@
+<include file="__THEME__/admin_header" />
+<php>
+ set_time_limit(0);
+</php>
+	<div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('survey/Admin/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+    
+    <div class="tit_tab">
+        <ul>
+        <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+        <volist name='pageTab' id='t'>
+            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+        </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    <form method="POST" action="{:U('survey/Admin/doEdit')}" >
+    	<input type="hidden" name="id" value="{$res.id}" />
+    	<div class="form2">
+		    <dl class="lineD">
+		    	<dt><font color="red"> * </font>调查分类：</dt>
+		    	<dd>
+		    		<select name="fid" class="s-select" style="width:200px;">
+			    		<option value="0" selected >选择调查分类</option>
+						<foreach name="fid" item="vo">
+							<option value="{$key}" <php> if($key == $res['fid']){ </php>selected<php>}</php> >{$vo}</option>
+						</foreach>
+					</select>
+				</dd>
+		    </dl>
+			
+			<dl class="lineD linepoint" >
+				<dt><font color="red"> * </font>名称：</dt>
+				<dd><input type="text" class="s-txt" style="width:200px;" value="{$res.title}" name="title" /></dd>
+			</dl>
+			
+			<dl class="lineD">
+		    	<dt><font color="red"> * </font>类型：</dt>
+		    	<dd>
+		    		<select name="type" class="s-select" style="width:200px;">
+						<option value="1" <php> if($res['type'] == 1){ </php>selected<php>}</php> >单选</option>
+						<option value="2" <php> if($res['type'] == 2){ </php>selected<php>}</php> >多选</option>
+					</select>
+				</dd>
+		    </dl>
+			
+			<volist name="res.options" id="vo">
+				<dl class="lineD linepoint" >
+					<dt>选项{$key+1}：</dt>
+					<dd><input name="option[]" type="text" value="{$vo.title}" class="s-txt" style="width:200px"></dd>
+				</dl>
+			</volist>
+			<php>
+			$count = count($res['options']);
+			if( $count < 10){
+				for($i=$count+1;$i<=10;$i++){
+			</php>
+			<dl class="lineD linepoint" >
+				<dt>选项{$i}：</dt>
+				<dd><input name="option[]" type="text" value="" class="s-txt" style="width:200px"></dd>
+			</dl>
+			<php>}}</php>
+			
+			<div class="page_btm">
+		         <input type="submit" class="btn_b" value="保存">
+		    </div>
+    	</div>
+    </form>
+    
+<include file="__THEME__/admin_footer" />

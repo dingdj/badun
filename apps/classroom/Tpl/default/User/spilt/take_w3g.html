@@ -1,0 +1,128 @@
+<include file="__THEME__/public_header_w3g"/>
+
+<div class="header2">
+    <a href="{:U('classroom/User/index')}" class="icon-back"></a>
+    <div>收入余额</div>
+</div>
+
+<style type="text/css">
+    .user-Release{margin-left:3%;padding-top:20px;width:94%;line-height:29px;}
+    .cent_r_box{margin-left:5px;width:100%;}
+    .box_block{position:relative;z-index:2;overflow:hidden;padding:20px 0;width:100%;height:auto;border-bottom:1px dashed #ddd;}
+    .lh30{line-height:30px;}
+    .ft24{font-size:24px;}
+    .clearfix{display:block;}
+    .h55{height:55px;}
+    .selected_title{float:left;height:30px;font-size:9pt;line-height:30px;}
+    .selected_title_a{width:90px;}
+    .color_hui{color:#999;}
+    .w276{width:276px;}
+    .Album_Title_s{background:none repeat scroll 0 0 #fff;}
+    .myInput1{position:relative;overflow:hidden;padding:8px;height:35px;border:1px solid #cecece;color:#ccc;}
+</style>
+<div class="body">
+    <ul class="fqalistnav">
+        <include file="_tab" />
+    </ul>
+
+    <div class="user-Release" >
+        <div class="cent_r_box clearfix">
+            <div class="box_block">
+                <p class="lh30 mb10"><span class="fl">可用</span> <em class="lan_txt ft24">{$balance}</em>  收入余额</p>
+                <if condition="$data eq null">
+                    <div class="clearfix h55">
+                        <span class="selected_title selected_title_a color_hui fl">
+                         输入兑换金额
+                        </span>
+                        <div class="myInput1 Album_Title_s  fl w276">
+                            <input type="text" class="upload_input_a" id="withdraw_num" rel="请输入提现数量" basenum="{$withdraw_basenum}" total="{$balance}" placeholder="(只允许输入{$withdraw_basenum}的倍数)">
+                        </div>
+                        <div class="fr txt_r">
+                            <a class="sel_w Collect" href="javascript:;" onClick="applyWithdraw();">提现</a>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        $(function(){
+                            $('html,body').click(function(){
+                                if($("#withdraw_num").val() == ''){
+                                    $("span.w276").show();
+                                }
+                            });
+                            $('.myInput1').click(function(){
+                                $("#withdraw_num").focus();
+                                $(this).find("span.w276").hide();
+                                return false;
+                            });
+                        });
+                        function applyWithdraw(){
+                            var input   = $('.myInput1 #withdraw_num:first');
+                            var num     = input.val();
+                            var basenum = parseInt(input.attr('basenum'));
+                            var total   = parseFloat(input.attr('total'));
+                            if(!/^[1-9][0-9\.]*$/.test(num)){
+                                alert('请输入正确的金额！');
+                                input.focus(); return false;
+                            }
+                            num = parseFloat(num);
+                            if(num > total){
+                                alert('无法提现：余额不足');
+                                input.focus(); return false;
+                            }
+                            if(num<0||num<basenum||num%basenum!=0){
+                                alert('只允许输入'+basenum+'的倍数');
+                                input.focus(); return false;
+                            }
+                            if(!confirm('提现金额：'+num+'，确认申请提现?')) return false;
+                            $.post(window.location, {num:num}, function(data){
+                                if(data.status){
+                                    alert('申请提现成功');
+                                    setTimeout(function(){
+                                        window.location.reload();
+                                    }, 2000);
+                                }else{
+                                    var errMsgs = ['未知错误','申请提现应为'+basenum+'的倍数','未找到用户或未绑定银行卡','同时只能申请一笔提现','余额转冻结失败或余额不足','提现申请失败'];
+                                    data.info = parseInt(data.info);
+                                    var msg  = errMsgs[data.info] ? errMsgs[data.info] : '未知错误';
+                                    alert('错误：'+msg);
+                                    input.focus(); return false;
+                                }
+                            }, 'json');
+                        }
+                    </script>
+                <else/>
+                    <table class="table_ye mt10"  cellpadding="0" cellspacing="1" border="1" width="100%">
+                        <?php foreach($data as $rs):?>
+                        <tr>
+                            <td width="50%" style="color: red">正在处理提现中</td>
+                            <td width="50%">{:unLast0($rs['wnum'])}  收入余额</td>
+                        </tr>
+                        <?php endforeach;?>
+                        <tr>
+                            <td>剩余的资产</td>
+                            <td> {$balance}     收入余额</td>
+                        </tr>
+                    </table>
+                </if>
+            </div>
+
+            <!--<if condition="$data">-->
+                <!--<div class="clearfix h80" style="margin-left:207px">-->
+                    <!--<span class="fl zzcl"></span>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_ky" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<a class="lan_y" href="javascript:;">dian</a>-->
+                    <!--<span class="fl hkwc"></span>-->
+                <!--</div>-->
+            <!--</if>-->
+
+            <p class="lh30 ">提示：1收入余额=1元人民币，提现金额必须是{$withdraw_basenum}的倍数；同时只能申请一笔提现，现金发放于7个工作日当周完成。如发现页面中一直是处理状态，请及时联系我们。联系电话：{$site.site_phone}</p>
+        </div>
+    </div>
+
+</div>
+
+<include file="__THEME__/public_footer_w3g" />

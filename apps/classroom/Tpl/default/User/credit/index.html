@@ -1,0 +1,161 @@
+<include file="__THEME__/public_header" />
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <include file="_tab" />
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all"  style="padding: 0 25px;">
+                <p class="txt_r ft24 pb20">积分：
+                    <em class="green_txt ft30 mlr22">{:unLast0($userLearnc['score'])}</em>
+                    <!--<a class="green_txt ft14 ml20" href="{:U('classroom/User/recharge')}" style="margin-right: 20px;">去充值</a>或者-->
+                    <a class="green_txt ft14 ml20" href="{:U('mall/Index/index')}" style="float: right">去兑换</a>
+                </p>
+                <div class="oline_pay_div">
+                    <span class="selected_title">充积分：</span>
+                    <div class="withdrawals_box">
+                        <input value="0" type="text" name="exchange_score" id="exchange_score" onkeyup="formatMoneyWith6digts(this);" />
+                    </div>
+                    <p class="have-price"><span id="lan_txt_ols">需花费¥0</span></p>
+                    <div class="foni_rea_lik">充值方式：
+                        <label><input type="radio" name="re_type" value="1" checked="checked"/>余额<i>（当前账户可用¥{$account['learn']}）</i></label>
+                        <label><input type="radio" name="re_type" value="2"/>收入<i>（当前账户可用¥{$account['split']}）</i></label>
+                        <b>注：余额&收入与积分的兑换比例为 {$split_score_pro}</b>
+                    </div>
+                </div>
+                <div class="sjo_ing_plmb">
+                    <!--<a id="buy-s-1r" class="topics_up color_wen9 fl pos_r"> <b class="Test_True"></b> 同意<em class="green_txt">《Eduline虚拟货币服务协议》</em></a>-->
+                    <a class="btn_big" type="button" value="" onclick="conRecharge();">确认</a>
+                    <p>应付：<em id="lan_txt_cost" class="lan_txt ft18 ml15">¥0
+                    </em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //手动输入
+    $('#exchange_score').keyup(function(){
+        var exchange_score = $(this).val(),
+            sple_score = parseFloat("{$sple_score}"),
+            learn = parseFloat("{$account['learn']}"),
+            split = parseFloat("{$account['split']}");
+
+        $('#lan_txt_cost').html("¥"+exchange_score / sple_score);
+        $('#lan_txt_ols').html("需花费¥"+exchange_score / sple_score);
+    });
+
+    function formatMoneyWith6digts( obj ){
+        obj.value = obj.value.replace(/\D|^0/g,'')
+        var re_type = $('input:radio[name="re_type"]:checked').val(),
+                sple_score = parseFloat("{$sple_score}");
+        if(re_type == 1){
+            var stock = parseFloat("{$account['learn']}") * sple_score;
+        }else if(re_type == 2){
+            var stock = parseFloat("{$account['split']}") * sple_score;
+        }
+
+        if(stock <= 0){
+            stock = 0;
+        }
+        if(obj.value <= 0 || obj.value == ''){
+            obj.value = 0;
+        }
+        if(obj.value > stock){
+            obj.value = stock;
+        }
+    }
+
+    $('.foni_rea_lik label input').click(function(){
+        $('#lan_txt_cost').html("¥0");
+        $('#exchange_score').val(0);
+        $('#lan_txt_ols').html("需花费¥0");
+    });
+
+    var conRecharge = function () {
+        var exchange_score = $.trim($('#exchange_score').val());
+        if (exchange_score == '') {
+            ui.error('请输入需要充值的数量');
+            return false;
+        }
+
+        if (exchange_score < 1) {
+            ui.error('充值的数量最少为1');
+            return false;
+        }
+
+        if(!(/^(\+|-)?\d+$/.test( exchange_score ))){
+            ui.error('充值的数量必须是正整数');
+            return false;
+        }
+
+        var re_type = $('input:radio[name="re_type"]:checked').val(),
+                sple_score = parseFloat("{$sple_score}"),
+                blanle = exchange_score / sple_score;
+        if(re_type == 1){
+            var contion_text = "您确认花费¥"+blanle+"余额，充值"+exchange_score+"积分吗？";
+        }else if(re_type == 2){
+            var contion_text = "您确认花费¥"+blanle+"收入，充值"+exchange_score+"积分吗？";
+        }
+        if(confirm(contion_text)){
+            _callback(re_type,exchange_score);
+        }
+        //ui.confirmBox("确认操作",contion_text,_callback(re_type,exchange_score));
+    };
+
+    function _callback(re_type,exchange_score){
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/User/rechargeScore')}",
+            data:"re_type="+re_type+"&exchange_score="+exchange_score,
+            dataType:"json",
+            success:function(e){
+                if(typeof (e) != 'object'){
+                    try {
+                        e = JSON.parse(e);
+                    }catch (e){
+                        ui.error("处理异常，请稍后再试");
+                        return false;
+                    }
+                }
+                if(e.status == 1){
+                    //ui.close();
+                    ui.success(e.info);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }else{
+                    ui.error(e.info);
+                    return false;
+                }
+            }
+        })
+    }
+</script>
+
+<include file="__THEME__/public_footer" />

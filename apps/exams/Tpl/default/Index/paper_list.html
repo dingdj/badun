@@ -1,0 +1,120 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
+
+<style>
+    .full-course:hover ul{
+        display: block;
+    }
+    .full-course ul{
+        display: none;
+    }
+    body{
+        background-color: #f0f0f2
+    }
+
+    .search-box .card-body .subs{
+        width: -webkit-fill-available;
+    }
+    .search-box{
+    	padding-bottom: 30px;
+    }
+    .topbox{
+    	margin-bottom: 20px;
+    }
+</style>
+<!-- 面包屑导航 start -->
+<div class="topbox bg3f">
+    <div class="screen-outer">
+        <ul class="position-label-find">
+            <li>
+                <a href="/">首页></a>
+                <a href="{:U('exams/Index/index')}">考试系统></a>
+                <a href="{:U('exams/Index/paper',['c'=>0,'module_id'=>$exams_module['exams_module_id']])}">{$exams_module.title}</a>
+            </li>
+        </ul>
+
+        <div class="search-box clearfix">
+            <dl class="card-body">
+                <dd class="clearfix">
+                    {$selcate}
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<!-- 面包屑导航 end -->
+
+<!--模块列表 start-->
+<div class="screen-outer mr01">
+    <dl class="card-body" style="overflow:visible">
+        <dt>
+            <div class="nav-item <eq name='order' value='default'>active</eq>">
+                <a href="{:U('exams/Index/paper',['module_id'=>$module_id,'c'=>$exams_subject_id,'order'=>'default','level'=>$level])}">综合排序</a>
+            </div>
+            <div class="nav-item <eq name='order' value='new'>active</eq>">
+                <a href="{:U('exams/Index/paper',['module_id'=>$module_id,'c'=>$exams_subject_id,'order'=>'new','level'=>$level])}">最新</a>
+            </div>
+            <div class="nav-item <eq name='order' value='hot'>active</eq>">
+                <a href="{:U('exams/Index/paper',['module_id'=>$module_id,'c'=>$exams_subject_id,'order'=>'hot','level'=>$level])}">最热</a>
+            </div>
+            <div class="special-video">
+            	<php>
+            		$levelArr = explode(',',$level);
+            	</php>
+                <h5>按难度：</h5>
+                <div class="nav-item">
+                    <label><input type="checkbox" <php>if(in_array(1,$levelArr)){echo "checked";}</php> name="level" value="1">一般</label>
+                </div>
+                <div class="nav-item">
+                    <label><input type="checkbox" <php>if(in_array(2,$levelArr)){echo "checked";}</php> name="level" value="2">简单</label>
+                </div>
+                <div class="nav-item">
+                    <label><input type="checkbox" <php>if(in_array(3,$levelArr)){echo "checked";}</php> name="level" value="3">困难</label>
+                </div>
+            </div>
+        </dt>
+    </dl>
+
+    <div class="card-main">
+        <ul class="classlist">
+        	<php>if(!$list['data']){</php>
+        		暂无内容
+        	<php>}else{</php>
+        	<volist name="list.data" id="vo">
+	        	<li data-paper_id="{$vo.exams_paper_id}" data-is_practice="{$exams_module.is_practice|default=0}">
+	                <a href="javascript:;">
+	                    <h3>{$vo.exams_paper_title}</h3>
+	                    <p><small>{$vo.exams_count|default='0'}人参加</small><b>共{$vo.paper_options.questions_count}题</b></p>
+	                    <button>{$exams_module.btn_text|default='开始练习'}</button>
+	                </a>
+	            </li>
+        	</volist>
+            <php>}</php>
+        </ul>
+        <div class="page">
+            <div class="pagebox">
+                {$list.html}
+            </div>
+        </div>
+    </div>
+</div>
+<include file="__THEME__/public_footer" />
+<script src="__APP__/js/public_header.js"></script>
+<script src="__APP__/js/view.js"></script>
+
+<script type="text/javascript">
+    /** 选择难度 **/
+	$(".special-video input[name='level']").click(function(){
+		var url = "{:U('exams/Index/paper',['module_id'=>$module_id,'c'=>$exams_subject_id,'order'=>$order])}";
+		var level = '';
+		$(".special-video input[name='level']:checked").each(function(i,v){
+			level += $(this).val()+',';
+		});
+		level = level.substr(0,level.length-1);
+		window.location.href = url+'&level='+level;
+	});
+
+</script>

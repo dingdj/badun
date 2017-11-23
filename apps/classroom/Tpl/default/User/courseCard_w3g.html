@@ -1,0 +1,68 @@
+<include file="__THEME__/public_header_w3g"/>
+
+    <div class="header2">
+    	<a href="{:U('classroom/User/index')}" class="icon-back"></a>
+    	<div>我的优惠券</div>
+    </div>
+    <div class="body">
+        <ul class="cardlistnav">
+            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
+            <li><a href="{:U('classroom/User/discount')}">打折</a></li>
+            <li><a href="{:U('classroom/User/vipCard')}">会员</a></li>
+            <li class="on"><a href="{:U('classroom/User/courseCard')}">课程卡</a></li>
+        </ul>
+        <ul class="card2list">
+            <if condition="$data">
+                <volist name="data" id="vo">
+                    <li class="<if condition='$vo["status"] eq 0'>stamp01<elseif condition='$vo["status"] eq 1'/>stamp03<elseif condition='$vo["etime"] lt time()'/>stamp04</if>">
+                        <div class="top">
+                            <div class="info">
+                                <div class="price" style="font-size: 18px;">{:msubstr(t($vo['video_name']),0,6,'utf-8',true)}（{$vo['vtype']}）</div>
+                                <p>课程卡</p>
+                                <p>{$vo.stime} - {$vo.etime}</p>
+                            </div>
+                            <php>if($vo['status'] == 0 && $vo['etime'] - time() > 86400*2){</php>
+                            <i style="display: none;"></i>
+                            <php>}else{</php>
+                            <i></i>
+                            <php>}</php>
+                        </div>
+                        <div class="bot">
+                            <p>券编号：{$vo.code}</p>
+                            <p>发卡单位：{$vo.school_title}</p>
+                            <a href="javascript:;" onclick="doExchange({$vo['video_id']},{$vo['video_type']},{$vo['cid']})">立即使用</a>
+                        </div>
+                    </li>
+                </volist>
+                <else/>
+                <div style="font-size: 15px;padding: 20px;margin-top: 8px;">您暂未获得课程卡~</div>
+            </if>
+        </ul>
+    </div>
+
+<script>
+    $(function() {
+        $(".header").hide();
+    });
+    //使用课程卡
+    function doExchange(vid,vtype,coupon_id){
+        if(vtype == 1){
+            vtype = 'zy_video';
+        }else if(vtype == 2){
+            vtype = 'zy_live';
+        }else if(vtype == 3){
+            vtype = 'zy_album';
+        }
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype,coupon_id:coupon_id},function(text){
+            if(text.status == 1){
+                alert('使用成功');
+                location.reload();
+            } else {
+                alert('使用失败');
+                return false;
+            }
+        },'json');
+    }
+</script>
+
+<include file="__THEME__/public_footer_w3g"/>

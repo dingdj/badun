@@ -1,0 +1,142 @@
+<include file="__THEME__/public_header_w3g"/>
+
+<style>
+    .centerbox {
+        padding: 0;
+        background-color: transparent;
+    }
+    .centerbox .teacher_bd{
+        background-color: transparent;
+    }
+    .pay_dl{
+        padding: 0 5%;
+        margin-top:10px;
+        color:#888;
+        font-size:12px;;
+    }
+</style>
+
+<div class="body">
+    <ul class="fqalistnav" style="margin-bottom:0"></ul>
+
+    <div class="centerbox">
+        <div class="cenbox_find_pr">
+            <div class="find_pr_head">
+                <a href="{:U('classroom/User/index')}" class="icon-back"></a>
+                <div>我的收入</div>
+                <h5>
+                    <a href="javascript:void(0)">明细</a>
+                    <p>
+                        <a href="{:U('classroom/User/spilt', array('tab'=>1))}">收入余额流水记录</a>
+                        <a href="{:U('classroom/User/spilt', array('tab'=>3))}">提现记录</a>
+                    </p>
+                </h5>
+            </div>
+            <p class="txt_r ft24 pb20">
+                <em class="green_txt ft30 mlr22">{$balance}</em>账户收入
+            </p>
+        </div>
+        <div class="center-type-hd li_asliebd_bind">
+            <a class="choose" href="javascript:;">提现</a>
+            <div class="slin-okn">
+                <span>¥</span>
+                <input value="0" type="text" name="exchange_balance" id="exchange_balance" onkeyup="formatMoneyWith6digts(this);"/>
+            </div>
+        </div>
+        <div class="inopmysge_poin">
+            <p><span id="lan_txt_ols">需花费¥0</span><a id="all_with">全部提现</a></p>
+        </div>
+        <div class="marsty_docse inpounfryt">
+            <label data-value="1">余额<em>（当前账户余额为{$balance}元）</em><i></i></label>
+            <label data-value="2">{$card_info}<i></i></label>
+        </div>
+        <div class="pay_dl">注：提现到余额后不能再转至银行卡,转账比例为1：1</div>
+        <div class="foot_menu_fix">
+            <dl class="pay_dl" style="padding: 0 5%">
+                <dt>收入：<em id="lan_txt_cost">¥0</em></dt>
+            </dl>
+            <a class="btn_b" type="button" value="" onclick="conTransfer();">确认</a>
+        </div>
+    </div>
+
+</div>
+<input name="tw_type" type="hidden" />
+
+<script>
+    $('#all_with').click(function(){
+        $('#exchange_balance').val("{$balance}");
+        $('#lan_txt_cost').html("¥{$balance}");
+        $('#lan_txt_ols').html("需花费¥{$balance}");
+    });
+
+    //手动输入
+    $('#exchange_balance').keyup(function(){
+        var exchange_balance = $(this).val();
+
+        $('#lan_txt_cost').html("¥"+exchange_balance);
+        $('#lan_txt_ols').html("需花费¥"+exchange_balance);
+    });
+
+    function formatMoneyWith6digts( obj ){
+        obj.value = obj.value.replace(/\D|^0/g,'')
+        var stock = parseInt('{$balance}');
+        if(stock <= 0){
+            stock = 0;
+        }
+        if(obj.value <= 0 || obj.value == ''){
+            obj.value = 0;
+        }
+        if(obj.value > stock){
+            obj.value = stock;
+        }
+    }
+
+    var conTransfer = function () {
+        var exchange_balance = $.trim($('#exchange_balance').val());
+        if (exchange_balance == '') {
+            alert('请输入需要转账的数量');
+            return false;
+        }
+
+        if (exchange_balance < 1) {
+            alert('转账的数量最少为1');
+            return false;
+        }
+
+        var tw_type = $('input:hidden[name="tw_type"]').val();
+
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/User/applySpiltWithdraw')}",
+            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance,
+            dataType:"json",
+            success:function(res){
+                if(typeof (res) != 'object'){
+                    try {
+                        res = JSON.parse(res);
+                    }catch (e){
+                        alert("处理异常，请稍后再试");
+                        return;
+                    }
+                }
+                if(res.status == 1){
+                    alert(res.info);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }else{
+                    alert(res.info);
+                }
+            }
+        });
+    };
+
+    $(".marsty_docse label").on("click",function(){
+        $('input:hidden[name="tw_type"]').val($(this).data("value"));
+        $(this).addClass("selected").siblings().removeClass("selected");
+    });
+
+    $(".marsty_docse label:first-child").click();
+</script>
+
+<include file="__THEME__/public_footer_w3g"/>

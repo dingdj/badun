@@ -1,0 +1,238 @@
+<include file="__THEME__/admin_header" />
+<style type="text/css">
+    .add_options{
+        margin: 20px 0;
+        background-color: #ABCE3F;
+        width: max-content;
+        padding: 2px 10px;
+    }
+    .add_options:hover{
+        background-color: #97C215;
+        width: max-content;
+        padding: 2px 10px;
+    }
+
+    .options_btn{
+        background-color: #FFF;
+        color:#67A813;
+        font-size: 14px;
+        border: 1px solid #67A813;
+        width: max-content;
+        margin: 20px 0;
+        padding: 8px 10px;
+    }
+    .options_btn:hover{
+        background-color: #67A813;
+        color:#FFF;
+        font-size: 14px;
+    }
+    .quote{
+        margin-bottom: 10px;
+        padding: 15px;
+        line-height: 22px;
+        border-left: 5px solid #9bacca;
+        border-radius: 0 2px 2px 0;
+        background-color: #f2f2f2;
+        font-size: 15px;
+        border-bottom: 1px solid #e2e2e2;
+    }
+    .question_type_box{
+        margin-left: 48px;
+        line-height: 6px;
+        background-color: #FFF;
+    }
+    .edit_score{
+        width: 16px;
+    }
+</style>
+<div id="container" class="so_main">
+    <div class="page_tit">
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+
+    <div class="tit_tab">
+        <ul>
+            <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+            <volist name='pageTab' id='t'>
+                <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+            </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+
+    <form method="POST" action="{:U('exams/AdminPaper/doAssembly')}" id="detail_form" name="detail_form">
+        <div class="form2">
+            <input type="hidden" name="paper_id" value="{$paper.exams_paper_id}">
+            <php>if($question_type){</php>
+            <blockquote class="quote">试题类型管理 </blockquote >
+            <dl class="lineD">
+                <dt>试题类型：</dt>
+                <dd>
+                    <select name="question_type">
+                        <volist name="question_type" id="t">
+                            <option value="{$t.exams_question_type_id}" data-key="{$t.question_type_key}">{$t.question_type_title}</option>
+                        </volist>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt>每题分值：</dt>
+                <dd>
+                    <input type="text" name="score">
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt>试题类型说明：</dt>
+                <dd>
+                    <textarea class="textarea" style="width: 248px;" name="desc"></textarea>
+                </dd>
+            </dl>
+            <dl>
+                <dd>
+                    <div class="clear">
+                        <div class="add_options btn_b">添加试题类型</div>
+                    </div>
+                </dd>
+            </dl>
+            <php>}</php>
+            <blockquote class="quote">试卷名称：<font style="color: #3695ff;">{$paper.exams_paper_title}</font> 总题数：<font style="color: #3695ff;">{$paper_options.questions_count|default=0}</font>  总分数：<font style="color: #3695ff;">{$paper_options.score|default=0}</font></blockquote >
+            <volist name="paper_options.options_type" id="op" key="type_num">
+                <blockquote class="quote question_type_box">
+                    <span><b>第{$type_num}部分</b> {$op.type_info.question_type_title}<neq name='op.desc' value="">({$op.desc})</neq></span> <span>每题分值: <input data-question_type="{$op.question_type}" type="text" value="{$op.score}" class="edit_score"> 分</span>
+                    <span class="btn_b options_btn" onclick="showQuestionList('{$op.question_type}',this)">展开</span>
+                    <span class="btn_b options_btn" onclick="showdiv('{$op.question_type}')">手动选择试题</span>
+                    <span class="btn_b options_btn" onclick="autoCreate('{$op.question_type}')">自动组成试题</span>
+                    <span class="btn_b options_btn" onclick="delOptionsType('{$type_num}')">删除</span>
+                </blockquote>
+                <div class="question_list_{$op.question_type}" style="display: none;">
+                    <php>
+                        $question_data = isset($paper_options['options_questions_data'][$op['question_type']]) ? $paper_options['options_questions_data'][$op['question_type']] :[];
+                    </php>
+                    <table id="table"  border="0" cellpadding="3" cellspacing="1" width="90%"  float:left; style="background-color: #ececec;text-align: center;">
+                      <tr style="BACKGROUND-COLOR: #d2dbea; font-weight: bold">
+                        <th width="5%">ID</th>
+                        <th width="55%">试题内容</th>
+                        <th width="15%">试题专业</th>
+                        <th width="5%">试题考点</th>
+                        <th width="5%">试题题型</th>
+                        <th width="5%">试题难度</th>
+                        <th width="5%">试题版块</th>
+                        <th width="10%">操作</th>
+                      </tr>
+                      <tbody>
+                    <php>if($question_data){</php>
+                    <volist name="question_data" id="vo">
+                            <tr bgcolor='#F4FAFF'>
+                                <td>{$vo.exams_question_id}</td>
+                                <td>{:mStr(t($vo['content']),50)}</td>
+                                <td>{$vo.question_subject}</td>
+                                <td>{$vo.exams_point_title}</td>
+                                <td>{$vo.exams_question_type_title}</td>
+                                <td>{$vo.level_title}</td>
+                                <td>{$vo.exams_module_title}</td>
+                                <td><a href="javascript:delquestion({$op.question_type},{$vo.exams_question_id});">删除</a></td>
+                            </tr>
+                    </volist>
+                    <php>}else{</php>
+                        <tr><td colspan="8">暂未添加试题</td></tr>
+                    <php>}</php>
+                    </tbody>
+                    </table>
+                </div>
+            </volist>
+        </div>
+    </form>
+    <include file="selectQuestion" />
+</div>
+<script type="text/javascript">
+
+function showQuestionList(question_type,_this){
+    var obj = $('.question_list_'+question_type);
+    if(obj.is(":hidden")){
+        obj.slideDown();
+        $(_this).text("收缩");
+    }else{
+        obj.slideUp();
+        $(_this).text("展开");
+    }
+    
+}
+function delOptionsType(type_id){
+    if(confirm('将会删除该类型下的所有试题,确认删除试题类型吗?')){
+        $.post('{:U("exams/AdminPaper/doDelPaperOptionType")}',{type_id:type_id,paper_id:$("input[name='paper_id']").val()},function(res){
+            haddResponse(res);
+        });
+    }
+}
+
+function autoCreate(question_type){
+    var paper_id = $("input[name='paper_id']").val();
+    ui.box.load(U('exams/AdminPaper/autoCreateQuestion')+'&question_type='+question_type+'&paper_id='+paper_id, "请填写新增试题个数");
+}
+
+function delquestion(question_type,question_id){
+    $.post('{:U("exams/AdminPaper/delQuestion")}',
+    {
+        question_type:question_type,
+        question_id:question_id,
+        paper_id:$("input[name='paper_id']").val()
+    },function(res){
+        haddResponse(res);
+    });
+}
+
+function haddResponse(res){
+    if(typeof(res) != 'object'){
+        try{
+            var res = JSON.parse(res);
+        }catch(e){
+            ui.error("处理异常,请重新尝试");
+            return false;
+        }
+    }
+
+    if(res.status == 1){
+        ui.success(res.data.info);
+        setTimeout(function(){
+            window.location.reload();
+        },1500)
+        return true;
+    }else{
+        ui.error(res.message);
+        return false;
+    }
+}
+    $(function(){
+        // 监听添加试题类型
+        $(".add_options").click(function(){
+            var question_type = $("select[name='question_type']").val();
+            var question_type_key = $("select[name='question_type'] option:selected").data("key");
+            var score = parseInt($("input[name='score']").val());
+            var desc = $("textarea[name='desc']").val();
+            $.post('{:U("exams/AdminPaper/doAddPaperOptionType")}',
+                {
+                    question_type:question_type,
+                    question_type_key:question_type_key,
+                    score:score,
+                    desc:desc,
+                    paper_id:$("input[name='paper_id']").val()
+                },function(res){
+                    haddResponse(res);
+                });
+        });
+
+        // 监听试题分数修改
+        $(".edit_score").blur(function(){
+            var score = $(this).val();
+            $.post('{:U("exams/AdminPaper/updateQuestionTypeScore")}',
+                {
+                    question_type:$(this).data('question_type'),
+                    score:score,
+                    paper_id:$("input[name='paper_id']").val()
+                },function(res){});
+        });
+        
+    });
+</script>
+<include file="__THEME__/admin_footer" />

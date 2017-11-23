@@ -1,0 +1,160 @@
+<include file="__THEME__/admin_header" />
+<php>
+ set_time_limit(0);
+</php>
+	<link rel="stylesheet" href="__THEME__/js/swfupload/css/default.css">
+	</div>
+	<div id="container" class="so_main">
+    <div class="page_tit">
+        <div class="right">
+            <neq name="back_id" value="-1"><a href="{:U('exam/AdminUserExam/index')}" class="btn_a"><span>返回</span></a></neq>
+        </div>
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+    
+    <div class="tit_tab">
+        <ul>
+        <php> !$_REQUEST['tabHash'] and $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+        <volist name='pageTab' id='t'>
+            <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+        </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+    	<form name="examiner_paper">
+    		<input type="hidden" name="paper_id" value="{$Think.get.paper_id}">
+    		<input type="hidden" name="exams_users_id" value="{$Think.get.exams_users_id}">
+    	<div class="form2">
+		    <div style='width:80%;height:auto; margin-left:50px;'>
+		    	<php>$question_num = 1;</php>
+			  	<volist name="paper_options.options_type" id="options_type">
+			  		<div style="line-height:30px;padding-left:5px;">
+				  		<switch name="options_type.question_type_key">
+							<case value="radio|multiselect|judge">
+								<!-- 单多选 -->
+	                            <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		                            <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
+		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<ul>
+			                            	<volist name="question.answer_options" id="answer">
+			                                    <li><b>{$key}、</b>{$answer}</li>
+			                                </volist>
+		                                </ul>
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+			                            <php>
+			                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+			                            </php>
+			                            <em class="bgco">用户答案<strong><php>if(!$content){</php>未作答<php>}</php><volist name="content" id="ans">{$ans|default='未作答'}</volist></strong></em>
+			                            <em>正确答案<strong><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></strong></strong></em>
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            </div>
+		                            <php>$question_num++;</php>
+		                            <hr />
+	                            </volist>
+							</case>
+							<case value="completion">
+								<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		                           <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
+		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<em class="bgco">用户答案:
+			                            <ul>
+	                                        <php>
+	                                            $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+	                                        </php>
+	                                        <volist name="question.answer_true_option" id="answer">
+	                                            <li <php>if($content[$i-1] != $answer){</php>class="co"<php>}</php>><span><b>{$i}</b>、{$content[$i-1]|default='未作答'}</span></li>
+	                                        </volist>
+	                                    </ul>
+			                            <em>正确答案
+			                            	<ul>
+		                                        <volist name="question.answer_true_option" id="answer_true">
+		                                        <li><span><b>{$i}</b>、{$answer_true}</span></li>
+		                                        </volist>
+		                                    </ul>
+		                                </em>
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            </div>
+		                            <php>$question_num++;</php>
+		                            <hr />
+	                            </volist>
+							</case>
+							<case value="essays">
+								<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		                            <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
+		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<ul>
+		                            	<volist name="question.answer_options" id="answer">
+		                                    <li><b>{$key}、</b>{$answer}</li>
+		                                </volist>
+		                                </ul>
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+			                            <php>
+			                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
+			                                $examiner_data = isset($answerData['examiner_data'][$question['exams_question_id']]) ? $answerData['examiner_data'][$question['exams_question_id']] : [];
+			                            </php>
+			                            <em class="bgco">用户答案
+			                            <p>{$content[0]|default='未作答'}</p>
+			                            </em>
+			                            <em>得分:<input type="number" name="examiner_data[{$options_type.question_type}][{$question.exams_question_id}]" value="{$examiner_data|default=''}"></em>
+			                            <input type="hidden" name="question_num[{$question.exams_question_id}]" value="{$question_num}">
+		                            </div>
+		                            <div style="line-height:30px;padding-left:5px;">
+		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            </div>
+		                            <php>$question_num++;</php>
+		                            <hr />
+	                            </volist>
+							</case>
+				  		</switch>
+			  		</div>
+			  	</volist>
+    		</div>
+    	</div>
+    	<div class="page_btm">
+		      <input type="button" class="btn_b" value="提交阅卷" id="form_submit">
+		</div>
+		</form>
+<include file="__THEME__/admin_footer" />
+
+<script type="text/javascript">
+$(function(){
+	$("#form_submit").click(function(){
+		var data = $("form[name='examiner_paper']").serialize();
+		$.post('{:U("exams/AdminExamsUser/doHaddleExams")}',
+        data,function(res){
+            if(typeof(res) != 'object'){
+		        try{
+		            var res = JSON.parse(res);
+		        }catch(e){
+		            ui.error("处理异常,请重新尝试");
+		            return false;
+		        }
+		    }
+
+		    if(res.status == 1){
+		        ui.success(res.data.info);
+		        setTimeout(function(){
+		            window.location.reload();
+		        },1500)
+		        return true;
+		    }else{
+		        ui.error(res.message);
+		        return false;
+		    }
+        });
+	});
+});
+</script>

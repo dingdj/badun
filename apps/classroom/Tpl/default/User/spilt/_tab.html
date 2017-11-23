@@ -1,0 +1,10 @@
+<if condition="$is_pc">
+    <a {$tab==0 ?' class="on"':''} href="{:U('classroom/User/spilt')}">我的收入</a>
+    <a {$tab==1 ?' class="on"':''} href="{:U('classroom/User/spilt', array('tab'=>1))}">收入流水记录</a>
+    <a {$tab==3 ?' class="on"':''} href="{:U('classroom/User/spilt', array('tab'=>3))}">提现记录</a>
+    <else/>
+    <style>.fqalistnav li{width: 33% !important;}</style>
+    <li {$tab==0 ?' class="on"':''}> <a href="{:U('classroom/User/spilt')}">我的收入</a></li>
+    <li {$tab==1 ?' class="on"':''}> <a href="{:U('classroom/User/spilt', array('tab'=>1))}">收入流水记录</a></li>
+    <li {$tab==3 ?' class="on"':''}> <a href="{:U('classroom/User/spilt', array('tab'=>3))}">提现记录</a></li>
+</if>

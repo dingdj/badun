@@ -1,0 +1,230 @@
+<include file="__THEME__/admin_header" />
+<style type="text/css">
+    .add_options{
+        margin: 20px 0;
+        background-color: #ABCE3F;
+    }
+    .add_options:hover{
+        background-color: #97C215;
+    }
+</style>
+<div id="container" class="so_main">
+    <div class="page_tit">
+        {$pageTitle}
+    </div>
+    <php>if(!empty($pageTab)):</php>
+
+    <div class="tit_tab">
+        <ul>
+            <php> !$_REQUEST['tabHash'] && $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
+            <volist name='pageTab' id='t'>
+                <li><a href="{$t.url}&tabHash={$t.tabHash}" <php> if($t['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$t.title}</a></li>
+            </volist>
+        </ul>
+    </div>
+    <php>endif;</php>
+
+    <form method="POST" action="{:U('exams/AdminQuestion/add')}" id="detail_form" name="detail_form">
+        <div class="form2">
+            <input type="hidden" name="exams_question_id" value="{$question.exams_question_id}">
+            <dl class="lineD">
+                <dt><font color="red"> * </font>试题类型：</dt>
+                <dd>
+                    <select name="exams_question_type">
+                        <option value="0">请选择</option>
+                        <volist name="exams_question_type" id="vo">
+                            <option <eq name='question.exams_question_type_id' value="$vo.exams_question_type_id">selected</eq> value="{$vo.question_type_key}|{$vo.exams_question_type_id}">{$vo.question_type_title}</option>
+                        </volist>
+                    </select>
+                </dd>
+            </dl>
+
+            <dl class="lineD" id="select_exams_subject">
+                <dt><font color="red"> * </font>选择专业：</dt>
+                <dd>
+                    {:W('CategoryLevel',array('table'=>'exams_subject','id'=>'exams_subject_id','default'=>$question['question_subject_fullpath']))}
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt><font color="red"> * </font>选择考点：</dt>
+                <dd id="select_point">
+                    <select name="exams_point_id">
+                    	<volist name="exams_point" id="point">
+                    		<option <eq name='question.exams_point_id' value="$point.exams_point_id">selected</eq> value="{$point.exams_point_id}">{$point.title}</option>
+                    	</volist>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt><font color="red"> * </font>选择版块：</dt>
+                <dd>
+                    <select name="exams_module_id">
+                        <volist name="exams_module" id="vo">
+                        <option <eq name='question.exams_module_id' value="$vo.exams_module_id">selected</eq> value="{$vo.exams_module_id}">{$vo.title}</option>
+                        </volist>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt><font color="red"> * </font>试题难度：</dt>
+                <dd>
+                    <select name="exams_level">
+                        <option <eq name='question.level' value="1">selected</eq> value="1">简单</option>
+                        <option <eq name='question.level' value="2">selected</eq> value="2">普通</option>
+                        <option <eq name='question.level' value="3">selected</eq> value="3">困难</option>
+                    </select>
+                </dd>
+            </dl>
+            <dl class="lineD">
+                <dt><font color="red"> * </font>试题内容：</dt>
+                <dd>
+                    {:W('Editor',array('value'=>$question['content'],'width'=>'99%','height'=>'200','contentName'=>'content','type'=>'more','maximumWords'=>'0'))}
+                </dd>
+            </dl>
+            <dl class="lineD dl_answer_options">
+                <dt><font color="red"> * </font>选项内容：</dt>
+                <dd id="showAnswerOption" data-options_count="{:count($question['answer_options'])}">
+	                <switch name="question.type_info.question_type_key">
+	                	<case value="radio">
+	                		<volist name="question.answer_options" id="op">
+		                		<div <php>if($i !=1 || count($answer_options) == 1){echo 'class="clear"';}</php>>
+					                <p><input <php>if(in_array($key,$question['answer_true_option'])){</php>checked<php>}</php> type="radio" name="answer_true_option" value="{$key}">{$key}.</p>
+					                {:W('Editor',array('width'=>'99%','height'=>'200','contentName'=>"answer_options_".$key,'value'=>$op,'type'=>'simple','maximumWords'=>'1000'))}
+					            </div>
+	                		</volist>
+                            <div class="clear">
+                                <div class="add_options btn_b">添加选项</div>
+                            </div>
+	                	</case>
+	                	<case value="multiselect">
+	                		<volist name="question.answer_options" id="op">
+		                		<div <php>if($i !=1 || count($answer_options) == 1){echo 'class="clear"';}</php>>
+					                <p><input <php>if(in_array($key,$question['answer_true_option'])){</php>checked<php>}</php> type="checkbox" name="answer_true_option[]" value="{$key}">{$key}.</p>
+					                <div>
+					                	{:W('Editor',array('width'=>'99%','height'=>'200','contentName'=>"answer_options_".$key,'value'=>$op,'type'=>'simple','maximumWords'=>'1000'))}
+					                </div>
+					            </div>
+				            </volist>
+                            <div class="clear">
+                                <div class="add_options btn_b">添加选项</div>
+                            </div>
+	                	</case>
+	                	<case value="judge">
+	                		<volist name="question.answer_options" id="op">
+	                			<p><input type="radio" <php>if(in_array($key,$question['answer_true_option'])){</php>checked<php>}</php>  name="answer_true_option" value="{$key}">{$op}</p>
+	                			<input type="hidden" name="answer_options_{$key}" value="{$op}">
+	                		</volist>
+	                	</case>
+	                	<case value="completion">
+	                		<volist name="question.answer_true_option" id="op">
+	                		<p><input type="text" value="{$op}" name="answer_true_option[]"></p>
+	                		</volist>
+                            <div class="clear">
+                                <div class="add_options btn_b">添加选项</div>
+                            </div>
+	                	</case>
+	                	<case value="essays"></case>
+	                </switch>
+                </dd>
+            </dl>
+
+            <dl class="lineD dl_analyze">
+                <dt>试题解析：</dt>
+                <dd>
+                    {:W('Editor',array('value'=>$question['analyze'],'width'=>'99%','height'=>'200','contentName'=>'analyze','type'=>'more','maximumWords'=>'0'))}
+                </dd>
+            </dl>
+            
+
+            <div class="page_btm">
+                <input type="submit" class="btn_b" value="保存" id="form_submit">
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function(){
+        // 监听选择专业
+        $("select[id='exams_subject']").live('change',function(){
+            var subject_id = $(this).val();
+            if(subject_id == 0){
+                 ui.error("请选择专业");
+                 $("#select_point").html("请选择专业");
+                return false;
+            }
+            // 加载考点
+            $.get('{:U("exams/AdminPoint/loadPonit")}',{subject_id:subject_id},function(res){
+                if(typeof(res) != 'object'){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        ui.error("获取考点错误");
+                        return false;
+                    }
+                }
+
+                if(res.status == 1){
+                    var html = '<select name="exams_point_id">';
+                    $.each(res.data,function(i,v){
+                        html += '<option value="'+v.exams_point_id+'">'+v.title+'</option>';
+                    })
+                    html += '</select>';
+                    $("#select_point").html(html);
+                }else{
+                    //ui.error(res.message);
+                    $("#select_point").html(res.message);
+                    return false;
+                }
+
+            });
+        });
+        // 监听切换试题类型
+        $("select[name='exams_question_type']").change(function(){
+            var exams_question_type = $(this).val();
+            $.get('{:U("exams/AdminQuestion/getAnswerTpl")}',{question_type_key:exams_question_type,totalCount:0,limit:4},function(res){
+                if(typeof(res) != 'object'){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        ui.error("获取选项内容数据错误,请重新尝试");
+                        return false;
+                    }
+                }
+                if(res.status == 1){
+                    $("#showAnswerOption").html(res.html);
+                    if(res.html == ""){
+                        $(".dl_answer_options").hide();
+                    }else{
+                        $(".dl_answer_options").show();
+                    }
+                }
+            });
+        });
+
+        // 添加选项
+        $(".add_options").live("click",function(){
+            var _this = $(this);
+            var exams_question_type = $("select[name='exams_question_type']").val();
+            var count = $("#showAnswerOption").data("options_count");
+            $.get('{:U("exams/AdminQuestion/getAnswerTpl")}',{question_type_key:exams_question_type,totalCount:count,limit:1},function(res){
+                if(typeof(res) != 'object'){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        ui.error("获取选项内容数据错误,请重新尝试");
+                        return false;
+                    }
+                }
+                if(res.status == 1){
+                    $("#showAnswerOption").append(res.html);
+                    $("#showAnswerOption").data("options_count",count+1);
+                    _this.parent().remove();
+                }else{
+                    ui.error(res.message);
+                    return false;
+                }
+            });
+        });
+    });
+</script>
+<include file="__THEME__/admin_footer" />

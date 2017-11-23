@@ -1,0 +1,96 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <include file="_tab" />
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all" style="display:block;padding: 10px 10px;">
+                    <div class="mt10b20 clearfix h55">
+                        <form method="get" action="{:U('classroom/User/account', array('tab'=>2))}" id="account-find-form">
+                            <span class="selected_title fl">
+                            时间：
+                            </span>
+                            <div class="myInput1 fl w130" style="padding:0;height:30px">
+                                <input type="text" style="height:30px;top:0" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="st" value="{$_GET['st']}" />
+                            </div>
+                            <span class="fl"> &nbsp;&nbsp;到&nbsp;&nbsp;</span>
+                            <div class="myInput1 fl w130" style="padding:0;height:30px">
+                                <input type="text" style="height:30px;top:0" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="et" value="{$_GET['et']}" />
+                            </div>
+                            <a class="sel_w fl ml15" id="find-submit" href="javascript:;">查询</a>
+                        </form>
+                    </div>
+                    <style>
+                        table.table_ye tr td{border-top:1px solid #e3e3e3;border-left:1px solid #e3e3e3; height:34px; line-height:34px; font-size:12px}
+                    </style>
+                    <table class="table_ye" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-right:1px solid #e3e3e3;border-bottom:1px solid #e3e3e3;">
+                        <thead>
+                        <tr><td width="10%">序号</td>
+                            <td width="25%">时间</td>
+                            <td width="25%">支付积分</td>
+                            <td width="40%">支付商品名称</td>
+                        </tr></thead>
+                        <tbody>
+                        <?php foreach($data['data'] as $i=>$rs):?>
+                        <tr>
+                            <td><?php echo ($i+1)*$data['nowPage']?></td>
+                            <td>{:friendlyDate($rs['ctime'])}</td>
+                            <td>{:unLast0($rs['num'])}积分</td>
+                            <td><if condition="$rs['goods_id']"><a href="{:U('mall/goods/view', array('id'=>$rs['goods_id']))}" class="green_txt" target="_blank" title="{$rs.note}"><else/><a class="green_txt"></if>{:mb_substr($rs['note'], 0, 15, 'utf-8')}</a></td>
+                        </tr>
+                        <?php endforeach;?>
+                        </tbody></table>
+                    <div class="mt10 account_page">累计支付：<em class="red_txt">{:unLast0($total)}</em>积分<p>共{$data.totalRows}条　{$data.html}</p></div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$('input.rcalendar_select,#rcalendar_y,#rcalendar_m,#ryears,#rmonths').live('click',function(e){
+	return false;
+});
+$(document).click(function(){
+	typeof rcalendar_close != 'undefined' && rcalendar_close();
+});
+$('#account-find-form').submit(function(e) {
+	if($("input.rcalendar_select").val() == '') notes('请选择查询时间', 'failure');
+    var url = $(this).attr('action')+'';
+	if(url.indexOf('?')>-1){
+		window.location = url+'&'+$(this).serialize();
+	}else{
+		window.location = url+'?'+$(this).serialize();
+	}
+	return false;
+}).find('#find-submit').click(function(){
+	$(this).parents('form').submit();
+});
+</script>
+
+<include file="__THEME__/public_footer" />

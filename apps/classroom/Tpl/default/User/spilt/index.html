@@ -1,0 +1,137 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <include file="_tab" />
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all"  style="padding: 0 25px;">
+                <p class="txt_r ft24 pb20"> 提成：
+                    <em class="green_txt ft30 mlr22">¥{$balance}</em>
+                </p>
+                <div class="oline_pay_div">
+                    <span class="selected_title">提现</span>
+                    <div class="withdrawals_box">
+                        <span>¥</span>
+                        <input value="0" type="text" name="exchange_balance" id="exchange_balance" onkeyup="formatMoneyWith6digts(this);"/>
+                    </div>
+                    <p class="have-price"><span id="lan_txt_ols">需花费¥0</span> <a href="javascript:void(0)" id="all_with">全部提现</a></p>
+                    <div class="foni_rea_lik">支付方式：
+                        <label><input type="radio" name="tw_type" value="1" checked="checked"/>余额<i>（当前账户可用¥{$balance}）</i></label>
+                        <label><input type="radio" name="tw_type" value="2"/>{$card_info}</label>
+                        <b>注：提现到余额后不能再转至银行卡,转账比例为1：1</b>
+                    </div>
+                </div>
+                <div class="sjo_ing_plmb">
+                    <!--<a id="buy-s-1r" class="topics_up color_wen9 fl pos_r"> <b class="Test_True"></b> 同意<em class="green_txt">《Eduline虚拟货币服务协议》</em> </a>-->
+                    <a class="btn_big" type="button" value="" onclick="conTransfer();">确认</a>
+                    <p>应付：<em id="lan_txt_cost" class="lan_txt ft18 ml15">¥0
+                    </em></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $('#all_with').click(function(){
+        $('#exchange_balance').val("{$balance}");
+        $('#lan_txt_cost').html("¥{$balance}");
+        $('#lan_txt_ols').html("需花费¥{$balance}");
+    });
+
+    //手动输入
+    $('#exchange_balance').keyup(function(){
+        var exchange_balance = $(this).val();
+
+        $('#lan_txt_cost').html("¥"+exchange_balance);
+        $('#lan_txt_ols').html("需花费¥"+exchange_balance);
+    });
+    function formatMoneyWith6digts( obj ){
+        obj.value = obj.value.replace(/\D|^0/g,'')
+        var stock = parseInt('{$balance}');
+        if(stock <= 0){
+            stock = 0;
+        }
+        if(obj.value <= 0 || obj.value == ''){
+            obj.value = 0;
+        }
+        if(obj.value > stock){
+            obj.value = stock;
+        }
+    }
+
+    var conTransfer = function () {
+        var exchange_balance = $.trim($('#exchange_balance').val());
+        if (exchange_balance == '') {
+            ui.error('请输入需要转账的数量');
+            return false;
+        }
+
+        if (exchange_balance < 1) {
+            ui.error('转账的数量最少为1');
+            return false;
+        }
+
+        var basenum = parseInt('{$withdraw_basenum}');
+        var tw_type = $('input:radio[name="tw_type"]:checked').val();
+
+        if(tw_type == 2 && (exchange_balance<0||exchange_balance<basenum||exchange_balance%basenum!=0)){
+            ui.error('只允许提现为'+basenum+'的倍数');
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url:"{:U('classroom/User/applySpiltWithdraw')}",
+            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance,
+            dataType:"json",
+            success:function(e){
+                if(typeof (e) != 'object'){
+                    try {
+                        e = JSON.parse(e);
+                    }catch (e){
+                        ui.error("处理异常，请稍后再试");
+                        return;
+                    }
+                }
+                if(e.status == 1){
+                    ui.success(e.info);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                }else{
+                    ui.error(e.info);
+                }
+            }
+        });
+        return false;
+    };
+</script>
+
+<!--footer-->
+<include file="__THEME__/public_footer" />

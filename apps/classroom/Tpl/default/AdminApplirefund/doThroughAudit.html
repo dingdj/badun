@@ -1,0 +1,62 @@
+
+
+<div style="width:300px;padding:10px;">
+
+    <div class="jgformitem" style="line-height: 30px;">
+        <label><span style="color: red;">*</span>退款原因:</label>
+        <select name="refund_reason" id="refund_reason" disabled="disabled" style="border: solid 0px #b6c7d6;vertical-align: 0px;width: 229px;margin-left: 10px;border-radius: 1px;">
+            <option value="0" <if condition="$refund_reason == 0">selected="selected"</if> >请选择</option>
+            <option value="1" <if condition="$refund_reason == 1">selected="selected"</if> >讲师不专业</option>
+            <option value="2" <if condition="$refund_reason == 2">selected="selected"</if> >课程不是想学习的</option>
+            <option value="3" <if condition="$refund_reason == 3">selected="selected"</if> >{$refundConfig['refund_numday']}天无理由退款</option>
+            <option value="4" <if condition="$refund_reason == 4">selected="selected"</if> >其他原因</option>
+        </select>
+    </div>
+    <div class="jgformitem">
+        <label><span style="color: red;">*</span>退款金额:</label><span style="color:red;">　￥{$price}</span>
+    </div><br/>
+    <div class="jgformitem">
+        <label><span style="color: red;"></span>退款渠道:</label><span style="color:red;">　原支付渠道退回（{$pay_type}）</span>
+    </div><br/>
+    <div class="jgformitem">
+        <label><span style="color: red;">*</span>退款说明:</label>
+        <textarea class="jg_input" name=refund_note" placeholder="选填" disabled="disabled" id ="refund_note" style ="width: 285px;height: 64px;margin-left: 4px;padding: 0 4px; line-height: 38px; border: solid 1px #b6c7d6; border-radius: 3px;" >{$refund_note}</textarea>
+    </div><br/>
+
+    <div class="jgformitem banner_div">
+        <style>
+            #width_150 input{opacity: 0;}
+            .image-list li a.name{display: none;}
+        </style>
+        <label class="label" style="float: left;"><span style="color: red;"> </span>凭证：</label>
+        {:W('Upload',array('inputname'=>'voucher','inForm'=>3, 'attachIds'=>$voucher, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+    </div><br/>
+    <p>以上是相关凭证/截图以及退款理由等详细信息</p><br/>
+
+    <input class="btn_b" type="button" value="确允退款" onclick="doadoptororder();" />
+    <input class="btn_w ml10" type="button" value="取消" onclick="ui.box.close();" />
+</div>
+<script>
+var  type = '{$type}';
+var  orderid = '{$orderid}';
+
+    /**
+     * 发布通过
+     * @return {[type]} [description]
+     */
+    var doadoptororder = function () {
+        // 提交驳回
+        $.post(U('classroom/AdminApplirefund/doRefundOrderThrough'), {type:type, orderid:orderid}, function (res) {
+            if (res.status == 1) {
+                ui.box.close();
+                ui.success(res.info);
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
+            } else {
+                ui.error(res.info);
+            }
+        }, 'json');
+        return false;
+    };
+</script>

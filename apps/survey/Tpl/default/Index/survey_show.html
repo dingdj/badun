@@ -1,0 +1,89 @@
+<include file="__THEME__/public_header" />
+<link href="__ROOT__/apps/exam/_static/css/exam.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+  #bg{ display: none; position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: #8e9091; z-index:1001; -moz-opacity: 0.7; opacity:.70; filter: alpha(opacity=70);}
+  #show{display: none; position: absolute; top: 30%; left: 35%; width: 30%; height: 30%; padding: 8px; z-index:1002; }
+  .fixed{position:fixed; top:20px;}
+  .fixed{_position:absolute; _top:expression((20+(noValue = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop))+'px');}
+  </style>
+  <script src="__APP__/js/exam.js"></script>
+
+<div class="content-place">
+    <ul>
+        <li>
+            <a href="/">首页</a><span>&gt;</span>
+            <a href="{:U('survey/Index/index')}">在线调查</a><span>&gt;</span>
+		</li>
+    </ul>
+</div>
+<div class="worap-con">
+<div class="row">
+    <div class="col-md-3" style="float:none;"><h2>{$title}-在线调查统计</h2></div>
+	<div class="col-md-9" style="width:100%;">
+		<volist name="list" id="vo">
+			<div class="survey_show" id="show{$key}">dd</div>
+		</volist>
+  	</div>
+</div>
+</div>
+<style>
+.survey_show {width:360px;background:#fff;float:left;margin:20px;}
+</style>
+<script src="__APP__/js/highcharts.js"></script>
+<script type="text/javascript">
+$(function () {
+    var list = {$list_json};
+    $(list).each(function(i,val){
+    	$('#show'+i).highcharts({
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: val['title']
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: '投票数量'
+                }
+
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.y:.1f}'
+                    }
+                }
+            },
+
+            tooltip: {
+            	enabled:false,    //禁用鼠标移动提示框
+            },
+
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: val['options']
+            }],
+        });
+    });
+    
+    
+    
+});
+</script>
+
+
+
+
+<include file="__THEME__/public_footer" />

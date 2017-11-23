@@ -1,0 +1,294 @@
+<include file="__THEME__/public_header_w3g"/>
+<style>
+    .centerbox {
+        padding: 0;
+        background-color: transparent;
+    }
+    .centerbox .teacher_bd{
+        background-color: transparent;
+    }
+</style>
+<div class="body">
+    <ul class="fqalistnav" style="margin-bottom:0"></ul>
+    <div class="cenbox_find_pr">
+        <div class="find_pr_head">
+            <a href="{:U('classroom/User/index')}" class="icon-back"></a>
+            <div>我的余额</div>
+            <a href="{:U('classroom/User/account', array('tab'=>6))}" class="payment_record_box">明细</a>
+        </div>
+        <p class="txt_r ft24 pb20">
+            <em class="green_txt ft30 mlr22">¥{:unLast0($userLearnc['balance'])}</em>账户余额
+           <!-- <a class="green_txt ft14 ml20" href="{:U('classroom/User/recharge')}" style="margin-right: 20px;">去充值</a>-->
+            <!--<a class="green_txt ft14 ml20" href="javascript:;" onclick="changeSplit(this,3)">兑换积分</a>-->
+            <!--或者<a class="green_txt ft14 ml20" href="{:U('classroom/User/account', array('tab'=>4))}">提现￥</a>-->
+        </p>
+    </div>
+
+    <div class="centerbox">
+        <div class="center-type-hd">
+            <a class="choose" href="javascript:;">余额充值</a>
+        </div>
+        <form action="{:U('classroom/Pay/recharge')}" method="post" id="recharge_form" style="background: #fff">
+            <input type="hidden" value="alipay" name="pay" />
+            <input type="hidden" value="0" name="money" />
+            <div class="teacher_bd db">
+
+                <div id="oline_pay_div">
+                    <dl class="pay_dl">
+                        <dd name="group-list" class="btn_je_box">
+                            <volist name="rechange_default" id="redt">
+                                <label><a class="btn_hui_h" href="javascript:;" val="{$redt[0]}" give="<if condition='$redt[1]'>=>{$redt[1]}</if>" ><if condition="$redt[1]">充{$redt[0]}元 送{$redt[1]}元<else/>{$redt[0]}元</if></a></label>
+                            </volist>
+                        </dd>
+                    </dl>
+                    <dl class="pay_dl" style="padding: 0 3%">
+                        <dd class="parent_custom">
+                            <span>¥</span>
+                            <input type="text" placeholder="自定义..." id="custom_money" style="margin: 0 3%;padding: 0">
+                        </dd>
+                    </dl>
+                    <dd style="padding: 0 5%"><p>备注：1元人民币=1余额</p></dd>
+                </div>
+
+                <div class="clearfix h55 mt15" id="cardpay_div" style="display: none"> <span class="selected_title selected_title_a color_hui fl"> 充值卡编号：</span>
+                    <input class="myInput1" style="border: solid 1px #cccbcb;" type="text" name="card_number" placeholder="请输入充值卡编号">
+                    <span class="lh30 ml15"></span>
+                </div>
+            </div>
+        </form>
+
+        <dl class="pay_dl marsty_docse">
+            <dd id="select_pay">
+                <if condition="in_array('alipay',$payConfig['pay'])">
+                    <label class="selected" val="alipay"><img src="__THEME__/images/Alipay.png"><i></i></label>
+                </if>
+                <if condition="in_array('wxpay',$payConfig['pay'])">
+                    <label  val="wxpay"><img src="__THEME__/images/weixinpay.png"><i></i></label>
+                </if>
+                <if condition="in_array('unionpay',$payConfig['pay'])">
+                    <!--<label val="unionpay"><img src="__THEME__/images/yyzf.png"></label>-->
+                </if>
+                <if condition="in_array('cardpay',$payConfig['pay'])">
+                    <label val="cardpay">充值卡支付<i></i></label>
+                </if>
+            </dd>
+        </dl>
+
+        <dl class="pay_dl" style="padding: 0 5%">
+            <dt class="pay_dt"><label><input id="user_recharge" type="checkbox" checked>同意<a href="javascropt:;">《{$site['site_keyword']}虚拟货币服务协议》</a></label></dt>
+        </dl>
+
+        <div class="foot_menu_fix">
+            <dl class="pay_dl" style="padding: 0 5%">
+                <dt>实付：<em id="lan_txt_cost" class="lan_txt ft18 ml15">¥0 </em></dt>
+            </dl>
+            <a class="pay_btn" href="javascript:;" onclick="rechange(this);">立即充值</a>
+        </div>
+    </div>
+</div>
+
+<if condition="$is_wx eq null">
+    <style>
+        #_ts_box_h5{width:290px;height:180px;text-align: center;color: #535353;border-radius: 5px;position: fixed;background: #fff;-webkit-box-shadow: 0 2px 5px #dddddd;-moz-box-shadow: 0 2px 5px #dddddd;-khtml-box-shadow: 0 2px 5px #dddddd;-ms-box-shadow: 0 0 15px #888888;box-shadow: 0 0 15px #888888;z-index: 997;left: 5%;top: 35%;margin: 0 auto;background: #fff;}
+        ._hide_box_h5{z-index:996;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;}
+        #_ts_box_h5 ._box_hd{padding: 20px 0px;color: black;font-size: 16px;border-bottom: 1px solid rgba(0, 0, 0, 0.16);}
+        #_layer-content{padding: 15px 0px;color: rgba(255, 35, 0, 0.69);font-size: 16px;border-bottom: 1px solid rgba(0, 0, 0, 0.1);}
+        ._layer-wt{padding: 15px 0px;color: #908d8d;font-size: 16px;}
+    </style>
+    <div class="_hide_box_h5" style="display: none;"></div>
+    <div id="_ts_box_h5" style="display: none;">
+        <div class="_box_hd" >请确认微信支付是否完成</div>
+        <div id="_layer-content">已完成支付</div>
+        <div class="_layer-wt"><a href="{:U('classroom/User/recharge')}">支付遇到问题，联系客服</a></div>
+    </div>
+</if>
+
+<script>
+    '<if condition="$is_wx eq null">'
+    $(function(){
+        var wpay = "{$_GET['wpay']}";
+        var ppn = "{$_GET['ppn']}";
+        if(wpay != ''){
+            $('._hide_box_h5,#_ts_box_h5').show();
+            $('#_layer-content').click(function(){
+                $('._hide_box_h5,#_ts_box_h5').hide();
+                s = setInterval(function(){
+                    $.ajax({
+                        url: "{:U('classroom/Pay/getPayStatus')}",
+                        data:{pay_pass_num:ppn},
+                        type:'post',
+                        success: function(res){
+                            try{
+                                res = JSON.parse(res);
+                                if(res.status == 1){
+                                    clearInterval(s);
+                                    alert('充值成功');
+                                    setTimeout(function(){
+                                        window.location.href = "{:U('classroom/UserShow/index',['uid'=>$uid])}";//res.data
+                                    },2000);
+                                }
+                            }catch(e){
+                                return;
+                            }
+                        }
+                    });
+                },1800);
+            });
+        }
+    });
+    '</if>'
+
+    $(function() {
+        $('.btn_je_box a.btn_hui_h').click(function () {
+            $(this).parents('form').find('input:hidden[name="money"]').val($(this).attr('val') + $(this).attr('give'));
+            $('#lan_txt_cost').text("¥"+$(this).attr('val'));
+            $('input#custom_money').val('').blur();
+        });
+
+        //默认点击事件
+        $('.btn_je_box a.btn_hui_h:eq(1)').click();
+
+        $('input#custom_money').change(function (e) {
+            $('.btn_je_box').children().removeAttr('selected');
+            $(this).parents('form').find('input:hidden[name="money"]').val($(this).val());
+            $('#lan_txt_cost').text("¥"+$(this).val());
+        });
+
+        //选择效果
+        $(document).on('click', '[name="group-list"] label', function () {
+            $(this).addClass('selected').siblings().removeClass('selected');
+        });
+
+        $('.btn_je_box label:eq(1)').click();
+
+        //默认采用第一个支付方式
+        $('#select_pay label:first').click();
+    });
+
+    //选择支付方式
+    $('#select_pay label').click(function(){
+        $(this).addClass('selected').siblings().removeClass('selected');
+
+        $('#recharge_form').find('input:hidden[name="pay"]').val($(this).attr('val'));
+
+        var pay = $('#recharge_form').find('input:hidden[name="pay"]').val();
+
+        if(pay == 'cardpay'){
+            $('#oline_pay_div').hide(100);
+            $('#cardpay_div').show(100);
+        }else{
+            $('#oline_pay_div').show(100);
+            $('#cardpay_div').hide(100);
+        }
+    });
+
+    //充值余额
+    function rechange(sbt){
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var form  = $('#recharge_form');
+        var pay   = form.find('input:hidden[name="pay"]').val();
+        var money = form.find('input:hidden[name="money"]').val();
+        if( pay != 'alipay' && pay!='unionpay' && pay!='wxpay' && pay!='cardpay'){
+            alert('错误的支付方式');
+            return false;
+        }
+        if(money <= 0){
+            alert('请选择或填写充值金额');
+            return false;
+        }
+        //if(rechange_base>0 && money%rechange_base != 0){
+        //    if(rechange_base == 1){
+        //        alert('充值金额必须为整数');
+        //    }else{
+        //        alert('充值金额必须为'+rechange_base+'的倍数');
+        //    }
+        //    return false;
+        //}
+        if(!$("#user_recharge").is(':checked')){
+            alert("请同意《{$site['site_keyword']}虚拟货币服务协议》");
+            return false;
+        }
+
+        var s = 0
+        if(pay == 'wxpay'){
+            $.ajax({
+                url: "{:U('classroom/Pay/recharge')}",
+                data:form.serialize(),
+                async:false,
+                type:'post',
+                success: function(data){
+                    if(typeof data != 'object'){
+                        var data = eval('('+data+')');
+                    }
+
+                    if(data.status == 1){
+                        var pay_pass_num = data.data.pay_pass_num;
+                        '<if condition="$is_wx">'
+                        WeixinJSBridge.invoke(
+                                'getBrandWCPayRequest',JSON.parse(data.data.html),
+                                function(res){
+                                    if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                                        s = setInterval(function(){
+                                            $.ajax({
+                                                url: "{:U('classroom/Pay/getPayStatus')}",
+                                                data:{pay_pass_num:pay_pass_num},
+                                                type:'post',
+                                                success: function(res){
+                                                    try{
+                                                        res = JSON.parse(res);
+                                                        if(res.status == 1){
+                                                            clearInterval(s);
+                                                            alert('充值成功');
+                                                            setTimeout(function(){
+                                                                window.location.href = "{:U('classroom/UserShow/index',['uid'=>$uid])}";//res.data
+                                                            },1500);
+                                                        }
+                                                    }catch(e){
+                                                        return;
+                                                    }
+                                                }
+                                            });
+                                        },1800);
+                                    }
+                                }
+                        );
+                        '<else/>'
+                        var a = document.createElement('a');
+                        a.href = data.data.html;
+                        a.click();
+                        return false;
+                        '</if>'
+                    }else{
+                        alert(e.data);
+                        setTimeout(function(){
+                            window.location.href = '{:U("classroom/User/recharge")}';
+                        },2000);
+                    }
+                },
+                error: function(){
+                    return false
+                }
+
+            });
+        } else if(pay == 'cardpay'){
+            $.post("{:U('classroom/Pay/recharge')}",form.serialize(),function(res){
+                res = JSON.parse(res);
+
+                if(res.status == 1){
+                    alert(res.info);
+                    setTimeout(function(){
+                        window.location.href = res.data;
+                    },2000);
+                }else{
+                    alert(res.info);
+                    return false
+                }
+            });
+        } else {
+            form.submit();
+        }
+    }
+
+</script>
+
+<include file="__THEME__/public_footer_w3g"/>

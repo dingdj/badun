@@ -1,0 +1,177 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="{$Think.APPS_URL}/exams/_static/css/user_exams.css">
+<!--header end-->
+<include file="../User/public/_top" />
+<style type="text/css">
+.no-data{padding: 25px;}
+</style>
+<!--centerbox end-->
+<div class="content cbg">
+    <div class="wrap">
+        <div class="center_right">
+
+            <div class="center_right_tit">
+                <ul>
+                    <li <php>if(!$_GET['tab'] || $_GET['tab'] == 1){</php>class="on"<php>}</php>> <a href="{:U('classroom/Home/exams',['tab'=>1])}">练习记录</a></li>
+                    <li <eq name="Think.get.tab" value="2">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>2])}">考试记录</a></li>
+                    <li <eq name="Think.get.tab" value="3">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>3])}">错题记录</a></li>
+                    <li <eq name="Think.get.tab" value="4">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>4])}">题目收藏</a></li>
+                </ul>
+            </div>
+
+            <div class="center_right_con">
+                <switch name="Think.get.tab">
+                    <case value="3">
+                        <div class="content-card">
+                            <php>if($list['data']){</php>
+                            <table class="exam-record" cellspacing="0">
+                                <tr class="exam-record-head">
+                                    <th>试卷名称</th>
+                                    <th>练习时间</th>
+                                    <th>正确率</th>
+                                    <th></th>
+                                </tr>
+                                <volist name="list.data" id="vo">
+                                    <tr class="exam-record-content">
+                                        <td class="name"><a href="javascript:;">{$vo.paper_info.exams_paper_title}</a></td>
+                                        <td>{:date('Y-m-d H:i:s',$vo['update_time'])}</td>
+                                        <td>{$vo.right_rate}</td>
+                                        <td>
+                                            <a target="_blank" href="{:U('exams/Index/showWrongPaper',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc01">查看题目</a>
+                                            <a target="_blank" href="{:U('exams/Index/wrongExamsroom',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc02">错题再练</a>
+                                            <i class="icon iconshan deleteExeams" data-temp_id="{$vo.exams_users_id}"></i>
+                                        </td>
+                                    </tr>
+                                </volist>
+                            </table>
+                            <!--分页-->
+                            <div class="page">
+                                <div class="pagebox">
+                                    {$list.html}
+                                </div>
+                            </div>
+                            <php>}else{</php>
+                                <div class="no-data">暂时没有记录</div>
+                            <php>}</php>
+                        </div>
+                    </case>
+                    <case value="4">
+                        <div class="content-card">
+                            <php>if($list['data']){</php>
+                            <ul class="error-record">
+                                <volist name="list.data" id="vo">
+                                    <li>
+                                        <h4>
+                                            <p>{$vo.question_info.content}</p>
+                                            <small>收藏时间：{:date('Y-m-d H:i:s',$vo['ctime'])}</small>
+                                        </h4>
+                                        <span>
+                                            <a href="{:U('exams/Index/showQuestioninfo',['question_id'=>$vo['source_id']])}" class="bgc01">查看题目</a>
+                                            <i class="icon iconshan deleteCollection" data-question_id="{$vo['source_id']}"></i>
+                                        </span>
+                                    </li>
+                                </volist>
+                            </ul>
+                            <php>}else{</php>
+                                <div class="no-data">暂时没有收藏的试题</div>
+                            <php>}</php>
+                        </div>
+                    </case>
+                    <default />
+                    <div class="content-card">
+                        <php>if($list['data']){</php>
+                        <table class="exam-record" cellspacing="0">
+                            <tr class="exam-record-head">
+                                <th>试卷名称</th>
+                                <th>练习时间</th>
+                                <th>进度</th>
+                                <th>正确率</th>
+                                <th></th>
+                            </tr>
+                            <volist name="list.data" id="vo">
+                                <tr class="exam-record-content">
+                                    <td class="name"><a href="javascript:;">{$vo.paper_info.exams_paper_title}</a></td>
+                                    <td>{:date('Y-m-d H:i:s',$vo['update_time'])}</td>
+                                    <td><div class="progress"><span style="width: {$vo.progress}%;"></span><em>{$vo.progress}%</em></div></td>
+                                    <td>{$vo.right_rate}</td>
+                                    <php>if($vo['progress'] == 100){</php>
+                                        <td><a target="_blank" href="{:U('exams/Index/examsresult',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc02" style="background-color:#00BED4;">查看结果</a><i class="icon iconshan deleteExeams" data-temp_id="{$vo.exams_users_id}"></i></td>
+                                    <php>}else{</php>
+                                        <td><a target="_blank" href="{:U('exams/Index/examsroom',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc02">继续作答</a><i class="icon iconshan deleteExeams" data-temp_id="{$vo.exams_users_id}"></i></td>
+                                    <php>}</php>
+                                </tr>
+                            </volist>
+                        </table>
+                        <!--分页-->
+                        <div class="page">
+                            <div class="pagebox">
+                                {$list.html}
+                            </div>
+                        </div>
+                        <php>}else{</php>
+                            <div class="no-data">暂时没有记录</div>
+                        <php>}</php>
+                    </div>
+                </switch>
+            </div>
+
+        </div>
+
+        <include file="../User/public/_right" />
+    </div>
+</div>
+<include file="__THEME__/public_footer" />
+<script type="text/javascript">
+    $(function(){
+        // 删除考试记录
+        $(".deleteExeams").click(function(){
+            if(confirm('确认删除该记录吗?')){
+                $.post('{:U("exams/Index/deleteExeams")}',{temp_id:$(this).data('temp_id')},function(res){
+                if(typeof(res) != "object"){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        ui.error("请求出错,请稍后再试");
+                        return false;
+                    }
+                }
+                if(res.status == 1){
+                    ui.success(res.data.info);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500);
+                }else{
+                    ui.error(res.message);
+                    return false;
+                }
+            });
+            }
+        });
+        // 取消收藏
+        $(".deleteCollection").click(function(){
+            var question_id = $(this).data('question_id');
+            // 后台
+            $.post(U('exams/Index/collect'),{action:0,source_id:question_id},function(res){
+                if(typeof(res) != 'object'){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        ui.error("处理异常,请重新尝试");
+                        return false;
+                    }
+                }
+
+                if(res.status == 1){
+                    ui.success(res.data.info);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1500);
+                    return true;
+                }else{
+                    ui.error(res.message);
+                    return false;
+                }
+            });
+        });
+    });
+</script>

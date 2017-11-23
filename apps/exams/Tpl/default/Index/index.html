@@ -1,0 +1,39 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
+<style>
+    .full-course:hover ul{
+        display: block;
+    }
+    .full-course ul{
+        display: none;
+    }
+</style>
+        <!--header end-->
+
+        <!-- 习题分类 start -->
+        <div class="screen-outer">
+            <ul class="position-label-find">
+                <li>
+                    <a href="/">首页></a>
+                    <a href="{:U('exams/Index/index')}">考试系统</a>
+                </li>
+            </ul>
+            <ul class="modular-flow">
+                <volist name="module" id="vo">
+                    <li>
+                        <a href="{:U('exams/Index/paper',['c'=>0,'module_id'=>$vo['exams_module_id']])}">
+                            <img src="{:getImageUrlByAttachId($vo['icon'])}">
+                            <h3>{$vo.title}</h3>
+                            <p>{$vo.description}</p>
+                            <button>{$vo.btn_text|default='开始练习'}</button>
+                        </a>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+<include file="__THEME__/public_footer" />
+<script src="__APP__/js/public_header.js"></script>
+<script src="__APP__/js/details.js"></script>

@@ -1,0 +1,45 @@
+<include file="__THEME__/public_header" />
+
+<div class="worap main-list">
+	<div class=" back " style="width:100%;margin:0;padding:20px;">
+		<ul class="mina-list-zj list-ul imghover" style="width:100%;">
+			<php>if($data){</php>
+			<foreach name="data" item="ld">
+			<div class="content" style="width:90%;height:150px;color:#999999;margin-bottom:15px;border-bottom-width: 1px;
+			    border-bottom-style: solid;
+			    border-bottom-color: #999999;">
+			    <div class="right_info l"> 
+			        <h2>{$ld.exam_name}</h2>
+			        <div style="width:90%;height:auto;">
+			            <div style="float:left;">
+			                <dl>
+			                    <dt>调查名称：{$ld.title}</dt>
+			                </dl>
+			                <dl>
+			                    <dt>调查时间：<php>echo friendlyDate($ld['stime'],'full').'-'.friendlyDate($ld['etime'],'full')</php></dt>
+			                </dl>
+			                <dl>
+			                    <dt>发起人：{$ld.uid|getUserName}</dt>
+			                </dl>
+			            </div>
+			            <div style="float:right;">
+			                <div>
+			                	<php>if( $ld['ctime'] <= time() && $ld['etime'] >= time() ){</php>
+			                    	<a class="btn" href="{:U('survey/Index/goSurvey',array('id'=>$ld['id']))}">我要参与调查</a>
+			                    <php>}else{</php>
+			                    	<a class="btn" href="javascript:;">调查已结束</a>
+			                    <php>}</php>
+			                </div>
+			            </div>  
+			        </div>
+			    </div>
+			</div>
+			</foreach>
+			<php>}else{</php>
+				<span>暂无在线调查</span>
+			<php>}</php>
+		</ul>
+	</div>
+</div>
+
+<include file="__THEME__/public_footer" />

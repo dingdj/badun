@@ -1,0 +1,11 @@
+<if condition="$is_pc">
+    <a {$tab==0 ?' class="on"':''} href="{:U('classroom/User/credit')}">积分余额</a>
+    <a {$tab==6 ?' class="on"':''} href="{:U('classroom/User/credit', array('tab'=>6))}">积分流水记录</a>
+    <a {$tab==7 ?' class="on"':''} href="{:U('classroom/User/credit', array('tab'=>7))}">积分兑换记录</a>
+    <!--<a {$tab==5 ?' class="on"':''} href="{:U('classroom/User/credit', array('tab'=>5))}">积分充值记录</a>-->
+    <!--<a {$tab==2 ?' class="on"':''} href="{:U('classroom/User/credit', array('tab'=>2))}">积分支付记录</a>-->
+<else/>
+    <li {$tab==0 ?' class="on"':''}> <a  href="{:U('classroom/User/credit')}">积分余额</a></li>
+    <li {$tab==6 ?' class="on"':''}> <a  href="{:U('classroom/User/credit', array('tab'=>6))}">积分流水记录</a></li>
+    <li {$tab==7 ?' class="on"':''}> <a  href="{:U('classroom/User/credit', array('tab'=>7))}">积分流水记录</a></li>
+</if>

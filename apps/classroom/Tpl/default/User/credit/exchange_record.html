@@ -1,0 +1,89 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <include file="_tab" />
+                </div>
+            </div>
+
+            <div class="center_right_con">
+            	<ul class="user-wenda" style="padding: 0 20px 30px 20px;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var p;
+    var url="{:U('classroom/User/getGoodsOrderList')}";
+    $(function() {
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: "p=1",
+            dataType: "json",
+            success: function (data) {
+                appendHtml(data);
+            }
+        });
+
+    });
+    //追加html
+    function appendHtml(data){
+        $(".more").remove();
+        $(".user-wenda").html('');
+        if(data.data==""){
+            $(".user-wenda").append("<span class='all-remind'>您暂时没有兑换任何商品。。</span>");
+        }else{
+            $(".user-wenda").append(data.data);
+        }
+    }
+    //请求事件
+    function fallBang(p) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {p:p},
+            dataType: "json",
+            success: function (data) {
+                appendHtml(data);
+            }
+        });
+    }
+
+    //删除兑换记录
+    function delGoodsOrder(id){
+        var id=id;
+        $.post("{:U('classroom/User/delGoodsOrder')}", {id:id}, function(res){
+            if(res==200){
+                location.reload();
+            }else{
+                notes('对不起，删除失败请重试!','failure');
+            }
+        });
+    }
+</script>
+<include file="__THEME__/public_footer" />

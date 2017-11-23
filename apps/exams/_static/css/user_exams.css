@@ -1,0 +1,46 @@
+/* 学习中心*/
+.content-card {float: left;width: 100%;}
+.exam-record{width: 820px;margin:0 auto 50px;text-align: left;margin-top: 16px;border-collapse: collapse;}
+.exam-record-head{background: #fafafa;line-height: 40px;color:#9e9e9e;font-size: 14px;border-bottom: 1px solid #e7e6e5;}
+.exam-record-head th{font-weight:400;padding-left:20px}
+.exam-record-content .name{max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.exam-record-content:hover{background:#fafafa}
+.error-record li:hover span i,.exam-record-content:hover i{background-image:url(../icon/icon_exam.png)}
+.exam-record-content td{padding-left:20px;height:100px;line-height:100px;color:#888;font-size:14px}
+.exam-record-content td a{color:#656565;font-size:16px}
+.error-record a,.exam-record-content .bgc01{float:left;background:#73c4f8;border-radius:4px;color:#fff;font-size:14px;width:100px;text-align:center;height:30px;line-height:30px;margin-left:20px}
+.exam-record-content .bgc02{float:left;background:#f6b37f;border-radius:4px;color:#fff;width:100px;text-align:center;height:30px;line-height:30px;font-size:14px;margin-left:20px}
+.error-record li span i,.exam-record-content td i{float:left;width:20px;height:20px;margin:5px 0 0 5px;background-position:-34px -8px;cursor:pointer;background-image:url(../)}
+/*进度条*/
+.progress{width:150px;height:14px;background:#eee;position:relative}
+.progress>span{float:left;height:14px;line-height:14px;text-align:right;background:#cee1f0}
+.progress>em{padding-left:5px;font-size:12px;color:#656565;position:absolute;top:0;right:5px;height:14px;line-height:14px}
+.error-record{margin-bottom:50px}
+.error-record li{height:100px;line-height:100px;padding:0 20px}
+.error-record li:hover{background:#fafafa}
+.error-record li h4{line-height: 1;float:left;width:500px;color:#656565;font-size:16px}
+.error-record li h4 p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:30px}
+.error-record li h4 small{display:block;color:#888;font-size:14px;margin-top:12px}
+.error-record li span{float:right;margin-top:35px}
+
+/*right*/
+.center_left{margin-bottom:30px;float:right;width:290px}
+.center_left .bot{background-color:#fff;float:left;border-radius:4px;width:100%}
+.center_left .bot .tit{padding:10px 5%;border-bottom:solid 1px #e7e6e5;color:#656565;font-size:16px;float:left;width:90%}
+.center_left .sign{margin-bottom:10px;text-align:center;padding-bottom:16px}
+.center_left .sign .txt{color:#888;font-size:12px;line-height:30px}
+.center_left .sign .txt span{color:#00BED4;display:block;font-size:72px;line-height:80px}
+#check_in_num em{font-size:12px;color:#888}
+.center_left .sign a{display:inline-block;width:240px;height:40px;border-radius:3px;background-color:#00BED4;color:#fff;text-align:center;font-size:16px;line-height:40px;cursor:pointer}
+.study-record{width:290px;overflow:hidden;background-color:#fff;border-radius:4px;float:right;margin-top:30px}
+.main-sidebar-title{padding:0 20px;margin:0;height:50px;line-height:50px;border-bottom:1px #eee solid}
+.main-sidebar-title .tit h5{float:left;color:#656565;font-size:16px}
+.main-sidebar-title .tit a{float:right;color:#00BED4;font-size:16px}
+.study-recor-pers{background-color:#fff}
+.center_left li:first-child{border:0}
+.center_left li{width:250px;margin-left:20px;line-height:36px}
+.study-recor-pers li small{color:#333;font-size:12px}
+.study-recor-pers li p{color:#888;font-size:12px;line-height:28px}
+.study-recor-pers li p em{color:#333}
+.center_left li a{color:#333;font-size:14px}
+.study-recor-pers li p a{color:#333}
