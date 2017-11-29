@@ -16,7 +16,7 @@ if (!defined('THINK_PATH')) exit();
 return  array(
 
     /* 插件是否开启 */
-    'APP_DEBUG'             =>  true,      // 是否开启调试模式
+    'APP_DEBUG'             =>  false,      // 是否开启调试模式
     'GZIP_OPEN'             =>  false,      // 开启Gzip模式
     'DEVELOP_MODE'          =>  true,       // 开发模式，开启后台表单的配置
     'APP_PLUGIN_ON'         =>  true,       // 是否开启插件机制

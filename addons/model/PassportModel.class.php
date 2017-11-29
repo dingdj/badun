@@ -165,6 +165,7 @@ class PassportModel {
 		}
 		
 		if($password && strtolower(md5(md5($password).$user['login_salt'])) != strtolower ($user['password'])) {
+			//dd($password,md5(md5($password).$user['login_salt']),$user['password']);
 			$login_error_time = intval($login_error_time) + 1;
 			cookie('login_error_time', $login_error_time);
 
