@@ -1367,6 +1367,7 @@ class AdminLiveAction extends AdministratorAction
                 $data['is_active']      = 1;
                 $data['live_id']        = $live_id;
                 $data['type']           = 5;
+                $data['zhibo_url']           = $_POST['zhibo_url'];
 
                 $result = model('Live')->liveRoom->add($data);
                 if(!$result){$this->error('创建失败!');}
@@ -1385,8 +1386,8 @@ class AdminLiveAction extends AdministratorAction
             }
             $this->pageTitle['addWhLiveRoom'] = $liveInfo['video_title'].' 直播课堂—新建直播课时';
 
-            $this->pageKeyList   = array('subject','startDate','invalidDate','clientJoin','uiMode','description');
-            $this->notEmpty = array('subject','startDate','invalidDate','uiMode','webJoin','description');
+            $this->pageKeyList   = array('subject','startDate','invalidDate','clientJoin','uiMode','description','zhibo_url');
+            $this->notEmpty = array('subject','startDate','invalidDate','uiMode','webJoin','description','zhibo_url');
 
             $this->opt['uiMode'] = array('1'=>'模板一 视频直播+聊天互动','2'=>'模板二 文档直播+聊天互动','3'=>'模板三 文档+视频+聊天互动');
             $this->opt['clientJoin'] = array('1'=>'是','0'=>'否');
@@ -1400,7 +1401,6 @@ class AdminLiveAction extends AdministratorAction
      */
     public function editWhLiveRoom(){
         $live_id = intval($_GET['live_id']);
-
         if( isset($_POST) ) {
             $startDate = strtotime($_POST['startDate']);
             $invalidDate = strtotime($_POST['invalidDate']);
@@ -1455,6 +1455,7 @@ class AdminLiveAction extends AdministratorAction
                 //$data['assistantToken'] = $live_info_res['assistantPass'];
                 //$data['studentClientToken'] = $live_info_res['playPass'];
                 $data['description']    = $live_info_res->introduction;
+                $data['zhibo_url']    = $_POST['zhibo_url'];
 
                 $result = model('Live')->liveRoom->save($data);
 
@@ -1481,8 +1482,8 @@ class AdminLiveAction extends AdministratorAction
             $live_room_data['invalidDate'] = date('Y-m-d H:i:s',$live_room_data["invalidDate"]);
 
 
-            $this->pageKeyList   = array('subject','startDate','invalidDate','clientJoin','uiMode','description');
-            $this->notEmpty = array('subject','startDate','invalidDate','clientJoin','uiMode','webJoin','description');
+            $this->pageKeyList   = array('subject','startDate','invalidDate','clientJoin','uiMode','description','zhibo_url');
+            $this->notEmpty = array('subject','startDate','invalidDate','clientJoin','uiMode','webJoin','description','zhibo_url');
 
             $this->opt['uiMode'] = array('1'=>'模板一 视频直播+聊天互动','2'=>'模板二 文档直播+聊天互动','3'=>'模板三 文档+视频+聊天互动');
             $this->opt['clientJoin'] = array('1'=>'是','0'=>'否');
@@ -1608,6 +1609,7 @@ class AdminLiveAction extends AdministratorAction
 
             $this->pageKeyList   = array('subject','startDate','invalidDate','maxAttendees','uiMode','clientJoin',
                 'webJoin','teacherToken','assistantToken','studentClientToken' ,'description');//,'scene'
+            //dd($this->pageKeyList);
             $this->notEmpty = array('subject','startDate','invalidDate','maxAttendees','uiMode','clientJoin',
                 'webJoin','teacherToken','assistantToken','studentClientToken' ,'description');
 

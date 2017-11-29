@@ -4383,3 +4383,8 @@ function showCatetreeForHtml($data,$config,$id = 'id',$selected_id = 0){
     return $html;
 
 }
+
+function dd() {
+    array_map(function($x) { echo "<pre>";var_dump($x); }, func_get_args());
+    die;
+}

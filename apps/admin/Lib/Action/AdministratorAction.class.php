@@ -336,8 +336,7 @@ class AdministratorAction extends Action {
 
         $pageKeyData = model('Xconfig')->pagekey_get('pageKey:'.$this->pageKey);
         $this->assign('pageKeyData',$pageKeyData);
-
-
+       // dd($this->pageKeyList);
         if($detailData === false){
             $detailData = model('Xdata')->get($this->systemdata_list.":".$this->systemdata_key);
         }

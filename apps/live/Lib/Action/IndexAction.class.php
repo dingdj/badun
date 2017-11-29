@@ -1032,7 +1032,10 @@ class IndexAction extends CommonAction {
         $map['invalidDate'] = array('egt' , time() );
         $res = model('Live')->liveRoom->where ( $map)->order('startDate ASC')->find();
 
-        if( !$res ) {
+        //获取直播地址
+        $zhibo_url = model('Live')->liveRoom->where(array('live_id'=>$id))->getField('zhibo_url');
+        //$sql = model('Live')->liveRoom->getLastSql();dd($zhibo_url);
+        if( !$res && empty($zhibo_url)) {
             $this->error ( '直播未开始或已经结束' );
         }
         if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
@@ -1077,6 +1080,9 @@ class IndexAction extends CommonAction {
 
             $url = "{$res['studentJoinUrl']}&autoLogin=true&username={$user_info['uname']}&password={$res['studentClientToken']}";
         }
+
+        //分配直播地址
+        $url = $zhibo_url ? $zhibo_url : $url;
         $this->assign('url' , $url);
         $this->display();
     }

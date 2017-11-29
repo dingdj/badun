@@ -58,6 +58,14 @@ class XconfigModel extends Model {
 			return $_res[$key];
 		}
 		$list = $this->pagekey_lget($keys[0]);
+		//dd($keys);
+		/*$list[$keys[1]]['key']['zhibo_url']	=	'zhibo_url';
+		$list[$keys[1]]['key_name']['zhibo_url']	=	'直播地址';
+		$list[$keys[1]]['key_type']['zhibo_url']	=	'text';
+		$list[$keys[1]]['key_default']['zhibo_url']	=	'';
+		$list[$keys[1]]['key_tishi']['zhibo_url']	=	'';
+		$list[$keys[1]]['key_javascript']['zhibo_url']	=	'';*/
+		//dd($list[$keys[1]]);
 		return $list ? $list[$keys[1]] : '';
 	}
 
