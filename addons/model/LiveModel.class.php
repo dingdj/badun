@@ -268,7 +268,7 @@ class LiveModel extends Model{
             if(count($live_list) == 0){
                 unset($live_list);
             }
-            $live_list = array_column($live_list,'startDate','live_id');
+            $live_list = i_array_column($live_list,'startDate','live_id');
             if($count < $day_num){
 				
                 $list[$count] = array_slice($live_list,0,4,true);

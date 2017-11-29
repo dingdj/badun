@@ -1816,7 +1816,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['listingtime'] [0] )) {
                 $map ['listingtime'] = array ('egt',strtotime ( $_POST ['listingtime'] [0] ));
             }
-            if (! empty(strtotime($_POST ['listingtime'] [1]))) {
+            $listingtime = strtotime($_POST ['listingtime'] [1]);
+            if (! empty($listingtime)) {
                 $map ['uctime'] = array ('elt',strtotime($_POST ['listingtime'] [1]));
             }
         }
@@ -1956,7 +1957,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['startDate'] [0] )) {
                 $map ['startDate'] = array ('egt',strtotime ( $_POST ['startDate'] [0] ));
             }
-            if (! empty(strtotime($_POST ['startDate'] [1]))) {
+            $startDate = strtotime($_POST ['startDate'] [1]);
+            if (! empty($startDate)) {
                 $map ['invalidDate'] = array ('elt',strtotime($_POST ['startDate'] [1]));
             }
         }
@@ -2041,7 +2043,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['startDate'] [0] )) {
                 $map ['startDate'] = array ('egt',strtotime ( $_POST ['startDate'] [0] )*1000);
             }
-            if (! empty(strtotime($_POST ['startDate'] [1]))) {
+            $startDate = strtotime($_POST ['startDate'] [1]);
+            if (! empty($startDate)) {
                 $map ['invalidDate'] = array ('elt',strtotime($_POST ['startDate'] [1])*1000);
             }
         }
@@ -2115,7 +2118,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['startDate'] [0] )) {
                 $map ['startDate'] = array ('egt',strtotime ( $_POST ['startDate'] [0] ));
             }
-            if (! empty(strtotime($_POST ['startDate'] [1]))) {
+            $startDate = strtotime($_POST ['startDate'] [1]);
+            if (! empty($startDate)) {
                 $map ['invalidDate'] = array ('elt',strtotime($_POST ['startDate'] [1]));
             }
         }
@@ -2197,7 +2201,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['startDate'] [0] )) {
                 $map ['startDate'] = array ('egt',strtotime ( $_POST ['startDate'] [0] ));
             }
-            if (! empty(strtotime($_POST ['startDate'] [1]))) {
+            $startDate = strtotime($_POST ['startDate'] [1]);
+            if (! empty($startDate)) {
                 $map ['invalidDate'] = array ('elt',strtotime($_POST ['startDate'] [1]));
             }
         }
@@ -2277,7 +2282,8 @@ class AdminLiveAction extends AdministratorAction
             if (! empty ( $_POST ['startDate'] [0] )) {
                 $map ['startDate'] = array ('egt',strtotime ( $_POST ['startDate'] [0] ));
             }
-            if (! empty(strtotime($_POST ['startDate'] [1]))) {
+            $startDate = strtotime($_POST ['startDate'] [1]);
+            if (! empty($startDate)) {
                 $map ['invalidDate'] = array ('elt',strtotime($_POST ['startDate'] [1]));
             }
         }
