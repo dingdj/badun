@@ -1,15 +1,16 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
     <div class="header2">
-    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<a href="{:U('classroom/User/index')}" class="icon-back"></a>
     	<div>我的优惠券</div>
     </div>
     <div class="body">
         <ul class="cardlistnav">
+            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
             <li class="on"><a href="{:U('classroom/User/discount')}">打折</a></li>
             <li><a href="{:U('classroom/User/vipCard')}">会员</a></li>
-            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
-            <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+            <!--<li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>-->
+            <li><a href="{:U('classroom/User/courseCard')}">课程卡</a></li>
         </ul>
         <ul class="card2list">
             <if condition="$data">
@@ -31,7 +32,7 @@
                     <div class="bot">
                         <p>券编号&nbsp;:&nbsp;{$vo.code}</p>
                         <p>发卡单位：{$vo.school_title}</p>
-                        <a href="{:U('classroom/Video/index')}">立即使用</a>
+                        <a href="{:U('classroom/Video/index',array('mhm_id'=>$vo['sid']))}">立即使用</a>
                     </div>
                     </li>
                 </volist>
@@ -47,4 +48,4 @@
     });
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

@@ -1,23 +1,14 @@
-<include file="__THEME__/public_header_twolevel"/>
-<!--ckplayer  -->
-<script src="__ROOT__/player/ckplayer/ckplayer.js"></script>
-<!-- cuplayer -->
-<script type="text/javascript" src="__ROOT__/player/cuplayer/js/action.js"></script>
-<script type="text/javascript" src="__ROOT__/player/cuplayer/js/swfobject.js"></script>
-<script type="text/javascript" src="__ROOT__/player/audiojs/audio.min.js"></script>
+<include file="__THEME__/public_header_w3g"/>
 <style>
-    .container {position: relative;width: 100%;max-width: 750px;min-height: 100%;margin: 0 auto;overflow-x: hidden;background-color: #fff;}
+    .container {position: relative;width: 100%;max-width: 750px;margin: 0 auto;overflow-x: visible;background-color: #fff;}
     .video_box_tit {height:40px;padding:0 10px;line-height:40px;font-size:15px;color:#fff;background-color:#000;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
-
-    .vedioPlay-msg{ width:100%; height:328px;position: absolute;z-index:102;text-align:center; background:#000000;filter:alpha(opacity=80);-moz-opacity:0.80;opacity:0.80; margin-right:370px}
-    .vedioPlay-msgbox{font-size: 13px;width: 315px;height: 20px;margin: 140px auto;}
+    .vedioPlay-msg{ width:100%;position: absolute;z-index:102;text-align:center; background:#000000;filter:alpha(opacity=80);-moz-opacity:0.80;opacity:0.80; margin-right:370px}
+    .vedioPlay-msgbox{font-size: 13px;width: 315px;height: 20px;margin: 95px auto;}
     .vedioPlay-msgbox span{color: #999999;}
-    .vedioPlay-msgbox a{color: #ffffff;}
+    .vedioPlay-msgbox a{color: #ffffff;display: inline;color:#076ccc}
     .float_left{float: left;}
-    .video_box{padding:5px;min-height: 80px;}
     .audiojs{width:auto;left:0;}
     .audiojs .scrubber{width:170px;}
-
 </style>
 <!--content start-->
 <div class="body">
@@ -26,102 +17,73 @@
             <h3 class="video_box_tit">{$video_title}</h3>
             <div class="vedioPlay-msg" style="display: none">
                 <div class="vedioPlay-msgbox">
-                    <span class="float_left">需要继续观看视频,</span>
-                    <a class="float_left" id="buyNow" href="{:U('classroom/Video/view','id='.$aid)}">立即购买！</a>
-                    <span class="float_left">或者&nbsp;&nbsp;</span>
-                    <a class="float_left" href="/">返回首页！</a>
+                    <span>需要继续观看视频,</span>
+                    <a id="buyNow" href="{:U('classroom/Video/view','id='.$aid)}">立即购买！</a>
                 </div>
             </div>
             <php>if($video_type == 1){</php>
                 <if condition="$video_upload_room eq 4">
                     <div class="learn-box" id="vplayer" style="z-index: 455" ><script src="http://p.bokecc.com/player?vid={$videokey}&siteid={$ccvideo_config['cc_userid']}&autoStart=true&width=100%&height=400px&playerid=82F980DA3FB79C8D&playertype=1" type="text/javascript"></script></div>
                 <else/>
-                    <div id="vplayer" class="learn-box" style="height:200px;"></div>
+                    <div id="vplayer" class="learn-box" style="height:210px;">
+                        <video id="my-video" class="video-js vjs-big-play-centered" controls autoplay playsinline   preload="auto" src="{$video_address}" width="100%" height="100%" poster="" data-setup="{}" wmode="opaque" />
+                        </video>
+                    </div>
+                    <link href="__THEME__/js/videojs/video-js.css" rel="stylesheet" type="text/css" />
+                    <script src="__THEME__/js/videojs/video.min.js"></script>   
                     <script type="text/javascript">
-                        var flashvars={
-                            f:"{$video_address}",
-                            c:0,
-                            p:1,
-                            g:parseInt("{$learn_record.time}"),
-                            loaded:'loadedHandler'
-                        };
-                        '<php>if($is_free==0 && $isBuyVideo==false && $free==0){</php>'
-                        function loadedHandler(){
-                            if(CKobject.getObjectById('ckvideo').getType()){
-                                //说明使用html5播放器
-                                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
-                            }else{
-                                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
+                        var myPlayer   = videojs('my-video');
+                        myPlayer.ready(function(){
+                            var myPlayer = this;
+                            myPlayer.play();
+                        });
+                        myPlayer.on('timeupdate', function() { 
+                            var test_time  = {$test_time};
+                            var is_free    = {$is_free};//课程是否免费
+                            var free       = {$free};//课时是否免费
+                            var times      = myPlayer.currentTime(); 
+                            var total_time = myPlayer.duration();
+                            if(times > 4){
+                                addLearnLog(times , total_time);
                             }
-                        }
-                        var ispause=false;
-                        var test_time={$test_time};
-                        function timeHandler(t){
-                            if (!ispause && t>test_time){
-                                ispause=true;
-                                CKobject.getObjectById('ckvideo').videoPause();
-                                $("#vplayer").html('');
-
-                                $(".vedioPlay-msg").css("display","block");
+                            if(is_free == 0 && free == 0){
+                                if (times > test_time){
+                                    myPlayer.pause();
+                                    $("#vplayer").html('');
+                                    $(".vedioPlay-msg").css("display","block");
+                                }
                             }
-                        }
-                        '<php>} else{</php>'
-                        function loadedHandler(){
-                            if(CKobject.getObjectById('ckvideo').getType()){
-                                //说明使用html5播放器
-                                CKobject.getObjectById('ckvideo').addListener('time',timeHandler);
-                            }else{
-                                CKobject.getObjectById('ckvideo').addListener('time','timeHandler');
-                            }
-                        }
-                        function timeHandler(t){
-                            var total = CKobject.getObjectById('ckvideo').getStatus();
-                            if(t>-1){
-                                addLearnLog(t,total);
-                                //Kobject.getObjectById('ckvideo').removeListener('time','timeHandler');
-                            }
-                        }
-                        '<php>}</php>'
-                        var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:"transparent"};
-                        var video=["{$video_address}"];
-                        CKobject.embed('__ROOT__/player/ckplayer/ckplayer.swf','vplayer','ckvideo','100%','100%',false,flashvars,video,params);
-
-                        var lastAddtime = "{$learn_record.time}";
-                        function addLearnLog(timespan,total){
-                            var t = parseInt(timespan);
-                            var totaltime = parseInt(total.totalTime);
-                            if(t && t>lastAddtime && (t % 4 == 0)){
+                        });
+                        //添加观看记录
+                        function addLearnLog(timespan , total_time){
+                            var t          = parseInt(timespan);
+                            var total_time = parseInt(total_time);
+                            if(t && (t % 4 == 0)){
                                 lastAddtime = t;
                                 $.ajax({
                                     type: "POST",
                                     url:"{:U('classroom/Video/updateLearn')}",
-                                    data:{time:t,vid:<php>echo $_GET['id'];</php>,sid:<php>echo $_GET['s_id'];</php>,totaltime:totaltime},
+                                    data:{time:t,vid:<php>echo $_GET['id'];</php>,sid:<php>echo $_GET['s_id'];</php>,totaltime:total_time},
                                     dataType:"json",
                                     success:function(){
                                     }
                                 });
-
+                                
                             }
                         }
                     </script>
                 </if>
             <php>}else if($video_type == 2){</php>
-                <!--<script>
-                    audiojs.events.ready(function() {
-                        audiojs.createAll();
-                    });
-                </script>
-                <div id="mplayer" class="video_box"><audio src="{$video_address}" preload="auto"></audio></div>-->
                 <div id="mplayer" class="learn-box">
                     <div id="aplayer" class="aplayer"></div>
                 </div>
-                <script src="__APP__/APlayer.min.js"></script>
-                <link rel="stylesheet" href="__APP__/APlayer.min.css" />
+                <script src="__THEME__/js/aplayer/APlayer.min.js"></script>
+                <link href="__THEME__/js/aplayer/APlayer.min.css" rel="stylesheet"/>
                 <script>
                     var ap = new APlayer({
                         element: document.getElementById('aplayer'),
                         narrow: false,
-                        autoplay: false,
+                        autoplay: true,
                         showlrc: false,
                         music: {
                             title: "{$video_title}",
@@ -208,26 +170,27 @@
                                     <li>课程数：{$video_count}</li>
                                     <li class="info" style="margin-left:10px;">学生数：{$follow}</li>
                                 </div>
+                                <div class="class_jg_txt">{$data['user']['inro']}</div>
                             </dd>
                         </dl>
+                        <!--<div class="classtit">他们也关注了</div>
+                        <div class="classcon">
+                            <ul class="class_mb_ul">
+                                <volist name="source" id="vol">
+                                    <li>
+                                        &lt;!&ndash;<a href="{:U('classroom/UserShow/index',array('uid'=>$vol['uid']))}">&ndash;&gt;
+                                        <img src="{$vol['user']['avatar_big']}" alt="{$vol['user']['uname']}">
+                                        <p>{$vol['user']['uname']}</p>
+                                        &lt;!&ndash;</a>&ndash;&gt;
+                                    </li>
+                                </volist>
+                            </ul>
+                        </div>-->
                     </div>
                 </div>
                 <php>}</php>
-                
+
                 <div class="classitem">
-                    <div class="classtit">他们也关注了</div>
-                    <div class="classcon">
-                        <ul class="class_mb_ul">
-                            <volist name="source" id="vol">
-                                <li>
-                                    <!--<a href="{:U('classroom/UserShow/index',array('uid'=>$vol['uid']))}">-->
-                                    <img src="{$vol['user']['avatar_big']}" alt="{$vol['user']['uname']}">
-                                    <p>{$vol['user']['uname']}</p>
-                                    <!--</a>-->
-                                </li>
-                            </volist>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
@@ -239,19 +202,46 @@
                         <dt>{:limitNumber($vo['title'], 15)}</dt>
                         <php>if($vo['child']){</php>
                         <volist name="vo.child" id="vo1">
-                            <dd>
+                            <dd <if condition=" $sid eq $vo1['id']" > class="on"  </if> >
                                 <a href="{:U('classroom/Video/watch','id='.$vo1['vid'].'&s_id='.$vo1['id'])}">
-                                    <php>if($vo1['is_free'] == 1){</php>
-                                    <em style="background: #ff8a0c;">试听</em>
-                                    <php>}else if($video['is_charge'] == 1){</php>
+                                    <if condition="$vo1['is_free'] eq 1">
                                     <em style="background: #39b75d;" >免费</em>
-                                    <php>}</php>
+                                    </if>
                                     <span>{:limitNumber($vo1['title'], 10)}</span>
                                     <php>if($vo1['video_type'] == 1 || $vo1['video_type'] == 2){</php>
                                         <span><i class="icon-01"></i></span>
                                     <php>}</php>
                                 </a>
                             </dd>
+                            <dl class="class_directory  <if condition=" $sid eq $vo1['id']" >on</if>">
+                                <dt>{:msubstr(t($vo['title']),0,15,'utf-8',true)}</dt>
+                                <php>if($vo['child']){</php>
+                                <volist name="vo.child" id="vo1">
+                                    <if condition="$vo1['is_activity'] eq 1">
+                                        <dd>
+                                            <a href="{:U('classroom/Video/watch','id='.$vo1['vid'].'&s_id='.$vo1['id'])}">
+                                                <php>if($vo1['video_type'] == 1){</php>
+                                                <em style="background: #7ebdff;">视频</em>
+                                                <php>}else if($vo1['video_type'] == 2){</php>
+                                                <em style="background: #78deaa;">音频</em>
+                                                <php>}else if($vo1['video_type'] == 3){</php>
+                                                <em style="background: #88b2cc;">文本</em>
+                                                <php>}else if($vo1['video_type'] == 4){</php>
+                                                <em style="background: #88b2cc;">文档</em>
+                                                <php>}</php>
+
+                                                <php>if($vo1['is_free'] == 1){</php>
+                                                <em style="background: #39b75d;" >免费</em>
+                                                <php>}</php>
+
+                                                <span>{:limitNumber($vo1['title'],10)}</span>
+                                                <span><i class="icon-01"></i></span>
+                                            </a>
+                                        </dd>
+                                    </if>
+                                </volist>
+                                <php>}</php>
+                            </dl>
                         </volist>
                         <php>}</php>
                     </dl>
@@ -264,8 +254,9 @@
 <script type="text/javascript">
     $(function() {
         '<php>if($is_free==0 && $isBuyVideo==false && $free==0 && $video_type>1){</php>'
-        $("#mplayer,#tplayer,#dplayer").remove();
-        $(".vedioPlay-msg").css("display", "block");
+            $("#mplayer,#tplayer,#dplayer").html('');
+            $("#mplayer,#tplayer,#dplayer").css("height","210px");
+            $(".vedioPlay-msg").css("display", "block");
         '<php>}</php>'
     });
     //导航选择卡
@@ -310,4 +301,4 @@
     }
 </script>
 <!--footer-->
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

@@ -92,7 +92,7 @@ class TeacherAction extends Action
             exit(json_encode(array('status'=>'0','info'=>'请先登录')));
         }
         if (!$_POST['course_id']) {
-            exit(json_encode(array('status'=>'0','info'=>'没有选择套餐')));
+            exit(json_encode(array('status'=>'0','info'=>'没有选择班级')));
         }
         if (M("zy_order_course")->where(array("uid"=>$this->mid,"course_id"=>intval($_POST['course_id'])))->find()) {
             exit(json_encode(array('status'=>'0','info'=>'您已预约此课程')));

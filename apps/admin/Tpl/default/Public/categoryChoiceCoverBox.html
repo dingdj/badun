@@ -23,11 +23,17 @@
         <php>}</php>
 
         <if condition="$currency_category_id">
-            <div class="l">显示排行榜：</div>
+            <div class="l">推荐到PC端：</div>
+            <div class="r">
+                <input type="radio" <php>if($category['is_choice_pc'] == 1){</php>checked="checked" <php>}</php> name="is_choice_pc" value="1">是
+                <input type="radio" <php>if($category['is_choice_pc'] == 0){</php>checked="checked" <php>}</php> name="is_choice_pc" value="0">否
+            </div>
+
+            <!--<div class="l">显示排行榜：</div>
             <div class="r">
                 <input type="radio" <php>if($category['is_choice_ranking'] == 1){</php>checked="checked" <php>}</php> name="is_choice_ranking" value="1">是
                 <input type="radio" <php>if($category['is_choice_ranking'] == 0){</php>checked="checked" <php>}</php> name="is_choice_ranking" value="0">否
-            </div>
+            </div>-->
 
             <div class="l">推荐到h5/app：</div>
             <div class="r">

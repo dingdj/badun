@@ -16,11 +16,11 @@ class ExamsPaperOptionsModel extends Model
      * @param  integer $paper_id [description]
      * @return [type] [description]
      */
-    public function getPaperOptionsById($paper_id = 0)
+    public function getPaperOptionsById($paper_id = 0, $parse_options = true)
     {
         $paper = $this->where('exams_paper_id=' . $paper_id)->find();
         if ($paper) {
-            $paper = $this->haddleData($paper);
+            $paper = $this->haddleData($paper, $parse_options);
         }
         return $paper;
     }
@@ -31,26 +31,32 @@ class ExamsPaperOptionsModel extends Model
      * @param  array $data [description]
      * @return [type] [description]
      */
-    protected function haddleData($data = array())
+    protected function haddleData($data = array(), $parse_options = true)
     {
         if ($data) {
-            // 解析试题类型
-            $data['options_type'] = unserialize($data['options_type']);
-            if ($data['options_type']) {
-                foreach ($data['options_type'] as $key => $val) {
-                    $data['options_type'][$key]['type_info'] = M("exams_question_type")->where("exams_question_type_id=" . $val['question_type'])->find();
-                }
-            }
-
-            // 解析试题ID
-            $data['options_questions'] = unserialize($data['options_questions']);
-            foreach ($data['options_questions'] as $k => $v) {
-                if (is_array($v)) {
-                    foreach ($v as $question_id) {
-                        $data['options_questions_data'][$k][] = D('ExamsQuestion', 'exams')->getQuestionById($question_id);
+            if ($parse_options === true) {
+                // 解析试题类型
+                $data['options_type'] = unserialize($data['options_type']);
+                if ($data['options_type']) {
+                    foreach ($data['options_type'] as $key => $val) {
+                        $data['options_type'][$key]['score']     = (string) $val['score'];
+                        $data['options_type'][$key]['type_info'] = M("exams_question_type")->where("exams_question_type_id=" . $val['question_type'])->find();
                     }
                 }
+                // 解析试题ID
+                $data['options_questions'] = unserialize($data['options_questions']);
+                foreach ($data['options_questions'] as $k => $v) {
+                    if (is_array($v)) {
+                        foreach ($v as $question_id) {
+                            $data['options_questions_data'][$k][] = D('ExamsQuestion', 'exams')->getQuestionById($question_id);
+                        }
+                    }
+                }
+            } else {
+                unset($data['options_questions'], $data['options_type']);
             }
+            $data['questions_count'] = intval($data['questions_count']);
+            $data['exams_paper_id']  = intval($data['exams_paper_id']);
 
         }
         return $data;

@@ -33,10 +33,10 @@ class QuestionAction extends CommonAction
 	public function add(){
 		//$data['qst_title']        = filter_keyword(t($_POST['title']));
 		$data['qst_description']  = filter_keyword(t($_POST['content']));
-		$data['type']		      = intval($_POST['kztype']);//提问类型【1:课程;2:套餐;】
+		$data['type']		      = intval($_POST['kztype']);//提问类型【1:课程;2:班级;】
 		$data['parent_id']		  = intval($_POST['parent_id']);//顶级为0其它为提问表ID
 		$data['uid'] 			  = intval($this->mid);
-		$data['oid'] 			  = intval($_POST['kzid']);//对应的ID【套餐ID/课程ID】
+		$data['oid'] 			  = intval($_POST['kzid']);//对应的ID【班级ID/课程ID】
 		$data['qst_source'] 	  = 'web网页';
 		$data['ctime']			  = time();
 		
@@ -67,14 +67,14 @@ class QuestionAction extends CommonAction
 		
 		$i = M('ZyQuestion')->add($data);
 		if($i){
-			//更改套餐或课程的总提问数
+			//更改班级或课程的总提问数
 			if(intval($_POST['kztype']) == 1){
 				$_data['video_question_count'] = array('exp','`video_question_count` + 1');
 				//课程
 				M('ZyVideo')->where(array('id'=>array('eq',$data['oid'])))->save($_data);
 			}else{
 				$_data['album_question_count'] = array('exp','`album_question_count` + 1');
-				//套餐	
+				//班级	
 				M('Album')->where(array('id'=>array('eq',$data['oid'])))->save($_data);
 			}
 			//session('mzaddQuestion'.$data['oid'].$data['type'],time()+180);

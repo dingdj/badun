@@ -33,3 +33,6 @@ button,input{
 body{
 	overflow-x: hidden;
 }
+.min-height-wrap{
+	min-height: 31rem;
+}

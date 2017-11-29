@@ -36,6 +36,23 @@
     .new_style{
         width: 392px;
     }
+    .showSchoolList{
+        position: absolute;
+        border: 1px solid #b6c7d6;
+        width: 390px;
+        background: #FFF;
+        display: none;
+    }
+    .showSchoolList li{
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #b6c7d6;
+        padding-left: 10px;
+        cursor: pointer;
+    }
+    .showSchoolList div{
+        padding-left: 10px;
+    }
 </style>
 <div class="content" style="background-color:#f0f0f2;padding:30px 0;">
     <div class="wrap">
@@ -79,7 +96,7 @@
                     <php>endif;</php>
 
                     <!-- 新号码 -->
-                    <dl class="modify_phone" style="display:none">
+                    <dl class="modify_phone" style="display:none;width:700px">
                         <dt><span>*</span>新手机号：</dt>
                         <dd>
                             <input type="text" value="" class="inp01" style="width: 200px;height: 30px;" />
@@ -87,7 +104,7 @@
                             <p class="warn">手机号用于密码找回和重要信息接收</p>
                         </dd>
                     </dl>
-                    <dl class="modify_phone" style="display:none">
+                    <dl class="modify_phone" style="display:none;width:700px">
                         <dt><span>*</span>验证码：</dt>
                         <dd>
                             <input type="text" value="" class="inp01" style="width: 200px;height: 30px;" />
@@ -142,7 +159,7 @@
                     </dl>
                     <dl>
                         <dt><span>*</span>地区：</dt>
-                        <dd style="width: 450px;">
+                        <dd style="width: 480px;">
                             <style>
                                 select{width: 118px;}
                             </style>
@@ -221,8 +238,8 @@
                             </div>
                             <div class="Introduction">
                                 <p class="ml85 fb lh30">绑定QQ后，你可以：</p>
-                                <p class="ml85 lh30">快速找到已加入Eduline的好友，和他们一起学习</p>
-                                <p class="ml85 lh30">邀请好友加入Eduline，和你一起学习</p>
+                                <p class="ml85 lh30">快速找到已加入{$site['site_keyword']}的好友，和他们一起学习</p>
+                                <p class="ml85 lh30">邀请好友加入{$site['site_keyword']}，和你一起学习</p>
                             </div>
                         </li>
                         <?php endif;?>
@@ -239,8 +256,8 @@
                             </div>
                             <div class="Introduction">
                                 <p class="ml85 fb lh30">绑定微信后，你可以：</p>
-                                <p class="ml85 lh30">快速找到已加入Eduline的好友，和他们一起学习</p>
-                                <p class="ml85 lh30">邀请好友加入Eduline，和你一起学习</p>
+                                <p class="ml85 lh30">快速找到已加入{$site['site_keyword']}的好友，和他们一起学习</p>
+                                <p class="ml85 lh30">邀请好友加入{$site['site_keyword']}，和你一起学习</p>
                             </div>
                         </li>
                         <?php endif;?>
@@ -257,8 +274,8 @@
                             </div>
                             <div class="mt10 Introduction">
                                 <p class="ml85 fb lh30">绑定新浪微博后，你可以：</p>
-                                <p class="ml85 lh30">快速找到已加入Eduline的好友，和他们一起学习 </p>
-                                <p class="ml85 lh30">邀请好友加入Eduline，和你一起学习</p>
+                                <p class="ml85 lh30">快速找到已加入{$site['site_keyword']}的好友，和他们一起学习 </p>
+                                <p class="ml85 lh30">邀请好友加入{$site['site_keyword']}，和你一起学习</p>
                             </div>
                         </li>
                         <?php endif;?>
@@ -275,31 +292,25 @@
                             {$status}
                         </dd>
                     </dl>
-                    <php>if($verifyInfo['verified'] == -1 || $verifyInfo === null){</php>
+                    <php>if($verifyInfo['verified_status'] == 0 || $verifyInfo === null){</php>
                     <dl>
-                        <dt><span>*</span>认证类型：</dt>
+                        <dt><span>*</span>认证讲师分类：</dt>
                         <dd>
-                            <volist name='auType' id='rs'>
-                                <input type="radio" value="{$rs.user_group_id}" name="usergroup_id"
-                                       onclick='changeText({$rs.user_group_id})' class="usergroup_id"
-                                       id="renzhenglx_{$rs.user_group_id}"
-                                <php>if($rs['user_group_id'] == $verifyInfo['usergroup_id']){</php>checked="checked"<php>}</php> >
-                                <label for="renzhenglx_{$rs.user_group_id}">&nbsp;{$rs.user_group_name}</label>
-                            </volist>
+                            {:W('CategoryLevel',array('table'=>'zy_teacher_category','id'=>'teacher_category','default'=>$verifyInfo['fullcategorypath']))}
                         </dd>
                     </dl>
                     <dl>
                         <dt><span>*</span>真实姓名：</dt>
                         <dd>
-                            <input type="text" class="inp01" name="realname" id="realname" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['realname']}"<php>}</php> class="head_search upload_input_a" rel="真实姓名">
+                            <input type="text" class="inp01" name="realname" id="realname" <php>if($verifyInfo['verified_status'] !== ""){</php>value="{$verifyInfo['name']}"<php>}</php> class="head_search upload_input_a" rel="真实姓名">
                         </dd>
                     </dl>
-                    <dl>
+                    <!--<dl>
                         <dt><span>*</span>身份证号：</dt>
                         <dd>
                             <input type="text" class="inp01" name="idcard" id="idcard" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['idcard']}"<php>}</php> class="head_search upload_input_a" rel="身份证号">
                         </dd>
-                    </dl>
+                    </dl>-->
                     <dl>
                         <dt><span>*</span>联系电话：</dt>
                         <dd>
@@ -315,16 +326,20 @@
                             <input class="inp01" <?php echo $phone?' value="'.$phone.'"':'';?> type="text" name="phone" id="phone" rel="联系电话" />
                         </dd>
                     </dl>
+
                     <dl>
-                        <dt>授课地区：</dt>
+                        <dt>机构名称：</dt>
                         <dd>
-                            <input name="address" class="inp01" id="address" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['address']}"<php>}</php> rel="个人地址"/>
+                            <input name="school" class="inp01" id="school" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['school']}"<php>}</php> rel="机构名称" placeholder="请输入机构名称"/>
+                            <ul class="showSchoolList">
+                            </ul>
+                            <p>不填则为平台讲师</p>
                         </dd>
                     </dl>
                     <dl>
-                        <dt><span>*</span>机构名称：</dt>
+                        <dt>授课地区：</dt>
                         <dd>
-                            <input name="school" class="inp01" id="school" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['school']}"<php>}</php> rel="机构名称" placeholder="请输入机构名称"/>
+                            <input name="address" class="inp01" id="address" <php>if($verifyInfo['verified'] !== ""){</php>value="{$verifyInfo['Teach_areas']}"<php>}</php> rel="个人地址"/>
                         </dd>
                     </dl>
                     <dl>
@@ -335,13 +350,13 @@
                         </dd>
                     </dl>
 
-                    <dl>
+                    <!--<dl>
                         <dt><span>*</span>身份认证附件：</dt>
                         <dd>
                             {:W('Upload',array('inputname'=>'identity', 'attachIds'=>$verifyInfo['identityIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
                             <p>认证本人手持身份证照片，证件所有信息清晰可见，手持证件人的五官清晰可见。</p>
                         </dd>
-                    </dl>
+                    </dl>-->
                     <dl>
                         <dt><span>*</span>资格认证附件：</dt>
                         <dd>
@@ -352,7 +367,7 @@
                     <dl>
                         <dd>
                             <php>if($verifyInfo['verified'] === null || $verifyInfo['verified'] == -1){</php>
-                            <p></p><label class="check"><input type="checkbox" checked  disabled>我已阅读并同意<a href="{:U('public/Single/info',array('id'=>27))}" style="color: #188eee;">《Eduline服务条款》</a> 及 <a href="{:U('public/Single/info',array('id'=>28))}" style="color: #188eee;">《Eduline认证条款》</a></label>
+                            <p></p><label class="check"><input type="checkbox" checked  disabled>我已阅读并同意<a href="{:U('public/Single/info',array('id'=>27))}" style="color: #188eee;">《{$site['site_keyword']}服务条款》</a> 及 <a href="{:U('public/Single/info',array('id'=>28))}" style="color: #188eee;">《{$site['site_keyword']}认证条款》</a></label>
                             <a href="javascript:;" class="btn" type="button" onclick="saveVerify();" style="height: 40px;line-height: 40px;">提交申请</a>
                             <php>}else if($verifyInfo['verified'] == 0){</php>
                             <a href="javascript:;" class="btn" type="button" style="height: 40px;line-height: 40px;background-color: #999">已申请，请等待审核</a>
@@ -360,54 +375,59 @@
                         </dd>
                     </dl>
                     <php>}else{</php>
-                    <dl>
+                    <!--<dl>
                         <dt><span>*</span>认证类型：</dt>
                         <dd>
                             <volist name='auType' id='vo'>
                                 <php>if($vo['user_group_id']==$verifyInfo['usergroup_id']){</php><label>{$vo.user_group_name}</label><php>}</php>
                             </volist>
                         </dd>
+                    </dl>-->
+                    <dl>
+                        <dt><span>*</span>认证讲师分类：</dt>
+                        <dd>{$verifyInfo.category|default='暂无分类'}</dd>
                     </dl>
                     <dl>
                         <dt><span>*</span>真实姓名：</dt>
                         <dd>
-                            <input type="text" class="inp01" readonly="readonly" value="{$verifyInfo['realname']}"  rel="机构名称" />
+                            <input type="text" class="inp01" readonly="readonly" value="{$verifyInfo['name']}"  rel="真实姓名" />
                         </dd>
                     </dl>
-                    <dl>
+                    <!--<dl>
                         <dt><span>*</span>身份证号：</dt>
                         <dd>
                             <input type="text" readonly="readonly" class="inp01" value="{$verifyInfo['idcard']}" rel="法人身份证号" />
                         </dd>
-                    </dl>
+                    </dl>-->
                     <dl>
                         <dt><span>*</span>联系电话：</dt>
                         <dd>
                             <input type="text" class="inp01" readonly="readonly" value="{$verifyInfo['phone']}"  rel="联系电话" />
                         </dd>
                     </dl>
+
                     <dl>
-                        <dt>授课地区：</dt>
+                        <dt>机构名称：</dt>
                         <dd>
-                            <input type="text" class="inp01" readonly="readonly" value="{$verifyInfo['address']}"  rel="授课地区" />
+                            <input name="school" class="inp01" readonly="readonly" value="{$verifyInfo['school']}"   rel="机构名称" >
                         </dd>
                     </dl>
                     <dl>
-                        <dt><span>*</span>机构名称：</dt>
+                        <dt>授课地区：</dt>
                         <dd>
-                            <input name="school" class="inp01" readonly="readonly" value="{$verifyInfo['school']}"   rel="机构名称" >
+                            <input type="text" class="inp01" readonly="readonly" value="{$verifyInfo['Teach_areas']}"  rel="授课地区" />
                         </dd>
                     </dl>
                     <dl>
                         <dt><span>*</span>认证理由：</dt>
                         <dd>{$verifyInfo['reason']|default='暂无'}</dd>
                     </dl>
-                    <dl>
+                    <!--<dl>
                         <dt><span>*</span>身份认证附件：</dt>
                         <dd>
                             <php>if($verifyInfo['certification']){</php>{$verifyInfo['certification']}<php>}else{</php>暂无<php>}</php>
                         </dd>
-                    </dl>
+                    </dl>-->
                     <dl>
                         <dt><span>*</span>资格认证附件：</dt>
                         <dd>
@@ -610,11 +630,11 @@
         }
     };
     var saveVerify = function(){
-        var vtype = $('input.usergroup_id:checked').val();
+        /*var vtype = $('input.usergroup_id:checked').val();
         if(!vtype){
             notes('请选择认证类型', 'failure');
             return false;
-        }
+        }*/
         /*var category = $("#user_verified_category_id").val();
          if(category == 0){
          notes('请选择认证分类', 'failure');
@@ -626,33 +646,38 @@
         var phone = $('#phone').val();
         var school = $('#school').val();
         var reason = $('#reason').val();
-        var verifiedCategory = $('#verifiedCategory').val();
+        var verifiedCategory = $('input[name="teacher_categoryhidden"]').val();
         var attach_ids = $('#attach_ids').val();
         var identity_ids = $('#identity_ids').val();
+
+        if(!verifiedCategory){
+            notes('请选择认证的讲师分类', 'failure');
+            return false;
+        }
         if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(realname))){
             notes('请输入正确的真实姓名', 'failure');
             return false;
         }
-        if(!/^[\dxX]{15,18}$/.test(idcard)){
+        /*if(!/^[\dxX]{15,18}$/.test(idcard)){
             notes('请输入正确的身份号码', 'failure');
             return false;
-        }
+        }*/
         if(!/^[\d\-]{7,11}$/.test(phone)){
             notes('请输入联系电话', 'failure');
             return false;
         }
-        if(!school){
+        /*if(!school){
             notes('请输入机构名称', 'failure');
             return false;
-        }
+        }*/
         if(!reason){
             notes('请输入认证理由', 'failure');
             return false;
         }
-        if(!identity_ids){
+        /*if(!identity_ids){
             notes('请上传身份认证附件', 'failure');
             return false;
-        }
+        }*/
         if(!attach_ids){
             notes('请上传资格认证附件', 'failure');
             return false;
@@ -674,6 +699,35 @@
 
         });
     }
+    // 查询机构
+    $("#school").keyup(function(){
+        var school_name = $(this).val();
+        if(!school_name){
+            $(".showSchoolList").html('');
+            $(".showSchoolList").hide();
+            return false;
+        }
+        $.post(U('public/Search/getSchoolList'),{school_name:school_name,limit:8},function(res){
+            var res = eval('('+res+')');
+            var list = '';
+            if(res.status == 1){
+                
+                $.each(res.data,function(i,v){
+                    list += '<li>'+v.title+'</li>' ;
+                });
+            }else{
+                list = '<div>'+res.message+'</div>';
+            }
+            $(".showSchoolList").html(list).show();
+        });
+    });
+
+    $(".showSchoolList").on('click',"li",function(){
+        var title = $(this).html();
+        $("#school").val(title);
+        $(".showSchoolList").html('');
+        $(".showSchoolList").hide();
+    });
 </script>
 <script type="text/javascript">
     $('#edit-password').click(function(e){

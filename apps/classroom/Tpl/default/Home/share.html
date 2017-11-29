@@ -8,7 +8,7 @@
     .detailmeg{
         float: left;
         line-height: 40px;
-        width:auto;
+        width:668px;
         margin-left: 20px;
     }
     .fbtime {
@@ -16,6 +16,10 @@
     }
     .discusslist{
         width:100%;
+    }
+    .user-wenda {
+        width: 820px;
+        padding: 0 25px;
     }
 </style>
 <!--centerbox end-->
@@ -26,7 +30,7 @@
                 <div class="center_right_tit">
                     <ul>
                         <li {$tab==0 ?' class="on"':''}><a href="{:U('classroom/Home/share')}" >我的分享</a></li>
-                        <li {$tab==1 ?' class="on"':''}><a href="{:U('classroom/Home/share', array('tab'=>1))}" >我的分享收入余额</a></li>
+                        <!--<li {$tab==1 ?' class="on"':''}><a href="{:U('classroom/Home/share', array('tab'=>1))}" >我的分享收入余额</a></li>-->
                     </ul>
                 </div>
             </div>
@@ -43,7 +47,7 @@
                                         </div>
                                         <div class="detailmeg">
                                             <if condition="$vs['type'] eq 0"><em>分享课程：</em><a href="{:U('classroom/Video/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
-                                            <if condition="$vs['type'] eq 1"><em>分享套餐：</em><a href="{:U('classroom/Album/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
+                                            <if condition="$vs['type'] eq 1"><em>分享班级：</em><a href="{:U('classroom/Album/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
                                             <if condition="$vs['type'] eq 2"><em>分享直播课程：</em><a href="{:U('live/Index/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
                                             <div class="fbtime">分享链接：
                                                 <span>{$vs['share_url']}</span>

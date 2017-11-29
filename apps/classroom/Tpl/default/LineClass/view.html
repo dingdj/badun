@@ -36,14 +36,65 @@
                 </dd>
                 <dd class="course-deta-txt">
                     <h3>{:msubstr(t($data['course_name']),0,25,'utf-8',true)}</h3>
-                    <small>主讲人：{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</small>
+                    <small>主讲人：{:msubstr(t($data['teacher_name']),0,10,'utf-8',true)}</small>
                     <small>已报名：{$data.course_order_count}人</small>
                     <small>开课时间：{:date('Y-m-d',$data['listingtime'])}～{:date('Y-m-d',$data['uctime'])}</small>
                     <small>上课地点：{$data['user']['Teach_areas'] | default='无限制'}</small>
                     <!--<p>原价：<em>¥{$data['mzprice']['oriPrice']}</em></p>-->
                     <p></p>
-                    <b><strong>优惠价：</strong><if condition="$data['mzprice']['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['mzprice']['price']}</if></b>
+                    <b><strong>优惠价：</strong><if condition="$data['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['price']}</if></b>
                     <if condition="$data['is_buy'] eq 3"><button>已预约</button><else/><button onclick="meetingteacher(this)">预约课程</button></if>
+
+                    <div class="classtopitem">
+                        <div class="sc">
+                            <php>if($data['is_collect']){</php>
+                            <a href="javascript:;" onClick="collectVideo(this,{$vid},0)"   class="sc on"><i class="icon-04"></i>已收藏</a>
+                            <php>}else{</php>
+                            <a href="javascript:;" onClick="collectVideo(this,{$vid},1)"  class="sc on"><i class="icon-01"></i>收藏</a>
+                            <php>}</php>
+                        </div>
+                        <div class="fx zhuang-left" id="fx"  style="position: relative;">
+                            <a href="javascript:void(0);">
+                                <i class="icon-02"></i>分享
+                            </a>
+                            <div class="_share_my_firends" >
+                                <div class="_share_all_channel" style="margin-top:25px;">
+                                    <i class="side-ills-fell"></i>
+                                    <p  style="margin-top:0;padding-top: 8px; text-indent: 10px;font-size:12px;">分享到：</p>
+                                    <div class="bdsharebuttonbox"  data-tag="share_1">
+                                        <!-- <a data-cmd="more" class="bds_more " href="#"></a> -->
+                                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>
+                                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>
+                                    </div>
+                                    <script>
+                                        var share_url = "{$share_url}";
+                                        window._bd_share_config={"common":{
+                                            bdUrl:share_url,
+                                            bdText:"",
+                                            bdMini:"2",
+                                            bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],
+                                            bdPic:"",
+                                            bdSize:"24"
+                                        },
+                                            share:{},
+                                            image:{"viewList":["tsina","weixin","qzone","sqq"],
+                                                viewText:"分享到：","viewSize":"0"}};
+                                        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb" style="float: right;">
+                            <i class="icon-03"></i>手机查看
+                            <div class="qrcode-wrap">
+                                <span></span>
+                                <div id="qrcode" class="fxp" style="margin-top: 0;display: block;"></div>
+                            </div>
+                        </div>
+                    </div>
                 </dd>
             </dl>
         </div>
@@ -83,11 +134,11 @@
                             <div>
                                 <span>
                                     <a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">
-                                        <img src="{:getCover($data['user']['head_id'],266,170)}">
+                                        <img src="{:getCover($data['user']['head_id'],60,80)}">
                                     </a>
                                 </span>
                                 <h4>
-                                    <a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">{:msubstr(t($data['user']['name']),0,10,'utf-8',true)}</a>
+                                    <a href="{:U('classroom/Teacher/view',array('id'=>$data['user']['id']))}">{:msubstr(t($data['teacher_name']),0,10,'utf-8',true)}</a>
                                     <small>{:msubstr($data['user']['teacher_title'],0,100,'utf-8',true)}</small>
                                 </h4>
                             </div>
@@ -101,7 +152,7 @@
                             <div>
                                 <span>
                                     <a href="{$mhmData.domain}">
-                                        <img src="{$mhmData['logo']}">
+                                        <img src="{:getCover($mhmData['logo'],60,80)}">
                                     </a>
                                 </span>
                                 <h4><a href="{$mhmData.domain}">{:msubstr(t($mhmData['title']),0,20,'utf-8',true)}</a></h4>
@@ -150,10 +201,24 @@
             <a class="quer_btn close_btn">取　消</a>
         </div>
     </div>
+
+<script src="__THEME__/js/qrcode.js"></script>
 <script type="text/javascript">
+    $(function(){
+        //手机二维码
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 100,
+            height : 100
+        });
+        function makeCode () {
+            var elText = '{$url}';
+            qrcode.makeCode(elText);
+        }
+        makeCode();
+    });
     var arr=['他妈的', '你妈的', '傻×', '滚蛋', '你妹儿'];
     function switchnav(obj , id){
-        $('body,html').animate({scrollTop:644},200);
+        $('body,html').animate({scrollTop:525},200);
 
         $('li').removeClass('on');
         $(obj).parent().addClass('on');
@@ -163,11 +228,12 @@
             $('.wenda-listcon').css('display','block');
         }
     }
+
     //约课
     function meetingteacher(sbt){
         var teauid = "{$data['user']['uid']}";
         var vid = "{$data['course_id']}";
-        var money = "{$data['mzprice']['price']}";
+        var money = "{$data['price']}";
         var vtype = "zy_teacher";
 
         if(id<=0){
@@ -229,6 +295,199 @@
                 return false;
             }
         },'json');
+    });
+
+    //收藏课程
+    function collectVideo(cate,vid,type){
+        if(UID<=0){
+            reg_login();
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url:"{:U('classroom/Public/collect')}",
+            data:{type:type,sctype:7,source_id:vid,is_video:5},
+            dataType:"json",
+            cache: false,
+            success: function(data){
+                if(data.status == '0'){
+                    ui.error(data.info);
+                } else {
+                    ui.success(data.info);
+                    window.location.reload();
+                }
+            },
+        });
+    }
+
+    $(document).ready(function(){
+        //点击评论取消按钮
+        $('.js-ipt-cancel').live('click',function(){
+            var cancel_id = $(this).siblings('button.js-ipt-submit').attr('sub_id');
+            var cancel_type = $(this).siblings('button.js-ipt-submit').attr('type');
+            $("#"+cancel_type+'_'+cancel_id).prev().find('.js-qa-tr-num').show();
+            $("#"+cancel_type+'_'+cancel_id).prev().find('.qa-tr-up').hide();
+            $("#"+cancel_type+'_'+cancel_id).hide();
+
+            //背景样式
+            $("#"+cancel_type+'_'+cancel_id).prev().find(".qa-total-reply.qa-icon").css("background-position","-25px -83px");
+            $("#"+cancel_type+'_'+cancel_id).prev().find(".js-qa-tr-num").css("display", "inline");
+        });
+        //点击收起评论
+        $('.qa-total-reply span.qa-tr-up').live('click',function(){
+            var cancel_id = $(this).attr('cancel_id');
+            var ctype = $(this).attr('type');
+            $("#"+ctype+"_"+cancel_id).hide();
+
+            $(this).css("display", "none");
+            $(this).siblings(".qa-total-reply .qa-icon").css("background-position","-25px -83px");
+            $(this).siblings(".js-qa-tr-num").css("display", "inline");
+        });
+
+
+        //显示评论
+        $('.qa-total-reply .js-qa-tr-num').live('click',function(){
+            if(UID<=0){
+                reg_login();
+                return;
+            }
+            $(this).css("display", "none"); //隐藏js-qa-tr-num
+            $(this).siblings(".qa-icon").css("background-position","-25px -107px"); //显示js-qa-tr-num同级的qa-icon  hover事件
+            $(this).siblings(".qa-tr-up").css({"display":"inline","color":"#333333"}); //显示js-qa-tr-num同级的qa-tr-up
+            var show_id = $(this).attr('show_id');
+            var stype = $(this).attr('type');
+            eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:班级;
+            eval('var kzid='+stype+'_kzid');  //课程或者班级ID
+            eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
+            // eval('var limit='+stype+'_limit');  //查询条数
+            eval('var page='+stype+'_page');  //当前分页
+            $("#"+stype+"_"+show_id).show();
+            $.post("{:U('widget/Resource/getListForId')}",{id:show_id,type:type,limit:6},function(txt){
+                showComment(txt.data,stype,show_id,txt.nowPage,txt.count);
+
+            },'json');//post
+        });
+
+
+        //显示更多
+        $('.qa-reply-more .loadMore').live('click',function(){
+            var id = $(this).attr('more_id');
+            var moreType = $(this).attr('type');
+            var page = $(this).attr('page');
+            eval('var moreTypes='+moreType+'_type');  //分类类型 1:提问,2:点评,3:笔记
+            eval('var limit='+moreType+'_limit');  //查询条数
+            $.post("{:U('widget/Resource/getListForId')}",{id:id,type:moreTypes,limit:limit,p:page},function(txt){
+                showComment(txt.data,moreType,id,txt.nowPage,txt.count);
+            },'json');
+        });
+
+
+
+        //@回复
+        $('.qst_reply').live('click',function(){
+            var atype = $(this).attr('type');
+            var reply_id = $(this).attr('reply_uid');
+            var id = $(this).attr('reply_id');
+            var name = $(this).parents('.qa-reply-item-foot').siblings('.username').find('a').text();
+            $('#'+atype+'f_'+id).val('回复@'+name+':');
+            $(this).parents('.qa-reply-c').siblings('.qa-reply-ibox').find('.reply_uid').val(reply_id);
+            //$('#'+atype+'_'+reply_id).val(reply_uid).attr('checktxt','回复@'+name);
+        });
+
+
+        //点评前判断
+        $('.js-reply-ipt-default').live('click',function(){
+            if(UID<=0){
+                reg_login();
+                return false;
+            }
+        });
+        //提交评论
+        $('button.js-ipt-submit').live('click',function(){
+            if(UID<=0){
+                reg_login();
+                return false;i.error('请输入评论!');
+                return false;
+            }
+            var sub_id = $(this).attr('sub_id');
+            var stype = $(this).attr('type');
+            var sub_this = $(this);
+            eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
+            var content = $("#"+stype+'f_'+sub_id).val();
+            //@用户id
+            var reply_uid = parseInt($("#"+stype+'f_'+sub_id).siblings('.reply_uid').val());
+            var checktxt = $("#"+stype+'f_'+sub_id).siblings('.reply_uid').attr('checktxt');
+            content=content.replace(/&nbsp;/ig, "");
+            content = content.replace(/[ ]/g,"");//去除空格
+            content = content.replace(/<[^>].*?>/g,"");//去html标签
+            //@用户验证
+            if(reply_uid != 0){
+                content = content.replace(/^回复@[^:：\s]*[:：\s]*/, '');
+            }
+            if(content == ""){
+                ui.error('请输入评论内容!');
+                return false;
+            }
+            for(var i=0; i<arr.length; i++)
+            {
+                if(content.indexOf(arr[i])>-1)
+                {
+                    ui.error('评论不得包含敏感词!');
+                    return false;
+                }
+            }
+            $.post("{:U('classroom/Index/dowrite')}",{rid:sub_id,content:content,type:type,rep_uid:reply_uid},function(txt){
+                if(txt.status == 1){
+                    var  html = '';
+                    html += '<div class="qa-reply-item">';
+                    html += '<a class="qa-reply-item-author" href="'+txt.data.user_src+'" title="'+txt.data.username+'"><img width="26" height="26" src="'+txt.data.userface+'"></a>';
+                    html += '<div class="qa-reply-item-inner">';
+                    html += '<p class="username"> <a href="'+txt.data.user_src+'" class="qa-reply-nick">'+txt.data.username+'</a> : </p>';
+                    html += '<p class="q-reply-item-c">'+txt.data.description+' </p>';
+                    html += '<div class="qa-reply-item-foot clearfix"> <span class="reply-item-index r">#</span> <span>'+txt.data.strtime+'</span> <span class="qa-reply-item-reply js-reply-item-reply qst_reply" reply_uid="'+txt.data.uid+'" type="'+stype+'" reply_id="'+txt.data.parent_id+'"><i class="qa-icon"></i>回复</span> </div>';
+                    html += '</div>';
+                    html += '</div>';
+                    if($("#"+stype+'_'+sub_id+' .qa-reply-c .qa-reply-item').size() <= 0){
+                        $("#"+stype+'_'+sub_id+' .qa-reply-c').append(html);
+                    }else{
+                        $("#"+stype+'_'+sub_id+' .qa-reply-c .qa-reply-item').first().before(html);
+                    }
+                    //评论条数+1
+                    var com_num = parseInt($("#"+stype+'_'+sub_id).prev().find('span.com_num').text())+1;
+                    $("#"+stype+'_'+sub_id).prev().find('span.com_num').text(com_num);
+                    $("#"+stype+'f_'+sub_id).val('');
+                }else{
+                    ui.error(txt.info);
+                }
+            },'json');
+        });
+        //处理显示评论
+        function showComment(data,type,id,nowPage,count){
+            var html = '';
+            $.each(data,function(i,k){
+                html += '<div class="qa-reply-item">';
+                html += '<a class="qa-reply-item-author" href="'+k.user_src+'" title="&#12288;"><img width="26" height="26" src="'+k.userface+'"></a>';
+                html += '<div class="qa-reply-item-inner">';
+                html += '<p class="username"> <a href="'+k.user_src+'" class="qa-reply-nick">'+k.username+'</a> : </p>';
+                if(k.reply_user != ''){
+                    html += '<p class="q-reply-item-c">回复@<span class="user-reply">'+k.reply_user+'</span>:'+k.content+' </p>';
+                }else{
+                    html += '<p class="q-reply-item-c">'+k.content+' </p>';
+                }
+                html += '<div class="qa-reply-item-foot clearfix"> <span class="reply-item-index r">#</span> <span>'+k.strtime+'</span> <span class="qa-reply-item-reply js-reply-item-reply qst_reply" reply_uid="'+k.uid+'" type="'+type+'" reply_id="'+k.parent_id+'"><i class="qa-icon"></i>回复</span> </div>';
+                html += '</div>';
+                html += '</div>';
+            });
+            html += '<div class="qa-reply-more"><a page="'+(parseInt(nowPage)+1)+'" class="loadMore" type="'+type+'" more_id="'+id+'" href="javascript:;">击显示更多</a></div>';
+            if(nowPage <= 1){
+                $("#"+type+"_"+id).find('.qa-reply-c').html('');
+            }
+            $("#"+type+"_"+id).find('.qa-reply-c').append(html);
+            $("#"+type+"_"+id).show();
+            if(count <= $("#"+type+"_"+id).find('.qa-reply-item').size()){
+                $("#"+type+"_"+id).find('div.qa-reply-more').hide();
+            }
+        }
     });
 </script>
 

@@ -107,9 +107,9 @@ class AdminLianZaiAction extends AdministratorAction{
 		foreach($listData['data'] as &$value){
 			$value['ctime']  = date('Y-m-d H:i:s',$value['ctime']);
 			
-			$value['title']        = '<div style="width:200px;">'.msubstr($value['title'],0,16).'</div>';
-			$value['description']  = '<div style="width:200px;">'.msubstr($value['description'],0,16).'</div>';
-			$value['source']       = '<div style="width:200px;">'.msubstr($value['source'],0,16).'</div>';
+			$value['title']        = msubstr($value['title'],0,16);
+			$value['description']  = msubstr($value['description'],0,16);
+			$value['source']       = msubstr($value['source'],0,16);
 			
 			if($value['type'] == 1){
 				$value['attach']       = '<a target="_blank" href="'.getImageUrlByAttachId(attachzh($value['attach'])).'">预览图片</a>';

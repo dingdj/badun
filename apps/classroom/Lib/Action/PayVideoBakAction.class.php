@@ -68,7 +68,7 @@ class PayVideoAction extends CommonAction{
             $data = D('Album')->where($map)->find();
             if (!$data) {
                 $this->assign('isAdmin', 1);
-                $this->error('套餐不存在!');
+                $this->error('班级不存在!');
             }
 
             $album_video = D('Album')->getVideoId($pay_video_id);
@@ -85,7 +85,7 @@ class PayVideoAction extends CommonAction{
                 $oPrice += $val['t_price'];
             }
 
-            //获取套餐价格
+            //获取班级价格
             $data['moner_data']['oriPrice'] = ($oPrice - $data['price']) > 0 ? $oPrice : $data['price'];
             $data['moner_data']['price'] = $data['price'];
             $data['video_title'] = $data['album_title'];
@@ -292,7 +292,7 @@ class PayVideoAction extends CommonAction{
             if(session('purchase_pay_album_operation') >= time()){
                 $this->mzError('请勿频繁操作');
             }
-            $type_title = "套餐";
+            $type_title = "班级";
         } else if ($check_type == 'zy_live') {
             if(session('purchase_pay_live_operation') >= time()){
                 $this->mzError('请勿频繁操作');
@@ -516,10 +516,10 @@ class PayVideoAction extends CommonAction{
             $pay_status = M('zy_order_album')->where(array('uid' => intval($this->mid), 'album_id' => $vid))->getField('pay_status');
 
             /*if ($pay_status == 1) {
-                $this->mzError("套餐订单未支付，请先到个人中心—订单操作！");
+                $this->mzError("班级订单未支付，请先到个人中心—订单操作！");
             } else*/
             if ($pay_status == 3) {
-                $this->mzError("已购买此套餐！");
+                $this->mzError("已购买此班级！");
             } else if ($pay_status == 1 || $pay_status == 2 || !$pay_status) {
                 $i = D('ZyService')->buyOnlineAlbum(intval($this->mid), $vid, $ext_data);
             }
@@ -529,24 +529,24 @@ class PayVideoAction extends CommonAction{
                 $this->mzSuccess('成功');
             } else
 //            if ($i === 1) {
-//                $this->mzError('该套餐你不需要购买');
+//                $this->mzError('该班级你不需要购买');
 //            } else
                 if ($i === 2) {
-                    $this->mzError('找不到套餐');
+                    $this->mzError('找不到班级');
                 } else if ($i === 3) {
-                    $this->mzError('套餐下没有课程');
+                    $this->mzError('班级下没有课程');
                 } else if ($i === 4) {
                     $this->ajaxReturn(null, "创建订单失败", 9);
                 } else if ($i === 5) {
                     $this->mzError('平台分成比例不存在');//平台与机构分成比例不存在
                 } else if ($i === 6) {
-                    $this->mzError('套餐不属于机构');
+                    $this->mzError('班级不属于机构');
                 } else if ($i === 7) {
-                    $this->mzError('该套餐机构不存在');//套餐所绑定的机构管理员不存在
+                    $this->mzError('该班级机构不存在');//班级所绑定的机构管理员不存在
                 } else if ($i === 8) {
-                    $this->mzError('套餐中包含有 没有相关讲师用户的课程');
+                    $this->mzError('班级中包含有 没有相关讲师用户的课程');
                 } else if ($i === 9) {
-                    $this->mzError('套餐中包含有与套餐的机构不一致的课程');
+                    $this->mzError('班级中包含有与班级的机构不一致的课程');
 //            } else if ($i === 10) {
 //                $this->mzError('机构与教师分成不存在');
                 } else if ($i === 11) {
@@ -803,7 +803,7 @@ class PayVideoAction extends CommonAction{
             $album = D("Album")->getAlbumOneInfoById($video_id,'id,price,mhm_id,album_title');
             //找不到直播课程
             if (!$album){
-                $this->mzError("找不到该套餐课程");
+                $this->mzError("找不到该班级课程");
             }
 
             $is_buy = D('ZyOrderAlbum')->isBuyAlbum($this->mid ,$video_id );
@@ -812,7 +812,7 @@ class PayVideoAction extends CommonAction{
             }
             if(!$coupon_id){
                 if($album['price'] != 0){
-                    $this->mzError("该套餐课程为收费课程");
+                    $this->mzError("该班级课程为收费课程");
                 }
                 $album['now_price'] = $album['price'];
             }else{
@@ -851,7 +851,7 @@ class PayVideoAction extends CommonAction{
     }
 
     /**
-     * 购买课程（点播、直播、套餐）
+     * 购买课程（点播、直播、班级）
      */
     public function payLibrary(){
         if($_SERVER['REQUEST_METHOD']!='POST') exit;
@@ -1094,7 +1094,7 @@ class PayVideoAction extends CommonAction{
                     $credit = M('credit_setting')->where(array('id'=>16,'is_open'=>1))->field('id,name,score,count')->find();
                     if($credit['score'] > 0){
                         $type = 6;
-                        $note = '购买套餐获得的积分';
+                        $note = '购买班级获得的积分';
                     }
                 }elseif($vtype == 'zy_live'){
                     $pay_status = M('zy_order_live')->where(array('uid'=>$this_uid,'live_id'=>$vid))->getField('pay_status');
@@ -1211,7 +1211,7 @@ class PayVideoAction extends CommonAction{
                     $credit = M('credit_setting')->where(array('id'=>16,'is_open'=>1))->field('id,name,score,count')->find();
                     if($credit['score'] > 0){
                         $type = 6;
-                        $note = '购买套餐获得的积分';
+                        $note = '购买班级获得的积分';
                     }
                 }elseif($vtype == 'zy_live'){
                     $pay_status = M('zy_order_live')->where(array('uid'=>intval($this->mid),'live_id'=>$vid))->getField('pay_status');
@@ -1401,8 +1401,8 @@ class PayVideoAction extends CommonAction{
                     $split->addVideoFlows($map, 5, 'zy_album_order');
 
                     $album_title = M('album')->where(array('id' => $vid))->getField('album_title');
-                    $s['title'] = "恭喜您购买套餐成功";
-                    $s['body'] = "恭喜您成功购买套餐：{$album_title}";
+                    $s['title'] = "恭喜您购买班级成功";
+                    $s['body'] = "恭喜您成功购买班级：{$album_title}";
                     $s['ctime'] = time();
                     model('Notify')->sendMessage($s);
                     return 1;//购买成功
@@ -1546,7 +1546,7 @@ class PayVideoAction extends CommonAction{
                 $credit = M('credit_setting')->where(array('id'=>16,'is_open'=>1))->field('id,name,score,count')->find();
                 if($credit['score'] > 0){
                     $type = 6;
-                    $note = '购买套餐获得的积分';
+                    $note = '购买班级获得的积分';
                 }
             }elseif($attach['vtype'] == 'zy_live'){
                 $pay_status = M('zy_order_live')->where(array('uid'=>$this_uid,'live_id'=>intval($attach['vid'])))->getField('pay_status');

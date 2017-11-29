@@ -74,11 +74,16 @@ class AddonsAction extends AdministratorAction
      */
 	public function admin()
 	{
+
         $addon = model('Addon')->getAddonObj(intval($_GET['pluginid']));
         $addonInfo = model('Addon')->getAddon(intval($_GET['pluginid']));
         if(!$addon) $this->error('插件未启动或插件不存在');
         $info = $addon->getAddonInfo();
         $adminMenu = $addon->adminMenu();
+        if(intval($_GET['pluginid']) == 3){
+            $adminMenu['config'] = '列表';
+            $adminMenu['addAdSpace'] = '添加';
+        }
         if(!$adminMenu){
             $this->assign('addonName',$info['pluginName']);
             $this->assign('menu',false);

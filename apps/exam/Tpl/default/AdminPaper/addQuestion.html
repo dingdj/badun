@@ -85,12 +85,7 @@
 	<div id="show">
 		<table  border="0" cellpadding="3" width="100%" cellspacing="1" style="background-color: #ececec;">
 			<dd style="text-align: left;">
-		    	<select id="question_category">
-		    		<option value="0">不限</option>
-		    		<volist name="category_list" id="vo">
-		    			<option value="{$vo.question_category_id}">{$vo.question_category_name}</option>
-		    		</volist>
-		      	</select>
+				{:W('CategoryLevel',array('table'=>'ex_question_category','id'=>'ex_question_category_id','default'=>''))}
 		      	<select id="question_type">
 		    		<option value="0">不限</option>
 		    		<volist name="type_list" id="vo">
@@ -143,7 +138,7 @@
 
 	//获取数据 
 	function getData(page){  
-	    var question_category  = $('#question_category option:selected').val();
+	    var question_category  = $('#ex_question_category_idhidden').val();
 	    var question_type      = $('#question_type option:selected').val();
 	    var title              = $('#title').val();
 	    var question_zj        = $('#question_zj').val();

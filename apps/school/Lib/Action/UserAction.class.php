@@ -37,7 +37,6 @@ class UserAction extends CommonAction{
         $mount_id = implode(',',getSubByKey($mount_data , 'vid'));
         $map ['is_activity'] = 1;
         $map ['is_del']      = 0;
-        $map ['type']        = 1;
         $map ['uctime']      = ['gt',time()];
         $map ['listingtime'] = ['lt',time()];
         $map ['id'] = ['in',$mount_id];
@@ -111,15 +110,18 @@ class UserAction extends CommonAction{
                 }
             }
         }
-        if($verified['status'] == 0){
+        if($verified['status'] == 0 || $verified['status'] == -1){
             $this->assign("verified",$verified);
         }
         if($data['is_school'] == 1){
             $this->assign('data', $data);
+        }else if($verified['status'] == -1){
+            $this->assign('data', $verified);
         }
         $this->assign('banks', D('ZyBcard','classroom')->getBanks());
         $this->display();
     }
+
     //视频大小转换方法
     public function formatBytes($size) {
         $units = array(' B', ' KB', ' MB', ' GB', ' TB');
@@ -266,7 +268,7 @@ class UserAction extends CommonAction{
             'accountmaster'    => t($_POST['accountmaster']),
             'tel_num'          => t($_POST['tel_num']),
             'reason'           => t($_POST['reason']),
-            'attach_id'        => t($_POST['attach_ids']),
+            'attach_id'        => trim(t($_POST['attach_ids']),'|'),
             'ctime'            => time(),
 
         );
@@ -360,7 +362,6 @@ class UserAction extends CommonAction{
      * @return void
      */
     public function doAuthenticate(){
-   
         $verifyInfo = model('School')->where('uid='.$this->mid)->find();
 
         $myAdminLevelhidden         = getCsvInt(t($_POST['school_categoryhidden']),0,true,true,',');  //处理分类全路径
@@ -376,11 +377,10 @@ class UserAction extends CommonAction{
         $data['reason'] = filter_keyword(t($_POST['reason']));
         $data['address']    = filter_keyword(t($_POST['address']));
         $data['other_data'] = t($_POST['other_data_ids']);
-        $attach = trim(t($_POST['attach_ids']),'|');
-        $identity = trim(t($_POST['identity_ids']),'|');
-
-        $data['identity_id'] = str_replace('|',',',$attach);
-        $data['attach_id']   = str_replace('|',',',$identity);
+        $identity = t($_POST['identity_ids']);
+        $attach = t($_POST['attach_ids']);
+        $data['identity_id'] = str_replace('|',',',$identity);
+        $data['attach_id']   = str_replace('|',',',$attach);
         //位置信息
         $data['location'] = t($_POST['city_names']);
         $province = intval($_POST['province']);
@@ -2173,7 +2173,7 @@ class UserAction extends CommonAction{
      */
     public function delMountVideo(){
         $id   = $_POST["id"];
-        $res  = M('zy_video_mount')->where('vid='.$id )->save( array('is_del'=>1));
+        $res  = M('zy_video_mount')->where('vid='.$id )->delete();
         if($res){
             exit(json_encode(array('status'=>'1','info'=>'已删除')));
         }else{

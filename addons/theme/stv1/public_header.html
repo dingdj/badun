@@ -3,64 +3,171 @@
 <if condition="$_SESSION['mid'] eq ''">
     <include file="__THEME__/reg_login" />
 </if>
-<script>
-    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
-        $(window).load(function () {
-            $('.modular,.logos,.window-box').show();
-            $('.users').attr('style','display:block');
-        });
-    }
-</script>
+
 <div class="win hide"></div>
 
-<!--h5左侧导航弹出层-->
-<div class="window-box hide">
-    <div class="win-bor">
-        <div class="input-box">
-            <span></span>
-            <input type="text" name="" placeholder="搜索">
+<div class="top">
+    <div class="header_new2">
+        <div class="top1">
+            <div class="top1img">
+                <a href="/" title="{$site['site_keyword']}在线教育系统" style="display: block;float: left;"><img src="{$site.logo_head}" width="150"/></a>
+            </div>
+
+            <div class="nav">
+                <ul>
+                    <volist name="site_top_nav" id="vo" key="k">
+                        <li <php>if(APP_NAME == lcfirst( $vo['app_name'] ) || ( APP_NAME == 'classroom' && MODULE_NAME == ucfirst( $vo['app_name'] ) ) ){echo "class='active'";}</php>>
+                        <a href="{$vo['url']}" target="{$vo['target']}">{$vo['navi_name']}</a>
+                        <if condition="$vo.child neq ''">
+                            <span class="course-class">
+                            <volist name="vo.child" id="child" key="k">
+                                <a href="{$child['url']}" target="{$child['target']}">{$child['navi_name']}</a>
+                            </volist>
+                            </span>
+                        </if>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
         </div>
-        <div class="direct">
-            <volist name="site_top_nav" id="vo" key="k" offset="0" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" >{$vo['navi_name']}</a>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="3" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a>
-                </if>
-            </volist>
-            <span></span>
-        </div>
-        <div class="news">
-            <volist name="site_top_nav" id="vo" key="k" offset="6" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="9" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a>
-                </if>
-            </volist>
-            <span></span>
-        </div>
-        <div class="integral">
-            <volist name="site_top_nav" id="vo" key="k" offset="12" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="15" length="3">
-                <if condition="$vo.app_name neq more">
-                    <a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a>
-                </if>
-            </volist>
+
+        <div class="top3">
+            <!--消息提示-->
+            <ul class="news-msg"
+            <php>if(!empty($mid) &&(!empty($unreadnum) || !empty($systemnum) || !empty($commentnum))){</php>
+            style="display:block;"
+            <php>}else{</php>
+            style="display:none;"
+            <php>}</php> >
+
+            <a class="shanchu-ico" href="javascript:;" onClick="closeMsg(this)">×</a>
+
+            <php>if(!empty($unreadnum) && !empty($mid)){</php>
+            <li>{$unreadnum}条新的私信，&nbsp;<a href="{:U('public/Message/index')}">查看消息</a></li>
+            <php>}</php>
+
+            <php>if(!empty($systemnum) && !empty($mid)){</php>
+            <li>{$systemnum}条新的系统消息，&nbsp;<a href="{:U('public/Message/notify')}">查看消息</a></li>
+            <php>}</php>
+
+            <php>if(!empty($commentnum) && !empty($mid)){</php>
+            <li>{$commentnum}条新的评论消息，&nbsp;<a href="{:U('public/Message/comment')}">查看消息</a></li>
+            <php>}</php>
+            </ul>
+
+            <div class="search_index">
+                <div class="search_index_val">
+                    <p>课程</p><i></i>
+                    <span>
+                        <a href="javascript:void(0)" attr="course">课程</a>
+                        <a href="javascript:void(0)" attr="school">机构</a>
+                        <a href="javascript:void(0)" attr="teacher">讲师</a>
+                    </span>
+                    <input value="video" id="search_cate" type="hidden" disabled />
+                </div>
+                <p class="bd_right"></p>
+                <input type="text" id="search_combo_input" placeholder="搜索课程">
+                <i class="search_start" id="btn_search_site"></i>
+            </div>
+            <script>
+            $(function(){
+                $('#btn_search_site').click(function(){
+                    var search_cate = $('#search_cate').val();
+                    var search_combo_input = $('#search_combo_input').val();
+                    if(search_combo_input != ''){
+                        if(search_cate == 'video'){
+                            window.open("{:U('classroom/Video/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'school'){
+                            window.open("{:U('school/Index/index')}"+"?search="+search_combo_input);
+                        }else if(search_cate == 'teacher'){
+                            window.open("{:U('classroom/Teacher/index')}"+"?search="+search_combo_input);
+                        }
+                    }
+                });
+
+                $(".search_index_val").hover(function(){
+                  $(".search_index").css("border-radius","4px 4px 4px 0px")
+                },function(){
+                  $(".search_index").css("border-radius","4px 4px 4px 4px")
+                })
+            })
+
+        </script>
+            <div class="nav1">
+                <div class="look_scanning">
+                    <i></i>
+                    <div class="ewm">
+                        <div class="h5">
+                            <div id="nav_h5_qrcode"><img style="display: block;" width="86" height="86" src="/api/pay/wxpay/qrcode.php?data={$site['phone_url']}" data-bd-imgshare-binded="1"></div>
+                            <p>手机网页端</p>
+                        </div>
+                        <div class="app">
+                            <div id="nav_app_qrcode"><img src="/api/pay/wxpay/qrcode.php?data={$site['download_url']}" data-bd-imgshare-binded="1"></div>
+                            <p>APP下载</p>
+                        </div>
+                    </div>
+                </div>
+                <ul class="page_header_adiv">
+                    <if condition="$_SESSION['mid']">
+                        <li class="header_top_nav">
+                            <a href="{:U('classroom/User/setInfo')}">{:getUserName($_SESSION['mid'])}</a>
+                            <i class="icon-nav-arrow"></i>
+                        </li>
+                        <dl class="login-after-position">
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/User/index')}">个人中心</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/Home/order')}">财务中心</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('classroom/User/setInfo')}">我的设置</a></dd>
+                            <dd class="login-after-bdbt"><a href="{:U('public/Message/index')}">我的消息</a></dd>
+
+                            <if condition="$is_school and $school_info">
+                                <dd class="login-after-bdbt">
+                                    <a href="{:U('school/School/index',array('id'=>$school_info['id'],'doadmin'=>$school_info['doadmin']))}">我的网校</a>
+                                </dd>
+                            </if>
+
+                            <if condition="$is_school and $school_info">
+                                <dd class="login-after-bdbt"><a href="{:U('school/User/index')}">网校设置</a></dd>
+                            </if>
+
+                            <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid'])  ) {</php>
+                            <if condition="$is_school and $school_info"><dd class="login-after-bdbt"><a href="{:U('classroom/Mount/index')}">课程挂载申请</a></dd></if>
+                            <php>}</php>
+
+                            <php>if( is_admin($_SESSION['mid']) || is_school($_SESSION['mid']) || CheckPermission('admin_login') ) {</php>
+                            <dd class="login-after-bdbt"><a href="{:U('admin')}"><if condition="$is_school and $school_info">网校</if>后台管理</a></dd>
+                            <php>}</php>
+
+                            <dd class="login-after-bdbt"><a href="javascript:;" onClick="logout()">退出</a></dd>
+                        </dl>
+
+                        <else/>
+                        <li><a href="javascript:;" onclick="reg_login();">登录</a></li>
+                        <li style="line-height: 100px;">丨</li>
+                        <li>
+                            <if condition="$this_mhm_id neq ''">
+                                <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">注册</a>
+                                <else/>
+                                <a href="{:U('public/Passport/reg')}">注册</a>
+                            </if>
+                        </li>
+                    </if>
+                </ul>
+            </div>
+
+			<php>if( !is_school($_SESSION['mid']) ){</php>
+                <div class="nav2">
+					<php>if( $_SESSION['mid'] ){</php>
+						<a class="page_header_adiv" href="{:U('school/User/setInfo')}">机构入驻</a>
+					<php>}else{</php>
+						<a class="page_header_adiv" href="{:U('public/Passport/login_g')}">机构入驻</a>
+					<php>}</php>
+                </div>
+            <php>}</php>
         </div>
     </div>
 </div>
 
+<!--
 <header>
     <div class="modular hide"></div>
 
@@ -138,7 +245,7 @@
                                 <dd class="login-after-bdbt"><a href="javascript:;" onClick="logout()">退出</a></dd>
                             </dl>
                         </div>
-                        <!--消息提示-->
+                        &lt;!&ndash;消息提示&ndash;&gt;
                         <ul class="news-msg"
                         <php>if(!empty($mid) &&(!empty($unreadnum) || !empty($systemnum) || !empty($commentnum))){</php>
                         style="display:block;"
@@ -172,16 +279,16 @@
 
     <div class="theme">
         <div class="logo hiddens">
-            <a href="/" title="{$site['site_keyword']}在线教育系统" style="display: block;float: left;"><img src="{$site.logo_head}" width="150" height="65"/></a>
-            <!--<div class="position hiddens">-->
-                <!--<p style="margin:auto;width:70px;white-space: nowrap; text-overflow: ellipsis;font-size:12px;line-height:24px;color:#9d9d9d" id="current_city" area-id="{$temp_id}" title="{$visitRegion}">{$visitRegion|msubstr=0,4,'utf-8',true}</p>-->
-                <!--<a href="{:U('public/ChangeCity/index')}">【切换城市】</a>-->
-            <!--</div>-->
+            <a href="/" title="{$site['site_keyword']}在线教育系统" style="display: block;float: left;"><img src="{$site.logo_head}" width="150"/></a>
+            &lt;!&ndash;<div class="position hiddens">&ndash;&gt;
+                &lt;!&ndash;<p style="margin:auto;width:70px;white-space: nowrap; text-overflow: ellipsis;font-size:12px;line-height:24px;color:#9d9d9d" id="current_city" area-id="{$temp_id}" title="{$visitRegion}">{$visitRegion|msubstr=0,4,'utf-8',true}</p>&ndash;&gt;
+                &lt;!&ndash;<a href="{:U('public/ChangeCity/index')}">【切换城市】</a>&ndash;&gt;
+            &lt;!&ndash;</div>&ndash;&gt;
         </div>
         <div class="cable hiddens">
             <input value="video" id="search_cate" type="hidden" disabled />
             <div class="direction">
-                <a href="javascript:;" attr="video" style="background-color: #02C1D0;color:#fff;">课程</a>
+                <a href="javascript:;" attr="video" style="background-color: #00bed4;color:#fff">课程</a>
                 <a href="javascript:;" attr="school">机构</a>
                 <a href="javascript:;" attr="teacher">老师</a>
             </div>
@@ -231,24 +338,29 @@
                 <p class="poescal">全部课程</P>
                 <div class="btn"></div>
                 <ul class="header_sider_ulbox">
-                    <volist name="currency_category" id="cycy" offset="0" length="7" >
+                    <volist name="currency_category" id="cycy" offset="0" length="6" >
                         <li>
                             <div class="pagings">
                                 <span><a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id']))}"  target="_blank">{$cycy.title}</a></span>
-                                <volist name="cycy.child" id="cycld">
-                                    <volist name="cycld.nav_left" id="ccnt">
-                                        <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycld['id'].','.$ccnt['zy_currency_category_id']))}" target="_blank">{$ccnt.title}</a>
-                                    </volist>
-                                </volist>
+                                <i class="icon icon-youjiantou"></i>
                             </div>
                             <div class="detailed-class">
-                                <volist name="cycy.child" id="cycd" offset="0" length="8" >
+                                <volist name="cycy.child" id="cycd" >
                                     <div class="detailed-header">
-                                        {$cycd.title}>
-                                        <div class="detailed-new-bodyer">
-                                            <volist name="cycd.child" id="ccd">
-                                                <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycd['id'].','.$ccd['id']))}" target="_blank">{$ccd.title}<span></span></a>
-                                            </volist>
+                                        <div class="detailed-new-thea-tt">
+                                            <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycd['id']))}" target="_blank">{$cycd.title}</a>
+                                            <div class="detailed-new-bodyer">
+                                                <volist name="cycd.child" id="ccd">
+                                                    <div class="detailed-new-ree-ts">
+                                                        <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycd['id'].','.$ccd['id']))}" target="_blank">{$ccd.title}</a>
+                                                        <volist name="ccd.child" id="ccdf">
+                                                            <div class="detailed-new-fou-fn">
+                                                                <a href="{:U('classroom/Video/index',array('cateId'=>$cycy['id'].','.$cycd['id'].','.$ccd['id'].','.$ccdf['id']))}" target="_blank">{$ccdf.title}</a>
+                                                            </div>
+                                                        </volist>
+                                                    </div>
+                                                </volist>
+                                            </div>
                                         </div>
                                     </div>
                                 </volist>
@@ -259,9 +371,16 @@
             </div>
             <div class="course-content">
                 <volist name="site_top_nav" id="vo" key="k">
-                    <if condition="$vo.app_name neq more">
-                        <a href="{$vo['url']}" target="{$vo['target']}" <php>if(APP_NAME == $vo['app_name'] || ( APP_NAME == 'classroom' && MODULE_NAME == $vo['app_name'] ) ){echo "class='active'";}</php>>{$vo['navi_name']}</a>
-                    </if>
+                    <li <php>if(APP_NAME == lcfirst( $vo['app_name'] ) || ( APP_NAME == 'classroom' && MODULE_NAME == ucfirst( $vo['app_name'] ) ) ){echo "class='active'";}</php>>
+                        <a href="{$vo['url']}" target="{$vo['target']}">{$vo['navi_name']}</a>
+                        <if condition="$vo.child neq ''">
+                            <span class="course-class">
+                            <volist name="vo.child" id="child" key="k" offset="0" length="20">
+                                <a href="{$child['url']}" target="{$child['target']}">{$child['navi_name']}</a>
+                            </volist>
+                            </span>
+                        </if>
+                    </li>
                 </volist>
                 <if condition="$is_school and $school_info">
                     <a href="{:U('classroom/Mount/index')}" target="_blank" <php>if(APP_NAME == Mount || ( APP_NAME == 'classroom' && MODULE_NAME == Mount ) ){echo "class='active'";}</php> >销课</a>
@@ -275,7 +394,7 @@
         <a href="{:U('classroom/User/setInfo')}">
             <img class="users" style="border-radius: 50%;width: 30px;height: 30px;margin: 8px 2% 0 0;" src="{:getUserFace($user['uid'],'b')}" width="30" height="30">
         </a>
-        <else/>
+    <else/>
         <div class="users" >
             <span>
                 <a href="{:U('public/Passport/login_g')}">登录</a>
@@ -288,4 +407,4 @@
         </div>
     </if>
 
-</header>
+</header>-->

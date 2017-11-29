@@ -22,6 +22,7 @@ abstract class Action
 	protected	$uid = 0;
 	protected	$is_wap = false;
 	protected	$is_pc = false;
+    protected 	$seo = array();
 
     /**
      * 架构函数 取得模板对
@@ -48,6 +49,20 @@ abstract class Action
 
 		//载入站点配置全局变量
 		$this->site = model('Xdata')->get('admin_Config:site');
+
+        //设置站点默认seo的title、meta
+        $seo_uri = APP_NAME.'/'.MODULE_NAME.'/'.ACTION_NAME;
+        $seo = M('seo')->where(['seo_uri'=>$seo_uri])->field('id')->find();
+        if($seo){
+            $this->seo['_title'] = $seo['seo_meta'] ? $seo['seo_title']." — ".$seo['seo_meta'] : $seo['seo_title']." — ".$this->site['site_name'];
+            $this->seo['_bak_title'] = $seo['seo_title'] ? " — ".$seo['seo_title'] : " — ".$this->site['site_name'];
+            $this->seo['_meta'] = $seo['seo_meta'] ? : $this->site['site_header_keywords'];
+        }else{
+            $this->seo['_title'] = $this->site['site_name']." — ".$this->site['site_slogan'];
+            $this->seo['_bak_title'] = " — ".$this->site['site_name'];
+            $this->seo['_meta'] = $this->site['site_header_keywords'];
+        }
+
 
         //获取注册方式
         $register_type = model('Xdata')->get('admin_Config:register');
@@ -120,11 +135,22 @@ abstract class Action
 
         //$_REQUEST['wap_to_normal'] = 1;//暂不访问手机版
         // 使用手持设备时, 对用户的访问默认跳转至移动版, 除非用户指定访问普通版 iPad上浏览pc的内容尺寸较小，默认也为3g版
+//        if (is_mobile()) {
+//            $this->is_pc = false;
+//            $this->is_wap = true;
+//            $this->assign('is_wap',$this->is_wap);
+//        } else {
+//            $this->is_pc = true;
+//            $this->is_wap = false;
+//            $this->assign('is_pc',$this->is_pc);
+//        }
+        //$_REQUEST['wap_to_normal'] = 1;//暂不访问手机版
+        // 使用手持设备时, 对用户的访问默认跳转至移动版, 除非用户指定访问普通版 iPad上浏览pc的内容尺寸较小，默认也为3g版
         if ( $_SESSION['wap_to_normal'] != '1' && cookie('wap_to_normal') != '1' && $_REQUEST['wap_to_normal'] != '1') {
             // 根据各应用的配置来判断是否存在手机版访问配置文件
             $publicAccess = array('message', 'register', 'feed');
 
-            if ((APP_NAME == 'classroom' || APP_NAME == 'exam' || APP_NAME == 'group' || APP_NAME == 'home' || APP_NAME == 'live'
+            if ((APP_NAME == 'classroom' || APP_NAME == 'exams' || APP_NAME == 'group' || APP_NAME == 'home' || APP_NAME == 'live'
                     || APP_NAME == 'mall' || APP_NAME == 'wenda' || APP_NAME == 'public' || APP_NAME == 'school') && !in_array(strtolower(MODULE_NAME), $publicAccess) &&
                 strtolower(ACTION_NAME) != 'message' && isMobile() || isiPad() && in_array('wap', C('DEFAULT_APPS')) ) {
                 $this->is_pc = false;
@@ -141,6 +167,12 @@ abstract class Action
         $config = model('Xdata')->get('admin_Config:index_item');
         if($config['tpl'] == 'index_new'){
             $currency_category = model('VideoCategory')->getNetworkNavList(0,6);
+        }else if($config['tpl'] == 'index_new2') {
+            $currency_category = model('VideoCategory')->getBestCategory(4);
+            foreach ($currency_category as $key => $val) {
+                $val['child'] = M('zy_currency_category')->where(['pid' => $val['zy_currency_category_id'], 'is_choice_pc' => 1])->field('zy_currency_category_id,title')->limit(4)->select();
+                $currency_category[$key] = $val;
+            }
         }else{
             $currency_category = model('VideoCategory')->getNetworkNavList(0,7);
         }
@@ -505,7 +537,7 @@ abstract class Action
      * @return voi
      */
     protected function display($templateFile='',$charset='utf-8',$contentType='text/html') {
-        $this->is_pc ? $templateFile : $templateFile = ACTION_NAME."_w3g";
+        $this->is_pc ? $templateFile : $templateFile = ($templateFile ?: ACTION_NAME)."_w3g";
         echo $this->fetch($templateFile,$charset,$contentType,true);
     }
 
@@ -520,6 +552,7 @@ abstract class Action
      * @return strin
      */
     protected function fetch($templateFile='',$charset='utf-8',$contentType='text/html',$display=false) {
+        $this->assign('seo',$this->seo);
         $this->assign('appCssList',$this->appCssList);
         $this->assign('langJsList', $this->langJsList);
         Addons::hook('core_display_tpl', array('tpl'=>$templateFile,'vars'=>$this->tVar,'charset'=>$charset,'contentType'=>$contentType,'display'=>$display));

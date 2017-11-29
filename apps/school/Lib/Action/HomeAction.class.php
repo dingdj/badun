@@ -316,7 +316,7 @@ class HomeAction extends UserAction{
 		$fields .= "{$otablename}.`learn_status`,{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
 		$fields .= "{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_intro`,";
 		$fields .= "{$vtablename}.`cover`,{$vtablename}.video_order_count";
-		//不是通过套餐购买的
+		//不是通过班级购买的
 	
 		$where     = "{$otablename}.`is_del`=0 and {$otablename}.`uid`={$uid}";
 		$data = M('ZyOrder')->join("{$vtablename} on {$otablename}.`video_id`={$vtablename}.`id`")->where($where)->group("{$vtablename}.`id`")->field($fields)->findPage($limit);
@@ -376,7 +376,7 @@ class HomeAction extends UserAction{
 		echo json_encode($data);exit;
 	}
 	/**
-    * 异步加载我购买的套餐
+    * 异步加载我购买的班级
     * @return void
     */
 	public function getbuyalbumslist(){
@@ -390,7 +390,7 @@ class HomeAction extends UserAction{
 		$fields .= "{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
 		$fields .= "{$atablename}.`id`,{$atablename}.`album_title`,{$atablename}.`album_category`,{$atablename}.`album_intro`,";
 		$fields .= "{$atablename}.`cover`,{$atablename}.`album_order_count`";
-		//不是通过套餐购买的
+		//不是通过班级购买的
 		$where     = "{$otablename}.`is_del`=0 and {$otablename}.`uid`={$uid}";
 		
 		$data = M('ZyOrderAlbum')->join("{$atablename} on {$otablename}.`album_id`={$atablename}.`id`")->where($where)->field($fields)->findPage($limit);
@@ -403,7 +403,7 @@ class HomeAction extends UserAction{
 		echo json_encode($data);exit;
 	}
 	/**
-    * 异步加载我收藏的套餐
+    * 异步加载我收藏的班级
     * @return void
     */
 	public function getcollectalbumslist(){
@@ -438,7 +438,7 @@ class HomeAction extends UserAction{
 		//拼接字段
 		$fields= 'o.`uid`,o.`teach_way`,o.`id`'; 
 		$fields .= ",c.`course_id`,c.`course_name`,c.`course_price`,c.`course_teacher`,c.`course_inro`";
-		//不是通过套餐购买的
+		//不是通过班级购买的
 		$where     = "o.`is_del`=".intval($_POST["is_del"])." and o.`uid`={$uid}";
 		$data = M('zy_order_course o')->join("`".C('DB_PREFIX')."zy_teacher_course` c on c.`course_id`=o.`course_id`")->where($where)->field($fields)->findPage($limit);
  		foreach ($data["data"] as $key => $value) {

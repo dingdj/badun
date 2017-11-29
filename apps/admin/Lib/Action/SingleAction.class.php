@@ -12,16 +12,16 @@ class SingleAction extends AdministratorAction {
 	 */
 	public function _initialize(){
 		parent::_initialize();
-		$this->pageTab[] = array( 'title' =>'单页管理', 'tabHash' => 'index', 'url' => U('admin/single/index') );
-		$this->pageTab[] = array( 'title' =>'添加单页', 'tabHash' => 'add', 'url' => U('admin/single/add') );
-		$this->pageTab[] = array( 'title' =>'单页分类', 'tabHash' => 'cate', 'url' => U('admin/single/cate') );
+		$this->pageTab[] = array( 'title' =>'列表', 'tabHash' => 'index', 'url' => U('admin/single/index') );
+		$this->pageTab[] = array( 'title' =>'添加', 'tabHash' => 'add', 'url' => U('admin/single/add') );
+		$this->pageTab[] = array( 'title' =>'分类', 'tabHash' => 'cate', 'url' => U('admin/single/cate') );
 	}
 	
 	/**
      * 单页分类列表
      */
 	public function cate() {
-		$this->pageTitle ['cate'] = '单页分类配置';
+		$this->pageTitle ['cate'] = '分类';
 		$treeData = model ( 'CategoryTree' )->setTable ( 'single_category' )->getNetworkList ();
 		$this->displaySree ( $treeData, 'single_category', 1 );
 	}
@@ -30,7 +30,7 @@ class SingleAction extends AdministratorAction {
 	 * 单页列表
 	 */
 	public function index(){
-		 $this->pageTitle ['index'] = '单页管理';
+		 $this->pageTitle ['index'] = '列表';
 		 $this->pageKeyList = array ('id','title','cate','url','action');
 		 $this->pageButton [] = array ( 'title' =>'删除', 'onclick' => "admin.delSingles()" );
 		 $list = M('single')->where('is_del=0')->findPage(10);
@@ -49,7 +49,7 @@ class SingleAction extends AdministratorAction {
 	 * 添加单页
 	 */
 	public function add(){
-		$this->pageTitle ['add'] = '添加单页';
+		$this->pageTitle ['add'] = '添加';
 		$this->pageKeyList = array ('cate_id','title','text','url','sort');
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){//如果是post表单提交
             $data['cate_id']     = intval( $_POST['cate_id'] );

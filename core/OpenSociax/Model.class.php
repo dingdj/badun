@@ -50,8 +50,8 @@ class Model extends Think
     // 是否自动检测数据表字段信息
     protected $autoCheckFields   =   true;
     protected $forceCheckFields   =   false;
-    // 模型名称
     protected $mid = 0;
+
     /**
      * 架构函数
      * 取得DB类的实例对象 字段检查
@@ -1270,6 +1270,18 @@ class Model extends Think
      */
     public function cleanCache($param){
         return true;
+    }
+
+    /**
+     * 设置当前登陆用户的ID
+     * @Author MartinSun<syh@sunyonghong.com>
+     * @Date   2017-11-03
+     * @param  integer $uid [description]
+     */
+    public function setLoginMid($uid = 0)
+    {
+        $this->mid = $uid;
+        return $this;
     }
 };
 ?>

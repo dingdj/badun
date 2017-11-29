@@ -8,7 +8,7 @@ KISSY.Editor.add("xiami-music/dialog/support", function() {
         CLS_XIAMI = "ke_xiami",
         TYPE_XIAMI = "xiami-music",
         BTIP = "搜 索",
-        TIP = "输入歌曲名、套餐名、艺人名";
+        TIP = "输入歌曲名、班级名、艺人名";
 
 
     var css = '.ke-xiami-list {' +

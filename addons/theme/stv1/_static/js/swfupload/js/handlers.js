@@ -115,7 +115,12 @@ function uploadSuccess(file, serverData) {
 	/*	alert(file);
 		alert(serverData);*/
 		var res=jQuery.parseJSON(serverData);
-		$("#videokey").val(res.key);	
+		$("#videokey").val(res.key);
+		if(typeof(res.status) != "undefined" && res.status == 1){
+			var attach_ids = jQuery("input[name='attach_ids']").val().replace(/\b(0+)|^,/gi,"");
+				attach_ids = attach_ids+','+res.data.attach_id
+			jQuery("input[name='attach_ids']").val(attach_ids.replace(/\b(0+)|^,/gi,""));
+		}
 		progress.setStatus("上传成功");
 		$(".btn_b").attr("disabled", false) ;
 		

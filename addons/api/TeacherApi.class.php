@@ -12,6 +12,16 @@ class TeacherApi extends Api{
         $this->teacher = M('ZyTeacher');
 
     }
+
+    /**
+     * Eduline获取讲师分类接口
+     * 参数：
+     * return   分类数据或者错误提示
+     */
+    public function getTeacherCategory(){
+        $selCate = model('CategoryTree')->setTable('zy_teacher_category')->getNetworkList(0,1);
+        $selCate ? $this->exitJson($selCate) : $this->exitJson([],0,'未能获取到分类信息');
+    }
     /**
      * Eduline获取讲师列表接口
      * 参数：
@@ -23,6 +33,13 @@ class TeacherApi extends Api{
         $map = array('is_del'=>0);
         if(isset($this->data['school_id'])){
             $map['mhm_id'] = $this->school_id;
+        }
+        $cateId = intval($this->data['cateId']);
+        if ($cateId > 0) {
+            $cateIds = model('CategoryTree')->setTable('zy_teacher_category')->getSubCateIdByPid($cateId);
+            $idlist = implode(',',$cateIds);
+            $category = $cateId.','.$idlist;
+            $map['teacher_category'] = ['in',trim($category,',')];
         }
 		$teacherData = $this->teacher->where($map)->order('ctime DESC')->limit($this->_limit())->select();
 		if( !$teacherData ) {
@@ -141,10 +158,10 @@ class TeacherApi extends Api{
         $this->exitJson($data);
     }
     
-    //获取套餐讲师列表
+    //获取班级讲师列表
     public function groupTeacherList(){
-        $albumid = intval($this->data['id']);//获取课程/套餐的id
-        //查询套餐中的课程
+        $albumid = intval($this->data['id']);//获取课程/班级的id
+        //查询班级中的课程
         $videoStr = trim( D('Album', 'classroom')->getVideoId( $albumid ) , ',');
         $where['id']         = array('in',$videoStr);
         $where['teacher_id'] = array("gt",0);
@@ -246,8 +263,8 @@ class TeacherApi extends Api{
             $list = D('ZyTeacherPhotos','classroom')->getPhotoDataByPhotoId($photos_id);
             if($list['data'] && $list['gtLastPage'] !== true){
                 foreach($list['data'] as $k=>$val){
-                    ($val['type']==1) && $list['data'][$k]['cover'] = getCover($val['resource'],'auto','auto');
-                    ($val['type']==2) && $list['data'][$k]['cover'] = getCover($val['cover'],'auto','auto');
+                    ($val['type']==1) && $list['data'][$k]['cover'] = getCover($val['resource'],100,100);
+                    ($val['type']==2) && $list['data'][$k]['cover'] = getCover($val['cover'],100,100);
                 }
                 $info = $list['data'];
             }else{
@@ -486,7 +503,7 @@ class TeacherApi extends Api{
 
         $i = M('ZyReview')->add($data);
         if($i){
-            //点评之后 要计算此套餐的总评分
+            //点评之后 要计算此班级的总评分
             $star = M('ZyReview')->where(array('tid'=>$tid))->Avg('star');
             $star = round($star/20);
             //操作积分

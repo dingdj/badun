@@ -1,4 +1,5 @@
 <php>if($listData){</php>
+
     <volist name="listData" id="vo">
         <php>if($vo['type'] == 1){</php>
             <li>
@@ -48,7 +49,7 @@
                     <case value="1|2"><a href="javascript:;" style="background-position: -280px -300px;">已<br>使<br>用</a></case>
                     <case value="-1"><a href="javascript:;" style="background-position: -280px -300px;color:#666;">已<br>过<br>期</a></case>
                     <default/>
-                    <a href="{:U('classroom/User/recharge')}">立<br>即<br>使<br>用</a>
+                    <a href="{:U('classroom/User/exchangeCard',array('id'=>$vo['coupon_id']))}">立<br>即<br>使<br>用</a>
                 </switch>
             </li>
         <php>}else if($vo['type'] == 4){</php>
@@ -65,6 +66,23 @@
                     <div class="item">发卡单位&nbsp;:&nbsp;{$vo.school_title}</div>
                     <php>if($vo['status'] == 0){</php>
                     <a href="{:U('classroom/User/recharge')}">立即使用</a>
+                    <php>}</php>
+                </div>
+            </li>
+        <php>}else if($vo['type'] == 5){</php>
+            <li <switch name="vo.status"><case value= "1|2" >class="used"</case><case value= "-1" >class="over"</case><default /></switch>>
+                <div class="quan">
+                    <if condition="($vo['is_out_time']) or ($vo['status']  neq 0)">
+                        <i class="icon-date"></i>
+                    </if>
+                    <div class="prcie">{:msubstr(t($vo['video_name']),0,7,'utf-8',true)}（{$vo['vtype']}）</div>
+                    <p>课程卡<br>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
+                </div>
+                <div class="txt">
+                    <div class="item">卡券编号&nbsp;:&nbsp;{$vo.code}</div>
+                    <div class="item">发卡单位&nbsp;:&nbsp;{$vo.school_title}</div>
+                    <php>if($vo['status'] == 0){</php>
+                    <a href="javascript:;" onclick="doExchange({$vo['video_id']},{$vo['video_type']},{$vo['cid']})">立即使用</a>
                     <php>}</php>
                 </div>
             </li>

@@ -86,7 +86,7 @@ class UserShowAction extends CommonAction{
         $fields .= "{$otablename}.`learn_status`,{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
         $fields .= "{$vtablename}.`teacher_id`,{$vtablename}.`mhm_id`,{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_binfo`,";
         $fields .= "{$vtablename}.`cover`,{$vtablename}.`video_order_count`,{$vtablename}.`ctime`,{$vtablename}.`t_price`";
-        //不是通过套餐购买的
+        //不是通过班级购买的
         //$where     = "{$otablename}.`is_del`=0 and {$otablename}.`order_album_id`=0 and {$otablename}.`uid`={$uid}";
         $where     = "{$otablename}.`is_del`=0 and {$otablename}.`pay_status`=3 and {$otablename}.`uid`={$uid}";
         $data = M('zy_order_course')->join("{$vtablename} on {$otablename}.`video_id`={$vtablename}.`id`")->where($where)->field($fields)->findPage($limit);
@@ -259,7 +259,7 @@ class UserShowAction extends CommonAction{
         $fields .= "{$otablename}.`learn_status`,{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
         $fields .= "{$vtablename}.`teacher_id`,{$vtablename}.`mhm_id`,{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_binfo`,";
         $fields .= "{$vtablename}.`cover`,{$vtablename}.`video_order_count`,{$vtablename}.`ctime`,{$vtablename}.`t_price`";
-        //不是通过套餐购买的
+        //不是通过班级购买的
         //$where     = "{$otablename}.`is_del`=0 and {$otablename}.`order_album_id`=0 and {$otablename}.`uid`={$uid}";
         $where     = "{$otablename}.`is_del`=0 and {$otablename}.`pay_status`=3 and {$otablename}.`uid`={$uid}";
         $data = M('zy_order_course')->join("{$vtablename} on {$otablename}.`video_id`={$vtablename}.`id`")->where($where)->field($fields)->findPage($limit);
@@ -283,7 +283,7 @@ class UserShowAction extends CommonAction{
         $fields .= "{$otablename}.`learn_status`,{$otablename}.`uid`,{$otablename}.`id` as `oid`,{$otablename}.`live_id`,";
         $fields .= "{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_intro`,";
         $fields .= "{$vtablename}.`cover`,{$vtablename}.video_order_count,{$vtablename}.`t_price`,{$vtablename}.`mhm_id`";
-        //不是通过套餐购买的
+        //不是通过班级购买的
         $where = "{$otablename}.`is_del`=0 and {$otablename}.`pay_status`=3 and {$otablename}.`uid`={$uid}";
         $data = M('zy_order_live')->join("{$vtablename} on {$otablename}.`live_id`={$vtablename}.`id`")->where($where)->field($fields)->findPage($limit);
 

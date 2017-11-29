@@ -28,9 +28,18 @@
                         <if condition="$listData">
                             <volist name="listData" id="val">
                                 <li>
-                                    <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}" class="img"><img src="{:getCover($val['cover'],253,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
+                                    <if condition="$val['mount_iand']">
+                                        <a href="{:U('classroom/video/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}" class="img">
+                                            <else/>
+                                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}" class="img">
+                                    </if>
+                                    <img src="{:getCover($val['cover'],253,153)}" class="lazyloading" data-bd-imgshare-binded="1"></a>
                                     <div class="user-title">
-                                        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:msubstr(t($val['video_title']),0,12,'utf-8',true)}</a></h3>
+                                        <h3><if condition="$val['mount_iand']">
+                                            <a href="{:U('classroom/video/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}">
+                                                <else/>
+                                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                        </if>{:msubstr(t($val['video_title']),0,12,'utf-8',true)}</a></h3>
                                         <p>
                                             <a href="{$val.domain}">{:msubstr(t($val['school_title']),0,12,'utf-8',true)}</a>
                                             <a style="float: right;" href="{:U('classroom/Teacher/view',array('id'=>$val['teacher_id']))}">{:msubstr(t($val['tea_name']),0,10,'utf-8',true)}</a>
@@ -38,7 +47,7 @@
                                     <span>
                                         <strong>
                                             <php>if($val['is_charge'] == 1  || $val['mzprice']['price'] == 0 ){</php>
-                                            <div class="fr green">免费</div>
+                                            <div class="fr" style="color: green">免费</div>
                                             <php>}else{</php>
                                             <div class="fr red">￥{$val['mzprice']['price']}</div>
                                             <php>}</php>

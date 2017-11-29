@@ -127,7 +127,7 @@ core.uploadFile = {
 				}
 
 				if($(_this.resultDiv).find('.loading').size() < 1 ){
-					$(_this.resultDiv).find('ul').eq(0).append('<li class="loading"><div class="loads"><img src="'+THEME_URL+'/image/load.gif" style="width:auto;height:auto"></div><p class="tips upload_tips" style="padding:5px"><a href="javascript:core.uploadFile.stopupload()">'+L('PUBLIC_REMOVE_UPLOAD')+'</a></p></li>');	
+					$(_this.resultDiv).find('ul').eq(0).append('<li class="loading"><div class="loads"><img src="'+THEME_URL+'/image/load.gif" style="width:auto;height:auto"></div><p class="tips upload_tips" style="padding:5px"><a href="javascript:core.uploadFile.stopupload()">取消上传</a></p></li>');//'+L('PUBLIC_REMOVE_UPLOAD')+'	
 				}
 				
 
@@ -244,7 +244,7 @@ core.uploadFile = {
 
 			//hash 处理
 			this.filehash[data.attach_id] = data.hash;
-			
+
 			if('' !=func){
 				if('function'==typeof(func)){
 					func(data);//执行回调函数
@@ -256,7 +256,7 @@ core.uploadFile = {
     			}else{
     				var html = '<li><i class="ico-'+data.extension+'-small"></i><a class="ico-close right" href="javascript:void(0)" onclick="core.uploadFile.removeAttachId(this,\''+this.type+'\','+data.attach_id+')"></a>'
     						  +'<a class="xxx" href="javascript:void(0)" title="'+data.name+'">'+subStr(data.name, 42)+'</a><span>('+data.size+')</span></li>';
-    			}		
+    			}
 				var _this = this;
 				$(this.parentModel).parent().find('.input-content').each(function(){
 					if( $(this).attr('uploadcontent').length>0 ){

@@ -33,7 +33,7 @@ class AdminReviewAction extends AdministratorAction
         $this->pageButton[] = array('title' => '删除', 'onclick' => "admin.delReviewAll('delReview')");
 		
 		$this->searchKey = array('id','uid','type','star','review_description','oid',array('ctime','ctime1'));
-		$this->opt['type']    = array('0'=>'不限','1'=>'课程','2'=>'套餐');
+		$this->opt['type']    = array('0'=>'不限','1'=>'课程','2'=>'班级','3'=>'线下课','4'=>'讲师');
 		$this->opt['star']    = array('0'=>'不限','1'=>'1星','2'=>'2星','3'=>'3星','4'=>'4星','5'=>'5星');
 		
         $list = model('ZyReview')->getReviewList('20',array('parent_id'=>array('eq',0)));
@@ -44,41 +44,41 @@ class AdminReviewAction extends AdministratorAction
             $video_type = D('ZyVideo','classroom')->where('id='.$value['oid'])->getField('type');
 
             if ($value['type'] == 1) {
+                $video_title = D('ZyVideo','classroom')->getVideoTitleById($value['oid']);
                 if($video_type == 1){
                     $url = U('classroom/Video/view', array('id' => $value['oid']));
+                    $type = "未知课程";
                 }else{
                     $url = U('live/Index/view', array('id' => $value['oid']));
+                    $type = "未知直播";
                 }
-            } else {
-                $url = U('classroom/Album/view', array('id' => $value['oid']));
-            }
-            $list['data'][$key]['review_description'] = '<div style="width:200px;height:30px;overflow:hidden;"><a href="' . $url . '" target="_bank">' . $value['review_description'] . '</a></div>';
-
-            if ($value['type'] == 1) {
-                $list['data'][$key]['oid'] = getVideoNameForID($value['oid']);
+                $list['data'][$key]['oid'] = getQuickLink($url,$video_title,$type);
             } else if ($value['type'] == 2) {
-                $list['data'][$key]['oid'] = getAlbumNameForID($value['oid']);
-            } else {
-                $list['data'][$key]['oid'] = '约课';
+                $url = U('classroom/Album/view', array('id' => $value['oid']));
+                $type = "未知班级";
+                $list['data'][$key]['oid'] = getQuickLink($url,getAlbumNameForID($value['oid']),$type);
+            } else if ($value['type'] == 3){
+                $title = M('zy_teacher_course')->where('course_id='.$value['oid'])->getField('course_name');
+                $url = U('classroom/LineClass/view', array('id' => $value['oid']));
+                $type = "未知线下课";
+                $list['data'][$key]['oid'] = getQuickLink($url,$title,$type);
+            } else if ($value['type'] == 4){
+                $name = M('zy_teacher')->where('id='.$value['oid'])->getField('name');
+                $url = U('classroom/Teacher/view', array('id' => $value['oid']));
+                $type = "未知讲师";
+                $list['data'][$key]['oid'] = getQuickLink($url,$name,$type);
             }
-//            $list['data'][$key]['oid'] = '<div style="width:160px;height:30px;overflow:hidden;">' . $list['data'][$key]['oid'] . '</div>';
-            $video_title = D('ZyVideo','classroom')->getVideoTitleById($value['oid']);
-            if($video_type == 1){
-                $url = U('classroom/Video/view', array('id' => $value['oid']));
-                $type = "未知课程";
-            }else{
-                $url = U('live/Index/view', array('id' => $value['oid']));
-                $type = "未知直播";
-            }
-            $list['data'][$key]['oid'] = getQuickLink($url,$video_title,$type);
+            $list['data'][$key]['review_description'] = '<a href="' . $url . '" target="_bank">' . $value['review_description'] . '</a>';
 
          if($value['type'] == 1) {
              $list['data'][$key]['type'] = '课程' ;
-         }     if($value['type'] == 2) {
-             $list['data'][$key]['type'] = '套餐' ;
-         }     if($value['type'] == 3) {
-             $list['data'][$key]['type'] = '约课' ;
-         }
+         } else if($value['type'] == 2) {
+             $list['data'][$key]['type'] = '班级' ;
+         } else if($value['type'] == 3) {
+             $list['data'][$key]['type'] = '线下课' ;
+         } else if($value['type'] == 4) {
+                $list['data'][$key]['type'] = '讲师' ;
+            }
             $list['data'][$key]['ctime'] = date('Y-m-d', $value['ctime']);
             if($value['is_del'] == 1) {
                 $list['data'][$key]['DOACTION'] = '  <a href="javascript:admin.mzReviewEdit(' . $value['id'] . ',\'closereview\',\'显示\',\'点评\','.$value['uid'].',' ."'{$value['review_description']}'".' ,'.$value['ctime'].');">显示</a>';
@@ -90,8 +90,12 @@ class AdminReviewAction extends AdministratorAction
             $list['data'][$key]['DOACTION'] .= ' | <a href="javascript:admin.delReview('.$value['id'].',\'delreview\','.$value['uid'].','.$value['ctime'].','."'{$value['review_description']}'".','.$value['ctime'].');">删除</a>';
             if ($value['type'] == 1) {
                 $list['data'][$key]['DOACTION'] .= ' | <a href="' . U('classroom/AdminVideo/reviewCommentVideo', array('oid' => $value['oid'], 'id' => $value['id'], 'tabHash' => 'reviewCommentVideo')) . '">查看回复</a>';
-            } else {
+            } else if ($value['type'] == 2){
                 $list['data'][$key]['DOACTION'] .= ' | <a href="' . U('classroom/AdminAlbum/reviewCommentAlbum', array('oid' => $value['oid'], 'id' => $value['id'], 'tabHash' => 'reviewCommentAlbum')) . '">查看回复</a>';
+            } else if ($value['type'] == 3){
+                $list['data'][$key]['DOACTION'] .= ' | <a href="' . U('classroom/AdminLineClass/reviewCommentAlbum', array('oid' => $value['oid'], 'id' => $value['id'], 'tabHash' => 'reviewCommentAlbum')) . '">查看回复</a>';
+            } else if ($value['type'] == 4){
+                $list['data'][$key]['DOACTION'] .= ' | <a href="' . U('classroom/AdminTeacher/reviewCommentAlbum', array('oid' => $value['oid'], 'id' => $value['id'], 'tabHash' => 'reviewCommentAlbum')) . '">查看回复</a>';
             }
             if (!empty($_POST['oid'])) {
                 if (!strstr($list['data'][$key]['oid'], $_POST['oid'])) {

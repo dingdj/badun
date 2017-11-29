@@ -82,7 +82,7 @@ class AdminVipCardAction extends AdministratorAction{
             }
             $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
 
-			['vip_title'] = M('user_vip')->where(array('id'=>$val['vip_grade']))->getField('title');
+            $val['vip_title'] = M('user_vip')->where(array('id'=>$val['vip_grade']))->getField('title');
             $val['ctime']    = date("Y-m-d H:i:s", $val['ctime']);
 			$val['end_time'] = date("Y-m-d H:i:s", $val['end_time']);
 

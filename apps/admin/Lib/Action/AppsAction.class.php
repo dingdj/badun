@@ -55,13 +55,6 @@ class AppsAction extends AdministratorAction
 							? "<a href='javascript:admin.setAppStatus({$v['app_id']},1)'>".L('PUBLIC_OPEN')."</a>&nbsp;&nbsp;"
 							: "<a href='javascript:admin.setAppStatus({$v['app_id']},0)'>".L('PUBLIC_CLOSE')."</a>&nbsp;&nbsp;";
 			$v['DOACTION'] .= "<a href='".U('admin/Apps/uninstall',array('app_id'=>$v['app_id']))."'>".L('PUBLIC_SYSTEM_APP_UNLODING')."</a>";
-
-			if(!empty($v['admin_entry'])){
-				$name = L('PUBLIC_APPNAME_'.strtoupper($v['app_name']));
-				$v['DOACTION'] .= in_array($v['app_name'],array_keys($inNav)) ? 
-				' <a href="javascript:;" onclick="admin.appnav(this,\''.$name.'\',\''.$v['admin_entry'].'\')" add="1">'.L('PUBLIC_REMOVE_NAV').'</a>'
-				:' <a href="javascript:;" onclick="admin.appnav(this,\''.$name.'\',\''.$v['admin_entry'].'\')" add="0">'.L('PUBLIC_ADD_NAV').'</a>';	
-			}
 			$v['status'] = $this->appStatus[$v['status']];	//语义化
 
 		}

@@ -1,13 +1,3 @@
-<style>
-    .adjust{margin-top: 65px;}
-</style>
-<div class="teacherpalce">
-    <div class="wrap">
-        <div class="content-place">
-            <div class="wrap"><a href="/">首页</a><span>&gt;</span><a href="{:U('classroom/Teacher')}">讲师</a><span>&gt;</span><span>{:msubstr(t($data['name']),0,10,'utf-8',true)}</span></div>
-        </div>
-    </div>
-</div>
 
 <div class="topbox teacherbg" style="<php>if($data['background']){</php>background:url({$data.background})<php>}else{</php>background:url(__THEME__/images/banner1.jpg)<php>}</php> center center no-repeat;background-size: cover;">
     <div class="wrap">
@@ -38,9 +28,9 @@
                         <php>if($mid!=$_GET['uid']){</php>
 
                             <php>if($isfollow){</php>
-                        <a class="btn gzl" href="javascript:;"  onclick="offyou(this,{$data.uid},{$data.id},'off')">  <img src="__THEME__/icon/ygz.png"></a>
+                        <a class="btn gzl ck-attentio" href="javascript:;"  onclick="offyou(this,{$data.uid},{$data.id},'off')">  已关注</a>
                             <php>}else{</php>
-                            <a class="btn gzl" href="javascript:;" onclick="followyou(this,{$data.uid},{$data.id})" >  <img src="__THEME__/icon/gz.png"></a>
+                            <a class="btn gzl ck-attentio" href="javascript:;" onclick="followyou(this,{$data.uid},{$data.id})" > +关注</a>
                             <php>}</php>
 
                         <php>}</php>
@@ -48,15 +38,9 @@
                 </div>
                 <div class="anther zhuang-left">
                     <ul class="action">
-
-
-
-
                         <div class="fr zhuang-left" style="position: relative;" >
                         <li class="favor"><a  href="javascript:;" ><i class="icon-01"></i>
                         </a>分享</li>
-
-
                             <div class="_share_my_firends" >
                                 <div class="_share_all_channel">
                                     <i class="side-ills-fell"></i>
@@ -82,29 +66,18 @@
                                             image:{"viewList":["tsina","weixin","qzone","sqq"],
                                                 viewText:"分享到：","viewSize":"0"}};
                                         with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
-
                                     </script>
-
                                 </div>
                             </div>
-
                         </div>
-
-
-
-
-
-
-
-                        <li>
-
-                            <i class="icon-02"></i>手机浏览
-                                <div class="qrcode-wrap" style="height: 116px;">
-                                    <span></span>
-                                    <div id="qrcode" class="fxp" title="http://dafengche.51eduline.com/live/770.html">
-                                    </div>
-                                    <p>用手机扫码看</p>
+                        <li class="look-embod">
+                        <i class="icon-02"></i>手机浏览
+                            <div class="qrcode-wrap" style="height: 116px;">
+                                <span></span>
+                                <div id="qrcode" class="fxp" title="http://dafengche.51eduline.com/live/770.html">
                                 </div>
+                                <p>用手机扫码看</p>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -124,15 +97,20 @@
                     makeCode();
                 </script>
                 </div>
-                <ul class="nav-box" id="view_main_nav">
-                    <li <eq name="ACTION_NAME" value="view">class="active"</eq>><a href="{:U('classroom/Teacher/view',array('id'=>$data['id']))}">主页</a></li>
-                    <li <eq name="ACTION_NAME" value="video">class="active"</eq>><a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}">课程</a></li>
-                    <li <eq name="ACTION_NAME" value="style">class="active"</eq>><a href="{:U('classroom/Teacher/style',array('id'=>$data['id']))}">相册/视频</a></li>
-                    <li <eq name="ACTION_NAME" value="article">class="active"</eq>><a href="{:U('classroom/Teacher/article',array('id'=>$data['id']))}">文章</a></li>
-                    <li <eq name="ACTION_NAME" value="details">class="active"</eq>><a href="{:U('classroom/Teacher/details',array('id'=>$data['id']))}">个人资料</a></li>
-                    <li <eq name="ACTION_NAME" value="evaluate">class="active"</eq>><a href="{:U('classroom/Teacher/evaluate',array('id'=>$data['id']))}">评价</a></li>
-                </ul>
             </div>
+        </div>
+    </div>
+
+    <div class="gr-main-infos">
+        <div class="wrap">
+            <ul class="nav-box" id="view_main_nav">
+                <li <eq name="ACTION_NAME" value="view">class="active"</eq>><a href="{:U('classroom/Teacher/view',array('id'=>$data['id']))}">主页</a></li>
+                <li <eq name="ACTION_NAME" value="video">class="active"</eq>><a href="{:U('classroom/Teacher/video',array('id'=>$data['id']))}">课程</a></li>
+                <!--<li <eq name="ACTION_NAME" value="style">class="active"</eq>><a href="{:U('classroom/Teacher/style',array('id'=>$data['id']))}">相册/视频</a></li>-->
+                <li <eq name="ACTION_NAME" value="article">class="active"</eq>><a href="{:U('classroom/Teacher/article',array('id'=>$data['id']))}">文章</a></li>
+                <li <eq name="ACTION_NAME" value="details">class="active"</eq>><a href="{:U('classroom/Teacher/details',array('id'=>$data['id']))}">个人资料</a></li>
+                <li <eq name="ACTION_NAME" value="evaluate">class="active"</eq>><a href="{:U('classroom/Teacher/evaluate',array('id'=>$data['id']))}">评价</a></li>
+            </ul>
         </div>
     </div>
     
@@ -212,7 +190,7 @@
         right: 44px;
         bottom: 3px;
         width: 168px;
-        top: 0px;
+        top: 6px;
         left: 0;
         display: none;
         margin-top: 20px
@@ -232,11 +210,26 @@
         width: 0!important;
         position: absolute;
         height: 0!important;
-        top: 5px;
+        top: 9px;
         left: 11px;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
         border-bottom: 5px solid #FFF;
     }
-
+    body{
+        background: #f0f0f2;
+        display: inline-block;
+    }
+    .content {
+        background-color: transparent;
+    }
+    .adjust{
+        margin-top: 30px;
+    }
+    .teacher-profile .anther:hover .qrcode-wrap,.teacher-profile .anther:hover ._share_my_firends{
+        display: none;
+    }
+    .classlist {
+         padding: 0 20px;
+     }
 </style>

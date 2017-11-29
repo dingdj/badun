@@ -329,6 +329,7 @@ class AdminQuestionAction extends AdministratorAction
                         $question_type = $question_type["question_type_id"];
                         $question      = array(
                             'question_category'     => $question_category,
+                            'fullcategorypath'      => ','.$question_category.',',
                             'question_type'         => $question_type,
                             'question_point'        => $question_point,
                             'question_option_count' => $question_option_count,

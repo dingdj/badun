@@ -5,15 +5,17 @@
 </style>
 <div class="center_left">
     <dl>
-        <dt><a href="javascript:;" onclick="magbtn(this)">财富管理</a></dt>
+        <dt><a href="javascript:;" onclick="magbtn(this)">财务中心</a></dt>
         <dd>
             <ul>
                 <li  id ="orderlist" <php>if(ACTION_NAME=="order"){echo "class='on'";}</php>><a href="{:U('classroom/Home/order')}">我的订单</a></li>
-                <li <php>if(ACTION_NAME=="videoCoupon"|ACTION_NAME=="discount"|ACTION_NAME=="vipCard"|ACTION_NAME=="rechargeCard"|ACTION_NAME=="exchangeCard"){echo "class='on'";}</php> ><a href="{:U('classroom/User/videoCoupon')}">我的卡券</a></li>
-                <li <php>if(ACTION_NAME=="goodsOrder"){echo "class='on'";}</php> ><a href="{:U('classroom/User/goodsOrder')}">兑换记录</a></li>
+                <li <php>if(ACTION_NAME=="videoCoupon"|ACTION_NAME=="discount"|ACTION_NAME=="vipCard"|ACTION_NAME=="rechargeCard"|ACTION_NAME=="exchangeCard"|ACTION_NAME=="courseCard"){echo "class='on'";}</php> ><a href="{:U('classroom/User/videoCoupon')}">我的卡券</a></li>
                 <li <php>if(ACTION_NAME=="account"){echo "class='on'";}</php> ><a href="{:U('classroom/User/account')}">我的余额</a></li>
-                <li <php>if(ACTION_NAME=="recharge"){echo "class='on'";}</php> ><a href="{:U('classroom/User/recharge')}">积分充值</a></li>
-                <li <php>if(ACTION_NAME=="card"){echo "class='on'";}</php> ><a href="{:U('classroom/User/card')}">绑定银行卡</a></li>
+                <li <php>if(ACTION_NAME=="spilt"){echo "class='on'";}</php> ><a href="{:U('classroom/User/spilt')}">我的收入</a></li>
+                <li <php>if(ACTION_NAME=="credit"){echo "class='on'";}</php> ><a href="{:U('classroom/User/credit')}">我的积分</a></li>
+                <li <php>if(ACTION_NAME=="recharge"){echo "class='on'";}</php> ><a href="{:U('classroom/User/recharge')}">会员充值</a></li>
+                <li <php>if(ACTION_NAME=="alipay"){echo "class='on'";}</php> ><a href="{:U('classroom/User/alipay')}">我的支付宝</a></li>
+                <li <php>if(ACTION_NAME=="card"){echo "class='on'";}</php> ><a href="{:U('classroom/User/card')}">我的银行卡</a></li>
             </ul>
         </dd>
     </dl>

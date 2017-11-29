@@ -1,12 +1,14 @@
 $(function(){
     /*导航面板的操作*/
     $(".modular ").on("click",function(){
+        $(".overall_situation_box_alls").css({"marginLeft":"70%"});
         $(".shadow-panle").show();
         $(".window-panle").css({"marginLeft":"0","box-shadow":"5px 0 10px rgba(58,69,88,0.3)"});
         $("body").css("overflow-y", "hidden")
     })
 
     $(".shadow-panle ").on("click",function(){
+        $(".overall_situation_box_alls").css({"marginLeft":"0"});
         $(".shadow-panle").hide();
         $(".window-panle").css({"marginLeft":"-70%","box-shadow":"0 0 0 rgba(58,69,88,0.3)"})
         $("body").css("overflow-y", "auto")

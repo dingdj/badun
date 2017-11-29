@@ -56,7 +56,7 @@
                                     </a>
                                     <div class="user-title">
                                         <h3><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l['video_title']}</a></h3>
-                                        <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_neme']}</a></p>
+                                        <p><a href="{$l['school_url']}">{$l['school_title']}</a><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_name']}</a></p>
                                         <span><strong>¥{$l.t_price}</strong><small>{$l['video_order_count']}人在学</small></span>
                                         <div class="sc fr"><a href="javascript:;" onclick="delalbum(this,{$l.cid},'col')">删除</a></div>
                                     </div>
@@ -113,7 +113,7 @@
     function delalbum(cate,id,type){
         var id=id;
         url="{:U('classroom/Album/delalbum')}";
-        //删除我购买的套餐
+        //删除我购买的班级
         if(type=="buy"){
             var fdata="type=1&rtype=1&id="+id;
         }else if(type=="col"){
@@ -132,6 +132,7 @@
             }
         });
     }
+
 </script>
 
 <include file="__THEME__/public_footer" />

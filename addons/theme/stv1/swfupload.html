@@ -3,7 +3,7 @@
 <script type="text/javascript" src = "__THEME__/js/swfupload/js/handlers.js"></script>
 <script type="text/javascript" src = "__THEME__/js/swfupload/swfupload/swfupload.js"></script>
 <script type="text/javascript" src = "__THEME__/js/swfupload/js/swfupload.queue.js"></script>
-
+<input type="hidden" name="attach_ids" value="" >
 <php>
  set_time_limit(0);
 </php>
@@ -19,17 +19,22 @@
 	
 	<script type="text/javascript">
 	var swfu;
+	var post_params = {};
+	var upload_url = U("widget/Upload/save");
+	<present name="uptoken">
+		upload_url = 'http://upload.qiniu.com';
+		post_params.token = '<?php echo $uptoken ?>';
+		post_params.key = '<?php echo $filename ?>';
+		post_params.persistentOps = 'avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg==';
+	</present>
 	window.onload = function() {
-		var uptoken = "{$uptoken}";
-		var filename= "{$filename}";
-		var entrycode="{$entrycode}";
 		var settings = {
 			flash_url : "__THEME__/js/swfupload/swfupload/swfupload.swf",
-			upload_url: "http://upload.qiniu.com",
-			post_params: {"token" :uptoken ,"key" :filename,"persistentOps": "avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg=="},
+			upload_url: upload_url,
+			post_params: post_params,
 			file_size_limit : "1024 MB",
 			file_post_name:'file',
-			file_types : "*.flv;*.f4v;*.mp4;*.mp3",
+			file_types : "*.mp4;*.mp3;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.pdf;*.txt",
 			file_types_description : "All Files",
 			file_upload_limit : 1,  //配置上传个数
 			file_queue_limit : 0,

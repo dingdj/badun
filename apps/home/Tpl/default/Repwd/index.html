@@ -64,7 +64,7 @@
                     <dl>
                         <dt><span>*</span>手机:</dt>
                         <dd>
-                            <input class="inp" type="text" maxlength="11" id="rephoneval" placeholder="请输入注册时填写的手机号">
+                            <input class="inp" type="text" maxlength="11" id="rephoneval" placeholder="请输入注册的手机号">
                             <p class="p" id="tsrephone"></p>
                         </dd>
                     </dl>
@@ -73,8 +73,8 @@
                         <dd>
                             <input class="inp" style="width:145px;" type="text" id="repverval" maxlength="6"
                                    placeholder="请输入收到的验证码">
-                            <a class="yzm" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
-                            <p class="width97" style="display:none;"><a id="dctime"></a>秒后重新发送</p>
+                            <a class="yzm width80" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
+                            <span class="width97" style="display:none;"><a id="dctime"></a>秒后重新发送</span>
                             <p class="p" id="tsrephonever"></p>
                         </dd>
                     </dl>
@@ -200,19 +200,7 @@
     </div>
 </div>
 
-<div class="login-footer" style="margin-bottom:0;">
-    <ul>
-        <li><a href="/">{$site['site_keyword']}首页</a></li>
-        <volist name="pageCategory" id="vo" offset="0" length="5">
-            <li>|</li>
-            <li>
-                <a target="_blank" href="{$vo['url']}">{$key}</a>
-            </li>
-        </volist>
-        <li>|</li>
-        <li><span>{:t($site['site_footer']);}.</span></li>
-    </ul>
-</div>
+<include file="__THEME__/public_footer" />
 
 <script type="text/javascript">
     $(function () {

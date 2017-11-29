@@ -13,22 +13,23 @@ class ResourceWidget extends Widget {
     
     
     /**
-     * @param integer kztype //数据分类 1:课程;2:套餐;
-     * @param integer kzid //课程或者套餐ID
+     * @param integer kztype //数据分类 1:课程;2:班级;3线下课
+     * @param integer kzid //课程或者班级ID
      * @param integer type //分类类型 1:提问,2:点评,3:笔记
      * @param string template 模板名称
      */
     public function render($data) {
         $var = array();
-        $var['kztype']      = 1;//数据分类 1:课程;2:套餐;3众筹
-        $var['kzid']        = 0;//课程或者套餐ID
+        $var['kztype']      = 1;//数据分类 1:课程;2:班级;3线下课
+        $var['kzid']        = 0;//课程或者班级ID
         $var['type']        = 1;//分类类型 1:提问,2:点评,3:笔记,4:评论
         $var['ispage']      = true;//是否分页
         $var['template']    = 'album_question';//模板名称
         $var['ispage']      = $data['ispage']?'true':'false';//是否分页
         //是否取信息
         $var['isdata']      = $data['isdata']?true:false;
-        
+        //评价级别
+        $var['startype']    = 'all';
         is_array($data) && $var = array_merge($var,$data);
         //获得模板名称
         $template = $var['template'].'.html';
@@ -37,9 +38,9 @@ class ResourceWidget extends Widget {
         
         if($var['isdata']){
             if($var['kztype'] == 2){
-                //序列化字段---让套餐和课程的字段看起来一样
+                //序列化字段---让班级和课程的字段看起来一样
                 $field = '`id`,`album_title` as `title`,`uid`,`album_score` as `score`,`cover`,`album_video`,`album_comment_count` as `comment_count`';
-                //取得套餐信息
+                //取得班级信息
                 $baseInfo = M('Album')->where(array('id'=>array('eq',intval($var['kzid']))))->field($field)->find();
                 
                 $videoids = trim( D('Album','classroom')->getVideoId($baseInfo['id']) , ',');
@@ -49,7 +50,7 @@ class ResourceWidget extends Widget {
                 $result = M('')->query($sql);
                 $mulus = $result;
             }else{
-                //序列化字段---让套餐和课程的字段看起来一样
+                //序列化字段---让班级和课程的字段看起来一样
                 $field = '`id`,`video_title` as `title`,`uid`,`video_id`,`video_score` as `score`,`cover`,`video_comment_count` as `comment_count`';
                 $field = '*';
                 //取得课程信息
@@ -96,8 +97,8 @@ class ResourceWidget extends Widget {
     
     /**
      * 获取提问列表
-     * @param integer kztype //数据分类 1:课程;2:套餐;
-     * @param integer kzid //课程或者套餐ID
+     * @param integer kztype //数据分类 1:课程;2:班级;
+     * @param integer kzid //课程或者班级ID
      * @param integer type //分类类型 1:提问,2:点评,3:笔记
      * @param string template 模板名称
      */
@@ -109,11 +110,11 @@ class ResourceWidget extends Widget {
         $limit  = intval($_POST['limit']);
         
         $stable = parse_name($this->tableList[$type],1);
-        //如果是课程的话就是=，套餐就是in
+        //如果是课程的话就是=，班级就是in
         $map['oid']        = $kzid;
         $map['parent_id']  = 0;
         
-        //如果是套餐的话、、需要把下面的所有的
+        //如果是班级的话、、需要把下面的所有的
         if($kztype == 2){
             $vids = M('Album')->where(array('id'=>array('eq',$kzid)))->getField('album_video');
             $vids = getCsvInt($vids);

@@ -80,7 +80,7 @@ var validate = function(_form){
         <div class="cent_r_box clearfix">
             <div class="nva_cent">
                 <ul class="Nav_bar fl">
-                    <li class="sel_cent_r">编辑套餐</li>
+                    <li class="sel_cent_r">编辑班级</li>
                 </ul>
             </div>
             <form id="zmform" name="zmform" action="{:U('classroom/User/doAlbum_edit')}" method="post" onsubmit="return j_validateCallback(this,validate);">
@@ -89,17 +89,17 @@ var validate = function(_form){
                 <div class="mt10b20 h55 clearfix">
                     <span class="selected_title w100 color_hui fl">
                         <font color="red"> * </font>
-                        套餐名称
+                        班级名称
                     </span>
                     <div id="Album_Title" class="Album_Title_s myInput1 fl w280">
                         <input name="album_title" id="album_title" class="head_search upload_input_a" type="text" value="{$album_title}" style="width:100%">
-                        <span id="s_span" style="display:none;">请添写套餐名称</span>
+                        <span id="s_span" style="display:none;">请添写班级名称</span>
                     </div>
                 </div>
                 <div class="mt10b20 h90 clearfix">
                     <span class="selected_title w100 color_hui fl">
                     <font color="red"> * </font>
-                    套餐简介
+                    班级简介
                     </span>
                     <div class="editwrap text_A fl w280 h65">
                     <textarea name="album_intro" id="album_intro" class="j-edittxt edittxt h65">{$album_intro}</textarea>
@@ -109,7 +109,7 @@ var validate = function(_form){
                 <div class="mt10b20 clearfix" style="height:35px;"> 
                     <span class="selected_title w100 color_hui fl">
                     <font color="red"> * </font>
-                    套餐分类
+                    班级分类
                     </span>
                     <a id="Tree_Menu_Add1" class="Attention sel_w fl" href="javascript:;">添加</a>
                 </div>
@@ -134,7 +134,7 @@ var validate = function(_form){
                 <div class="mt10b20 H100 clearfix">
                     <span class="selected_title w100 color_hui fl">
                     <font color="red"> * </font>
-                    套餐大图(278*240)：
+                    班级大图(278*240)：
                     </span>
                     <div id="width_150">
                     {:W('Upload',array('callback'=>'upload_callback','uploadType'=>'image','limit'=>'1','inputname'=>'big','inForm'=>'0'))}
@@ -147,7 +147,7 @@ var validate = function(_form){
                 <div class="mt10b20 H100 clearfix">
                     <span class="selected_title w100 color_hui fl">
                     <font color="red"> * </font>
-                    套餐中图(276*137)：
+                    班级中图(276*137)：
                     </span>
                     <div id="width_150">
                     {:W('Upload',array('callback'=>'upload_callback','uploadType'=>'image','limit'=>'1','inputname'=>'middle','inForm'=>'0'))}
@@ -162,7 +162,7 @@ var validate = function(_form){
                 <div class="mt10b20 H100 clearfix">
                     <span class="selected_title w100 color_hui fl">
                     <font color="red"> * </font>
-                    套餐小图(278*240)：
+                    班级小图(278*240)：
                     </span>
                     <div id="width_150">
 						{:W('Upload',array('callback'=>'upload_callback','uploadType'=>'image','limit'=>'1','inputname'=>'small','inForm'=>'0'))}
@@ -177,11 +177,11 @@ var validate = function(_form){
                 <div class="mt10b20 h55 clearfix">
                     <span class="selected_title w100 color_hui fl">
                         <font color="red"> * </font>
-                        套餐标签：
+                        班级标签：
                     </span>
                     <div id="Album_Title" class="Album_Title_s myInput1 w280">
                         <input name="album_tag" id="album_tag" class="head_search upload_input_a" type="text" value="{$str_tag}" style="width:100%">
-                        <span id="s_span" style="display:none;">请添写套餐标题</span>
+                        <span id="s_span" style="display:none;">请添写班级标题</span>
                     </div>
                     <p class="ml100 lh30">多个标签请以半角，逗号分割</p>
                 </div>
@@ -193,8 +193,8 @@ var validate = function(_form){
 					<input type="text" readonly id="uctime" name="uctime" value="<if condition=' $uctime '>{$uctime}</if>" onfocus="core.rcalendar(this,'full');" />	
                 </div>
 				<div class="mt10b20 h55 clearfix" style="text-align:center;margin-top:0px">
-                	<input type="submit" class="Save btn_big_r" value="保存套餐信息" style="border:none;cursor:pointer;outline:none;"/>
-					<!--<a id="start_creat" class="Save btn_big_r" style="margin-top:0px;" href="javascript:;">保存套餐信息</a>-->
+                	<input type="submit" class="Save btn_big_r" value="保存班级信息" style="border:none;cursor:pointer;outline:none;"/>
+					<!--<a id="start_creat" class="Save btn_big_r" style="margin-top:0px;" href="javascript:;">保存班级信息</a>-->
 				</div>
             </div>
             </form>   
@@ -204,6 +204,6 @@ var validate = function(_form){
     <include file="../User/_right" />
     <!-- 右边结束 -->
 </div>
-<include file="__THEME__/public_footer_g" />
+<include file="__THEME__/public_footer" />
 </body>
 </html>

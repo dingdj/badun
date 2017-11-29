@@ -1904,12 +1904,12 @@ function objshow(btnid,objid,closeid,bg)
 			}
 			$("#cash").attr("data-videos",ids);
 			if($("#album_title").val() == ''){
-				notes('你还没有填写套餐标题','failure');
+				notes('你还没有填写班级标题','failure');
 				$("#album_title").focus();
 				return;
 			}
 			if($("#edittxt").val() == ''){
-				notes('你还没有填写套餐简介','failure');
+				notes('你还没有填写班级简介','failure');
 				$("#edittxt").focus();
 				return;
 			}
@@ -2584,7 +2584,7 @@ function omanage_all(oManage_all)
 				oCloseCent.onclick=function()
 				{
 					var id    = $(this).attr('data-id');
-					//1:课程;2:套餐;
+					//1:课程;2:班级;
 					var type  = $(this).attr('data-type');
 					//1:购买的;2:收藏的;3：上传的
 					var rtype = $(this).attr('data-rtype');
@@ -2816,7 +2816,7 @@ function  upload_yz()
 		{
 			if(oHeadSearch[0].value.indexOf(arr[i])>-1)
 			{
-				tag('套餐标题内容不得包含敏感词','transparent');
+				tag('班级标题内容不得包含敏感词','transparent');
 				return false;
 			}
 			if(oHeadSearch[1].value.indexOf(arr[i])>-1)
@@ -2837,7 +2837,7 @@ function  upload_yz()
 		}
 		if(oHeadSearch[0].value=='')
 		{
-			tag('套餐标题内容不得为空','transparent');
+			tag('班级标题内容不得为空','transparent');
 			return false;
 		}
 		else if(oUploadTextareaA.value=='')
@@ -2914,7 +2914,7 @@ var mzgaojiaowang = function(){
 	self._document = document;
 }
 
-//把套餐分享到点播去
+//把班级分享到点播去
 mzgaojiaowang.prototype.shareToDianBo = function(_this,$id){
 	var url = U('classroom/Album/sharetodianbo');
 	$.ajax({

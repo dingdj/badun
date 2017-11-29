@@ -15,11 +15,11 @@ class AdminVideoMountAction  extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index']       = '课程挂载管理';
-        $this->pageTitle['action']       = '待审核课程挂载管理';
+        $this->pageTitle['index']       = '已审';
+        $this->pageTitle['action']       = '待审';
 
-        $this->pageTab[] = array('title'=>'挂载课程列表','tabHash'=>'index','url'=>U('classroom/AdminVideoMount/index'));
-        $this->pageTab[] = array('title'=>'待审核挂载课程列表','tabHash'=>'action','url'=>U('classroom/AdminVideoMount/action'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('classroom/AdminVideoMount/index'));
+        $this->pageTab[] = array('title'=>'待审','tabHash'=>'action','url'=>U('classroom/AdminVideoMount/action'));
 
         parent::_initialize();
     }
@@ -137,7 +137,7 @@ class AdminVideoMountAction  extends AdministratorAction
     private function _getList($map = [],$type,$limit,$order){
         $map['type']        = 1;
         $map['is_del']      = 0; //搜索非隐藏内容
-        $map['is_activity'] = 1;
+        $map['is_activity'] = ['in','1,5'];
         $map ['_string']    = ' (is_charge != 1)  AND ( t_price != 0) ';
         if(isset($_POST)) {
             $_POST['id'] && $map['id'] = intval(t($_POST['id']));

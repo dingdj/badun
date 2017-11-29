@@ -8,6 +8,9 @@
 hr{
 	display: none;
 }
+.full-course on:hover .header_sider_ulbox{
+	display: block;
+}
 .swiper-container:hover .swiper-button-next, .swiper-container:hover .swiper-button-prev{
 	display: none;
 }
@@ -24,6 +27,17 @@ hr{
 	width:1200px;
 	height:484px;
 	margin:auto;
+}
+.content-place{
+	line-height: 50px;
+}
+.content-place span{
+	color: #6d6d6d;
+    font-size: 14px;
+}
+.content-place a{
+	color:#999;
+    font-size: 14px;
 }
 .banner{
 	width:970px;
@@ -183,8 +197,12 @@ a{
 	width: 190px;
 	height: 168px;
 	background-color:#F7F7F7;
-	float: left;
 	margin:10px 12px 0 0;
+}
+@media screen and (min-width:700px){
+	.integral-hoice a{
+		float: left;
+	}
 }
 .integral-hoice a:hover{
 	background-color:#fff;
@@ -227,6 +245,7 @@ a{
 	color: #ffc446;
 	margin:0 5px 0 5px;
 	font-size: 16px;
+	float: left;
 }
 .integral-num img{
 	width: 180px;

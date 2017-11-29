@@ -1,0 +1,42 @@
+<include file="public/public_header_w3g"/>
+<!--header end-->
+
+<div class="cover"></div>
+
+<div class="min-height-wrap">
+    <!--banner-->
+    <div class="device about-bakg" <if condition="$ad_list[0]">style="background: url({:cutImg($ad_list[0]['banner'],1920,420)}) center no-repeat"</if>></div>
+
+    <div class="single-info"></div>
+
+<script>
+    $(function(){
+        var id = $(".ftwrapper li:first").attr("value");
+        singleCate(this,id);
+
+        $(".ftwrapper li:first").addClass("on");
+    });
+
+    //关于我们页面跳转
+    function singleCate(cate,id){
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/Index/getSingleInfo')}",
+            data: "id="+id,
+            async:false,
+            dataType:"text",
+            success:function(data){
+                $(".single-info").html('');
+                var data = JSON.parse(data);
+                if(data.text){
+                    $(".single-info").append(data.text);
+                }else{
+                    $(".single-info").append('<div class="introduction"><p>暂无相关信息。。</p></div>');
+                }
+                $(cate).parent('li').addClass('on').siblings().removeClass('on');
+            }
+        });
+    }
+</script>
+
+<include file="public/public_footer_w3g"/>

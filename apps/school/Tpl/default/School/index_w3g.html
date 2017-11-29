@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
     <div class="body">
 		<div id="slideBox" class="slideBox">
@@ -29,7 +29,7 @@
 				autoPlay:true //自动播放
 			});
 		</script>
-        <div class="teachertop" style="position: initial;">
+        <div class="teachertop" style="position: initial;height:auto;">
             <div class="inst-pic">
                 <img src="{:cutImg($school['logo_id'],150,150)}" alt="" />
             </div>
@@ -99,24 +99,10 @@
                 </div>
             </div>
             <php>if($live_cate){</php>
-            <volist name="live_cate" id="vo" key="k">
-                <php>
-                    if(($k+1)%2 == 1){
-                    $jgc = 1;
-                    }else{
-                    $jgc = 0;
-                    }
-                </php>
                 <div class="institem <eq name='jgc'>bgw</eq>">
-                    <div class="insttitlle">
-                        <div>
-                            <h2>{:msubstr(t($vo['catename']),0,15,'utf-8',true)}</h2>
-                            <p>Open education class</p>
-                        </div>
-                    </div>
                     <div class="itemboxcon">
                         <ul class="list02">
-                            <volist name="vo.data" id="val" offset="0" length="6">
+                            <volist name="live_cate" id="val" offset="0" length="6">
                                 <li>
                                     <if condition="$val['mount_iand']">
                                         <if condition="$val['type'] eq 2">
@@ -144,7 +130,7 @@
                                 </li>
                             </volist>
                         </ul>
-                        <php>if(count($vo['data']) > 6){</php>
+                        <php>if(count($live_cate) > 6){</php>
                         <if condition="$school['domain']">
                             <a href="javascript:;" data-cate_id="{$vo['cate_id']}" class="inst-more video_list">查看更多</a>
                             <else/>
@@ -153,7 +139,6 @@
                         <php>}</php>
                     </div>
                 </div>
-            </volist>
             <php>}else{</php>
             <p style="font-size: 15px;background: #fff;">暂时没有相关直播信息</p>
             <php>}</php>
@@ -167,24 +152,10 @@
                 </div>
             </div>
             <php>if($cate){</php>
-                <volist name="cate" id="vo" key="k">
-                <php>
-                    if(($k+1)%2 == 1){
-                    $jgc = 1;
-                    }else{
-                    $jgc = 0;
-                    }
-                </php>
                 <div class="institem <eq name='jgc'>bgw</eq>">
-                    <div class="insttitlle">
-                        <div>
-                            <h2>{:msubstr(t($vo['catename']),0,15,'utf-8',true)}</h2>
-                            <p>Open education class</p>
-                        </div>
-                    </div>
                     <div class="itemboxcon">
                         <ul class="list02">
-                            <volist name="vo.data" id="val" offset="0" length="6">
+                            <volist name="cate" id="val" offset="0" length="6">
                                 <li>
                                     <if condition="$val['mount_iand']">
                                         <if condition="$val['type'] eq 2">
@@ -212,7 +183,7 @@
                                 </li>
                             </volist>
                         </ul>
-                        <php>if(count($vo['data']) > 6){</php>
+                        <php>if(count($cate) > 6){</php>
                             <if condition="$school['domain']">
                                 <a href="javascript:;" data-cate_id="{$vo['cate_id']}" class="inst-more video_list">查看更多</a>
                                 <else/>
@@ -221,7 +192,6 @@
                         <php>}</php>
                     </div>
                 </div>
-                </volist>
             <php>}else{</php>
                 <p style="font-size: 15px;background: #fff;">暂时没有相关点播信息</p>
             <php>}</php>
@@ -311,4 +281,4 @@
         },'json');
     }
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

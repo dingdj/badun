@@ -162,7 +162,7 @@
                         </dd>
                         <dd>
                             <h5><a href="{:U('classroom/LineClass/view',array('id'=>$vo['course_id']))}">{:msubstr(t($vo['course_name']),0,10,'utf-8',true)}</a></h5>
-                            <b><if condition="$vo['course_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$vo['course_price']}</if></b>
+                            <b><if condition="$vo['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$vo['price']}</if></b>
                             <small>开课时间：{:date('Y-m-d',$vo['listingtime'])}～{:date('Y-m-d',$vo['uctime'])}</small>
                             <small>上课地点：{$vo['teach_areas'] | default='无限制'}</small>
                             <p>{:msubstr(t($vo['course_binfo']),0,60,'utf-8',true)}</p>

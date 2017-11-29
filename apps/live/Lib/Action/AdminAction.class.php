@@ -324,7 +324,7 @@ class AdminAction extends AdministratorAction
 				$data["number"] = $addLive["number"];
 				$data["subject"] = $live['subject'];
 				$data["speaker"] = intval($_POST['speaker']);
-				$data["price"] = intval($_POST['price']);
+				$data["price"] = floatval($_POST['price']);
 				$data["score"] = intval($_POST['score']);
 				$data["startDate"] = $addLive["startDate"]/1000;
 				$data["invalidDate"] = $addLive["invalidDate"]/1000;
@@ -433,7 +433,7 @@ class AdminAction extends AdministratorAction
 
 				$data["subject"] = $live['subject'];
 				$data["speaker"] = intval($_POST['speaker']);
-				$data["price"] = intval($_POST['price']);
+				$data["price"] = floatval($_POST['price']);
 				$data["score"] = intval($_POST['score']);
 				$data["startDate"] = $live['startDate']/1000;
 				$data["invalidDate"] = $live['invalidDate']/1000;

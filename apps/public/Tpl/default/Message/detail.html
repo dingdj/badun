@@ -3,14 +3,12 @@
 .talkPop{clear:left;margin-top:43px;*margin-top:20px !important;margin-left:-75px !important;*margin-left:-25px !important;_*margin-left:-25px;position:absolute !important;}
 @media screen and (-webkit-min-device-pixel-ratio:0){ .talkPop {margin-left:-25px !important} }
 </style>
-<div class="content cf2">
+<div class="content cf2" style="background-color: #f0f0f2;padding: 30px 0;">
     <div class="wrap">
         <!--左-->
         <include file="left" />
 
-        <div class="jgpage_right">
-            <div class="jgpage_right_con">
-            <a href="#" class="onactive">我的私信</a></div>
+        <div class="jgpage_right" style="padding: 0 30px;width:810px;">
         <!--后台私信-->
         <div class="user-sxmain">
             <div class="user-sxmainhd">我和 <a href="{$message['to'][0]['user_info']['space_url']}" style="color: #3366cc;">{$message['to'][0]['user_info']['uname']}</a> {:L('PUBLIC_PRIVATE_MESSAGE')}({:L('PUBLIC_SUM_TO_TALL',array('num'=>"<strong id='message_content_count'>".$message['message_num']."</strong>"))})

@@ -33,7 +33,7 @@ class AdminNoteAction extends AdministratorAction
         $this->pageButton[] = array('title' => '删除', 'onclick' => "admin.delNoteAllEdit('delnote')");
 
         $this->searchKey = array('id', 'uid', 'type', 'is_open', 'note_title',  'note_description',array('ctime', 'ctime1'));
-        $this->opt['type'] = array('0' => '不限', '1' => '课程', '2' => '套餐');
+        $this->opt['type'] = array('0' => '不限', '1' => '课程', '2' => '班级');
         $this->opt['is_open'] = array('0' => '不限', '1' => '不公开', '2' => '公开');
 
         $list = model('ZyNote')->getNoteList('20', array('parent_id' => array('eq', 0)));
@@ -45,8 +45,8 @@ class AdminNoteAction extends AdministratorAction
             } else {
                 $url = U('classroom/Album/view', array('id' => $value['oid']));
             }
-            $list['data'][$key]['note_title'] = '<div style="width:192px;height:30px;overflow:hidden;"><a href="' . $url . '" target="_bank">' . $value['note_title'] . '</a></div>';
-            $list['data'][$key]['note_description'] = '<div style="width:200px;height:30px;overflow:hidden;">' . $value['note_description'] . '</div>';
+            $list['data'][$key]['note_title'] = '<a href="' . $url . '" target="_bank">' . $value['note_title'] . '</a>';
+            $list['data'][$key]['note_description'] = $value['note_description'];
 
             if ($value['type'] == 1) {
                 $list['data'][$key]['oid'] = getVideoNameForID($value['oid']);
@@ -60,7 +60,7 @@ class AdminNoteAction extends AdministratorAction
             $url = U('classroom/Video/view', array('id' => $value['oid']));
             $list['data'][$key]['oid'] = getQuickLink($url,$video_title,"未知课程");
 
-            $list['data'][$key]['type'] = ($value['type'] == 1) ? '课程' : '套餐';
+            $list['data'][$key]['type'] = ($value['type'] == 1) ? '课程' : '班级';
            if( $list['data'][$key]['is_open'] == 0)
            {
                $list['data'][$key]['is_open'] ="不";

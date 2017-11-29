@@ -21,23 +21,27 @@ class AdminTeacherAction extends AdministratorAction{
      * @return void
      */
     private function _initTabSpecial() {
-        $this->pageTitle['index']           = '讲师管理';
-        $this->pageTitle['article']         = '讲师文章';
-        $this->pageTitle['details']         = '讲师经历';
-        $this->pageTitle['style']           = '讲师风采';
-        $this->pageTitle['photoDeatils']    = '讲师相册详情';
-        $this->pageTitle['disable']         = '讲师文章禁用列表';
-
+        $this->pageTitle['index']           = '列表';
+        $this->pageTitle['article']         = '文章';
+        // $this->pageTitle['details']         = '经历';
+//        $this->pageTitle['style']           = '讲师风采';
+//        $this->pageTitle['photoDeatils']    = '讲师相册详情';
+//        $this->pageTitle['disable']         = '讲师文章禁用列表';
 
         // Tab选项
-        $this->pageTab [] = array ('title' => '讲师列表','tabHash' => 'index','url' => U ( 'school/AdminTeacher/index' ));
-        $this->pageTab [] = array ('title' => '讲师文章','tabHash' => 'article','url' => U ( 'school/AdminTeacher/article'));
-        $this->pageTab [] = array ('title' => '讲师经历','tabHash' => 'details','url' => U ('school/AdminTeacher/details'));
+        $this->pageTab [] = array ('title' => '列表','tabHash' => 'index','url' => U ( 'school/AdminTeacher/index' ));
+        $this->pageTab [] = array ('title' => '文章','tabHash' => 'article','url' => U ( 'school/AdminTeacher/article'));
+        // $this->pageTab [] = array ('title' => '经历','tabHash' => 'details','url' => U ('school/AdminTeacher/details'));
         if(!is_admin($this->mid)){
-            $this->pageTab [] = array ('title' => '添加讲师','tabHash' => 'addTeacher','url' => U ( 'school/AdminTeacher/addTeacher' ));
+            $this->pageTab [] = array ('title' => '添加','tabHash' => 'addTeacher','url' => U ( 'school/AdminTeacher/addTeacher' ));
         }
-        $this->pageTab [] = array ('title' => '讲师风采','tabHash' => 'style','url' => U ('school/AdminTeacher/style'));
-        $this->pageTab [] = array ('title' => '讲师文章禁用列表','tabHash' => 'disable','url' => U ( 'school/AdminTeacher/disable' ));
+//        $this->pageTab [] = array ('title' => '讲师风采','tabHash' => 'style','url' => U ('school/AdminTeacher/style'));
+//        $this->pageTab [] = array ('title' => '讲师文章禁用列表','tabHash' => 'disable','url' => U ( 'school/AdminTeacher/disable' ));
+
+        if(!is_admin($this->mid)){
+            $this->pageTitle['teacherVerify']      = '待审';
+            $this->pageTab[] = array('title'=>'待审','tabHash'=>'teacherVerify','url'=>U('school/AdminTeacher/teacherVerify'));
+        }
     }
 
     public function index(){
@@ -68,6 +72,7 @@ class AdminTeacherAction extends AdministratorAction{
         $this->opt['school_title'] = $school;
         $map['mhm_id']= array('gt','0');
         $map['is_del'] = ['neq',2];
+        $map['verified_status'] = 1;
         if(!empty($id))$map['id']=$id;
         if(!empty($uid))$map['uid']=$uid;
         if(!empty($uname))$map['uid']=$uname;
@@ -117,13 +122,13 @@ class AdminTeacherAction extends AdministratorAction{
                 $val['is_del'] = "<span style='color: green;'>正常</span>";
             }
             $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/editTeacher',array('id'=>$val['id'],'tabHash'=>'revise')).";>编辑</a>";
-            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/addStyle',array('id'=>$val['id'],'tabHash'=>'addStyle','doadd'=>1)).";>风采上传</a>";
+//            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/addStyle',array('id'=>$val['id'],'tabHash'=>'addStyle','doadd'=>1)).";>风采上传</a>";
             $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/addArticle',array('id'=>$val['id'],'tabHash'=>'revise','doadd'=>1)).";>添加文章</a>";
-            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/addDetails',array('id'=>$val['id'],'tabHash'=>'revise','doadd'=>1)).";>添加经历</a>";
+            // $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/addDetails',array('id'=>$val['id'],'tabHash'=>'revise','doadd'=>1)).";>添加经历</a>";
             $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/courseShow',array('id'=>$val['id'],'tabHash'=>'courseShow')).";>课程展示</a>";
             $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/article',array('id'=>$val['id'])).";>文章展示</a>";
-            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/details',array('id'=>$val['id'])).";>经历展示</a>";
-            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/style',array('id'=>$val['id'])).";>风采展示</a>";
+            // $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/details',array('id'=>$val['id'])).";>经历展示</a>";
+//            $val['DOACTION'].=" | <a href=".U('school/AdminTeacher/style',array('id'=>$val['id'])).";>风采展示</a>";
         }
         $this->_listpk = 'id';
         $this->displayList($trlist);
@@ -427,9 +432,9 @@ class AdminTeacherAction extends AdministratorAction{
         $this->onsubmit = 'admin.checkTeacher(this)';
 
         $this->pageKeyList = array (
-            'email','uname','password','sex', 'uid','realname','idcard','phone','address','reason','attach_id','identity_id'
+            'category','email','phone','uname','password','sex','realname',
         );
-        $this->notEmpty = array ('uid','realname','phone','idcard','reason','attach_id','identity_id',);
+        $this->notEmpty = array ('email','phone','uname','password','realname');
 
         //注册配置(添加用户页隐藏审核按钮)
         $regInfo = model('Xdata')->get('admin_Config:register');
@@ -445,18 +450,20 @@ class AdminTeacherAction extends AdministratorAction{
         $this->opt['type'] = array('2'=>L('PUBLIC_SYSTEM_FIELD'));
         // 字段选项配置
         $this->opt['sex'] = array('1'=>L('PUBLIC_MALE'),'2'=>L('PUBLIC_FEMALE'));
-        $schoolData['prompt'] = '请选择一种方式添加讲师（重新添加用户或者选择用户）';
 
         $_REQUEST['tabHash'] = 'addTeacher';
         $this->pageTitle['addTeacher']      = '添加讲师';
 
         if(!is_admin($this->mid)){
-            $schoolData = model('User')->where('mhm_id='.$this->school_id)->field('uid,uname')->findALL();
             $this->opt['uid'] = array_column($schoolData,'uname','uid');
         }
         $this->savePostUrl = U ('school/AdminTeacher/doAuthenticate');
          //说明是添加
-        $this->displayConfig($schoolData);
+         ob_start();
+        echo W('CategoryLevel', array('table' => 'zy_teacher_category', 'id' => 'teacher_level'));
+        $output = ob_get_contents();
+        ob_end_clean();
+        $this->displayConfig(array('category'=>$output));
     }
     /**
      * 提交添加讲师
@@ -472,79 +479,80 @@ class AdminTeacherAction extends AdministratorAction{
             $map['is_init']  = ($map['is_init'] == 2) ? 0 : 1;
             $map['mhm_id']  = $this->school_id;
             //检查map返回值，有表单验证
-             $user->addUser($map);
-             $uid  = $user->where(array('email'=>$_POST['email'],'uname'=>$_POST['uname']))->getField('uid');
-             if(!$uid){$this->error('用户添加失败!');}
-             $maps['uid'] = $uid;
-             $maps['user_group_id'] = '2';
-             $exist = D('user_group_link')->where($maps)->find();
-             if(!$exist){
-                 D('user_group_link')->add($maps);
-                 model('User')->cleanCache($uid);
-                 // 清除用户组缓存
-                 model('Cache')->rm('user_group_' . $uid);
-                 // 清除权限缓存
-                 model('Cache')->rm('perm_user_' . $uid);
-             }
-             $data['uid'] = $uid;
+            if( $user->addUser($map) ) {
+                $uid  = $user->where(array('email'=>$_POST['email'],'uname'=>$_POST['uname']))->getField('uid');
+                if(!$uid){$this->error('用户添加失败!');}
+                $maps['uid'] = $uid;
+                $maps['user_group_id'] = '2';
+                $exist = D('user_group_link')->where($maps)->find();
+                if(!$exist){
+                     D('user_group_link')->add($maps);
+                     model('User')->cleanCache($uid);
+                     // 清除用户组缓存
+                     model('Cache')->rm('user_group_' . $uid);
+                     // 清除权限缓存
+                     model('Cache')->rm('perm_user_' . $uid);
+                }
+                $data['uid'] = $uid;
+            } else {
+                $this->error( $user->getError() );
+            }
         }else{
              $data['uid']  = intval($_POST['uid']);
         }
-        $data['user_verified_category_id'] = intval(6);
-        $data['usergroup_id'] = intval(3);
 
-        $data['realname'] = t($_POST['realname']);
-        $data['idcard'] = t($_POST['idcard']);
+        $myAdminLevelhidden         = getCsvInt(t($_POST['teacher_levelhidden']),0,true,true,',');  //处理分类全路径
+        $fullcategorypath           = explode(',',$_POST['teacher_levelhidden']);
+        $category                   = array_pop($fullcategorypath);
+        $category                   = $category == '0' ? array_pop($fullcategorypath) : $category; //过滤路径最后为0的情况
+
+        $data['teacher_category'] = '0' ? array_pop($fullcategorypath) : $category;
+        $data['fullcategorypath'] = $myAdminLevelhidden;//分类全路径
+        
+        //$data['user_verified_category_id'] = intval(6);
+        //$data['usergroup_id'] = intval(3);
+
+        $data['name'] = t($_POST['realname']);
+        //$data['idcard'] = t($_POST['idcard']);
         $data['phone'] = t($_POST['phone']);
         $data['reason'] = t($_POST['reason']);
-        $data['address'] = t($_POST['address']);
-        $data['identity_id'] = t($_POST['identity_id_ids']);
+        $data['Teach_areas'] = t($_POST['address']);
+        //$data['identity_id'] = t($_POST['identity_id_ids']);
         $data['attach_id']   = t($_POST['attach_id_ids']);
         $data["mhm_id"] = $this->school_id;
-        $data['is_school'] = 1;
+        //$data['is_school'] = 1;
 
         $Regx1 = '/^[0-9]*$/';
         $Regx2 = '/^[A-Za-z0-9]*$/';
         $Regx3 = '/^[A-Za-z|\x{4e00}-\x{9fa5}]+$/u';
 
         $teacher = M('zy_teacher')->where('uid='.$data['uid'])->find();
-        if(!$data['uid']){$this->error('请选择或添加用户');}
         if(!is_admin($this->mid)){
             $mhm_id = model('User')->where('uid='.$data['uid'])->getField('mhm_id');
             if($this->school_id != $mhm_id){$this->error('请选择本机构下的用户');}
         }
         if($teacher){$this->error('该用户已经是讲师，请重新选择用户');}
-        if(strlen($data['realname'])==0){$this->error('真实姓名不能为空');}
-        if(strlen($data['idcard'])==0){$this->error('身份证号码不能为空');}
+        if(strlen($data['name'])==0){$this->error('真实姓名不能为空');}
         if(strlen($data['phone'])==0){$this->error('联系电话不能为空');}
-        if(strlen($data['reason'])==0){$this->error('认证理由不能为空');}
-        if(preg_match($Regx3, $data['realname'])==0 || strlen($data['realname'])>30){$this->error('请输入正确的姓名格式');}
-        if(preg_match($Regx2, $data['idcard'])==0 || preg_match($Regx1, substr($data['idcard'],0,17))==0 || strlen($data['idcard'])!==18){$this->error('请输入正确的身份证号码');}
-        if(strlen($data['phone']) !== 11 || preg_match($Regx1, $data['phone'])==0){$this->error('请输入正确的联系电话格式');}
-        preg_match_all('/./us', $data['reason'], $matchs);   //一个汉字也为一个字符
-        if(count($matchs[0])>140){$this->error('认证理由不能超过140个字符');}
-        if(!$data['identity_id']){$this->error('请上传身份认证附件');}
-        if(!$data['attach_id']){$this->error('请上传资格认证附件');}
 
-        $teacher_verified = M('user_verified')->where('uid='.$data['uid'])->count();
-        if($teacher_verified){
-            $data['verified'] = '0';
-            $res = M('user_verified')->where('uid='.$data['uid'])->save($data);
-        }else{
-            $res = M('user_verified')->add($data);
+        $data['verified_status']     = 1;
+        $data['ctime']     = time();
+        $res                  = D('ZyTeacher','classroom')->add($data);
+        
+        $exist_map['uid']           = $data['uid'];
+        $exist_map['user_group_id'] = 3;//intval($_POST['usergroup_id']);
+        $exist                 = D('user_group_link')->where($exist_map)->find();
+        if (!$exist) {
+            D('user_group_link')->add($exist_map);
         }
-        //$id  = M('user_verified')->getLastInsID();
-        //$uid = M('user_verified')->where('id='.$id)->getField('uid');
-
-        if($res){
-            $this->success("添加讲师成功,请等待平台审核");
-            /*$id = M('user_verified')->where('uid='.$uid)->getField('id');
-            $result = $this->doVerify($id);
-            if($result == "true"){
-                $this->success("添加讲师成功,请等待平台审核");
-            }*/
-        }else{
-            $this->error("对不起，添加讲师失败！");
+        // 清除用户组缓存
+        model('Cache')->rm('user_group_' . $exist_map['uid']);
+        // 清除权限缓存
+        model('Cache')->rm('perm_user_' . $exist_map['uid']);
+        if ($res){
+            $this->success('添加成功');
+        }else {
+            $this->error('添加失败');
         }
     }
     /*
@@ -600,20 +608,23 @@ class AdminTeacherAction extends AdministratorAction{
         $this->opt['teach_way'] = array('1' => "线上授课", '2' => "线下授课", '3' => "线上/线下均可");
         $this->pageKeyList = array(
             'uid', 'name', 'category', 'school_title', 'title', 'head_id', 'teacher_age', 'high_school', 'graduate_school', 'label',
-            'teach_way', 'online_price', 'offline_price', 'inro', 'details', 'teach_evaluation', 'is_best', 'best_sort'
+            'teach_way', 'Teach_areas', 'online_price', 'offline_price', 'inro', 'details', 'teach_evaluation', 'is_best', 'best_sort'
         );
         $this->notEmpty = array('uid', 'name', 'category', 'mhm_id', 'teacher_age', 'high_school', 'graduate_school', 'teach_evaluation', 'label', 'teach_way', 'inro', 'details', 'title', 'head_id',);
-        $treeData = M('zy_teacher_title_category')->findALL();
-        $this->opt['title'] = array('0' => '请选择')+array_column($treeData, 'title', 'zy_teacher_title_category_id');
+        $treeData = M('zy_teacher_title_category')->where('is_del=0')->order('sort ASC')->findALL();
+        $this->opt['title'] = array('0' => '请选择');
+        if($treeData){
+            $this->opt['title'] += array_column($treeData, 'title', 'zy_teacher_title_category_id') ;
+        }
         $this->opt['is_best'] = array('0' => '否', '1' => '是');
 
         $this->savePostUrl = U('school/AdminTeacher/doAddTeacher', 'type=save&id=' . $id);
         $zyTeacher = D('ZyTeacher','classroom')->where('id=' . $id)->find();
         $zyTeacher['school_title'] = $val['school_title'] = model('School')->where('id='.$zyTeacher['mhm_id'])->getField('title');
-        $this->pageTitle['addTeacher'] = '编辑讲师-' . $zyTeacher['name'];
+        $this->pageTitle['editTeacher'] = '编辑讲师-' . $zyTeacher['name'];
 
         ob_start();
-        echo W('CategoryLevel', array('table' => 'zy_currency_category', 'id' => 'teacher_level', 'default' => trim($zyTeacher['fullcategorypath'], ',')));
+        echo W('CategoryLevel', array('table' => 'zy_teacher_category', 'id' => 'teacher_level', 'default' => trim($zyTeacher['fullcategorypath'], ',')));
         $output = ob_get_contents();
         ob_end_clean();
         $zyTeacher['category'] = $output;
@@ -640,7 +651,7 @@ class AdminTeacherAction extends AdministratorAction{
             'teacher_category'=> '0' ? array_pop($fullcategorypath) : $category,
             'fullcategorypath'=> $myAdminLevelhidden,//分类全路径
             'inro'=>t($_POST['inro']),
-            'details'=>t($_POST['details']),
+            'details'=>$_POST['details'],
             'head_id'=>intval($_POST['head_id']),
             'title'=>t($_POST['title']),
             'mhm_id'=>intval($this->school_id),
@@ -651,6 +662,7 @@ class AdminTeacherAction extends AdministratorAction{
             'graduate_school'=>t($_POST['graduate_school']),
             'teach_evaluation'=>t($_POST['teach_evaluation']),
             'teach_way'=>t($_POST['teach_way']),
+            'Teach_areas'=>t($_POST['Teach_areas']),
             'uid'=>intval($_POST['uid']),
             'offline_price'=>floatval($_POST['offline_price']),
             'online_price'=>floatval($_POST['online_price'])
@@ -944,7 +956,237 @@ class AdminTeacherAction extends AdministratorAction{
         $this->displayList($res);
     }
 
+    /**
+     * 机构讲师认证审核
+     */
+    public function teacherVerify(){
+        $_REQUEST['tabHash'] = 'teacherVerify';
+        $this->_initTabSpecial();
+        $this->pageButton[] = array('title'=>'驳回认证','onclick'=>"admin.mzTeacherVerify('',3)");
+        $this->pageKeyList = array('uname','name','category','phone','reason','certification','other_data','Teach_areas','DOACTION');
+        $mhm_id = is_school($this->mid);
+        $listData = D('ZyTeacher','classroom')->where(array('verified_status'=>2,'mhm_id'=>$mhm_id))->findpage(20);
+        // 获取认证分类的Hash数组
+        $categoryHash = model('CategoryTree')->setTable('user_verified_category')->getCategoryHash();
+        //数据的格式化
+        foreach($listData['data'] as $k=>$v){
+            $userinfo = model('user')->getUserInfo($listData['data'][$k]['uid']);
+            $listData['data'][$k]['uname'] = $userinfo['uname'];
+            //$listData['data'][$k]['usergroup_id'] = D('user_group')->where('user_group_id='.$v['usergroup_id'])->getField('user_group_name');
+            $school = model('School')->getSchoolFindStrByMap(array('id'=>$v['mhm_id']),'doadmin,title');
+            $listData['data'][$k]['school'] = getQuickLink(getDomain($school['doadmin'],$v['mhm_id']),$school['title'],"未知机构");
+            if($listData['data'][$k]['identity_id']){
+                $a = explode('|', $listData['data'][$k]['identity_id']);
+                $listData['data'][$k]['attachment'] = "";
+                foreach($a as $key=>$val){
+                    if($val !== ""){
+                        $attachInfo = D('attach')->where("attach_id=$a[$key]")->find();
+                        $listData['data'][$k]['attachment'] .= msubstr($attachInfo['name'],0,25,"UTF-8",ture).'&nbsp;<a href="'.getImageUrl($attachInfo['save_path']).$attachInfo['save_name'].'" target="_blank">下载</a><br />';
+                    }
+                }
+                unset($a);
+            }
+            if($listData['data'][$k]['attach_id']){
+                $a = explode('|', $listData['data'][$k]['attach_id']);
+                $listData['data'][$k]['certification'] = "";
+                foreach($a as $key=>$val){
+                    if($val !== ""){
+                        $attachInfo = D('attach')->where("attach_id=$a[$key]")->find();
+                        $listData['data'][$k]['certification'] .= msubstr($attachInfo['name'],0,25,"UTF-8",ture).'&nbsp;<a href="'.getImageUrl($attachInfo['save_path']).$attachInfo['save_name'].'" target="_blank">下载</a><br />';
+                    }
+                }
+                unset($a);
+            }
+            //$listData['data'][$k]['category'] = $categoryHash[$v['user_verified_category_id']];
+            $cate = M('zy_teacher_category')->where(['zy_teacher_category_id'=>['in',trim($v['fullcategorypath'],',')]])->field('title')->findAll();
+            $cate = getSubByKey($cate,'title');
+            $listData['data'][$k]['category'] = implode('/',$cate);
+            $listData['data'][$k]['reason'] = str_replace(array("\n", "\r"), array('', ''), format($listData['data'][$k]['reason']));
+            $listData['data'][$k]['DOACTION'] = '<a href="javascript:void(0)" onclick="admin.mzTeacherVerify('.$v['id'].',1)">通过</a> - ';
+            $listData['data'][$k]['DOACTION'] .='<a href="javascript:void(0)" onclick="admin.mzTeacherVerifyBox('.$v['id'].')">驳回</a>';
+        }
+        $this->displayList($listData);
+    }
 
+    /**
+     * 驳回理由 窗口(讲师审核)
+     * @return void
+     */
+    public function getTeacherVerifyBox () {
+        $id = intval($_GET['id']);
+        $this->assign('id', $id);
+        $this->assign('action','doTeacherVerify');
+        $this->display('verify');
+    }
+    /**
+     * 执行认证 (讲师)
+     * @return json 返回操作后的JSON信息数据
+     */
+    public function doTeacherVerify(){
+        $status = intval($_POST['status']);
+        $id = $_POST['id'];
+        if(is_array($id)){
+            $map['id'] = array('in',$id);
+        }else{
+            $map['id'] = $id;
+        }
+        $datas['verified_status'] = $status;
+        $res = D('ZyTeacher','classroom')->where($map)->save($datas);
+        if($res){
+            $return['status'] = 1;
+            if($status == 1){
+                $user_group = D('ZyTeacher','classroom')->where('id='.$id)->find();
+                if($user_group['mhm_id']){
+                    $mhdata['mhm_id'] = $user_group['mhm_id'];
+                    M('user') ->where('uid ='.$user_group['uid']) -> save($mhdata);
+                }
+
+                //添加成为老师
+                /*if($user_group["user_verified_category_id"]==6){
+                    $data["uid"]   = $user_group['uid'];
+                    $data["Teach_areas"] = $user_group['address'];
+                    $data["name"]  = $user_group['realname'];
+                    $data["mhm_id"] = $user_group['mhm_id'];
+                    $data["ctime"] = time();
+                    $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
+
+                    $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
+                    if($res){
+                        $data['is_reject'] = 0;
+                        M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
+                    }else{
+                        M("zy_teacher")->add($data);
+                    }
+                }*/
+                //结束
+                $maps['uid'] = $user_group['uid'];
+                $maps['user_group_id'] = 3;//$user_group['usergroup_id'];
+                $exist = D('user_group_link')->where($maps)->find();
+                if ( !$exist ){
+                    D('user_group_link')->add($maps);
+                    // 清除用户组缓存
+                    model ( 'Cache' )->rm('user_group_'.$user_group['uid']);
+                    // 清除权限缓存
+                    model('Cache')->rm('perm_user_'.$user_group['uid']);
+                    // 删除微博信息
+                    $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
+                    model('Feed')->cleanCache($feed_ids);
+
+                    model('Notify')->sendNotify($user_group['uid'],'admin_user_doverify_ok');
+                    unset($user_group);
+                    unset($maps);
+                }
+                $return['data'] = "认证成功";
+            }
+            if($status == 3){
+                $return['data']	  = "驳回成功";
+                $map['verified_status'] = 0 ;
+                $rejectInfo = t($_POST['reason']);
+                //$data['act'] = '驳回';
+                if(is_array($id)){
+                    foreach($id as $k=>$v){
+                        $result = D('ZyTeacher','classroom')->where('id='.$v)->save($map);
+                        if($result){
+                            //$user_group = M('user_verified')->where('id='.$v)->find();
+                            $user_id = D('ZyTeacher','classroom')->where('id='.$v)->getField('uid');
+                            $teacher = M('zy_teacher')->where('uid='.$user_id)->count();
+                            if($teacher){
+                                $data['is_reject'] = 1;
+                                M('zy_teacher')->where('uid='.$user_id)->save($data);
+                            }
+                        }
+                        //添加成为老师
+//                        if($user_group["user_verified_category_id"]==6){
+//                            $data["uid"]   = $user_group['uid'];
+//                            $data["Teach_areas"] = $user_group['address'];
+//                            $data["name"]  = $user_group['realname'];
+//                            $data["mhm_id"] = $user_group['mhm_id'];
+//                            $data["ctime"] = time();
+//                            $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
+//
+//                            $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
+//                            if($res){
+//                                $data['is_reject'] = 0;
+//                                M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
+//                            }else{
+//                                M("zy_teacher")->add($data);
+//                            }
+//                        }
+                        //结束
+                        $maps['uid'] = $user_id;
+                        $maps['user_group_id'] = 3;//$user_group['usergroup_id'];
+                        D('user_group_link')->where($maps)->delete();
+                        // 清除用户组缓存
+                        model ( 'Cache' )->rm ('user_group_'.$user_id);
+                        // 清除权限缓存
+                        model('Cache')->rm('perm_user_'.$user_id);
+                        // 删除微博信息
+                        $feed_ids = model('Feed')->where('uid='.$user_id)->limit(1000)->getAsFieldArray('feed_id');
+                        model('Feed')->cleanCache($feed_ids);
+
+                        $s['uid']=$user_id;
+                        $s['title'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
+                        $s['body'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
+                        $s['ctime'] = time();
+                        model('Notify')->sendMessage($s);
+                        unset($user_group);
+                        unset($maps);
+                    }
+                }else{
+                    $result = D('ZyTeacher','classroom')->where('id='.$id)->save($map);
+                    if($result){
+                        //$user_group = M('user_verified')->where('id='.$id)->find();
+                        $user_id = D('ZyTeacher','classroom')->where('id='.$id)->getField('uid');
+                        $teacher = M('zy_teacher')->where('uid='.$user_id)->count();
+                        if($teacher){
+                            $data['is_reject'] = 1;
+                            M('zy_teacher')->where('uid='.$user_id)->save($data);
+                        }
+                    }
+                    //添加成为老师
+//                    if($user_group["user_verified_category_id"]==6){
+//                        $data["uid"]   = $user_group['uid'];
+//                        $data["Teach_areas"] = $user_group['address'];
+//                        $data["name"]  = $user_group['realname'];
+//                        $data["mhm_id"] = $user_group['mhm_id'];
+//                        $data["ctime"] = time();
+//                        $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
+//
+//                        $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
+//                        if($res){
+//                            $data['is_reject'] = 0;
+//                            M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
+//                        }else{
+//                            M("zy_teacher")->add($data);
+//                        }
+//                    }
+                    //结束
+                    $maps['uid'] = $user_id;
+                    $maps['user_group_id'] = 3; //$user_group['usergroup_id'];
+                    D('user_group_link')->where($maps)->delete();
+                    // 清除用户组缓存
+                    model ( 'Cache' )->rm ('user_group_'.$user_id);
+                    // 清除权限缓存
+                    model('Cache')->rm('perm_user_'.$user_id);
+                    // 删除微博信息
+                    $feed_ids = model('Feed')->where('uid='.$user_id)->limit(1000)->getAsFieldArray('feed_id');
+                    model('Feed')->cleanCache($feed_ids);
+
+                    $s['uid']=$user_id;
+                    $s['title'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
+                    $s['body'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
+                    $s['ctime'] = time();
+                    model('Notify')->sendMessage($s);
+                    unset($user_group);
+                    unset($maps);
+                }
+            }
+        }else{
+            $return['status'] = 0;
+            $return['data']   = "认证失败";
+        }
+        echo json_encode($return);exit();
+    }
 
 
     /**

@@ -25,12 +25,12 @@ class AdminVipCardAction extends AdministratorAction{
     private function _initTabSpecial() {
         // Tab选项
         $this->pageTab [] = array (
-                'title' => '会员卡列表',
+                'title' => '列表',
                 'tabHash' => 'index',
                 'url' => U ( 'classroom/AdminVipCard/index' ) 
         );
         $this->pageTab [] = array (
-                'title' => '添加会员卡',
+                'title' => '添加',
                 'tabHash' => 'addTeacher',
                 'url' => U ( 'classroom/AdminVipCard/addVipCard' ) 
         );
@@ -38,14 +38,14 @@ class AdminVipCardAction extends AdministratorAction{
 
     public function index(){
         $this->_initTabSpecial();
-        $this->assign('pageTitle','会员卡管理');
+        $this->assign('pageTitle','列表');
         //页面配置
         $id     =  intval($_POST['id']);
         $sid    =  intval($_POST['sid']);
         $code   =  intval($_POST['code']);
         $vip_grade   =  intval($_POST['vip_grade']);
-        $this->pageKeyList = array('id','school_title','code','vip_title','vip_date','exp_date','status','ctime','end_time','is_del','DOACTION');
-        $this->searchKey = array('id','sid','code','vip_grade');
+        $this->pageKeyList = array('id','code','vip_title','vip_date','exp_date','status','count','ctime','end_time','is_del','DOACTION');
+        $this->searchKey = array('id','code','vip_grade');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delcoupon')");
         $vip_title = M('user_vip')->where('is_del=0')->field('id,title')->findAll();
@@ -63,19 +63,19 @@ class AdminVipCardAction extends AdministratorAction{
         $time = time();
         foreach($listData['data'] as $key=>$val){
             if($val['is_del'] == 1) {
-                $val['status'] == 3;
+                $val['status'] = 3;
             }
             if($val['status'] != 3 && $val['end_time'] < $time){
                 $val['status'] = 0;
                 $coupon->setStatus($val['id'],0);
             }
-            $school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
+            /*$school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
             if(!$school['doadmin']){
                 $url = U('school/School/index', array('id' => $val['mhm_id']));
             }else{
                 $url = getDomain($school['doadmin']);
             }
-            $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
+            $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");*/
 
 			$val['vip_title'] = M('user_vip')->where(array('id'=>$val['vip_grade']))->getField('title');
             $val['ctime']    = date("Y-m-d H:i:s", $val['ctime']);
@@ -115,10 +115,10 @@ class AdminVipCardAction extends AdministratorAction{
         $id   = intval($_GET['id']);
 
         $this->_initTabSpecial();
-        $this->pageKeyList = array ('sid','vip_grade','vip_date','exp_date','end_time','counts');
-        $this->notEmpty = array ('sid','vip_grade','vip_date','exp_date','end_time','counts');
-		$schoolData = model ( 'School' )->findAll();
-		$this->opt['sid'] = array_column($schoolData,'title','id');
+        $this->pageKeyList = array ('vip_grade','vip_date','exp_date','end_time','count');
+        $this->notEmpty = array ('vip_grade','vip_date','exp_date','end_time','count');
+		//$schoolData = model ( 'School' )->findAll();
+		//$this->opt['sid'] = array_column($schoolData,'title','id');
 		$vipCardData = M( 'user_vip' )->where('is_del=0')->findAll();
 		$this->opt['vip_grade'] = array_column($vipCardData,'title','id');
         if($id){
@@ -128,12 +128,12 @@ class AdminVipCardAction extends AdministratorAction{
             if(empty($card['sid'])){
                 $card['sid']=null;
             }
-            $this->assign('pageTitle','修改会员卡');
+            $this->assign('pageTitle','修改');
             //说明是编辑
             $this->displayConfig($card);
         }else{
             $this->savePostUrl = U ('classroom/AdminVipCard/doVipCard','type=add');
-            $this->assign('pageTitle','添加会员卡');
+            $this->assign('pageTitle','添加');
             //说明是添加
             $this->displayConfig();
         }
@@ -146,30 +146,34 @@ class AdminVipCardAction extends AdministratorAction{
     public function doVipCard(){
         $id=intval($_GET['id']);
         $type= t($_GET['type']);
-        $count = intval($_POST['counts']);
+        /*$count = intval($_POST['counts']);
         if($count == 0){
             $count = 1;
-        }
+        }*/
         //要添加的数据
          //数据验证
-        if(empty($_POST['sid'])){$this->error("请选择机构");}
+        //if(empty($_POST['sid'])){$this->error("请选择机构");}
         if(empty($_POST['vip_grade'])){$this->error("请选择vip等级");}
-        if($_POST['vip_date'] == ''){$this->error("会员时间不能为空");}
+        if($_POST['vip_date'] == ''){$this->error("会员时限不能为空");}
         if($_POST['exp_date'] == ''){$this->error("有效期不能为空");}
         if(!is_numeric($_POST['exp_date'])){$this->error('有效期必须为数字');}
 		if($_POST['end_time'] == ''){$this->error("终止时间不能为空");}	
-        if(!is_numeric($count)){$this->error('生成数量必须为数字');}
+        //if(!is_numeric($count)){$this->error('生成数量必须为数字');}
+        if(!$_POST['count']) $this->error('兑换次数不能为空');
+        if(preg_match("/^[0-9]+$/",$_POST['count'] ) == 0){$this->error('兑换次数必须为正整数');}
 
         $params = array(
             'type'=> 3,
-            'sid'=>intval($_POST['sid']),
+            'sid'=>1,
             'vip_grade'=>t($_POST['vip_grade']),
             'vip_date'=>t($_POST['vip_date']),
             'exp_date'=>intval($_POST['exp_date']),
             'end_time'=>strtotime($_POST['end_time']),
+            'count'=>intval($_POST['count']),
+            'ctime'=>time(),
         );
         if($type == 'add'){
-            $num = 0;
+            /*$num = 0;
             $couponModel = model('Coupon');
             for ($i = 0; $i < $count; $i++) {
                 $params['code'] = $this->create_code();
@@ -178,7 +182,11 @@ class AdminVipCardAction extends AdministratorAction{
                 $num++;
             }
             if(!$num)$this->error("对不起，添加失败！");
-            $this->success("成功添加".$num."个会员卡！");
+            $this->success("成功添加".$num."个会员卡！");*/
+            $params['code'] = $this->create_code();
+            $res=model('Coupon')->add($params);
+            if(!$res)$this->error("对不起，添加失败！");
+            $this->success("添加会员卡成功!");
         }else if($type=='save' && $id){
             $res=model('Coupon')->where("id=$id")->save($params);
             if(!$res)$this->error("对不起，修改失败！");

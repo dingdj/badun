@@ -1,0 +1,148 @@
+<include file="__THEME__/public_header" />
+
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+    .Manage_all{
+      height: 288px;
+    }
+    .no_blind{font-size: 18px;text-align: center;margin-top: 100px;}
+</style>
+<!--centerbox end-->
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
+    <div class="wrap">
+        <include file="../User/public/_left" />
+
+        <div class="center_right">
+            <div class="center_right_tit">
+                <div class="user-con-title">
+                    <h5><if condition="$alipay_info">我的<else/>绑定</if>支付宝</h5>
+                </div>
+            </div>
+
+            <div class="center_right_con Manage_all " style="display:block;">
+
+
+                    <div class="user-Release aplay_go">
+                        <if condition="$_GET['tag'] eq 1">
+
+                            <form method="post" action="{:U('classroom/User/saveAlipay')}" class="infobox">
+                                <dl>
+                                    <dt><span>*</span>真实姓名：</dt>
+                                    <dd>
+                                        <input type="text" class="inp01" id="real_name" rel="手机" name="real_name" placeholder="{$alipay_info['accountmaster']}" style="color:#666">
+                                        <p >该账户在支付宝登记的实名，最长支持100个英文/50个汉字。</p>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><span>*</span>账户：</dt>
+                                    <dd>
+                                        <input type="text" class="inp01" rel="账户" id= "alipay_account"  name="alipay_account" placeholder="{$alipay_info['account']}" style="color:#666">
+                                        <p >支付宝登录号，仅支持邮箱和手机号格式。</p>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dd>
+                                        <a href="javascript:;" class="btn" type="button"  style="height: 40px;line-height: 40px;"onclick="saveAlipay(this)">提 交</a>
+                                    </dd>
+                                </dl>
+                            </form>
+
+                            <style type="text/css">
+                                .user-set-sz .label{ width:110px}
+                                .user-set-sz li p{ left:115px}
+                                .user-set-sz{ padding-left:130px}
+                                .user-set-sz .user-submit{ width:332px;}
+                            </style>
+
+                            <script type="text/javascript">
+                                function saveAlipay(o){
+                                    var form = $(o).parents('form');
+
+                                    if(!$('#real_name').val()){
+                                        ui.error('请输入真实姓名');
+                                        $('#real_name').focus();
+                                        return false;
+                                    }
+                                    if(!$('#alipay_account').val()){
+                                        ui.error('请输入支付宝账号');
+                                        $('#alipay_account').focus();
+                                        return false;
+                                    }
+                                    var alipay_account = $.trim($('#alipay_account').val());
+                                    var phone = new RegExp("^1[3|4|5|7|8][0-9]\d{4,8}$");
+                                    var email = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+                                    var is_phone = phone.test(alipay_account);
+                                    var is_email = email.test(alipay_account);
+                                    //if(!is_email && !is_phone){//
+                                    //    ui.error('请输入正确的支付宝账号');
+                                    //    $('#alipay_account').focus();
+                                    //    return false;
+                                    //}
+                                    $.post('{:U("classroom/User/saveAlipay")}', form.serialize(), function(data){
+                                        if(data.status){
+                                            ui.success(data.info);
+                                            setTimeout(function(){
+                                                window.location = "{:U('classroom/User/alipay')}";
+                                            }, 2000);
+                                        }else{
+                                            ui.error(data.info);
+                                        }
+                                    }, 'json');
+                                }
+                            </script>
+                            <else/>
+                            <if condition="$alipay_info">
+                                <div class="cent_r_box pb40">
+                                    <span>支付宝账号</span>
+                                    <div class="aplay_info">
+                                  <span class="aplay_num">  {$alipay_info['account']}</span>
+                                    <i class="icon icon-gou"></i>
+                                  </div>
+                                    <i class="icon icon-qiehuanxiaoqu"></i>
+                                    <a class="replace" href="{:U('classroom/User/alipay',['tag'=>1])}">换个账号</a>
+                                    <a class="del_bond" href="javascript:;" id="delBond">解除绑定</a><br>
+                                </div>
+
+                                <script>
+                                    $('#delBond').click(function(){
+                                        if(confirm("确定解绑？")){
+                                            $.post('{:U("classroom/User/doBondAlipay")}', [], function(data){
+                                                if(data.status){
+                                                    ui.success(data.info);
+                                                    setTimeout(function(){
+                                                        window.location = "{:U('classroom/User/alipay')}";
+                                                    }, 2000);
+                                                }else{
+                                                    ui.error(data.info);
+                                                }
+                                            }, 'json');
+                                        }
+                                    });
+                                </script>
+                                <else/>
+                                <div class="no_blind">
+                                您还未绑定支付宝账号，<a href="{:U('classroom/User/alipay',['tag'=>1])}">去绑定 >></a>
+                              </div>
+                            </if>
+                        </if>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<include file="__THEME__/public_footer" />

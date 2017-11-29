@@ -13,19 +13,35 @@
                 <volist name="listData" id="val">
                     <li>
                         <div class="pic">
-                            <if condition="$val['type'] eq 2">
-                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                            <if condition="$val['mount_iand']">
+                                <if condition="$val['type'] eq 2">
+                                    <a href="{:U('live/Index/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}">
+                                        <else/>
+                                        <a href="{:U('classroom/video/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}">
+                                </if>
                                 <else/>
-                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                <if condition="$val['type'] eq 2">
+                                    <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                        <else/>
+                                        <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                </if>
                             </if>
                             <img src="{:getCover($val['cover'],218,130)}" alt=""></a>
                             <div class="txt">{:limitNumber($val['video_title'],10)}</div>
                         </div>
                         <h3>
-                            <if condition="$val['type'] eq 2">
-                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                            <if condition="$val['mount_iand']">
+                                <if condition="$val['type'] eq 2">
+                                    <a href="{:U('live/Index/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}">
+                                        <else/>
+                                        <a href="{:U('classroom/video/view_mount',array('id'=>$val['id'],'mid'=>$mhm_id.''.$mount_url_str))}">
+                                </if>
                                 <else/>
-                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                <if condition="$val['type'] eq 2">
+                                    <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                        <else/>
+                                        <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
+                                </if>
                             </if>
                             {:limitNumber($val['video_binfo'],30)}</a>
                         </h3>

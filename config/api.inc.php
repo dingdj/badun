@@ -28,6 +28,9 @@ return array(
 		'Video/render' 			 => true,
 		'Video/getFreeTime' 	 => true,
 		'Video/getCatalog' 	 	 => true,
+        'Video/screen' 	         => true,
+		'Video/lineClassList' 	 => true,
+		'Video/lineClassInfo' 	 => true,
 
 		'Wenda/getCate' 	     => true,
 		'Wenda/getWendaList' 	 => true,
@@ -45,7 +48,6 @@ return array(
 		'Group/getGroupTopList'	 => true,//小组话题列表
 		'Group/getGroupMember'	 => true,//小组成员列表
         'Group/getGroupCate'     => true,//小组分类
-        'Group/getGroupTopList'  => true,//小组话题
         'Group/getGroupInfo'     => true,//小组详情
         //积分商品
         'Goods/getGoodsList'	 => true,//积分商城列表
@@ -88,6 +90,10 @@ return array(
 		'Home/indexNewLive'      => true,//获取最新直播
 		'Home/indexNewCourse'    => true,//获取最新课程
 		'Home/indexHotCourse'    => true,//获取推荐课程
-        
+
+		'Exams/getPaperList' => true,
+		'Exams/getExamsMoudles' => true,
+		'Exams/getSubjectCategory' => true,
+
 	) 
 );

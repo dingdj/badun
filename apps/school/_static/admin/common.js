@@ -201,8 +201,18 @@ admin.delCouponAll=function(action){
     if(!confirm("是否确认？")){
         return false;
     }
-    $.post(U('classroom/AdminVideoCoupon/'+action),{ids:ids},function(msg){
+    $.post(U('school/AdminVideoCoupon/'+action),{ids:ids},function(msg){
         admin.ajaxReload(msg);
     },'json');
 }
-
+//添加卡券
+admin.addCoupon = function(action){
+    location.href = U('school/AdminEntityCard/'+action)+'&tabHash='+action;
+};
+//导出卡券列表
+admin.exportCoupon = function(explod){
+    if(explod ==''){
+        ui.error( "还没数据喏。。" );return false;
+    }
+    location.href = U('school/AdminEntityCard/exportCoupon')+"&explod="+explod;
+};

@@ -68,16 +68,18 @@ function cookie($name, $value = '', $option = null)
 }
 
 //获取活动封面存储地址
-function getCover($coverId, $width = 100, $height = 100, $cut = true, $replace = false)
+function getCover($file_id, $width = 100, $height = 100, $cut = true, $replace = false)
 {
-    if ($coverId > 0)
-        $cover = model('Attach')->where("attach_id=$coverId")->find();
-    if ($cover) {
-        $cover = getImageUrl($cover['save_path'] . $cover['save_name'], $width, $height, $cut, $replace);
-    } else {
-        $cover = THEME_PUBLIC_URL . '/images/default-cover.png';
-    }
-    return $cover;
+    // if ($coverId > 0)
+    //     $cover = model('Attach')->where("attach_id=$coverId")->find();
+    // if ($cover) {
+    //     $cover = getImageUrl($cover['save_path'] . $cover['save_name'], $width, $height, $cut, $replace);
+    // } else {
+    //     $cover = THEME_PUBLIC_URL . '/images/default-cover.png';
+    // }
+    // return $cover;
+    $file_url = cut_auto($file_id, $width, $height);
+    return cut_fix($file_url, $width, $height, $type = 1, $pos = 5, $start_x = 0, $start_y = 0);
 }
 
 /**
@@ -1228,7 +1230,7 @@ function fetch($templateFile = '', $tvar = array(), $charset = 'utf-8', $content
 
     //模版缓存文件
     $templateCacheFile = C('TMPL_CACHE_PATH') . '/' . APP_NAME . '_' . tsmd5($templateFile) . '.php';
-    //dd($templateCacheFile);
+
     //载入模版缓存
     if (!$ts['_debug'] && file_exists($templateCacheFile)) {
         //if(1==2){ //TODO  开发
@@ -2395,7 +2397,7 @@ function showTreeCategory($data, $stable, $left, $delParam, $level = 0, $ext = '
     foreach ($data as $val) {
         // 判断是否有符号
         $isFold = empty($val['child']) ? false : true;
-        $html .= '<li id="' . $stable . '_' . $val['id'] . '" class="underline" style="padding-left:' . $left . 'px;"><div class="c1">';
+        $html .= '<li id="' . $stable . '_' . $val['id'] . '" class="underline" style="padding-left:' . $left . 'px;"><div class="c1">'.$val['id'].'</div><div class="c1">';
         if ($isFold) {
             $html .= '<a href="javascript:;" onclick="admin.foldCategory(' . $val['id'] . ')"><img id="img_' . $val['id'] . '" src="' . __THEME__ . '/admin/image/on.png" /></a>';
         }
@@ -2774,7 +2776,7 @@ function getQuickLink($link,$text,$bak_text,$target = true,$color = '#3b5999',$s
 /**
  * 检查是否是以手机浏览器进入(IN_MOBILE)
  * iPad上浏览pc的内容尺寸较小，默认也为3g版
- *
+ *old
  */
 function isMobile()
 {
@@ -2793,6 +2795,40 @@ function isMobile()
                 return false;
             }
         }
+    }
+}
+
+/**
+ * @return 是否为移动端
+ * new
+ */
+function is_mobile()
+{
+    $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
+    $is_pc = (strpos($agent, 'windows nt')) ? true : false;
+    $is_mac = (strpos($agent, 'mac os')) ? true : false;
+    $is_iphone = (strpos($agent, 'iphone')) ? true : false;
+    $is_android = (strpos($agent, 'android')) ? true : false;
+    $is_ipad = (strpos($agent, 'ipad')) ? true : false;
+
+    if($is_pc){
+        return  false;
+    }
+
+    if($is_mac){
+        return  false;
+    }
+
+    if($is_iphone){
+        return  true;
+    }
+
+    if($is_android){
+        return  true;
+    }
+
+    if($is_ipad){
+        return  true;
     }
 }
 
@@ -3247,10 +3283,10 @@ function is_pinclass($uid)
  * @param integer $uid 获取价格的用户UID
  * @param boolean $autoInt 是自动去掉价格小数点后面的多余的0，默认去掉
  * @param boolean $detail 是否返回详细的价格数组。
- * @param int $type 类型 默认为点播，1点播，2直播，3套餐，4线下课
+ * @param int $type 类型 默认为点播，1点播，2直播
  *  数组包含，实际价格，包含原价，vip优惠价，限时优惠价，折扣，折扣类型(0无，1vip，2限时)。
  * @return mixed 返回实际价格或包含细节的数组
- * ->field("id,uid,video_title,mhm_id,teacher_id,v_price,t_price,vip_level,
+ * ->field("id,uid,video_title,mhm_id,teacher_id,v_price,t_price,vip_level,is_charge
  * endtime,starttime,limit_discount,uid,teacher_id")
  */
 function getPrice($rs, $uid, $autoInt = true, $detail = false,$type = 1)
@@ -3268,31 +3304,38 @@ function getPrice($rs, $uid, $autoInt = true, $detail = false,$type = 1)
 
     if($type == 1){
         //是VIP则计算VIP折扣价
-        $vip_type = M('credit_user')->where(array('uid' => $uid, 'vip_expire' => array('egt', time())))->getField('vip_type');
+        $vip_type = M('zy_learncoin')->where(array('uid' => $uid, 'vip_expire' => array('egt', time())))->getField('vip_type');
         $video_level_info = M('zy_video')->where('id=' . $rs['id'])->field('vip_level,vip_pattern')->find();
 
         $user_level = M('user_vip')->where('is_del=0 and id = ' . $vip_type)->getField('sort');
-        $video_level = M('user_vip')->where('is_del=0 and id = ' . $rs['vip_level'])->getField('sort');
+        $video_level = M('user_vip')->where('is_del=0 and id = ' . $video_level_info['vip_level'])->getField('sort');
+
         if ($user_level && $video_level) {
-            if ($video_level_info['vip_pattern'] == 0) {
+            $vip_pattern_config = model('Xdata')->get('admin_Config:vipPatternConfig');
+
+            //独立模式
+            if ($vip_pattern_config['vip_switch'] == 0) {
                 if ($user_level == $video_level) {
                     $prices['price'] = 0;
                 }
             }
-            if ($video_level_info['vip_level'] == 1) {
+
+            //阶梯模式
+            if ($vip_pattern_config['vip_switch'] == 1) {
                 if ($user_level >= $video_level) {
                     $prices['price'] = 0;
                 }
             }
         }
     }
-//    //限时折扣
-//    if ($rs['is_tlimit'] == 1 && $rs['endtime'] > time() && $rs['starttime'] < time()) {
-//        $prices['disPrice'] = $rs['t_price'];
-//        $prices['discount'] = $rs['limit_discount'] * 10;
-//        $prices['dis_type'] = 2;
-//        $prices['price'] = $rs['t_price'];
-//    }
+
+    ////限时折扣
+    //if ($rs['is_tlimit'] == 1 && $rs['endtime'] > time() && $rs['starttime'] < time()) {
+    //    $prices['disPrice'] = $rs['t_price'];
+    //    $prices['discount'] = $rs['limit_discount'] * 10;
+    //    $prices['dis_type'] = 2;
+    //    $prices['price'] = $rs['t_price'];
+    //}
 
     $teacher_id = D('ZyTeacher', 'classroom')->getTeacherStrByMap((array('uid' => $uid)), 'id');
 
@@ -3337,6 +3380,62 @@ function getPrice($rs, $uid, $autoInt = true, $detail = false,$type = 1)
     return $detail ? $prices : $prices['price'];
 }
 
+/**
+ * @param $album_id
+ * @param $uid
+ * @param boolean $autoInt 是自动去掉价格小数点后面的多余的0，默认去掉
+ * @param boolean $detail 是否返回详细的价格数组。
+ */
+function getAlbumPrice($album_id,$uid, $autoInt = true, $detail = true){
+    $album = D("Album",'classroom')->where(['id'=>$album_id])->field('id,price,mhm_id,album_title')->find();
+    $video_ids       = trim(D("Album",'classroom')->getVideoId($album_id), ',');
+    $v_map['id']     = array('in', array($video_ids));
+    $v_map["is_del"] = 0;
+    $album_info      = M("zy_video")->where($v_map)->field("t_price")->select();
+
+    //计算课程原价之和
+    $oprice = 0;
+    foreach ($album_info as $key => $video) {
+        $oprice += $video['t_price'];
+    }
+
+    $prices = $album['price'];
+    //如果是超级管理员
+    if(is_admin($uid)){
+        $prices = 0;
+    }
+
+    //如果是班级机构管理员
+    if($album['mhm_id'] && ($album['mhm_id'] == is_school($uid))){
+        $prices = 0;
+    }
+
+    //价格细节 disPrice优惠
+    $prices = array(
+        'oriPrice' => $oprice,
+        'price' => $prices,
+        'disPrice' => ($oprice - $prices) > 0 ? ($oprice - $prices) : 0.00,
+    );
+
+    //如果小数点后面是0，则去掉
+    if ($autoInt) {
+        foreach ($prices as $k => $v) {
+            if (is_numeric($v)) {
+                $parts = explode('.', $v);
+                $v = $parts[0];
+                if (isset($parts[1])) {
+                    $parts[1] = rtrim($parts[1], '0');
+                    if ($parts[1] && $parts[1] > 0) {
+                        $v .= '.' . $parts[1];
+                    }
+                }
+                $prices[$k] = $v;
+            }
+        }
+    }
+
+    return $detail ? $prices : $prices['price'];
+}
 /**
  * 取得平台配置的所有分成比例
  * @return array 所有分成比例
@@ -3561,9 +3660,9 @@ function downloadFile($fileurl, $filepath)
 }
 
 /**
- * 查询一个用户是否购买过一个套餐
+ * 查询一个用户是否购买过一个班级
  * @param $uid 要查询的用户
- * @param $vid 套餐ID
+ * @param $vid 班级ID
  * @return mixed 如果购买过则返回订单ID，否则返回false
  */
 function isBuyAlbum($uid, $aid)
@@ -3961,7 +4060,7 @@ function _ghdata(){
  * @param salt   加密salt
  * @return
  */
-function  createHashedQueryString($queryMap) {
+function  createHashedQueryString($queryMap,$time) {
 
     ksort($queryMap);
 
@@ -3971,9 +4070,12 @@ function  createHashedQueryString($queryMap) {
     }
     $param_code = trim($param,'&');
 
-    $param = $param_code.'&time='.time().'&salt='.model('Xdata')->get('live_AdminConfig:ccConfig')['api_key'];
+    if(!$time){
+        $time = time();
+    }
+    $param = $param_code.'&time='.$time.'&salt='.model('Xdata')->get('live_AdminConfig:ccConfig')['api_key'];
 
-    $param_arr[0] = md5($param);
+    $param_arr[0] = strtoupper(md5($param));
     $param_arr[1] = $param_code;
 
     return $param_arr;
@@ -4111,7 +4213,60 @@ function secondsToHour($seconds,$type){
     }
 }
 
+/**
+ * 邮箱、手机账号、名字中间字符串以*隐藏
+ * @param $str
+ * @param int $name_type 默认为1 中文时：0 只保留字符串首尾字符，隐藏中间用*代替，1只保留姓
+ * @param int $num
+ * @return mixed|string 替换后的字符串
+ */
+function hideStar($str,$name_type = 1,$num = 0) {
+    if (preg_match( "/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/", $str)) {
+        $email_array = explode("@", $str);
+        $prevfix = (strlen($email_array[0]) < 4) ? "" : substr($str, 0, 3); //邮箱前缀
+        $count = 0;
+        $str = preg_replace('/([\d\w+_-]{0,100})@/', '***@', $str, -1, $count);
+        $rs = $prevfix . $str;
+    } elseif(preg_match('/^(\+86)?1[34578]{1}\d{9}$/', $str)) {//手机
+        $rs = preg_replace('/(1[34578]{1}[0-9])[0-9]{4}([0-9]{4})/i', '$1****$2', $str);
+    } elseif(preg_match('/([\d]{4})([\d]{4})([\d]{4})([\d]{4})([\d]{0,})?/', $str)) {//银行卡
+        $prefix = substr($str,0,4);
+        $suffix = substr($str,-4,4);
+        $rs = $prefix."************".$suffix;
+    } else {//姓名
+        if($name_type == 1){//只保留姓
+            if ($num && mb_strlen($str, 'UTF-8') > $num) {
+                return mb_substr($str, 0, 4) . '*';
+            }
 
+            if ($num && mb_strlen($str, 'UTF-8') <= $num) {
+                return $str;
+            }
+
+            $doubleSurname = [
+                '欧阳', '太史', '端木', '上官', '司马', '东方', '独孤', '南宫','万俟', '闻人', '夏侯', '诸葛', '尉迟', '公羊', '赫连',
+                '澹台', '皇甫', '宗政', '濮阳','公冶', '太叔', '申屠', '公孙', '慕容', '仲孙', '钟离', '长孙', '宇文', '司徒', '鲜于',
+                '司空', '闾丘', '子车', '亓官', '司寇', '巫马', '公西', '颛孙', '壤驷', '公良', '漆雕', '乐正','宰父', '谷梁', '拓跋',
+                '夹谷', '轩辕', '令狐', '段干', '百里', '呼延', '东郭', '南门', '羊舌','微生', '公户', '公玉', '公仪', '梁丘', '公仲',
+                '公上', '公门', '公山', '公坚', '左丘', '公伯','西门', '公祖', '第五', '公乘', '贯丘', '公皙', '南荣', '东里', '东宫',
+                '仲长', '子书', '子桑','即墨', '达奚', '褚师', '吴铭'
+            ];
+
+            $surname = mb_substr($str, 0, 2,'UTF-8');
+            if (in_array($surname, $doubleSurname)) {
+                $rs = mb_substr($str, 0, 2,'UTF-8') . str_repeat('*', (mb_strlen($str, 'UTF-8') - 2));
+            } else {
+                $rs = mb_substr($str, 0, 1,'UTF-8') . str_repeat('*', (mb_strlen($str, 'UTF-8') - 1));
+            }
+        } else {//只保留字符串首尾字符，隐藏中间用*代替（两个字符时只显示第一个）
+            $strlen     = mb_strlen($str, 'utf-8');
+            $firstStr   = mb_substr($str, 0, 1, 'utf-8');
+            $lastStr    = mb_substr($str, -1, 1, 'utf-8');
+            $strlen == 2 ? $rs = $firstStr . str_repeat('*', mb_strlen($str, 'utf-8') - 1) : $rs = $firstStr . str_repeat("*", $strlen - 2) . $lastStr;
+        }
+    }
+    return $rs;
+}
 /**
  * 分析筛选条件
  */
@@ -4136,8 +4291,11 @@ function parse_params_map($param_name = ''){
  */
 function get_params_url($param = '',$replace = false,$change_value = '',$delete_params = array()){
     $url = $_GET['squery'];
+    $ext_params = $_GET;
+    unset($ext_params['app'],$ext_params['mod'],$ext_params['act'],$ext_params['squery']);
     if(!$url){
-        return $param.'.html';
+        $url = (stripos($param,'.html') !== false) ? $param : $param.'.html';
+        return (stripos($url,'?') !== false) ?  $url.'&'.http_build_query($ext_params): $url.'?'.http_build_query($ext_params);
     }
     // 交换值不为空
     if($change_value != '') {
@@ -4146,7 +4304,8 @@ function get_params_url($param = '',$replace = false,$change_value = '',$delete_
         preg_match('/([a-zA-Z]+)(\d+)/',$param,$parName);
         if(!check_in_params($parName[1])){
             $url .= $param;
-            return $url.'.html';
+            $url = (stripos($url,'.html') !== false) ? $url : $url.'.html';
+            return (stripos($url,'?') !== false) ?  $url.'&'.http_build_query($ext_params): $url.'?'.http_build_query($ext_params);
         }
         // 参数存在时,替换值
         if(preg_match('/(^|\d)'.$param.'$|(^|\d)'.$param.'[a-zA-Z]/',$url)){
@@ -4176,7 +4335,8 @@ function get_params_url($param = '',$replace = false,$change_value = '',$delete_
         !check_in_params($parName[1]) && $url .= $param;
     }
 
-    return $url.'.html';
+    $url = (stripos($url,'.html') !== false) ? $url : $url.'.html';
+    return (stripos($url,'?') !== false) ?  $url.'&'.http_build_query($ext_params): $url.'?'.http_build_query($ext_params);
 }
 
 /**
@@ -4222,9 +4382,4 @@ function showCatetreeForHtml($data,$config,$id = 'id',$selected_id = 0){
     }
     return $html;
 
-}
-
-function dd() {
-    array_map(function($x) { echo "<pre>";var_dump($x); }, func_get_args());
-    die;
 }

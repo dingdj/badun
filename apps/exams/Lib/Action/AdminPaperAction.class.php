@@ -22,9 +22,9 @@ class AdminPaperAction extends AdministratorAction
         $this->_listpk                = 'exams_paper_id';
         $this->mod                    = D('ExamsPaper', 'exams');
         $this->optionsMod             = D("ExamsPaperOptions", 'exams');
-        $this->pageTitle['index']     = '试卷列表';
-        $this->pageTitle['add']       = '添加试卷';
-        $this->pageTitle['edit']      = '编辑试卷';
+        $this->pageTitle['index']     = '列表';
+        $this->pageTitle['add']       = '添加';
+        $this->pageTitle['edit']      = '编辑';
         $this->pageTitle['assembly']  = '试题组卷';
         $this->pageTitle['examslogs'] = '考试记录';
 
@@ -38,12 +38,12 @@ class AdminPaperAction extends AdministratorAction
      */
     public function index()
     {
-        $this->pageTab[] = array('title' => '试卷列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
-        $this->pageTab[] = array('title' => '添加试卷', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
         // 列表批量操作按钮
-        $this->pageButton[] = array('title' => '搜索试卷', 'onclick' => "admin.fold('search_form')");
+        $this->pageButton[] = array('title' => '搜索', 'onclick' => "admin.fold('search_form')");
         // 列表批量操作按钮
-        $this->pageButton[] = array('title' => '批量删除', 'onclick' => "exams.batchDelete('deletePaper')");
+        $this->pageButton[] = array('title' => '删除', 'onclick' => "exams.batchDelete('deletePaper')");
         // 搜索选项的key值
         $this->searchKey                                         = array('exams_paper_id', 'exams_paper_title', 'exams_module_id');
         $map                                                     = [];
@@ -77,8 +77,8 @@ class AdminPaperAction extends AdministratorAction
      */
     public function add()
     {
-        $this->pageTab[] = array('title' => '试卷列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
-        $this->pageTab[] = array('title' => '添加试卷', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
         if ($_POST) {
             // 解析专业分类
             $subjectArr = explode(',', $_POST['exams_subject_idhidden']);
@@ -167,8 +167,8 @@ class AdminPaperAction extends AdministratorAction
      */
     public function edit()
     {
-        $this->pageTab[] = array('title' => '试卷列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
-        $this->pageTab[] = array('title' => '添加试卷', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('exams/AdminPaper/index'));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'add', 'url' => U('exams/AdminPaper/add'));
         if ($_POST) {
             $paper_id = intval($_POST['exams_paper_id']);
             if (!$paper_id) {
@@ -207,8 +207,8 @@ class AdminPaperAction extends AdministratorAction
             $this->jumpUrl = U('exams/AdminPaper/index');
             $this->error("未找到编辑的试卷");
         }
-        $this->pageTab[]   = array('title' => '编辑试卷', 'tabHash' => 'edit', 'url' => U('exams/AdminPaper/edit', ['paper_id' => $paper_id]));
-        $this->pageKeyList = ['exams_paper_id', 'exams_subject_id', 'exams_module_id', 'level', 'exams_paper_title', 'reply_time','exams_limit' ,'sort', 'start_time', 'end_time', 'description'];
+        $this->pageTab[]   = array('title' => '编辑', 'tabHash' => 'edit', 'url' => U('exams/AdminPaper/edit', ['paper_id' => $paper_id]));
+        $this->pageKeyList = ['exams_paper_id', 'exams_subject_id', 'exams_module_id', 'level', 'exams_paper_title', 'reply_time', 'exams_limit', 'sort', 'start_time', 'end_time', 'description'];
         $this->notEmpty    = ['exams_paper_id', 'exams_subject_id', 'exams_module_id', 'level', 'exams_paper_title', 'reply_time'];
         ob_start();
         echo W('CategoryLevel', array('table' => 'exams_subject', 'id' => 'exams_subject_id', 'default' => $paper['paper_subject_fullpath']));
@@ -484,7 +484,7 @@ class AdminPaperAction extends AdministratorAction
                 $v['update_time']       = date("Y-m-d H:i", $v['update_time']);
                 $v['status']            = $v['status'] == 1 ? '已审阅' : "未审阅";
                 $v['anser_time']        = $v['anser_time'] . ' 分钟';
-                $v['DOACTION']          = '待开发';
+                $v['DOACTION']          = '<a href="' . U('exams/AdminExamsUser/haddleExamsInfo', ['back_url'=>urlencode(U('exams/AdminPaper/examslogs',['paper_id' => $paper_id])),'tabHash' => 'haddleExamsInfo', 'paper_id' => $v['exams_paper_id'], 'exams_users_id' => $v['exams_users_id']]) . '">详情</a>';
                 $v['exams_paper_title'] = $v['paper_info']['exams_paper_title'];
                 //$v['DOACTION']    = '<a href="' . U('exams/AdminPaper/edit', ['tabHash' => 'edit', 'paper_id' => $v['exams_paper_id']]) . '">编辑</a>';
                 //$v['DOACTION'] .= ' - <a href="' . U('exams/AdminPaper/assembly', ['tabHash' => 'assembly', 'paper_id' => $v['exams_paper_id']]) . '">组卷</a>';

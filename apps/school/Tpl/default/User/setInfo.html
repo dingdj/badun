@@ -1,5 +1,4 @@
 <include file="__THEME__/public_header" />
-<script src="__THEME__/js/jquery.js"></script>
 <style type="text/css">
     .center_left{
         border-radius: 4px;
@@ -27,7 +26,7 @@
     }
 </style>
 <div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
-<div class="wrap">
+	<div class="wrap">
    		<div class="center_right_tit">
 	    	<div class="user-con-title">
 	            <h5>申请成为机构</h5>
@@ -131,14 +130,14 @@
 					<dl>
 						<dt><span>*</span>机构认证附件：</dt>
 						<dd>
-							{:W('Upload',array('inputname'=>'attach','attachIds'=>$verifyInfo['attach_id'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+							{:W('Upload',array('inputname'=>'attach','attachIds'=>$verifyInfo['attach_id'],'limit'=>10, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
 							<p>申请成为机构需提交以下材料：营业执照、税务登记证、组织机构代码、对公账号相关信息、机构法人身份证复印件 </p>
 						</dd>
 					</dl>
 	                <dl>
 	                    <dt><span>*</span>身份认证附件：</dt>
 	                    <dd>
-	                        {:W('Upload',array('inputname'=>'identity','attachIds'=>$verifyInfo['identity_id'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+							{:W('Upload',array('inputname'=>'identity','attachIds'=>$verifyInfo['identity_id'],'limit'=>2, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
 	                        <p>认证本人手持身份证照片，证件所有信息清晰可见，手持证件人的五官清晰可见。</p>
 	                    </dd>
 	                </dl>
@@ -152,51 +151,61 @@
 	                        <a href="javascript:;" class="btn" type="button" onclick="saveVerify();" style="height: 40px;line-height: 40px;">提交申请</a>
 	                    </dd>
 	                </dl>
+                    <script type="text/javascript">
+                        $(function(){
+                            $('input[name="attach"]').click(function(){
+                                $(this).parent('#width_150').siblings('.uder-imgfb').find('a.name').trigger("click")
+                            });
+                            $('input[name="identity"]').click(function(){
+                                $(this).parent('#width_150').siblings('.uder-imgfb').find('a.name').trigger("click")
+                            });
+                        });
+                    </script>
 				<php>}else{</php>
 					<dl>
 	                  	<dt><span>*</span>机构类型：</dt>
 	                  	<dd>
-	                  		<input type="text" name="fullcategorypath" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['ceta_name']}"  rel="机构类型">
+	                  		<input type="text" name="fullcategorypath" class="inp01" readonly="readonly" value="{$verifyInfo['ceta_name']}"  rel="机构类型">
 	                  	</dd>
 	                </dl>
 					<dl>
 	                    <dt><span>*</span>机构名称：</dt>
 	                    <dd>
-	                        <input type="text" name="title" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['title']}"  rel="机构名称">
+	                        <input type="text" name="title" class="inp01" readonly="readonly" value="{$verifyInfo['title']}"  rel="机构名称">
 	                    </dd>
 	                </dl>
 					<dl>
 						<dt><span>*</span>法人身份证：</dt>
 						<dd>
-							<input type="text" readonly="readonly" class="inp01" name="idcard" value="{$verifyInfo['idcard']}" id="idcard" rel="法人身份证号" />
+							<input type="text" readonly="readonly" class="inp01" name="idcard" value="{$verifyInfo['idcard']}" rel="法人身份证号" />
 						</dd>
 					</dl>
 					<dl>
 	                  	<dt><span>*</span>联系电话：</dt>
 	                  	<dd>
-                            <input type="text" name="phone" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['phone']}"  rel="联系电话：">
+                            <input type="text" name="phone" class="inp01" readonly="readonly" value="{$verifyInfo['phone']}"  rel="联系电话：">
                         </dd>
 	                </dl>
 	                <dl>
 	                  	<dt><span>*</span>机构地址：</dt>
 	                  	<dd>
-                            <input type="text" name="address" id="title" class="inp01" readonly="readonly" value="{$verifyInfo['location']} {$verifyInfo['address']}"  rel="机构地址：">
+                            <input type="text" name="address" class="inp01" readonly="readonly" value="{$verifyInfo['location']} {$verifyInfo['address']}"  rel="机构地址：">
                         </dd>
 	                </dl>
 	                <dl>
 	                  	<dt><span>*</span>认证理由：</dt>
 	                  	<dd>{$verifyInfo['reason']|default='暂无'}</dd>
 	                </dl>
-	                <dl>
-	                  	<dt><span>*</span>身份认证附件：</dt>
-	                  	<dd>
-	                  		<php>if($verifyInfo['certification']){</php>{$verifyInfo['certification']}<php>}else{</php>暂无<php>}</php>
-	                  	</dd>
-	                </dl>
 					<dl>
 						<dt><span>*</span>资格认证附件：</dt>
 						<dd>
 							<php>if($verifyInfo['attachment']){</php>{$verifyInfo['attachment']}<php>}else{</php>暂无<php>}</php>
+						</dd>
+					</dl>
+					<dl>
+						<dt><span>*</span>身份认证附件：</dt>
+						<dd>
+							<php>if($verifyInfo['certification']){</php>{$verifyInfo['certification']}<php>}else{</php>暂无<php>}</php>
 						</dd>
 					</dl>
 				<php>}</php>
@@ -206,10 +215,10 @@
 </div>
 <script type="text/javascript">
 	function saveVerify(){
-	if($("#school_categoryhidden").val()==0){
-	  notes('请选择机构类型', 'failure');
-	  return false;
-	}
+        if($("#school_categoryhidden").val()==0){
+          notes('请选择机构类型', 'failure');
+          return false;
+        }
 		var title  = $('#title').val();
 		var idcard = $('#idcard').val();
 		var phone  = $('#phone').val();
@@ -224,10 +233,10 @@
 	  	 notes('请输入机构名称', 'failure');
 		 return false;
 	  }
-	  if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(title))){
+	  /*if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(title))){
 		  notes('机构名称格式不正确', 'failure');
 		  return false;
-	  }
+	  }*/
 	  if(!idcard){
 	  	 notes('请输入身份号码', 'failure');
 		 return false;
@@ -263,7 +272,7 @@
 	  var other_data_ids = $('#other_data_ids').val();
 
 	  var data = $('#renzhengform').serialize();
-	  $.post(U('school/User/doAuthenticate'),data,function(res){
+	  $.post(U('school/User/doAuthenticate'),data+"&identity_ids="+$('#identity_ids').val()+"&attach_ids="+$('#attach_ids').val(),function(res){
 	  	try{
 	  		var res = JSON.parse(res);
 		}catch(e){
@@ -299,6 +308,5 @@
 	        });
 	    }
 	};
-
 </script>
 <include file="__THEME__/public_footer" />

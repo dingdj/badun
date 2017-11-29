@@ -33,7 +33,7 @@ class AdminQuestionAction extends AdministratorAction
         $this->pageButton[] = array('title' => '删除', 'onclick' => "admin.mzQuestionEdit('delquestion')");
 		
 		$this->searchKey = array('id','uid','type','qst_title',array('ctime','ctime1'));
-		$this->opt['type']    = array('0'=>'不限','1'=>'课程','2'=>'套餐');
+		$this->opt['type']    = array('0'=>'不限','1'=>'课程','2'=>'班级');
 		
         $list = model('ZyQuestion')->getQuestionList('20',array('parent_id'=>array('eq',0)));
 		
@@ -44,8 +44,8 @@ class AdminQuestionAction extends AdministratorAction
 			}else{
 				$url = U('classroom/Album/view', array('id'=>$value['oid']));
 			}
-			$list['data'][$key]['qst_title']  = '<div style="width:200px;height:30px;overflow:hidden;"><a href="'.$url.'" target="_bank">'.$value['qst_title'].'</a></div>';
-			$list['data'][$key]['qst_description']  = '<div style="width:200px;height:30px;overflow:hidden;">'.$value['qst_description'].'</div>';
+			$list['data'][$key]['qst_title']  = '<a href="'.$url.'" target="_bank">'.$value['qst_title'].'</a>';
+			$list['data'][$key]['qst_description']  = $value['qst_description'];
 
 			if($value['type']==1){
 				$list['data'][$key]['oid']  = getVideoNameForID($value['oid']);
@@ -59,7 +59,7 @@ class AdminQuestionAction extends AdministratorAction
 			$url = U('classroom/Video/view', array('id' => $value['oid']));
 			$list['data'][$key]['oid'] = getQuickLink($url,$video_title,"未知课程");
 
-			$list['data'][$key]['type']     = ($value['type']==1)?'课程':'套餐';
+			$list['data'][$key]['type']     = ($value['type']==1)?'课程':'班级';
 			$list['data'][$key]['ctime']    = date('Y-m-d',$value['ctime']);
             $list['data'][$key]['DOACTION'] = ' <a href="javascript:admin.mzdelquest('.$value['id'].',\'delquestion\',' ."'{$value['qst_description']}'".','.$value['uid'].','.$value['ctime'].');">删除</a>';
 			if($value['type'] == 1){

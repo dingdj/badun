@@ -14,9 +14,9 @@ class AdminGlobalAction extends AdministratorAction {
      */
     public function _initialize() {
         parent::_initialize();
-        $this->pageTab[] = array('title'=>'积分列表','tabHash'=>'index','url'=>U('mall/AdminGlobal/index'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'index','url'=>U('mall/AdminGlobal/index'));
 
-        $this->pageTab[] = array('title'=>'所有流水记录','tabHash'=>'flow','url'=>U('mall/AdminGlobal/flow'));
+        $this->pageTab[] = array('title'=>'流水','tabHash'=>'flow','url'=>U('mall/AdminGlobal/flow'));
         $this->pageTab[] = array('title'=>'设置用户积分','tabHash'=>'user','url'=>U('mall/AdminGlobal/creditUser'));
 
     }
@@ -24,10 +24,10 @@ class AdminGlobalAction extends AdministratorAction {
      * 积分列表管理
      */
     public function index(){
-        $this->pageTitle['index']      = '积分列表';
+        $this->pageTitle['index']      = '列表';
 
 
-        $this->pageKeyList = array('id', 'uid', 'uname','score','vip_type','DOACTION');
+        $this->pageKeyList = array('id', 'uid', 'uname','score','DOACTION');//,'vip_type'
         //搜索字段
         $this->searchKey = array('id', 'uid', 'uname', 'score');
         $this->pageButton[] = array('title' => "搜索", 'onclick' => "admin.fold('search_form')");
@@ -162,16 +162,56 @@ class AdminGlobalAction extends AdministratorAction {
         }
         $crrdit_user = model('Credit')->getGreditUser($map,$order,$limit);
         foreach($crrdit_user['data'] as $key => $val){
+            $user = M('user')->where(['uid'=>$val['uid']])->getField('uid');
             $crrdit_user['data'][$key]['uname']     = getUserSpace($val['uid'], null, '_blank');
             $crrdit_user['data'][$key]['vip_type']  = M('user_vip')->where('id='.$val['vip_type'])->getField('title') ? : '非会员';
-            $crrdit_user['data'][$key]['DOACTION']  = '<a href="'.U('mall/AdminGlobal/creditUser',array('id'=>$val['id'])).'">编辑</a> | <a href="'.U('mall/AdminGlobal/uflow',array('uid'=>$val['uid'],'tabHash'=>'uflow')).'">TA的积分流水</a>';;
-
+            $crrdit_user['data'][$key]['DOACTION']  = '<a href="'.U('mall/AdminGlobal/creditUser',array('id'=>$val['id'])).'">编辑</a> | <a href="'.U('mall/AdminGlobal/uflow',array('uid'=>$val['uid'],'tabHash'=>'uflow')).'">TA的积分流水</a>';
+            if(!$user){
+                $crrdit_user['data'][$key]['DOACTION']  .= " | <a href='javascript:;'onclick='admin.delUserGreditAFlow({$val['id']})' title='此操作会彻底删除之前用户的所有积分及其关联的积分流水'>彻底删除</a>";
+            }
         }
         switch(strtolower($type)){
             case 'index':
                 break;
         }
         return $crrdit_user;
+    }
+
+    public function delUserGreditAFlow(){
+        $ids = implode(",",$_POST['ids']);
+        $ids = trim(t($ids),",");
+        if($ids==""){
+            $ids=intval($_POST['ids']);
+        }
+        $where = array(
+            'id'=>array('in',$ids)
+        );
+
+        $uid = M('credit_user')->where($where)->getField('uid');
+        if(!$uid){
+            $msg['data'] = "未找到相关记录";
+            $msg['status'] = 0;
+            echo json_encode($msg);
+        }
+        $user = M('user')->where(['uid'=>$uid])->getField('uid');
+        if($user){
+            $msg['data'] = "此用户还存在于系统，不能进行彻底删除!";
+            $msg['status'] = 0;
+            echo json_encode($msg);
+        }
+
+        $res = M('credit_user')->where($where)->delete();
+
+        if( $res !== false){
+            M('credit_user_flow')->where(['uid'=>$uid])->delete();
+            $msg['data']   = '操作成功';
+            $msg['status'] = 1;
+            echo json_encode($msg);
+        }else{
+            $msg['data'] = "操作失败!";
+            $msg['status'] = 0;
+            echo json_encode($msg);
+        }
     }
 
 
@@ -194,7 +234,7 @@ class AdminGlobalAction extends AdministratorAction {
 
         $this->pageKeyList = array('id','uname','catagroy','type','num','balance','rel_id','note','ctime');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
-        $this->pageTitle[ACTION_NAME] = $uid?'积分流水-'.getUserName($uid):'所有流水记录';
+        $this->pageTitle[ACTION_NAME] = $uid?'积分流水-'.getUserName($uid):'流水';
         if($uid){
             $this->pageTab[]    = array('title'=>'积分流水-'.getUserName($_GET['uid']),'tabHash'=>ACTION_NAME,'url'=>U(APP_NAME.'/'.MODULE_NAME.'/'.ACTION_NAME,array('uid'=>$uid)));
             $this->pageButton[] = array('title'=>'&lt;&lt;&nbsp;返回来源页','onclick'=>"admin.zyPageBack()");

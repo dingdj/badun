@@ -5,12 +5,12 @@
 </style>
 <div class="center_left">
     <dl style="border-bottom: solid 1px #e7e6e5;">
-        <dt><a href="javascript:;" onclick="magbtn(this)">账户管理</a></dt>
+        <dt><a href="javascript:;" onclick="magbtn(this)">我的设置</a></dt>
         <dd>
             <ul>
                 <li <php>if(ACTION_NAME=="setInfo"){echo "class='on'";}</php> ><a href="{:U('classroom/User/setInfo')}">账户设置</a></li>
                 <li <php>if(ACTION_NAME=="address"){echo "class='on'";}</php> ><a href="{:U('classroom/User/address')}">收货地址设置</a></li>
-                <php>if($GLOBALS['ts']['teacher'] == 1){</php>
+                <php>if($GLOBALS['ts']['teacher'] == 1 && $is_teacher == 1){</php>
                 <li <php>if(ACTION_NAME=="teacherDeatil"){echo "class='on'";}</php>><a href="{:U('classroom/User/teacherDeatil',['tab'=>0])}">教师信息设置</a></li>
                 <php>}</php>
             </ul>

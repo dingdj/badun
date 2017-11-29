@@ -47,7 +47,7 @@ class AdminSuggestAction extends AdministratorAction{
             $val['ctime']    = friendlyDate($val['ctime']);
             $val['uid']      = $val['uid']?getUserSpace($val['uid'], null, '_blank'):'游客';
             $val['DOACTION'] = '<a href="javascript:;" onclick="admin.delSuggest('.$val['id'].');">删除</a>';
-            $val['content']  = '<div style="width:500px">'.$val['content'].'</div>';
+            $val['content']  = $val['content'];
             $listData['data'][$key] = $val;
         }
 

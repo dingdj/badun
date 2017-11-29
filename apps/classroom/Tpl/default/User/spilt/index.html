@@ -41,9 +41,20 @@
                     </div>
                     <p class="have-price"><span id="lan_txt_ols">需花费¥0</span> <a href="javascript:void(0)" id="all_with">全部提现</a></p>
                     <div class="foni_rea_lik">支付方式：
-                        <label><input type="radio" name="tw_type" value="1" checked="checked"/>余额<i>（当前账户可用¥{$balance}）</i></label>
-                        <label><input type="radio" name="tw_type" value="2"/>{$card_info}</label>
-                        <b>注：提现到余额后不能再转至银行卡,转账比例为1：1</b>
+                        <label><input type="radio" name="tw_type" value="lcnpay" checked="checked"/>余额<i>（当前账户余额¥{$account_balance}）</i></label>
+                        <label><input type="radio" name="tw_type" value="alipay"/>支付宝<i>（{$alipay_info['account']}）</i></label>
+                        <label><input type="radio" name="tw_type" value="unionpay"/>
+                            银行卡<if condition="$card_list">
+                                <select name="card_id" id="card_id">
+                                    <volist name="card_list" id="calt">
+                                        <option value="{$calt.id}" <php>if($mhm_id == $calt['id']){</php>selected="selected"<php>}</php>>{$calt.card_info}</option>
+                                    </volist>
+                                </select>
+                                <else/>
+                                {$card_info}
+                            </if>
+                        </label>
+                        <b>注：提现到余额后不能再转至银行卡或支付宝,转账比例为1：1</b>
                     </div>
                 </div>
                 <div class="sjo_ing_plmb">
@@ -93,22 +104,26 @@
             return false;
         }
 
-        if (exchange_balance < 1) {
-            ui.error('转账的数量最少为1');
-            return false;
-        }
-
         var basenum = parseInt('{$withdraw_basenum}');
         var tw_type = $('input:radio[name="tw_type"]:checked').val();
 
-        if(tw_type == 2 && (exchange_balance<0||exchange_balance<basenum||exchange_balance%basenum!=0)){
+        if((tw_type == 'unionpay' || tw_type == 'alipay') && (exchange_balance<0||exchange_balance<basenum||exchange_balance%basenum!=0)){
             ui.error('只允许提现为'+basenum+'的倍数');
             return false;
+        } else {
+            if (exchange_balance < 1) {
+                ui.error('转账的数量最少为1');
+                return false;
+            }
+        }
+
+        if(tw_type == 'unionpay'){
+            var card_id = $('#card_id').val();
         }
         $.ajax({
             type: "POST",
             url:"{:U('classroom/User/applySpiltWithdraw')}",
-            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance,
+            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance+"&card_id="+card_id,
             dataType:"json",
             success:function(e){
                 if(typeof (e) != 'object'){

@@ -36,7 +36,11 @@
             </div>
             <div class="item">
             	<input type="text" id="prverify" placeholder="请输入手机验证码">
-                <a class="yzm" href="javascript:;" onclick="getPhoneVerify()">获取验证码</a>
+                <a class="yzm width80" href="javascript:;" onclick="getPhoneVerify()">获取验证码</a>
+                <span class="width97"  style="display:none;" ><a id="dtime" style="display: inline-block"></a>秒后可重新发送</span>
+            </div>
+            <div class="item">
+                <input type="text" id="uname" maxlength="10" placeholder="请输入用户昵称">
             </div>
             <div class="item">
             	<input type="password" id="prpassword" placeholder="请输入密码">
@@ -45,16 +49,15 @@
                 <input type="password" id="prpassword2" placeholder="确认密码">
             </div>
             <a class="login_btn" href="javascript:;" onclick="phoneNext()">注册</a>
-            <!--<p>点击注册即代表您同意<a href="{:U('public/Single/info',array('id'=>35))}">《{$site['site_keyword']}服务协议》</a></p>-->
             <p>点击注册即代表您同意<a href="javascript:;">《{$site['site_keyword']}服务协议》</a></p>
+            <!--<p>点击注册即代表您同意<a href="{:U('public/Single/info',array('id'=>35))}">《{$site['site_keyword']}服务协议》</a></p>-->
         </div>
         <div class="login-bd" id="emailReg" style="display: none;">
             <div class="item">
                 <input type="text" id="erusername" placeholder="请输入邮箱地址">
             </div>
             <div class="item">
-                <input type="text" id="erverify" placeholder="请输入右侧验证码">
-                <img class="yzm-3g" src="__ROOT__/public/captcha.php" title="点击刷新" onclick="changeverify()" id="verifyimg">
+                <input type="text" id="eruname" maxlength="10" placeholder="请输入用户昵称">
             </div>
             <div class="item">
                 <input type="password" id="erpasswrod" placeholder="请输入密码">
@@ -62,56 +65,16 @@
             <div class="item">
                 <input type="password" id="erpasswrod2" placeholder="确认密码">
             </div>
+            <div class="item">
+                <input type="text" id="erverify" placeholder="请输入右侧验证码">
+                <img class="yzm-3g" src="__ROOT__/public/captcha.php" title="点击刷新" onclick="changeverify()" id="verifyimg">
+            </div>
             <a class="login_btn" href="javascript:;" onclick="onemaliNext()">注册</a>
             <p>点击注册即代表您同意<a href="javascript:;">《{$site['site_keyword']}服务协议》</a></p>
         </div>
 
   </div>
-    <!--用户信息-->
-    <div class="loginbox login_nextbox" style="display: none;">
-    <div class="title" style="padding-bottom: 10px;font-size: 20px;line-height: 20px;color: #333;border-bottom: solid 1px #eee;"><em></em>完善信息，让学友们更了解你</div>
-    <form class="loginform">
-        <div class="login-bd">
-            <div class="item">
-                <input type="text" id="uname" maxlength="6" placeholder="请输入用户昵称">
-            </div>
-            <div class="item">
-                <select name="interest" id="sex">
-                    <option value="1">男</option>
-                    <option value="2">女</option>
-                </select>
-            </div>
-            <div class="item">
-                <style>
-                    select {
-                        width: 83px !important;
-                        border-radius: 4px;
-                        border: solid 1px #b6c7d6;
-                        line-height: 34px;
-                    }
-                </style>
-                {:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}
-            </div>
-            <div class="item">
-                <input type="text" id="profession" maxlength="10" placeholder="请输入您的职业,10个字符内">
-            </div>
-            <div class="item">
-                <select name="interest" id="interest">
-                        <option value="0">感兴趣</option>
-                    <foreach name="interest" item="vo" key="k">
-                        <option value="{$vo.zy_currency_category_id}">{$vo.title}</option>
-                    </foreach>
-                </select>
-            </div>
-            <div class="item" style="height: auto;">
-                <textarea id="intro" style="width:100%; height: 90px;" maxlength="500" placeholder="请输入个人简介,6-500个字符内" cols="" rows=""></textarea>
-            </div>
-        </div>
-        <a class="login_btn" href="javascript:;" onclick="setUserInfo()">完成填写，注册！</a>
-        <a href="javascript:;" style="font-size: 16px;" onclick="prevBang()">返回</a>
-    </form>
-</div>
-
+    
 
 <script>
     $(function(){
@@ -192,215 +155,162 @@
             $('.width80').removeAttr("style");
         }
     }
-    //手机注册下一部
-    function phoneNext(){
-        user=$.trim($("#prphone").val());//获取用户手机号
-        verify=$.trim($("#prverify").val());//获取手机验证码
-        password=$.trim($("#prpassword").val());//获取密码
-        password2=$.trim($("#prpassword2").val());//获取密码
 
-        if(!user){
-            alert('对不起，请输入手机号!');
-            return;
-        }
-        //检查密码
-        if(password=="" ||password.length<6 || password.length>20){
-            alert('对不起，密码长度不正确!');
-            return;
-        }
-        if(password2=="" ||password2.length<6 || password2.length>20){
-            alert('对不起，确认密码长度不正确!');
-            return;
-        }
-        if(password != password2){
-            alert('两次输入密码不一致');
-            return;
-        }
-        //检查验证码
-        if(verify=="" ||verify.length!=6){
-            alert('对不起，手机验证码长度不正确!');
-            return;
-        }
-        //检查手机号格式
-        if(!user.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
-            alert('对不起，请填写正确的手机号!');
-            return;
-        }else{
-            //验证手机
-            $.ajax({
-                type: "POST",
-                url:CLICK_PHONEVER,
-                data:"phone="+user+"&verify="+verify,
-                dataType:"json",
-                success:function(data){
-                    if(data.status=='0'){
-                        alert(data.info);
-                        return;
-                    }else{
-                        type=2;
-                        $(".loginbox").css("display","none");
-                        $(".login_nextbox").css("display","block");
-                    }
-                }
-            });
-        }
-    }
+
     //邮箱注册下一部
-    function onemaliNext(){
-        user=$.trim($("#erusername").val());//获取用户邮箱地址
-        verify=$.trim($("#erverify").val());//获取验证码
-        password=$.trim($("#erpasswrod").val());//获取密码
-        password2=$.trim($("#erpasswrod2").val());//获取密码
+function onemaliNext(){
+    user      = $.trim($("#erusername").val());//获取用户邮箱地址
+    verify    = $.trim($("#erverify").val());//获取验证码
+    uname     = $.trim($("#eruname").val());//获取用户昵称
+    password  = $.trim($("#erpasswrod").val());//获取密码
+    password2 = $.trim($("#erpasswrod2").val());//获取密码
+    mount_reg = $.trim($("#mount_reg").val());//挂载机构
 
-        //检查邮箱
-        if(user==""){
-            alert('对不起，邮箱不能为空!');
-            return;
-        }
-        if(!user.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
-            alert('对不起，邮箱格式错误!');
-            return;
-        }else{
-            //验证此邮箱是否已被注册
-            $.ajax({
-                type: "POST",
-                url:CLICK_EMIL,
-                data:"email="+user,
-                dataType:"text",
+    //检查信息是否为空
+    if(user == ""){
+        alert('请输入邮箱');
+        return;
+    }
+    if(uname == ""){
+        alert('请输入昵称');
+        return;
+    }
+    if(password == ""){
+        alert('请输入密码');
+        return;
+    }
+    if(password2 == ""){
+        alert('请再次输入密码');
+        return;
+    }
+    if(verify == ""){
+        alert('请输入验证码');
+        return;
+    }
 
-                success:function(data){
-                    if(data==0){
-                        alert('对不起，此邮箱已被注册，请更换!');
-                        return;
-                    }else{
-                        ckverify();
-                    }
+    //验证邮箱
+    if(!user.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
+        alert('邮箱格式错误');
+        return;
+    }
+    
+    //验证昵称
+    if( uname.length > 10){
+        alert('昵称长度不能大于10位');
+        return;
+    }
 
-                }
-            });
+    //检查密码
+    if( password.length<6 || password.length>20 ){
+         alert('密码长度为6-20位');
+         return;
+    }
+    if( password != password2 ){
+        alert('两次输入密码不一致');
+        return;
+    }
 
-        }
+    //检查验证码
+    if( verify.length != 5){
+        alert('验证码长度不正确');
+         return;
+    }
 
-        var ckpassword=function(){
-            //检查密码
-            if(password=="" ||password.length<6 || password.length>20){
-                alert('对不起，密码长度不正确!');
-                return;
-            }
-            if(password2=="" ||password2.length<6 || password2.length>20){
-                alert('对不起，确认密码长度不正确!');
-                return;
-            }
-            if(password != password2){
-                alert('两次输入密码不一致');
-                return;
-            }
-            type=1;//设置为邮箱注册状态
-            $(".loginbox").css("display","none");
-            $(".login_nextbox").css("display","block");
-        };
-        var ckverify = function(){
-            //检查验证码
-            if(verify=="" || verify.length !=5){
-                alert('对不起，验证码长度不正确!');
+    $.ajax({
+        async:false,
+        type: "POST",
+        url:REG_ADDRESS,
+        data:"email="+user+"&uname="+uname+"&password="+password+"&type=1&mount_reg="+mount_reg+"&verify="+verify,
+        dataType:"json",
+        success:function(data){
+            if( data.status == '0'){
+                alert(data.info);
                 return;
             }else{
-                $.ajax({
-                    type: "POST",
-                    url:CLICK_VERIFY,
-                    data:"verify="+verify,
-                    dataType:"text",
-                    success:function(data){
-                        if(data==0){
-                            alert('对不起，验证码不正确!');
-                            return;
-                        }else{
-                            ckpassword();
-                        }
-                    }
-                });
+                alert("恭喜您，注册成功!");
+                location = data.data;
             }
-        };
-    }
-    //用户信息
-    function setUserInfo(){
-        var uname=$.trim($("#uname").val());//获取用户昵称
-        var sex=$("#sex").val();//获取性别
-        var profession=$("#profession").val();//取得职业信息
-        var intro=$.trim($("#intro").val());//取得用户简介
-        var interest=$.trim($("#interest").val());//取得感兴趣数据
-//        var mhm_id=$.trim($("#mhm_id").val());//取得选择机构
-        var city_names= $("input[name=city_names]").val();//地区信息
-        var city_ids= $("input[name=city_ids]").val();//地区信息ids
-        var province=$("#province").val();//取得省
-        var city=$("#city").val();//取得市
-        var area=$("#area").val();//取得区
-        var mhm_id="{$Think.get.this_mhm_id}";//取得选择机构
-        var ckemailreg=function(){
-            if(province==0){//检查省
-                alert('对不起，请选择地区所在省!');
-                return;
-            }
-            if(city==0){//检查市
-                alert('对不起，请选择所在城市!');
-                return;
-            }
+        }
+    });
+}
 
-            var udata;
-            if(type==1){
-                udata="&email="+user;
+
+//手机注册下一部
+function phoneNext(){
+    user      = $.trim($("#prphone").val());//获取用户邮箱地址
+    verify    = $.trim($("#prverify").val());//获取验证码
+    uname     = $.trim($("#uname").val());//获取用户昵称
+    password  = $.trim($("#prpassword").val());//获取密码
+    password2 = $.trim($("#prpassword2").val());//获取密码
+    mount_reg = $.trim($("#mount_reg").val());//挂载机构
+
+    //检查信息是否为空
+    if(user == ""){
+        alert('请输入手机号');
+        return;
+    }
+    if(verify == ""){
+        alert('请输入验证码');
+        return;
+    }
+    if(uname == ""){
+        alert('请输入昵称');
+        return;
+    }
+    if(password == ""){
+        alert('请输入密码');
+        return;
+    }
+    if(password2 == ""){
+        alert('请再次输入密码');
+        return;
+    }
+    
+
+    //检查手机号格式
+    if(!user.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
+        alert('对不起，请填写正确的手机号!');
+         return;
+    }
+
+    //检查验证码
+    if( verify.length !=6 ){
+        alert('手机验证码长度不正确!');
+        return;
+    }
+
+    //验证昵称
+    if( uname.length > 10){
+        alert('昵称长度不能大于10位');
+        return;
+    }
+
+    //检查密码
+    if( password.length<6 || password.length>20 ){
+         alert('密码长度为6-20位');
+         return;
+    }
+    if( password != password2 ){
+        alert('两次输入密码不一致');
+        return;
+    }
+
+
+    $.ajax({
+        async:false,
+        type: "POST",
+        url:REG_ADDRESS,
+        data:"phone="+user+"&uname="+uname+"&password="+password+"&type=2&mount_reg="+mount_reg+"&verify="+verify,
+        dataType:"json",
+        success:function(data){
+            if( data.status == '0'){
+                alert(data.info);
+                return;
             }else{
-                udata="&phone="+user;
+                alert("恭喜您，注册成功!");
+                location = data.data;
             }
-            $.ajax({
-                async:false,
-                type: "POST",
-                url:REG_ADDRESS,
-                data:"uname="+uname+"&sex="+sex+"&password="+password+"&profession="+profession+"&intro="+intro+"&interest="+interest+udata+"&city_names="+city_names+"&city_ids="+city_ids+"&type="+type+"&verify="+verify+"&mhm_id="+mhm_id,
-                dataType:"json",
-                success:function(data){
-                    if(data.status== 0){
-                        alert(data.info);
-                        return;
-                    }else{
-                        alert('恭喜您，注册成功!');
-                        window.location.href = data.data;
-                    }
-                }
-
-            });
         }
-
-        if(user=="" || password==""){
-            return;
-        }
-        if(uname=="" || uname.length>6){
-            //检查昵称
-            alert('对不起，昵称长度不正确!');
-            return;
-        }else{
-            $.ajax({
-                type: "POST",
-                url:CLICK_UNAME,
-                data:"uname="+uname,
-                dataType:"text",
-                success:function(data){
-                    if(data==0){
-                        alert('对不起，此昵称已被注册，请更换!');
-                        return;
-                    }else{
-                        ckemailreg();
-                    }
-
-                }
-            });
-        }
-    }
-    /**
-     * 返回上一步
-     */
-    function prevBang(){
-        $(".loginbox").css("display","block");
-        $(".login_nextbox").css("display","none");
-    }
+    });
+}
 </script>

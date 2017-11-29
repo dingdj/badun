@@ -45,7 +45,7 @@
             <dl class="lineD">
                 <dt><font color="red"> * </font>封面上传：</dt>
                 <dd id="image_cover">
-                    {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：460px*345px
+                    {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：580px*320px
                     <php>if($cover_path){</php>
                     <div id="cover">
                         <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$cover_path}" />
@@ -73,7 +73,6 @@
                 <dt>所属机构：</dt>
                 <dd>
                     <select name="school" class="mhm_select">
-                        <option value="0">请选择</option>
                         <volist name="school" id="vo">
                             <option value="{$vo.id}" <php>if($mhm_id == $vo['id']){</php>selected="selected"<php>}</php>>{$vo.title}</option>
                         </volist>
@@ -81,14 +80,17 @@
                 </dd>
             </dl>
 
-            <dl class="lineD" id="form_teacherlist" style="display: none">
-                <dt><font color="red"> * </font>讲师选择：</dt>
+            <dl class="lineD" id="form_teacherlist">
+                <dt>讲师选择：</dt>
                 <dd>
                     <select name="trid">
-                        <option value="0">请选择</option>
-                        <foreach name="trlist" item="tl">
-                            <option value="{$tl.id}" <php>if($teacher_id == $tl['id']){</php>selected="selected"<php>}</php> >{$tl.name}</option>
-                        </foreach>
+                        <if condition="$trlist">
+                            <foreach name="trlist" item="tl">
+                                <option value="{$tl.id}" <php>if($teacher_id == $tl['id']){</php>selected="selected"<php>}</php> >{$tl.name}</option>
+                            </foreach>
+                            <else/>
+                            <option value="0">该机构暂时没有讲师</option>
+                        </if>
                     </select>
                 </dd>
             </dl>
@@ -153,18 +155,19 @@
                             <option value="{$key}" <php>if($vip_level == $key){</php>selected="selected"<php>}</php> >{$vo}</option>
                         </volist>
                     </select>
+                    <br><p>此vip模式免费</p>
                 </dd>
             </dl>
 
-            <dl class="lineD" id="dl_vip_pattern" style="display: none;">
-                <dt><font color="red"> * </font>会员使用模式：</dt>
-                <dd>
-                    <label><input type="radio" name="vip_pattern" value="0" <php>if($vip_pattern == 0){</php>checked="checked"<php>}</php> >独立模式 </label><span> </span>
-                    <label><input type="radio" name="vip_pattern" value="1" <php>if($vip_pattern == 1){</php>checked="checked"<php>}</php> >阶梯模式 </label><span></span>
-                    <br>
-                    <p>独立模式为此vip模式免费&nbsp;&nbsp;&nbsp;阶梯模式为此vip模式以上级别（含）免费</p>
-                </dd>
-            </dl>
+            <!--<dl class="lineD" id="dl_vip_pattern" style="display: none;">-->
+                <!--<dt><font color="red"> * </font>会员使用模式：</dt>-->
+                <!--<dd>-->
+                    <!--<label><input type="radio" name="vip_pattern" value="0" <php>if($vip_pattern == 0){</php>checked="checked"<php>}</php> >独立模式 </label><span> </span>-->
+                    <!--<label><input type="radio" name="vip_pattern" value="1" <php>if($vip_pattern == 1){</php>checked="checked"<php>}</php> >阶梯模式 </label><span></span>-->
+                    <!--<br>-->
+                    <!--<p>独立模式为此vip模式免费&nbsp;&nbsp;&nbsp;阶梯模式为此vip模式以上级别（含）免费</p>-->
+                <!--</dd>-->
+            <!--</dl>-->
 
             <dl class="lineD">
                 <dt>课件上传：</dt>
@@ -281,21 +284,21 @@
                 <!--</dd>-->
             <!--</dl>-->
 
-            <!--<dl class="lineD">-->
-                <!--<dt>推荐到首页分类楼层：</dt>-->
-                <!--<dd>-->
-                    <!--<label><input type="radio" name="is_cete_floor" value="0" <if condition="$is_cete_floor eq 0"> checked="checked"</if> >否 </label>-->
-                    <!--<label><input type="radio" name="is_cete_floor" value="1" <if condition="$is_cete_floor eq 1"> checked="checked"</if> >是 </label>-->
-                <!--</dd>-->
-            <!--</dl>-->
+            <dl class="lineD">
+                <dt>推荐到首页分类楼层：</dt>
+                <dd>
+                    <label><input type="radio" name="is_cete_floor" value="0" <if condition="$is_cete_floor eq 0"> checked="checked"</if> >否 </label>
+                    <label><input type="radio" name="is_cete_floor" value="1" <if condition="$is_cete_floor eq 1"> checked="checked"</if> >是 </label>
+                </dd>
+            </dl>
 
-            <!--<dl class="lineD" id="form_cete_floor_sort">-->
-                <!--<dt><font color="red"></font>首页分类楼层推荐排序：</dt>-->
-                <!--<dd>-->
-                    <!--<input name="cete_floor_sort" type="text" value="{$cete_floor_sort|default=999}" class="s-txt" >-->
-                    <!--<p>越小越靠前</p>-->
-                <!--</dd>-->
-            <!--</dl>-->
+            <dl class="lineD" id="form_cete_floor_sort">
+                <dt><font color="red"></font>首页分类楼层推荐排序：</dt>
+                <dd>
+                    <input name="cete_floor_sort" type="text" value="{$cete_floor_sort|default=999}" class="s-txt" >
+                    <p>越小越靠前</p>
+                </dd>
+            </dl>
 
             <!--<dl class="lineD">-->
                 <!--<dt>推荐到首页天天特价：</dt>-->

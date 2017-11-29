@@ -1,0 +1,213 @@
+<include file="__THEME__/public_header_w3g"/>
+    <style>
+        .teachertop h3 {top: calc(33% + 33px);}
+        .monsli {top: calc(51% + 60px);}
+        .monsli ul {width: 164px;color: #fff;margin: auto;}
+    </style>
+    <div class="body">
+		<div class="teachertop">
+        	<img class="bg" src="<php>if($data['cover']){</php>{:cutImg($data['cover'],640,442)}<php>}else{</php>__THEME__/icon/bg.jpg<php>}</php>" alt="" />
+            <div class="photo" style="max-width: 72px;max-height: 72px;">
+            	<img src="{:cutImg($data['head_id'],72,72)}" alt="{$data.name}"/>
+                <!--<php>if($data['teacher_title_cover']){</php>
+                <i><img src="{$data.teacher_title_cover}" alt="" /></i>
+                <php>}</php>-->
+            </div>
+            <div class="tit">
+                <h3>{:msubstr(t($data['name']),0,15,'utf-8',true)}</h3>
+                <i class="icon-01"></i>
+                <i class="icon-01"></i>
+            </div>
+            <p>{$data.inro|msubstr=0,20,'utf-8',true}</p>
+            <div class="monsli">
+                <ul>
+                    <li>{$data.teacher_age}年<br>教龄</li>
+                    <li>{$data.video}个<br>课程</li>
+                    <li><php>if($data['video_count']){</php>{$data.video_count}<php>}else{</php>0<php>}</php>个<br>视频</li>
+                    <li>{$follow}人<br>关注</li>
+                </ul>
+            </div>
+        </div>
+        <div class="teacherbot">
+            <div class="teachermain-hd bgw">
+            	<ul class="cou_head_funs">
+                    <li class="change on"><a href="javascript:;">简介</a></li>
+                    <li class="change"><a href="javascript:;">课程</a></li>
+                    <li class="change"><a href="javascript:;">相册</a></li>
+                    <li class="change"><a href="javascript:;">文章</a></li>
+                </ul>
+            </div>
+            <div class="teachermain-bd teacherInfo" style="display: block">
+                <div class="classitem bgw">
+                    <dl class="teacher-dl">
+                        <dt>所在地</dt>
+                        <dd>{$data.Teacher_areas}</dd>
+                    </dl>
+                    <dl class="teacher-dl">
+                        <dt>教师职称</dt>
+                        <dd>{$data.teacher_title_category}</dd>
+                    </dl>
+                    <div id="showInfo" style="display: none;">
+                        <php>if($data['teach_evaluation']){</php>
+                        <dl class="teacher-dl">
+                            <dt>教学特点</dt>
+                            <dd>{$data.teach_evaluation}</dd>
+                        </dl>
+                        <php>}</php>
+                        <php>if($data['high_school']){</php>
+                        <dl class="teacher-dl">
+                            <dt>教师学历</dt>
+                            <dd>{$data.high_school}</dd>
+                        </dl>
+                        <php>}</php>
+                        <php>if($data['graduate_school']){</php>
+                        <dl class="teacher-dl">
+                            <dt>毕业院校</dt>
+                            <dd>{$data.graduate_school}</dd>
+                        </dl>
+                        <php>}</php>
+                        <php>if($data['teach_way']){</php>
+                        <dl class="teacher-dl">
+                            <dt>授课方式</dt>
+                            <dd>{$data.teach_way}</dd>
+                        </dl>
+                        <php>}</php>
+                        <php>if($data['inro']){</php>
+                        <dl class="teacher-dl">
+                            <dt>教师介绍</dt>
+                            <dd>{$data.inro}</dd>
+                        </dl>
+                        <php>}</php>
+                    </div>
+                    <a class="teacher_btn opeanInfo" href="javascript:;">更多基本资料</a>
+                </div>
+                <div class="classitem bgw">
+                    <div class="classtit"><em></em>更多详情</div>
+                    <div class="classcon">
+                        <php>if($data['details']){</php>
+                        <ul class="teachermore-ul">
+                            <li>{$data.details}</li>
+                        </ul>
+                        <php>}else{</php>
+                        <p style="font-size:14px;padding: 12px;">该讲师暂无详情</p>
+                        <php>}</php>
+                    </div>
+                    <php>if($school){</php>
+                    <div class="classtit"><em></em>机构信息</div>
+                    <div class="classcon">
+                        <dl class="class_jg_dl">
+                            <dt><a href="{$school.domain}"><img src="{$school['logo']}" alt=""></a></dt>
+                            <dd>
+                                <h3>
+                                    <a href="{$school.domain}" class="name-len">{$school['title']}<span class="icon-star"></span></a>
+                                    <div class="class_jg_btn">
+                                        <!-- <a href="{$school.domain}">进入机构</a>-->
+                                        <php>if($school['state']['following']){</php>
+                                        <a href="javascript:;" onclick="setFollow({$school['uid']}, false)">已关注</a>
+                                        <php>}else{</php>
+                                        <a href="javascript:;" onclick="setFollow({$school['uid']}, true)">+关注</a>
+                                        <php>}</php>
+                                    </div>
+                                </h3>
+                                <p>{:limitNumber($school['str_tag'],15)}</p>
+                                <ul class="class_jg_ul">
+                                    <li>好评度<span>{$school.reviewRate}</span></li>
+                                    <li>课程数<span>{$school.video_count}</span></li>
+                                    <li>学生数<span>{$school.student}</span></li>
+                                </ul>
+                                <div class="class_jg_txt">{$school['info']}</div>
+                            </dd>
+                        </dl>
+                    </div>
+                    <php>}</php>
+                </div>
+            </div>
+            <div class="teachermain-bd teacherInfo classcon" style="display: none">
+                <php>if($video_list['data']){</php>
+                <ul class="teacher-classlist">
+                    <volist name="video_list.data" id="vo" offset="0" length="3">
+                        <li>
+                            <if condition="$vo['type'] eq 2">
+                                <a href="{:U('live/Index/view',array('id'=>$data['id']))}" title="{$vo['video_title']}">
+                                    <else/>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" title="{$vo['video_title']}">
+                            </if>
+                            <img src="{:cutImg($vo['cover'],194,112)}" alt="{$vo['video_title']}">
+                            <h3>{$vo.video_title}</h3>
+                            <p class="free"><eq name="vo.is_charge" value="1">免费<else/><span style="color: #fb7d30;">￥{$vo.t_price}</span></eq></p>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+                <div class="classtit"><php>if($video_list['data']){</php><a href="{:U('classroom/Video/index',array('tid'=>$data['id']))}" class="new_btns_more">更多课程</a><php>}</php></div>
+                <php>}else{</php>
+                <p style="font-size:14px;padding: 12px;">该讲师暂无课程</p>
+                <php>}</php>
+            </div>
+            <div class="teachermain-bd teacherInfo" style="display: none;">
+                <php>if(!$photos){</php>
+                    <p style="font-size:14px;padding: 12px;">该讲师未上传任何照片和视频</p>
+                <php>}else{</php>
+                <ul class="teacher-albumlist">
+                    <volist name="photos" id="pic" offset="0" length="6" >
+                        <li>
+                            <a href="{:U('classroom/Teacher/getPhotoList',array('id'=>$data['id'],'photo_id'=>$pic['id']))}" title="{$pic}">
+                                <div class="pic">
+                                    <img src="{:cutImg($pic['cover_id'],305,162)}" alt="{$pic.title}" />
+                                </div>
+                                <h3>{$pic.title}</h3>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+                <php>}</php>
+            </div>
+            <div class="teachermain-bd teacherInfo" style="display: none;">
+                <php>if($article['data'] == 0){</php>
+                    <p style="font-size:14px;padding: 12px;">该讲师未上传任何文章</p>
+                <php>}else{</php>
+                    <ul class="teacher-articlelist">
+                    <volist name="article.data" id="art" offset="0" length="4">
+                        <li>
+                            <a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$art['id']))}">
+                            <h3>{$art.art_title}</h3>
+                            <p>{:msubstr(t($art['article']),0,45,'utf-8',true)}</p>
+                            <div class="info">
+                                <div class="fl">{:date("Y-m-d H:i:s",$art['ctime'])}</div>
+                                <div class="fr">{$art['praise']}人点赞</div>
+                            </div>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+                <php>}</php>
+            </div>
+        </div>
+    </div>
+
+<script>
+$(function(){
+    $(".change").click(function(){
+        $(this).addClass("on").siblings().removeClass("on");
+        var index = $(this).index();
+        $(".teacherInfo").hide().eq(index).show();
+    });
+    $(".opeanInfo").click(function(){
+        $("#showInfo").show();
+        $(".opeanInfo").hide();
+    });
+
+});
+    function setFollow(uid, follow){
+        action = follow?'doFollowMhm':'unFollow';
+        $.post(U('public/Follow/'+action), {fid:uid}, function(data){
+            if(data.status){
+                alert('操作成功');
+                setTimeout('window.location.reload()', 1000);
+            }else{
+                alert(data.info);
+            }
+        }, 'json');
+    }
+</script>
+<include file="__THEME__/public_footer_w3g"/>

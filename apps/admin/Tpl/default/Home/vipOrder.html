@@ -2,7 +2,7 @@
 
 <div id="container" class="so_main">
 	<div class="page_tit">
-		订单收益统计
+		收益统计
 	</div>
 
 <div class="form2">
@@ -48,7 +48,7 @@
 	// 自定义配置
 	var option = {
 		title: {
-			text: '订单收益统计'
+			text: '收益统计'
 		},
 		tooltip : {
 			trigger: 'axis',
@@ -65,7 +65,7 @@
             }
         },
         legend: {
-            data:['课程订单','直播课堂订单','套餐订单']
+            data:['课程订单','直播课堂订单','班级订单']
         },
         grid: {
             left: '3%',
@@ -93,7 +93,7 @@
                 data: (typeof(dataCount.y[1]) != 'undefined') ? dataCount.y[1] : []
             },
             {
-                name:'套餐订单',
+                name:'班级订单',
                 type:'bar',
                 data: (typeof(dataCount.y[2]) != 'undefined') ? dataCount.y[2] : []
             },

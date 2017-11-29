@@ -1,0 +1,85 @@
+<switch name="Think.get.tab">
+<case value="3">
+    <!--错题记录-->
+    <php>if($list['data']){</php>
+        <volist name="list.data" id="vo">
+        <li>
+            <a href="#">
+                <span>
+                    <h4>{$vo.paper_info.exams_paper_title}</h4>
+                    <p>{:date('Y-m-d H:i:s',$vo['update_time'])}</p>
+                </span>
+                <strong>{$vo.wrong_count}道错题</strong>
+                <a href="{:U('exams/Index/wrongExamsroom',['joinType'=>1,'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn exams'>错题再练</a>
+                <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+            </a>
+        </li>
+        </volist>
+    <php>}</php>
+</case>
+<case value="4">
+    <!--题目收藏-->
+    <php>if($list['data']){</php>
+        <volist name="list.data" id="vo">
+        <li>
+            <a href="#">
+                <span>
+                    <h4>{:t($vo['question_info']['content'])}</h4>
+                    <p>{:date('Y-m-d H:i:s',$vo['ctime'])}</p>
+                </span>
+                <a href="{:U('exams/Index/showQuestioninfo',['question_id'=>$vo['source_id']])}" class="btn exams">查看题目</a>
+                <a class='btn del deleteCollection' data-question_id="{$vo.source_id}">删除</a>
+            </a>
+        </li>
+        </volist>
+    <php>}</php>
+</case>
+<default />
+<!--练习记录 考试记录-->
+    <php>if($list['data']){</php>
+        <volist name="list.data" id="vo">
+        <li>
+            <span>
+                <h4>2015年四川省公考《申论》真题</h4>
+                <p>{:date('Y-m-d H:i:s',$vo['update_time'])}</p>
+            </span>
+            <php>if($vo['progress'] == 100){</php>
+                <strong>{$vo.score|default="0"}分</strong>
+                <a href="{:U('exams/Index/examsresult',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn show'>查看结果</a>
+                <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+            <php>}else{</php>
+                <i class="icon icon-weiwancheng"></i>
+                <a href="{:U('exams/Index/examsroom',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn exams'>继续答题</a>
+                <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+            <php>}</php>
+        </li>
+        </volist>
+    <php>}</php>
+</switch>
+<script type="text/javascript">
+    $(function(){
+        $('.suren-content li').rhuiSwipe('swipeLeft', function(event){
+            var left = 0;
+            $(this). find(".btn").each(function(){
+                left += $(this).width();
+                $(this).css({lineHeight:$(this).height()+'px'});
+            });
+            $(this).animate({left:"-"+left+"px"},500);
+            $(this).siblings().css("left","0px");
+        }, {
+            // 可选参数
+            isStopPropagation: false,
+            isPreventDefault: false,
+            triggerOnMove: true
+        });
+        $('.suren-content li').rhuiSwipe('swipeRight', function(event){
+            $(this).animate({left:"0px"},500);
+            $(this).siblings().animate({left:0},500);
+        }, {
+            // 可选参数
+            isStopPropagation: false,
+            isPreventDefault: false,
+            triggerOnMove: true
+        });
+    });
+</script>

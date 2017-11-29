@@ -1,0 +1,177 @@
+<include file="__THEME__/public_header_w3g"/>
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer_media.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/exam_2.0.css">
+
+<div class="cover"></div>
+<div class="min-height-wrap">
+    <!--习题模式-->
+    <dl class="pattern-worap">
+        
+    </dl>
+
+    <!--筛选-->
+    <div class="selectul-screen">
+        <ul class="selectul">
+            <li>课程专业<i class="icon icon-arrowDown"></i></li>
+            <li>筛选条件<i class="icon icon-arrowDown"></i></li>
+        </ul>
+        <div class="selectul-screen-content">
+            <div class="selectul-layer">
+                <php>
+                    function createHtml($createFromData = [],$cid = null){
+                        foreach ($createFromData as $key => $value) {
+                            if (is_array($value) && $value) {
+                                $attr  = [];
+                                $isone = false;
+                                foreach ($value as $k => $v) {
+
+                                    if ($isone === false) {
+                                        echo '<ul class="three-selectul selectul-' . $v['pid'] . '">';
+                                        echo '<li data-pid="' . $v['pid'] . '" data-cid="' . (($cid !== null) ? $cid:$v['id']) . '"><a href="javascript:void(0)">不限</a></li>';
+                                        $isone = true;
+                                    }
+                                    echo '<li data-pid="' . $v['pid'] . '" data-cid="' . $v['id'] . '"><a href="javascript:void(0)">' . $v['title'] . '</a></li>';
+                                    if ($v['child']) {
+                                        $attr[] = $v['child'];
+                                    }
+                                }
+                                echo '</ul>';
+                                if ($attr) {
+                                    createHtml($attr);
+                                }
+
+                            }
+                        }
+                    }
+                    createHtml([$cateData],0);
+                    
+                </php>
+                <button style="display: none;" id="search_by_cid"></button>
+            </div>
+            <div class="selectul-layer date-condition">
+                <dl class="box">
+                    <dt><h4>排序</h4></dt>
+                    <dd><button <eq name='order' value='default'>class="selected"</eq> data-type="order" data-order="default">综合排序</button></dd>
+                    <dd><button <eq name='order' value='new'>class="selected"</eq> data-type="order" data-order="new">最新</button></dd>
+                    <dd><button <eq name='order' value='hot'>class="selected"</eq> data-type="order" data-order="hot">最热</button></dd>
+                    <dt><h4>难度</h4></dt>
+                    <dd><button <eq name='level' value='1'>class="selected"</eq> data-type="level" data-level="1">一般</button></dd>
+                    <dd><button <eq name='level' value='2'>class="selected"</eq> data-type="level" data-level="2">简单</button></dd>
+                    <dd><button <eq name='level' value='3'>class="selected"</eq> data-type="level" data-level="3">困难</button></dd>
+                </dl>
+                <dl class="deta-cancel">
+                    <dd><button class="btn02" id="submit_search">确定</button></dd>
+                    <dd><button class="btn01" id="reset_search">重置</button></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="exam-subject">
+        <php>if($list['data']){</php>
+        <ul>
+            <volist name="list.data" id="vo">
+                <li>
+                    <a href="javascript:;">
+                        <h4>{$vo.exams_paper_title}</h4>
+                        <p><small>参考人数 {$vo.exams_count|default='0'}</small><strong>题数 {$vo.paper_options.questions_count}</strong></p>
+                    </a>
+                    <dl>
+                        <dt><h4>{$vo.exams_paper_title}</h4></dt>
+                        <dd><p><em>题数</em>{$vo.paper_options.questions_count}题</p></dd>
+                        <dd><p><em>总分</em>{$vo.paper_options.score}分</p></dd>
+                        <dd><p><em>考试时间</em><php>if($vo['reply_time'] == 0){</php>不限制<php>}else{</php>{$vo.reply_time}<php>}</php>分钟</p></dd>
+                        <dd class="a_btn clearfix">
+                            <php>if($exams_module['is_practice'] == 0){</php>
+                                <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>2])}" class="c02" style="width: 100%;">考试模式</a>
+                            <php>}else{</php>
+                                <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>1])}" class="c01">练习模式</a>
+                                <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>2])}" class="c02">考试模式</a>
+                            <php>}</php>
+                        </dd>
+                    </dl>
+                </li>
+            </volist>
+        </ul>
+        <php>}else{</php>
+        <span>暂无相关试卷</span>
+        <php>}</php>
+    </div>
+
+</div>
+<include file="__THEME__/public_footer_w3g"/>
+<script src="__APP__/js/public_header_footer_media.js"></script>
+<script src="__APP__/js/view_3g.js"></script>
+<script type="text/javascript">
+    $(function(){
+        var module_id = "{$module_id}",
+            c = "{$exams_subject_id}",
+            order = "{$order}",
+            level = "{$level}";
+        $("#submit_search").click(function(){
+            if($(".date-condition .selected").length == 0){
+                order = '';
+                level = '';
+            }else{
+                $(".date-condition .selected").each(function(){
+                    var type = $(this).data("type");
+                    if(type == 'order'){
+                        order = $(this).data(type);
+                    }else{
+                        level = $(this).data(type);
+                    }
+                });
+            }
+            var url = U("exams/Index/paper",['module_id='+module_id,'c='+c,'order='+order,'level='+level]);
+            window.location.href = url;
+        });
+        $("#search_by_cid").click(function(){
+            c = $(".three-selectul.locked").last().find(".on").data("cid");
+            $("#submit_search").click();
+        });
+
+        var p = 1;
+        $(window).scroll(function(){
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = $(this).height();
+            if(scrollTop + windowHeight == scrollHeight){
+                if(!p || p >= parseInt("{$list['totalPages']}")){
+                    return false;
+                }else{
+                    p = p+1;
+                    $.ajax({
+                        type: "GET",
+                        url:"{:U('exams/Index/paper')}",
+                        data:{
+                            module_id:module_id,
+                            c:c,
+                            order:order,
+                            level:level,
+                            p:p
+                        },
+                        dataType:"json",
+                        success:function(res){
+                            if(typeof(res) != 'object'){
+                                try{
+                                    var res = JSON.parse(res);
+                                }catch(e){
+                                    alert("处理异常,请重新尝试");
+                                    return false;
+                                }
+                            }
+
+                            if(res.status == 1){
+                                $(".exam-subject ul").append(res.data.html);
+                                return true;
+                            }
+                            
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>

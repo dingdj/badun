@@ -7,6 +7,16 @@
         font-size: 15px;
         color:#656565;
 }
+    .ewm1 {
+    position: relative;
+    display: block;
+    padding: 0;
+    top: 0;
+    width: auto;
+    height: 20px;
+    border: 0;
+    background: #fff;
+}
 </style>
 <div class="mask"></div>
 <!--content start-->
@@ -31,7 +41,7 @@
     <div class="wrap">
         <div class="livetopbox">
             <div class="left">
-                <img src="{:getCover($data['cover'] ,520 , 320 )}" alt="" class="style-btn">
+                <img src="{:getCover($data['cover'] ,580 , 320 )}" alt="" class="style-btn">
 
                 <php>if($data['is_buy']){</php>
                     <a href="{:U('live/Index/watch',array('id'=>$lid))}" class="sign">
@@ -44,7 +54,7 @@
                         <input type="hidden" value="{$data['id']}" name="vid" />
                         <input type="hidden" value="zy_live" name="check_type" />
                         <input type="hidden" value="直播：{$data['video_title']}" name="title" />
-                        <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                        <input type="hidden" id="money" value="{$data['mzprice']['price']}" name="money" />
                     </form>
                     <a href="javascript:;" class="sign" id="charge_video01"><!-- 报名{$data['video_order_count']}人<em>|</em> --><b><i class="icon-01"></i>进入直播</b>
                     </a>
@@ -81,8 +91,8 @@
                    <div class="tip tip04"><em>插</em><span>随时插班</span></div>
                </div> -->
                 <div class="price">
-                 <php> if($data['t_price'] == 0 ||  $data['is_charge'] == 1  ||  $is_free == 1) {</php>  <div class="new_price"><span  style="color: #56b02a;">免费</span></div> <php> } else {</php> <div class="new_price">¥<span>{$data['t_price']}</span></div><php>}</php>
-                    <div class="old_price">原价：<span>¥{$data['v_price']}</span></div>
+                 <php> if($data['mzprice']['price'] == 0 ) {</php>  <div class="new_price"><span  style="color: #56b02a;">免费</span></div> <php> } else {</php> <div class="new_price">¥<span>{$data['mzprice']['price']}</span></div><php>}</php>
+                    <div class="old_price">原价：<span>¥{$data['mzprice']['oriPrice']}</span></div>
                 </div>
                 <div class="livetopitem btn" style="padding: 0">
                     <php>if($data['is_buy']){</php>
@@ -94,7 +104,7 @@
                             <input type="hidden" value="{$data['id']}" name="vid" />
                             <input type="hidden" value="zy_live" name="check_type" />
                             <input type="hidden" value="直播：{$data['video_title']}" name="title" />
-                            <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                            <input type="hidden" id="money" value="{$data['mzprice']['price']}" name="money" />
                         </form>
                         <a href="javascript:;" class="sign" id="charge_video"><!-- 报名{$data['video_order_count']}人<em>|</em> -->立即报名</a>
                         <div class="live-date-count-down-box">
@@ -162,7 +172,7 @@
         </div>
     </div>
 </div>
-<div class="content pt40 bgf7">
+<div class="content pt20 bgf7">
     <div class="wrap">
         <div class="livemain">
             <div class="livemain-hd" id="view_main_nav">
@@ -174,8 +184,8 @@
 
                 <div class="livetopitem btn livetopitem_btn" style="margin-right: 0px;">
                     <div class="classtopitem_price">
-                        <div class="new_price">¥{$data['t_price']}</span></div>
-                        <div class="old_price">¥<span>{$data['v_price']}</span></div>
+                        <div class="new_price">¥{$data['mzprice']['price']}</span></div>
+                        <div class="old_price">¥<span>{$data['mzprice']['oriPrice']}</span></div>
                     </div>
 
                     <!--<php>if($data['is_buy']){</php>-->
@@ -187,7 +197,7 @@
                         <input type="hidden" value="{$data['id']}" name="vid" />
                         <input type="hidden" value="zy_live" name="check_type" />
                         <input type="hidden" value="直播：{$data['video_title']}" name="title" />
-                        <input type="hidden" id="money" value="{$data['t_price']}" name="money" />
+                        <input type="hidden" id="money" value="{$data['mzprice']['price']}" name="money" />
                     </form>
                     <!--<a href="javascript:;" class="sign xf_a" id="charge_video2">报名{$data['video_order_count']}人<em>|</em>立即报名</a>-->
                     <php>}</php>
@@ -282,7 +292,7 @@
                             <li><a href ="javascript:;" onclick="navClick(this,'bad')">差评（{$reviews['bad']}）</a></li>
                         </ul>
                         <div class="details">
-                            {:W('Resource',array('type'=>2,'ispage'=>true,'kztype'=>1,'kzid'=>$lid,'switch'=>$switch,'template'=>'album_review'))}
+                            {:W('Resource',array('type'=>2,'ispage'=>true,'kztype'=>1,'kzid'=>$lid,'switch'=>$switch,'startype'=>'all','template'=>'album_review'))}
                         </div>
                     </div>
                 </div>
@@ -332,15 +342,15 @@
                 <div class="lists">
                     <volist name="othervideo" id="vo">
                         <div class="item">
-                            <php>if($vo['type'] == '2'){ </php>
-                            <div class="photo"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
-                            <div class="description"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
-                          <php>  }</php>
-                            <php>if($vo['type'] == '1'){ </php>
-                            <div class="photo"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
-                            <div class="description"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
+                            <php>if($vo['type'] == 1){ </php>
+                                <div class="photo"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
+                                <div class="description"><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
+                            <php>  }else {</php>
+                                <div class="photo"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}" target="_blank"><img src="{:getCover($vo['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
+                             <div class="description"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,15,'utf-8',true)}</a></div>
                             <php>  }</php>
-                            <div class="moreInfo"><p><span class="rmb">￥</span><span>{$vo['v_price']}</span>&nbsp;|&nbsp;{$vo['video_order_count']}人学习</p></div>
+                            
+                            <div class="moreInfo"><p><span class="rmb">￥</span><span>{$vo['mzprice']['price']}</span>&nbsp;|&nbsp;{$vo['video_order_count']}人学习</p></div>
                         </div>
                     </volist>
                 </div>
@@ -350,70 +360,27 @@
                 <h3 class="title">相关课程</h3>
                 <div class="lists">
                     <php>if(!$samevideo)    {</php>
-                    <h3 class="title">无</h3>
-                    <php>}</php>
-                    <php>if($samevideo)    {</php>
-                    <volist name="samevideo" id="val">
-                        <div class="item">
-                            <div class="photo"><a href="{:U('live/Index/view',array('id'=>$val['id']))}" rel="nofollow"><img src="{:getCover($val['cover'] ,240 , 135 )}" width="240" height="135"></a></div>
-                            <div class="description"><span class="price"><span class="rmb">￥{$val['v_price']}</span></span><a href="{:U('live/Index/view',array('id'=>$val['id']))}">{:msubstr(t($val['video_title']),0,15,'utf-8',true)}</a></div>
-                        </div>
-                    </volist>
+                    <h3 class="title">暂无相关课程。。</h3>
+                    <php>}else{</php>
+                        <volist name="samevideo" id="val">
+                            <div class="item">
+                                <div class="photo">
+                                    <a <eq name="val.type" value="1">href="{:U('classroom/Video/view',array('id'=>$val['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$val['id']))}"</eq>>
+                                        <img src="{:getCover($val['cover'] ,240 , 135 )}" width="240" height="135">
+                                    </a>
+                                </div>
+                                <div class="description">
+                                    <span class="price"><span class="rmb">￥{$val['mzprice']['price']}</span></span>
+                                    <a <eq name="val.type" value="1">href="{:U('classroom/Video/view',array('id'=>$val['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$val['id']))}"</eq>>{:msubstr(t($val['video_title']),0,15,'utf-8',true)}</a>
+                                </div>
+                            </div>
+                        </volist>
                     <php>}</php>
                 </div>
             </div>
         </div>
 
         <div class="clear"></div>
-        <php>if($guess_you_like){</php>
-        <div class="guess_like">
-            <h3 class="guess_like_tit">猜你喜欢</h3>
-            <ul class="classlist02 clearfix">
-                <volist name="guess_you_like" id="vol">
-                    <li>
-                        <php>if($vol['type'] == 1){</php>
-                    <div class="pic">
-                        <a href="{:U('classroom/Video/view',array('id'=>$vol['id']))}"><img src="{:getCover($vol['cover'] ,220 , 124 )}" alt=""></a>
-
-                    </div>
-                    <h3><a href="{:U('classroom/Video/view',array('id'=>$vol['id']))}">{:limitNumber($vol['video_title'],7)}|{$vol['live']['count']}节课</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span></h3>
-                    <!--<div class="name">{:msubstr(t($vol['mhmName']),0,20,'utf-8',true)}</div>-->
-                    <div class="info">
-                        <div class="fr">{:msubstr(t($vol['teacherInfo']['name']),0,10,'utf-8',true)}</div>
-                        <php>if($vol['pe']){</php>
-                        <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
-                        <php>}else{</php>
-                        <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
-                        <php>}</php>
-                    </div>
-                        <php>}</php>
-
-                        <php>if($vol['type'] == 2){</php>
-                        <div class="pic">
-                            <a href="{:U('live/Index/view',array('id'=>$vol['id']))}"><img src="{:getCover($vol['cover'] ,220 , 124 )}" alt=""></a>
-
-                            <div class="txt">
-                                <div class="fl orange class">直播中</div>
-                                <span class="fl">进度：{$vol['live']['now']}/{$vol['live']['count']}节</span>
-                            </div>
-
-                        </div>
-                        <h3><a href="{:U('live/Index/view',array('id'=>$vol['id']))}">{:limitNumber($vol['video_title'],9)}|{$vol['live']['count']}节课</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span></h3>
-                        <div class="info">
-                            <div class="fr">{:msubstr(t($vol['teacherInfo']['name']),0,10,'utf-8',true)}</div>
-                            <php>if($vol['pe']){</php>
-                            <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
-                            <php>}else{</php>
-                            <div class="price">￥{$vol['t_price']}<span class="sx">可试学</span></div>
-                            <php>}</php>
-                        </div>
-                        <php>}</php>
-
-                </li>
-                </volist>
-            </ul>
-        </div>
-        <php>}</php>
     </div>
 </div>
 
@@ -541,13 +508,15 @@
 
     //头部点击事件
     function navClick(cate,type){
+        startype  = type;
         $('#ordertype').val(type);
         $(".user-wenda").html("");
+        $(".indo-mess").html("");
         type = type;
         $("li").removeClass("active");
         $(cate).parent("li").addClass("active");
         p=1;
-        getReview(type,type);
+        getReview(p);
     }
 </script>
 <script type="text/javascript">
@@ -569,7 +538,7 @@
 
 		//点击购买
         $('#charge_video,#charge_video2,#charge_video01').click(function () {
-            if(uid<=0){
+            if(UID<=0){
                 reg_login();
                 return false;
             }
@@ -589,14 +558,14 @@
                 $('.mask').show();
                 return false;
             }
-            if(rechange_base>0 && money%rechange_base != 0){
+            /*if(rechange_base>0 && money%rechange_base != 0){
                 if(rechange_base == 1){
                     ui.error('购买金额必须为整数');
                 }else{
                     ui.error('购买金额必须为'+rechange_base+'的倍数');
                 }
                 return false;
-            }
+            }*/
 
             $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
                 var mount_url = "{$mount_str}";
@@ -715,7 +684,7 @@
         });
     }
     function switchnav(obj , id){
-        $('body,html').animate({scrollTop:633},200);//673
+        $('body,html').animate({scrollTop:495},200);//673
 
         $('li').removeClass('on');
         $(obj).parent().addClass('on');
@@ -738,7 +707,7 @@
     $(document).ready(function(){
     //显示/隐藏 问题、笔记、点评输入框
         $('.title a,.js-ipt-cancel').click(function(){
-            if(id<=0){
+            if(UID<=0){
                 reg_login();
                 return false;
             }
@@ -788,8 +757,8 @@
         $(this).siblings(".qa-tr-up").css({"display":"inline","color":"#333333"}); //显示js-qa-tr-num同级的qa-tr-up
         var show_id = $(this).attr('show_id');
         var stype = $(this).attr('type');
-        eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:套餐;
-        eval('var kzid='+stype+'_kzid');  //课程或者套餐ID
+        eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:班级;
+        eval('var kzid='+stype+'_kzid');  //课程或者班级ID
         eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
         // eval('var limit='+stype+'_limit');  //查询条数
         eval('var page='+stype+'_page');  //当前分页

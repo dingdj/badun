@@ -53,6 +53,7 @@ class Guard
     const LINK_MSG = 128;
     const DEVICE_EVENT_MSG = 256;
     const DEVICE_TEXT_MSG = 512;
+    const FILE_MSG = 1024;
     const EVENT_MSG = 1048576;
     const ALL_MSG = 1049598;
 
@@ -94,6 +95,7 @@ class Guard
         'link' => 128,
         'device_event' => 256,
         'device_text' => 512,
+        'file' => 1024,
         'event' => 1048576,
     ];
 
@@ -275,7 +277,7 @@ class Guard
      */
     protected function buildResponse($to, $from, $message)
     {
-        if (empty($message) || $message === self::SUCCESS_EMPTY_RESPONSE) {
+        if (empty($message) || self::SUCCESS_EMPTY_RESPONSE === $message) {
             return self::SUCCESS_EMPTY_RESPONSE;
         }
 
@@ -289,6 +291,7 @@ class Guard
 
         if (!$this->isMessage($message)) {
             $messageType = gettype($message);
+
             throw new InvalidArgumentException("Invalid Message type .'{$messageType}'");
         }
 
@@ -481,6 +484,6 @@ class Guard
      */
     private function isSafeMode()
     {
-        return $this->request->get('encrypt_type') && $this->request->get('encrypt_type') === 'aes';
+        return $this->request->get('encrypt_type') && 'aes' === $this->request->get('encrypt_type');
     }
 }

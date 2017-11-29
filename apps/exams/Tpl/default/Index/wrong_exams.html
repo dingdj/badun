@@ -1,6 +1,6 @@
 <include file="__THEME__/public_header" />
 <link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
-<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">
+<!--<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">-->
 <link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
 <style>
     .full-course:hover ul{
@@ -238,14 +238,4 @@
 <include file="__THEME__/public_footer" />
 <script src="__APP__/js/public_header.js"></script>
 <script src="__APP__/js/exercise.js"></script>
-<script type="text/javascript">
-$(function(){
-    $(document).bind("keydown",function(e){   
-        e=window.event||e;
-        if(e.keyCode==116){
-        e.keyCode = 0;
-        return false; //屏蔽F5刷新键   
-        }
-    });
-});
-</script>
+<script type="text/javascript" src="__APP__/js/disable.js"></script>

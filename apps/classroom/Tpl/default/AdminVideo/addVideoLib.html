@@ -21,7 +21,7 @@
     	<input type="hidden" name="id" value="{$id}" />
     	<div class="form2">
 
-    		<dl class="lineD" ">
+    		<dl class="lineD">
 		      	<dt><font color="red"> * </font>视频名称：</dt>
 		      	<dd>
 		      		<input name="title" type="text" value="{$title}" class="s-txt">
@@ -55,9 +55,7 @@
 		    	<dt><font color="red"> * </font>上传视频：</dt>
 		    	<dd>
                     <div id="video">
-                        <php>if($upload_room == 0){</php>
-                            {:W('UploadAttach',array('limit'=>'1','allow_exts'=>'flv,f4v,mp4,mp3,pdf,wp,sword,excel,ppt,png,jpg,gif,bmp,xls,xlsx,doc,docx,pptx,txt'))}
-                        <php>}else if($upload_room == 4){</php>
+                        <php>if($upload_room == 4){</php>
                             <div class="swfupload-box">
                                     <p>点击“浏览”按钮，选择您要上传的文件后，</p>
                                     <p>再确认提交上传，系统将自动上传并在完成后提示您。</p>
@@ -100,7 +98,7 @@
                             <div class="swfupload-box">
                                     <p>点击“选择文件”按钮，选择您要上传的文件后，系统将自动上传并在完成后提示您。</p>
                                     <p>一次只能上传一个视频文件！</p>
-                                    <p>支持流行视频格式flv，f4v，mp4</p>
+                                    <p>支持的文件格式mp4;mp3;doc;docx;xls;xlsx;ppt;pptx;pdf;txt</p>
                                     <form id="form1" action="index.php" method="post" enctype="multipart/form-data">
                                         <div class="fieldset flash" id="fsUploadProgress"></div>
                                         <div style="margin-top:15px;">

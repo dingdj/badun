@@ -1,10 +1,13 @@
 <include file="__THEME__/public_header" />
 <style>
     .center_right_con .comment_list {
-        padding: 0 25px 25px; 
+        padding: 0 25px 25px;
     }
     .comment_list li {
         padding-top: 10px;
+    }
+    .label{
+      margin-bottom: 10px!important;
     }
 </style>
 <include file="../User/public/_top" />
@@ -20,7 +23,7 @@
                 <!--问答内容-->
                 <ul class="comment_list">
                     <if condition="$notedata['data'] eq null">
-                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关笔记。。</li>
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 0;">您还没有相关笔记。。</li>
                         <else/>
                         <foreach name="notedata['data']" item="l" key='k'>
                             <li>

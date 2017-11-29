@@ -288,22 +288,7 @@
         </div>
     </div>
 </div>
-<!-- 购买确认弹出框 -->
-<div class="buyOperating">
-    <div class="w-close"><a class="mr15 mt5">×</a></div>
-    <div class="w-notice">
-        <h4>提示：该课程需要支付<em class="coin_num_l" id="price"></em>学币，您当前账户余额为<em class="coin_num_l">{$data['balance']['balance']}</em>学币。是否继续？</h4>
-    </div>
-    <div class="agreement">
-        <a><span id="protocol" class="agree"></span>我已经阅读并同意</a>
-        <a>《收费课程服务协议》</a>
-    </div>
-    <div class="buy-btn">
-        <a class="btn"  onclick="buyOperat();">确认支付</a>
-        <a class="btn" href="{:U('classroom/User/recharge')}">充值</a>
-        <a class="btn cancel">暂不支付</a>
-    </div>
-</div>
+
 <script>
 //关注讲师
 function followyou(cate,uid,id){

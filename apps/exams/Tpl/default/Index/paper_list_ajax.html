@@ -1,0 +1,24 @@
+<php>if($list['data']){</php>
+    <volist name="list.data" id="vo">
+        <li>
+            <a href="javascript:;">
+                <h4>{$vo.exams_paper_title}</h4>
+                <p><small>参考人数 {$vo.exams_count|default='0'}</small><strong>题数 {$vo.paper_options.questions_count}</strong></p>
+            </a>
+            <dl>
+                <dt><h4>{$vo.exams_paper_title}</h4></dt>
+                <dd><p><em>题数</em>{$vo.paper_options.questions_count}题</p></dd>
+                <dd><p><em>总分</em>{$vo.paper_options.score}分</p></dd>
+                <dd><p><em>考试时间</em><php>if($vo['reply_time'] == 0){</php>不限制<php>}else{</php>{$vo.reply_time}<php>}</php>分钟</p></dd>
+                <dd class="a_btn clearfix">
+                    <php>if($exams_module['is_practice'] == 0){</php>
+                        <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>2])}" class="c02" style="width: 100%;">考试模式</a>
+                    <php>}else{</php>
+                        <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>1])}" class="c01">练习模式</a>
+                        <a href="{:U('exams/index/examsroom',['paper_id'=>$vo['exams_paper_id'],'joinType'=>2])}" class="c02">考试模式</a>
+                    <php>}</php>
+                </dd>
+            </dl>
+        </li>
+    </volist>
+<php>}</php>

@@ -34,11 +34,11 @@
                            	 时间：
                             </span>
                         <div class="myInput1 fl w130" style="padding:0;height:30px">
-                            <input type="text" style="height:30px;top:0;margin-top:-35px" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="st" value="{$_GET['st']}" />
+                            <input type="text" style="top:0;margin-top:-35px" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="st" value="{$_GET['st']}" />
                         </div>
                         <span class="fl"> &nbsp;&nbsp;到&nbsp;&nbsp;</span>
                         <div class="myInput1 fl w130" style="padding:0;height:30px">
-                            <input type="text" style="height:30px;top:0;margin-top:-35px" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="et" value="{$_GET['et']}" />
+                            <input type="text" style="top:0;margin-top:-35px" onfocus="core.rcalendar(this,'');" class="rcalendar_select" readonly name="et" value="{$_GET['et']}" />
                         </div>
                         <a class="sel_w fl ml15" id="find-submit" href="javascript:;">查询</a>
                     </form>
@@ -60,12 +60,12 @@
                     <tr>
                         <td><?php echo ($i+1)*$data['nowPage']?></td>
                         <td>{:friendlyDate($rs['ctime'])}</td>
-                        <td>{:unLast0($rs['wnum'])}收入余额</td>
+                        <td>￥{:unLast0($rs['wnum'])}</td>
                         <td{$rs['status']<2?' class="lan_txt"':''}><?php echo $statusTxts[$rs['status']];echo $rs['status']==0?'　<a href="javascript:;" onclick="cancelWithdraw('.$rs['id'].');" style="color:#06A7E1">取消</a>':'';?></td>
                     </tr>
                     <?php endforeach;?>
                     </tbody></table>
-                <div class="mt10 account_page">累计成功提现：<em class="red_txt">{:unLast0($total)}</em>收入余额<p>共{$data.totalRows}条　{$data.html}</p></div>
+                <div class="mt10 account_page">累计成功提现：￥<em class="red_txt">{:unLast0($total)}</em><p>共{$data.totalRows}条　{$data.html}</p></div>
             </div>
 
         </div>
@@ -93,7 +93,7 @@ $('#account-find-form').submit(function(e) {
 });
 function cancelWithdraw(id){
 	if(!confirm('确认取消提现？')) return false;
-	$.get('{:U("classroom/User/spilt",array("tab"=>3,"id"=>"'+id+'"))}',null, function(data){
+	$.get('{:U("classroom/User/spilt",array("tab"=>3))}',{id:id}, function(data){
 		if(data.status){
 			notes('取消成功', 'success');
 			setTimeout(function(){

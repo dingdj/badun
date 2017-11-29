@@ -51,7 +51,7 @@
                                         <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
                                             <input type="hidden" value="{$vo['id']}" name="vid" />
                                             <input type="hidden" value="zy_album" name="check_type" />
-                                            <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                                            <input type="hidden" value="班级：{$vo['album_title']}" name="title" />
                                             <input type="hidden" id="money" value="{$vo['price']}" name="money" />
                                             <input type="hidden" value="{$_SESSION['mid']}" name="mid" />
                                         </form>
@@ -60,7 +60,11 @@
                                                 <!--最多显示5条-->
                                                 <volist name="vo.video" id="val" offset="0" length="6">
                                                     <li>
-                                                        <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                                        <if condition="$val['type'] eq 2">
+                                                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}">
+                                                                <else/>
+                                                            <a href="{:U('classroom/video/view',array('id'=>$val['id']))}">
+                                                        </if>
                                                             <img src="{:getCover($val['cover'],94,70)}">
                                                             <h6>{:msubstr($val['video_title'],0,10)}</h6>
                                                         </a>
@@ -73,10 +77,15 @@
                                             <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">{:msubstr($vo['album_title'],0,8)}</a></h3>
                                             <span><em>收藏：{$vo.collect_count}次</em><em>购买：{$vo.order_count}次</em></span>
                                             <small>共{:count($vo['video'])}门课程</small>
-                                            <strong>¥{$vo['price']}<i>¥{$vo['oPrice']}</i></strong>
-                                            <p>为你节省了{$vo['oPrice']-$vo['price']}元</p>
-                                            <php>if($vo['price'] < 0 ){</php>
-                                                <a href="javascript:;">免费套餐</a>
+
+                                            <if condition="$vo['price']">
+                                                <strong>¥{$vo['price']}<i>¥{$vo['oPrice']}</i></strong>
+                                                <else/>
+                                                <strong style="color: #56b02a;">免费<i>¥{$vo['oPrice']}</i></strong>
+                                            </if>
+                                            <p>为你节省了{$vo['disPrice']}元</p>
+                                            <php>if($vo['price'] <= 0 ){</php>
+                                                <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" style="display: block;float: left;width: 100%;line-height: 40px;text-align: center;background-color: #00bed4;color: #fff;font-size: 16px;border-radius: 4px;margin-top: 20px;">免费班级</a>
                                             <php>}else{</php>
                                                 <eq name="vo.isBuy" value="0">
                                                     <a href="javascript:;" class="package-buy">立即购买</a>
@@ -90,7 +99,7 @@
                             </dl>
                         </volist>
                         <else/>
-                        <dl>该机构还没有套餐。。</dl>
+                        <dl>该机构还没有班级。。</dl>
                     </if>
                 </div>
                 <div class="page">

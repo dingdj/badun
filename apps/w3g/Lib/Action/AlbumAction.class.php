@@ -48,7 +48,7 @@ class AlbumAction extends Action
 	public function view() {
         $id = intval($_GET['id']);
         $map['id'] = array('eq', $id);
-        //获取套餐列表
+        //获取班级列表
         $sVideos = $this->album->getVideoId($id);
         $sVideos = getCsvInt($sVideos);
         $sql = 'SELECT `id`,`video_title` FROM ' . C("DB_PREFIX") . 'zy_video WHERE `id` IN (' . (string) $sVideos . ') and is_del=0 ORDER BY find_in_set(id,"' . (string) $sVideos . '")';
@@ -57,7 +57,7 @@ class AlbumAction extends Action
         $data = $this->album->where($map)->find();
         if (!$data) {
             $this->assign('isAdmin', 1);
-            echo "<script>alert('套餐不存在');history.go(-1);</script>";
+            echo "<script>alert('班级不存在');history.go(-1);</script>";
         }
         //处理数据
         $data['album_score'] = floor($data['album_score'] / 20); //四舍五入
@@ -65,7 +65,7 @@ class AlbumAction extends Action
         $data['reviewCount'] = $this->review->getReviewCount(2, intval($data['id']));
         $data['album_title'] = msubstr($data['album_title'], 0, 24);
         $data['album_intro'] = msubstr($data['album_intro'], 0, 100);
-        //套餐分类
+        //班级分类
         $data['album_category_name'] = getCategoryName($data['album_category'], true);
         $data['str_tag'] = array_chunk(explode(',', $data['str_tag']), 3, false);
 
@@ -78,7 +78,7 @@ class AlbumAction extends Action
         $data['isGetResource'] = isGetResource(2, $data['id'], array('video', 'upload', 'note', 'question'));
 
         $album_video = D('Album')->getVideoId($id);
-        //获取套餐价格
+        //获取班级价格
         $data['mzprice'] = $this->album->getAlbumMoeny( $album_video ,$this->mid);
         //查询所有讲师的id
         $tids = D('zyVideo')->where(array('id'=>array('IN',trim( $album_video ,',')),'teacher_id'=>array('NEQ','0')))->field('teacher_id')->select();
@@ -100,13 +100,13 @@ class AlbumAction extends Action
     }
 
     /**
-     * 套餐观看页面
+     * 班级观看页面
      */
     public function watch() {
         include SITE_PATH . '/api/cc/spark_config.php';
         $this->assign('sp_config', $spark_config);
         $aid = intval($_GET['aid']);
-        $type = intval($_GET['type']); //数据分类 1:课程;2:套餐;
+        $type = intval($_GET['type']); //数据分类 1:课程;2:班级;
       
         if ($type == 1) { //课程
             $data = M("ZyVideo")->where(array('id' => array('eq', $aid)))->select();
@@ -248,9 +248,9 @@ class AlbumAction extends Action
             $video_ids = $this->album->getVideoId($val['id']);
             $vids = D('zyVideo')->where(array('id'=>array('IN',$video_ids),'is_del'=>0))->field('id')->select();
             $val['video_cont'] = count($vids);
-            //获取套餐价格
+            //获取班级价格
             $val['mzprice'] = $this->album->getAlbumMoeny( $video_ids ,$this->mid);
-            //格式化套餐评分
+            //格式化班级评分
             $val['score']    = round($val['album_score']/20);
         }
         if ($data['data']) {
@@ -269,17 +269,17 @@ class AlbumAction extends Action
         }
     }
     /**
-     * 购买套餐操作
+     * 购买班级操作
      */
     public function buyOperating() {
         if(!$this->mid){
             exit(json_encode(array('status'=>'0','info'=>'请先登录!')));
         }
         if (!$_POST['id']) {
-            exit(json_encode(array('status'=>'0','info'=>'没有选择套餐!')));
+            exit(json_encode(array('status'=>'0','info'=>'没有选择班级!')));
         }
         if (isBuyAlbum($this->mid, $_POST['id'])) {
-            exit(json_encode(array('status'=>'0','info'=>'您已经买了本套餐!')));
+            exit(json_encode(array('status'=>'0','info'=>'您已经买了本班级!')));
         }
         $album = D("Album","classroom")->getAlbumById($_POST['id']);
         $albumId = intval($_POST['id']);
@@ -304,7 +304,7 @@ class AlbumAction extends Action
             }
         }
         if ($illegal_count > 0) {
-            exit(json_encode(array('status'=>'0','info'=>'套餐中包含有过期的课程，无法整辑购买!')));
+            exit(json_encode(array('status'=>'0','info'=>'班级中包含有过期的课程，无法整辑购买!')));
         }
 
         if (!D('ZyLearnc',"classroom")->isSufficient($this->mid, $total_price, 'balance')) {
@@ -318,11 +318,11 @@ class AlbumAction extends Action
         //订单数量加1
         M()->query("UPDATE `".C('DB_PREFIX')."album` SET `album_order_count`=`album_order_count`+1 WHERE `id`=$albumId");
         //添加消费记录
-        M('ZyLearnc',"classroom")->addFlow($this->mid, 0, $total_price, $note = '购买套餐<' . $album['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
+        M('ZyLearnc',"classroom")->addFlow($this->mid, 0, $total_price, $note = '购买班级<' . $album['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
        //添加订单记录到课程
         $sql="update `".C('DB_PREFIX')."zy_video`  set video_order_count=video_order_count+1 where `id` in('$video_ids')";
         M()->query($sql);
-        //添加套餐中的课程购买记录
+        //添加班级中的课程购买记录
         $insert_value = "";
         foreach ($album_info as $key => $video) {
             if (!$video['is_buy']) {
@@ -335,7 +335,7 @@ class AlbumAction extends Action
             $query = "INSERT INTO " . C("DB_PREFIX") . "zy_order (`uid`,`muid`,`video_id`,`old_price`,`discount`,`discount_type`,`price`,`order_album_id`,`learn_status`,`ctime`,`is_del`) VALUE " . trim($insert_value, ',');
             $table = new Model();
             if ($table->query($query) !== false || $total_price == 0) {
-                exit(json_encode(array('status'=>'0','info'=>'购买套餐成功!')));
+                exit(json_encode(array('status'=>'0','info'=>'购买班级成功!')));
                 foreach ($album_info as $key => $video) {
                     if (!$video['is_buy'] && ($this->mid != $video['uid'])) {
                         $rvid = M("zy_order")->where('video_id=' . $video['id'])->field("id")->find();
@@ -348,11 +348,11 @@ class AlbumAction extends Action
         else {
             $albumname= D("Album","classroom")->getAlbumTitleById($_POST['id']);
             $s['uid']=$this->mid;
-            $s['title'] = "恭喜您购买套餐成功";
-            $s['body'] = "恭喜您成功购买套餐：《".$albumname."》";
+            $s['title'] = "恭喜您购买班级成功";
+            $s['body'] = "恭喜您成功购买班级：《".$albumname."》";
             $s['ctime'] = time();
             model('Notify')->sendMessage($s);
-            exit(json_encode(array('status'=>'1','info'=>'购买套餐成功!')));
+            exit(json_encode(array('status'=>'1','info'=>'购买班级成功!')));
         }
     }
 }

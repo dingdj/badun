@@ -63,7 +63,7 @@ class ZyNoteModel extends Model
 	
 	
 	/**
-	 * 更具课程或者套餐ID来取笔记
+	 * 更具课程或者班级ID来取笔记
 	 * @param array $map 分页条件
 	 * @param int $limit 分页数据
 	 * @param string $field 分页数据

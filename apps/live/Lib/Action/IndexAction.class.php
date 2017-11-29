@@ -198,81 +198,30 @@ class IndexAction extends CommonAction {
         //精彩直播
         $this->is_pc ? $perfect_size = 16 : $perfect_size = 4;
         $perfect = $this->video->where($map)->order('best_sort asc,ctime desc')->field("id,video_title,mhm_id,cover,v_price,is_charge,
-                    t_price,vip_level,is_best,listingtime,limit_discount,uid,type,live_type,str_tag,view_nums")->limit($perfect_size)->select();
+                    t_price,vip_level,is_best,listingtime,limit_discount,uid,type,live_type,str_tag,view_nums,teacher_id")->limit($perfect_size)->select();
         foreach ($perfect as $knd => $vnd) {
             //如果为管理员/机构管理员自己机构的课程 则免费
-            if(is_admin($this->mid) || $vnd['is_charge'] == 1) {
-                $perfect[$knd]['t_price'] = 0;
-            }
-            if($vnd['mhm_id'] && is_school($this->mid) == $vnd['mhm_id']){
-                $perfect[$knd]['t_price'] = 0;
-            }
+            $perfect[$knd]['mzprice'] = getPrice($vnd , $this->mid , true , true);
 
             $video_section_status = '';
             $video_section_end_num = 0;
-            if ($vnd['live_type'] == 1) {
-                $live_info = M('zy_live_zshd')->where(array('live_id' => $vnd['id'], 'is_active' => 1, 'is_del' => 0))->field('id,startDate,invalidDate')->select();
-                foreach ($live_info as $live1 => $zshd) {
-                    if ($zshd['startDate'] < time() && $zshd['invalidDate'] > time()) {
-                        $video_section_status = '直播中';
-                    } elseif ($zshd['invalidDate'] <= time()) {
-                        $video_section_status = '已结束';
-                    } elseif ($zshd['startDate'] >= time()) {
-                        $video_section_status = '未开始';
-                    }
 
-                    if ($zshd['invalidDate'] < time()) {
-                        $video_section_end_num += 1;
-                    }
-                }
-            } elseif ($vnd['live_type'] == 3) {
-                $live_info = M('zy_live_gh')->where(array('live_id' => $vnd['id'], 'is_active' => 1, 'is_del' => 0))->field('id,beginTime,endTime')->select();
-                foreach ($live_info as $live3 => $gh) {
-                    if ($gh['beginTime'] / 1000 < time() && $gh['endTime'] / 1000 > time()) {
-                        $video_section_status = '直播中';
-                    } elseif ($gh['endTime'] / 1000 <= time()) {
-                        $video_section_status = '已结束';
-                    } elseif ($gh['beginTime'] / 1000 >= time()) {
-                        $video_section_status = '未开始';
-                    }
-                    if ($gh['endTime'] / 1000 < time()) {
-                        $video_section_end_num += 1;
-                    }
+            $live_info = model('Live')->liveRoom->where(array('live_id' => $vnd['id'], 'is_active' => 1, 'is_del' => 0,'type'=>$vnd['live_type']))->field('id,startDate,invalidDate')->select();
 
+            foreach ($live_info as $live1 => $zshd) {
+                if ($zshd['startDate'] < time() && $zshd['invalidDate'] > time()) {
+                    $video_section_status = '直播中';
+                } elseif ($zshd['invalidDate'] <= time()) {
+                    $video_section_status = '已结束';
+                } elseif ($zshd['startDate'] >= time()) {
+                    $video_section_status = '未开始';
                 }
 
-            } elseif ($vnd['live_type'] == 4) {
-                $live_info = M('zy_live_cc')->where(array('live_id' => $vnd['id'], 'is_active' => 1, 'is_del' => 0))->field('id,beginTime,endTime')->select();
-                foreach ($live_info as $live3 => $gh) {
-                    if ($gh['startDate'] < time() && $gh['endTime'] > time()) {
-                        $video_section_status = '直播中';
-                    } elseif ($gh['invalidDate'] <= time()) {
-                        $video_section_status = '已结束';
-                    } elseif ($gh['startDate'] >= time()) {
-                        $video_section_status = '未开始';
-                    }
-
-                    if ($gh['invalidDate'] < time()) {
-                        $video_section_end_num += 1;
-                    }
-
-                }
-            } elseif ($vnd['live_type'] == 5) {
-                $live_info = M('zy_live_thirdparty')->where(array('live_id' => $vnd['id'], 'is_active' => 1, 'is_del' => 0,'type'=>5))->field('id,startDate,invalidDate')->select();
-                foreach ($live_info as $live3 => $wh) {
-                    if ($wh['startDate'] < time() && $wh['invalidDate'] > time()) {
-                        $video_section_status = '直播中';
-                    } elseif ($gh['invalidDate'] <= time()) {
-                        $video_section_status = '已结束';
-                    } elseif ($gh['startDate'] >= time()) {
-                        $video_section_status = '未开始';
-                    }
-
-                    if ($gh['invalidDate'] < time()) {
-                        $video_section_end_num += 1;
-                    }
+                if ($zshd['invalidDate'] < time()) {
+                    $video_section_end_num += 1;
                 }
             }
+
             $perfect[$knd]['video_section_num'] = count($live_info);
             $perfect[$knd]['video_section_ing'] = $video_section_status;
             $perfect[$knd]['video_section_end_num'] = $video_section_end_num;
@@ -288,13 +237,6 @@ class IndexAction extends CommonAction {
                 'is_del' => 0, 'is_activity' => 1, 'uctime' => array('gt', time()), 'listingtime' => array('lt', time())))->field("id,video_title,mhm_id,cover,v_price,is_charge,
                         video_binfo,video_order_count,t_price,vip_level,is_best,listingtime,limit_discount,uid,teacher_id,type,live_type,str_tag,video_score")->order('listingtime desc,ctime desc')->limit(3)->findAll();
             foreach ($live_cate_data as $knd => $vnd) {
-                //如果为管理员/机构管理员自己机构的课程 则免费
-                if(is_admin($this->mid) || $vnd['is_charge'] == 1) {
-                    $perfect[$knd]['t_price'] = 0;
-                }
-                if($vnd['mhm_id'] && is_school($this->mid) == $vnd['mhm_id']){
-                    $perfect[$knd]['t_price'] = 0;
-                }
 //                $video_section_status = '';
 //                $video_section_end_num = 0;
 //                if ($vnd['live_type'] == 1) {
@@ -659,9 +601,6 @@ class IndexAction extends CommonAction {
         return $dayafttomorrowLive;
     }
 
-
-
-
     /**
      * 取得直播列表
      * @param boolean $return 是否返回数据，如果不是返回，则会直接输出Ajax JSON数据
@@ -744,10 +683,14 @@ class IndexAction extends CommonAction {
     private function view_info(){
         $id = intval ( $_GET ['id'] );
 
-		$share_url = $this->addVideoShare($id,2);
-		$code = t ( $_GET ['code'] );
+        $liveres = M('zy_video')->where('id ='.$id) ->field('video_title,video_binfo,listingtime,uctime,is_activity,is_del')-> find();
 
-        M('zy_video') ->where('id ='.$id) ->setInc('view_nums');
+        //设置seo详情
+        $this->seo['_title'] = $liveres['video_binfo'] ? $liveres['video_title'].' — '.$liveres['video_binfo'] : $liveres['video_title'].$this->seo['_bak_title'];
+        $this->seo['_meta'] = $liveres['video_binfo'] ? : $this->seo['_meta'];
+
+        $share_url = $this->addVideoShare($id,2);
+		$code = t ( $_GET ['code'] );
 
         if($code){
 			$code = explode('@@@', $code);
@@ -786,10 +729,7 @@ class IndexAction extends CommonAction {
         $maps['uctime'] = array('gt', time());
         $data = D('ZyVideo')->where($maps)->find ();
 
-        $data['video_order_count'] = M('zy_order_live') -> where(array('live_id'=> $id, 'is_del' => 0 ,'pay_status'=>3)) -> count();
-
-        $liveres = M('zy_video')->where('id ='.$id) ->field('listingtime,uctime,is_activity,is_del')-> find();
-
+        //$data['video_order_count'] = M('zy_order_live') -> where(array('live_id'=> $id, 'is_del' => 0 ,'pay_status'=>3)) -> count();
 
         if( $liveres['uctime'] < time()  )
         {
@@ -808,62 +748,14 @@ class IndexAction extends CommonAction {
             $this->error ( '该直播已被删除' );
         }
 
-
         $isAdmin = model('UserGroup')->isAdmin($this->mid);
         if (! $data && !$isAdmin) {
             $this->assign ( 'isAdmin', 1 );
             $this->error ( '直播课程不存在!' );
         }
         //如果为管理员/机构管理员自己机构的课程 则免费
-        if(is_admin($this->mid) || $data['is_charge'] == 1) {
-            $data['t_price'] = 0;
-        }
-        if(is_school($this->mid) == $data['mhm_id']){
-            $data['t_price'] = 0;
-        }
+        $data['mzprice'] = getPrice($data , $this->mid , true , true);
 
-        //如果是讲师自己的课程 则免费
-        $mid = $this -> mid;
-        $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-        if($mid == intval($data['uid']) || $tid == $data['teacher_id'])
-        {
-            $data['t_price'] = 0;
-        }
-
-
-        if($data['live_type']  ==1)
-        {
-            $livetall =M('zy_live_zshd') -> where(array('live_id'=>$data['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-        }
-        if($data['live_type']  ==3)
-        {
-            $livetall =M('zy_live_gh') -> where(array('live_id'=>$data['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-        }
-        if($data['live_type']  ==4)
-        {
-            $livetall =M('zy_live_cc') -> where(array('live_id'=>$data['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-        }
-        if($data['live_type']  ==5)
-        {
-            $livetall =M('zy_live_thirdparty') -> where(array('live_id'=>$data['id'],'is_del'=> 0,'is_active'=>1,'type'=>5))-> field('speaker_id') ->select();
-        }
-        if($tid) {
-            $tids = trim(implode(',', array_unique(getSubByKey($livetall, 'speaker_id'))), ',');
-            $tids = "," . $tids . ',';
-
-            $chtid = ',' . $tid . ',';
-
-            if (strstr($tids, $chtid)) {
-                $data['t_price'] = 0;
-            }
-        }
-
-        $data['old_price'] =  $data['t_price'];
-        if($data['is_tlimit']==1 && $data['starttime'] < time() && $data['endtime'] > time() ){
-            $data['is_tlimit']=1;
-        }else{
-            $data['is_tlimit']=0;
-        }
         //众筹课程不允许其他人观看
         if(!empty($data['crow_id']) && !Model('UserGroup')->isAdmin($this->mid)){
             $isJoinCrow = M('crowdfunding_user')->where(array('uid'=>$this->mid,'cid'=>$data['crow_id']))->find();
@@ -873,30 +765,8 @@ class IndexAction extends CommonAction {
             }
         }
         //总课时
-        if($data['type'] == 1){
-            $map = array();
-            $map['vid'] = $data['id'];
-            $map['pid'] = array('neq',0);
-            $count = M('zy_video_section')->where($map)->count();
-            if($count <= 0){
-                $count = 1;
-            }
-            $data['sectionNum'] = $count;
-        }elseif($data['type'] == 2){
-            if($data['live_type'] == 1){
-                $liveData = $this->live_data(1,$data['id']);
-                $data['sectionNum'] = $liveData['count'];
-            }elseif ($data['live_type'] == 3){
-                $liveData = $this->live_data(3,$data['id']);
-                $data['sectionNum'] = $liveData['count'];
-            }elseif ($data['live_type'] == 4){
-                $liveData = $this->live_data(4,$data['id']);
-                $data['sectionNum'] = $liveData['count'];
-            }elseif ($data['live_type'] == 5){
-                $liveData = $this->live_data(5,$data['id']);
-                $data['sectionNum'] = $liveData['count'];
-            }
-        }
+        $liveData = model('Live')->liveSpeed($data['live_type'],$data['id']);
+        $data['sectionNum'] = $liveData['count'];
 
         //添加围观人数
         D( 'ZyVideo' )->where ( $maps )->setInc('view_nums');
@@ -917,11 +787,10 @@ class IndexAction extends CommonAction {
             'note',
             'question'
         ) );
-        //讲师信息
-        $teacher_id = $this->teacher($data['live_type'],$id);
 
-        if($teacher_id){
-            $data['user'] = M("zy_teacher")->where("id=".$teacher_id)->find();
+        //讲师信息
+        $data['user'] = M('zy_teacher')->where('id ='.$data['teacher_id'])->find();
+        if($data['user']){
             $count = model('UserData')->getUserData($data['user']['uid']);
             //讲师等级
             $teacher_title = M('zy_teacher_title_category')->where('zy_teacher_title_category_id='.$data['user']['title'])->find();
@@ -937,10 +806,12 @@ class IndexAction extends CommonAction {
             }
             $data['user']['fans_state'] = $state;
         }
+
         // 课程标签
         $data['video_str_tag'] = array_chunk ( explode ( ',', $data ['str_tag'] ), 3, false );
+
         //课程菜单
-        $live_menu = $this->live_menu($data['live_type'],$id);
+        $live_menu = model('Live')->liveMenu($data['live_type'],$id);
 
         if($live_menu){
             $live_end = $live_menu['end'];
@@ -955,19 +826,20 @@ class IndexAction extends CommonAction {
         }
 
         //相关课程
-        $sameWhere = array();
-        $sameWhere['is_del'] = 0;
-        $sameWhere['type'] = 2;
-        $sameWhere['id'] = array('neq',$id);
-        $category = M('zy_video')->where('id ='.$id)->getField('video_category');
-        $sameWhere['uctime'] = array('GT',time());
-        $sameWhere['video_category'] =$category;
-        if(count($data['video_str_tag']['0']) > 1){
-            $sameWhere['str_tag'] = array(array('LIKE',$data['video_str_tag']['0']['0']),array('LIKE',$data['video_str_tag']['0']['1']), 'or') ;
-        }elseif(count($data['video_str_tag']['0']) == 1){
-            $sameWhere['str_tag'] = array('LIKE',$data['video_str_tag']['0']['0']);
+        $fullcategorypath = M('zy_video')->where('id ='.$id)->getField('fullcategorypath');
+
+        $sameWhere['id']            = ['neq',$id];
+        $sameWhere['is_del']        = 0;
+        $sameWhere['is_activity']   = 1;
+        $sameWhere['listingtime']   = array('lt', time());
+        $sameWhere['uctime']        = array('gt', time());
+        $sameWhere['fullcategorypath'] = ['like',"%,".array_filter(explode(',',$fullcategorypath))[1].",%"];
+
+        $sameVideo = D('ZyVideo')->where ( $sameWhere )->order('ctime desc')->limit(2)->select();
+        foreach ($sameVideo as &$val) {
+             $val['mzprice'] = getPrice($val , $this->mid , true , true);
         }
-        $sameVideo = D( 'ZyVideo' )->where ( $sameWhere )->order('ctime desc')->limit(3)->select();
+
         //机构信息
         $mhm_id = $data['mhm_id'];
         if($mhm_id){
@@ -1001,6 +873,8 @@ class IndexAction extends CommonAction {
                 $mhmData['domain'] = U('school/School/index',array('id'=>$mhmData['school_id']));
             }
         }
+
+        $teacher_id = $data['teacher_id'];
         //老师的其他课程
         if($teacher_id){
             $otherWhere = array();
@@ -1008,6 +882,9 @@ class IndexAction extends CommonAction {
             $otherWhere['teacher_id'] = $teacher_id;
             $otherWhere['id'] = array('neq',$id);
             $otherVideo = D( 'ZyVideo' )->where($otherWhere)->limit(3)->select();
+            foreach ($otherVideo as &$val) {
+                 $val['mzprice'] = getPrice($val , $this->mid , true , true);
+            }
         }
 
         //课程所有评论
@@ -1030,11 +907,11 @@ class IndexAction extends CommonAction {
         $reviews['middle'] = $middle;
         $reviews['bad'] = $bad;
         $url = U('live/Index/view',array('id'=>$id));;
-        //账号余额
-        $data['balance'] = D("zyLearnc" ,'classroom' )->getUser($this->mid);
-        // 是否已购买
+
+        //是否购买
         $data['is_buy'] = D('ZyOrderLive','classroom')->isBuyLive($this->mid ,$id );
         $data['order_count'] = M('zy_order_live')->where('live_id='.$id)->count();
+
         if(empty($live_bef['beginTime']))
         {
             $live_bef['beginTime'] = $data['listingtime'];
@@ -1051,7 +928,7 @@ class IndexAction extends CommonAction {
         }
 
         //猜你喜欢
-        $guess_you_like = D('ZyGuessYouLike','classroom')->getGYLData(0,$this->mid,5);
+        $guess_you_like = D('ZyGuessYouLike','classroom')->getGYLData(0,$this->mid,4);
 
         foreach ($guess_you_like as $key=> $val){
             $mhmName = model('School')->getSchoolInfoById($val['mhm_id']);
@@ -1063,18 +940,10 @@ class IndexAction extends CommonAction {
             $guess_you_like[$key]['teacherInfo']['head_id'] = $teacher['head_id'];
             //直播课时
             if($val['type'] == 2){
-                $live_data = $this->live_data($val['live_type'],$val['id']);
+                $live_data = model('Live')->liveSpeed($val['live_type'],$val['id']);
                 $guess_you_like[$key]['live']['count'] = $live_data['count'];
                 $guess_you_like[$key]['live']['now'] = $live_data['now'];
             }
-        }
-
-        $mid = $this -> mid;
-        $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-        if($mid == intval($data['uid']) || $tid == $data['teacher_id'] )
-        {
-            $this -> assign('is_free',1);
-            $data['t_price'] = 0;
         }
 
         $follow_count = model('Follow')->getFollowCount($data['user']['uid']);
@@ -1088,6 +957,17 @@ class IndexAction extends CommonAction {
 
 		$commentSwitch = model('Xdata')->get('admin_Config:commentSwitch');
 		$switch = $commentSwitch['live_switch'];
+
+        if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+            //微信分享配置
+            tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'core', 'OpenSociax', 'jssdk.php')));
+            $weixin = model('Xdata')->get('admin_Config:weixin');
+            $jssdk = new JSSDK($weixin['appid'], $weixin['appsecret']);
+            $signPackage = $jssdk->GetSignPackage();
+
+            $this->assign('is_wx',true);
+            $this->assign('signPackage', $signPackage);
+        }
 
         $this->assign('mid',$mid);
         $this->assign('guess_you_like',$guess_you_like);
@@ -1126,246 +1006,7 @@ class IndexAction extends CommonAction {
         $this->assign('mount_str',$mid.'H'.$mount_url_str);
         $this->display ('view');
     }
-    //直播主讲教师id
-    protected function teacher($live_type,$id)
-    {
-        if($live_type == 1){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_zshd')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['invalidDate']=array('gt',time());
-                $live_data = M('zy_live_zshd')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        }elseif ($live_type == 3){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_gh')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['invalidDate']=array('gt',time());
-                $live_data = M('zy_live_gh')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        } elseif ($live_type == 4){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_cc')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['invalidDate']=array('gt',time());
-                $live_data = M('zy_live_cc')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        } elseif ($live_type == 5){
-            $map = array();
-            $map['live_id'] = $id;
-            $map['is_del']  = 0;
-            $map['type']    = 5;
-            $map['startDate'] = array('gt',time());
-            $live_data = M('zy_live_thirdparty')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['invalidDate']=array('gt',time());
-                $live_data = M('zy_live_thirdparty')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        }
-        return $speaker_id;
-    }
-    //课程目录
-    protected function live_menu($live_type,$id)
-    {
-        $is_buy = D('ZyOrderLive','classroom')->isBuyLive($this->mid ,$id );
 
-        if($live_type == 1){
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['is_active']=1;
-            $end_count = 0;
-            $live_data = M('zy_live_zshd')->where($map)->order('invalidDate asc')->select();
-
-            if($live_data){
-                foreach ($live_data as $key=>$val){
-                    if($val['startDate'] > time()){
-                        $note_time = $val['startDate']-time();
-                        $note_time_str = secondsToHour($note_time,1);
-                        $live_data[$key]['count_down'] = 1;
-                        $live_data[$key]['note'] = "<p style='height: 20px;color: #9d9e9e;'>距开课还剩：</p><p id='countDown_{$val['id']}' data-time='{$note_time}'
-                                style='height: 40px;color: #fc7272;' >{$note_time_str}</p>";
-                        $live_data[$key]['notestate'] = 0;
-                    }elseif ($val['invalidDate'] > time() && $val['startDate'] < time()){
-                        $live_data[$key]['note'] = '正在直播';
-                        $live_data[$key]['notestate'] = 1;
-                    } elseif ($val['invalidDate'] < time()){
-                        if($is_buy){
-                            $live_data[$key]['note'] = "<a target='_blank' href='".U('live/Index/getLivePlayback',['id'=>$val['id'],'type'=>1,'ac'=>'in'])."' title='观看回放'>观看回放</a>";
-                        }else{
-                            $live_data[$key]['note'] = '已结束';
-                        }
-                        $end_count += 1;
-                        $live_data[$key]['notestate'] = 1;
-                    }
-                    $live_data[$key]['endTime'] = $live_data[$key]['invalidDate'];
-                    $live_data[$key]['beginTime'] = $live_data[$key]['startDate'];
-                    $live_data[$key]['title'] = $live_data[$key]['subject'];
-                }
-                $liveCount = count($live_data);
-                $end = $liveCount - 1;
-                $live_data['end'] = $live_data[$end];
-                $live_data['bef'] = $live_data['0'];
-                $live_data['count'] = $liveCount;
-                $live_data['endCount'] = M('zy_live_zshd')->where($map)->count();
-            }
-        }else if ($live_type == 3){
-            $end_count = 0;
-            $maps['live_id']=$id;
-            $maps['is_del']=0;
-            $maps['is_active']=1;
-            $live_data = M('zy_live_gh')->where($maps)->order('invalidDate asc')->select();
-
-            if($live_data){
-                foreach ($live_data as $key=>$val){
-                    if($val['startDate']/1000 > time()){
-                        $note_time = $val['startDate']-time();
-                        $note_time_str = secondsToHour($note_time,1);
-                        $live_data[$key]['count_down'] = 1;
-                        $live_data[$key]['note'] = "<p style='height: 20px;color: #9d9e9e;'>距开课还剩：</p><p id='countDown_{$val['id']}' data-time='{$note_time}'
-                                style='height: 40px;color: #fc7272;' >{$note_time_str}</p>";
-                        $live_data[$key]['notestate'] = 0;
-                    }elseif($val['invalidDate']/1000 > time() && $val['startDate']/1000 < time()){
-                        $live_data[$key]['note'] = '正在直播';
-
-                        $live_data[$key]['notestate'] = 1;
-                    }elseif ($val['invalidDate']/1000 < time()){
-                        if($is_buy){
-                            $live_data[$key]['note'] = "<a target='_blank' href='".U('live/Index/getLivePlayback',['id'=>$val['id'],'type'=>3,'ac'=>'in'])."' title='观看回放'>观看回放</a>";
-                        }else{
-                            $live_data[$key]['note'] = '已结束';
-                        }
-                        $live_data[$key]['notestate'] = 1;
-                        $end_count =  $end_count+ 1;
-                    }
-
-                    $live_data[$key]['invalidDate'] = substr($live_data[$key]['invalidDate'],0,10);
-                    $live_data[$key]['startDate'] = substr($live_data[$key]['startDate'],0,10);
-                }
-                $liveCount = count($live_data);
-                $end = $liveCount - 1;
-                $live_data['end'] = $live_data[$end];
-                $live_data['bef'] = $live_data['0'];
-                $live_data['count'] = $liveCount;
-                $live_data['endCount'] = $end_count;
-            }
-        }else if($live_type == 4){
-
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['is_active']=1;
-            $end_count = 0;
-            $live_data = M('zy_live_cc')->where($map)->order('invalidDate asc')->select();
-
-            if($live_data){
-
-                foreach ($live_data as $key=>$val){
-                    if(intval($val['startDate']) > time()){
-                        $note_time = $val['startDate']-time();
-                        $note_time_str = secondsToHour($note_time,1);
-                        $live_data[$key]['count_down'] = 1;
-                        $live_data[$key]['note'] = "<p style='height: 20px;color: #9d9e9e;'>距开课还剩：</p><p id='countDown_{$val['id']}' data-time='{$note_time}'
-                                style='height: 40px;color: #fc7272;' >{$note_time_str}</p>";
-                        $live_data[$key]['notestate'] = 0;
-                    }elseif (intval($val['invalidDate']) > time() && intval($val['startDate']) < time()){
-                        $live_data[$key]['note'] = '正在直播';
-                        $live_data[$key]['notestate'] = 1;
-                    } elseif (intval($val['invalidDate']) < time()){
-                        if($is_buy){
-                            $live_data[$key]['note'] = "<a target='_blank' href='".U('live/Index/getLivePlayback',['id'=>$val['id'],'type'=>4,'ac'=>'in'])."' title='观看回放'>观看回放</a>";
-                        }else{
-                            $live_data[$key]['note'] = '已结束';
-                        }
-                        $end_count += 1;
-                        $live_data[$key]['notestate'] = 1;
-                    }
-
-                    $live_data[$key]['endTime'] = $live_data[$key]['invalidDate'];
-                    $live_data[$key]['beginTime'] = $live_data[$key]['startDate'];
-                    $live_data[$key]['title'] = $live_data[$key]['subject'];
-                }
-
-                $liveCount = count($live_data);
-                $end = $liveCount - 1;
-                $live_data['end'] = $live_data[$end];
-                $live_data['bef'] = $live_data['0'];
-                $live_data['count'] = $liveCount;
-                $live_data['endCount'] = M('zy_live_cc')->where($map)->count();
-            }
-        }else if($live_type == 5){
-
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['is_active']=1;
-            $map['type']=5;
-            $end_count = 0;
-            $live_data = M('zy_live_thirdparty')->where($map)->order('invalidDate asc')->select();
-
-            if($live_data){
-
-                foreach ($live_data as $key=>$val){
-                    if(intval($val['startDate']) > time()){
-                        $note_time = $val['startDate']-time();
-                        $note_time_str = secondsToHour($note_time,1);
-                        $live_data[$key]['count_down'] = 1;
-                        $live_data[$key]['note'] = "<p style='height: 20px;color: #9d9e9e;'>距开课还剩：</p><p id='countDown_{$val['id']}' data-time='{$note_time}'
-                                style='height: 40px;color: #fc7272;' >{$note_time_str}</p>";
-                        $live_data[$key]['notestate'] = 0;
-                    }elseif (intval($val['invalidDate']) > time() && intval($val['startDate']) < time()){
-                        $live_data[$key]['note'] = '正在直播';
-                        $live_data[$key]['notestate'] = 1;
-                    } elseif (intval($val['invalidDate']) < time()){
-                        if($is_buy){
-                            $live_data[$key]['note'] = "<a target='_blank' href='".U('live/Index/getLivePlayback',['id'=>$val['id'],'type'=>5,'ac'=>'in'])."' title='观看回放'>观看回放</a>";
-                        }else{
-                            $live_data[$key]['note'] = '已结束';
-                        }
-                        $end_count += 1;
-                        $live_data[$key]['notestate'] = 1;
-                    }
-
-                    $live_data[$key]['endTime'] = $live_data[$key]['invalidDate'];
-                    $live_data[$key]['beginTime'] = $live_data[$key]['startDate'];
-                    $live_data[$key]['title'] = $live_data[$key]['subject'];
-                }
-
-                $liveCount = count($live_data);
-                $end = $liveCount - 1;
-                $live_data['end'] = $live_data[$end];
-                $live_data['bef'] = $live_data['0'];
-                $live_data['count'] = $liveCount;
-                $live_data['endCount'] = M('zy_live_thirdparty')->where($map)->count();
-            }
-        }
-
-        return $live_data;
-    }
     /**
      * Eduline直播首页方法
      * @return void
@@ -1385,47 +1026,34 @@ class IndexAction extends CommonAction {
         // 是否已购买
         $is_buy = M('ZyOrderLive','classroom')->isBuyLive($this->mid,$id);
 
+        $map['live_id'] = $id;
+        $map['type']    = $info['live_type'];
+        $map['startDate']   = array('elt' , time() );
+        $map['invalidDate'] = array('egt' , time() );
+        $res = model('Live')->liveRoom->where ( $map)->order('startDate ASC')->find();
+
+        if( !$res ) {
+            $this->error ( '直播未开始或已经结束' );
+        }
+        if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
+            if($info['price'] > 0 && $is_buy <= 0){
+                $this->error('请先购买');
+            }
+            if($res['startDate'] >= time()){
+                $this->error ( '还未到直播时间' );
+            }
+            if($res['invalidDate'] <= time()){
+                $this->error ( '直播已经结束' );
+            }
+        }
         if( $info['live_type'] == 1) {//展示互动
-            $map['live_id'] = $id;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $res = M( 'zy_live_zshd' )->where ( $map)->order('startDate ASC')->find();
             $unmae = getUserName($this->mid);
-            if( !$res ) {
-                $this->error ( '直播未开始或已经结束' );
-            }
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
+
             $url = $res['studentJoinUrl']."?nickname=".$unmae."&token=".$res['studentToken'];
         } else if($info['live_type'] == 2) {//三芒
             $url = $this->getClass();
             $url = $url['url'].'?param='.$url['param'];
         } else if($info['live_type'] == 3) {//光慧
-            $map['live_id'] = $id;
-            $map['startDate'] = array('elt' , time()*1000 );
-            $map['invalidDate']   = array('egt' , time()*1000 );
-            $res = M('zy_live_gh')->where($map)->order('startDate ASC')->find();
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] / 1000 >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] / 1000 <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
-
             $gh_config   =  model('Xdata')->get('live_AdminConfig:ghConfig');
             if ( $res['invalidDate'] / 1000 >= time() ) {
                 $url = $gh_config['video_url'] . '/student/index.html?liveClassroomId='.$res['room_id'].'&customerType=taobao&customer=seition&sp=0';
@@ -1433,133 +1061,24 @@ class IndexAction extends CommonAction {
                 $url = $gh_config['video_url'] . '/playback/index.html?liveClassroomId='.$res['room_id'].'&customerType=taobao&customer=seition&sp=0';
             }
         } else if($info['live_type'] == 4){//cc
-            $map['live_id'] = $id;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $res = M( 'zy_live_cc' )->where ( $map)->order('startDate ASC')->find();
             $unmae = getUserName($this->mid);
-            if( !$res ) {
-                //$this->error ( '直播未开始或已经结束' );
-            }
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
+
+            dump($unmae);
+            dump($res['studentClientToken']);
             $url = "{$res['studentJoinUrl']}&autoLogin=true&viewername={$unmae}&viewertoken={$res['studentClientToken']}";
+            dump($url);
         } else if ($info['live_type'] == 5) {//微吼
-            $map['live_id'] = $id;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $map['type'] = 5;
-            $res = M('zy_live_thirdparty')->where($map)->order('startDate ASC')->find();
             $user_info = M('user')->where("uid={$this->mid}")->field('uname,email')->find();
-            if (!$res) {
-                //$this->error('直播未开始或已经结束');
-            }
-            if (($this->mid != $res['speaker_id']) && !is_admin($this->mid)) {
-                if ($info['price'] > 0 && $is_buy <= 0) {
-                    $this->error('请先购买');
-                }
-                if ($res['startDate'] >= time()) {
-                    $this->error('还未到直播时间');
-                }
-                if ($res['invalidDate'] <= time()) {
-                    $this->error('直播已经结束');
-                }
-            }
+
             $user_info['email'] ?: $user_info['email'] = "eduline@eduline.com";
             $url = "{$res['studentJoinUrl']}?email={$user_info['email']}&name={$user_info['uname']}";
+        } else if ($info['live_type'] == 6) {//cc小班课
+            $user_info = M('user')->where("uid={$this->mid}")->field('uname,email')->find();
+
+            $url = "{$res['studentJoinUrl']}&autoLogin=true&username={$user_info['uname']}&password={$res['studentClientToken']}";
         }
-        $url = M('zy_live_cc')->where(array('live_id'=>$id))->getField('url');
         $this->assign('url' , $url);
         $this->display();
-    }
-
-
-    //获取课程详情-展视互动
-    function getInfo(){
-        $url = 'http://cdsx.gensee.com/integration/site/training/room/info?roomId=88834851&sec=123123&loginName=link@hao.com&password=123456';
-        $res = getDataByUrl($url);
-
-    }
-
-    //判断当前直播
-    private function getLiveType(){
-        $res = model('Xdata')->get('live_AdminConfig:baseConfig');
-        return intval( $res['live_opt'] );
-    }
-
-    // 购买直播
-    public function buyOperating() {
-        if ( !$this->mid ) {
-            $this->mzError ( '请先登录!' );
-        }
-        $id = intval ( $_POST ['id'] );
-        //取得课程
-        if($this->base_config['live_opt'] == 1) {
-            $map['number'] = $id;
-            $map['is_del'] = 0;
-            $map['is_active'] = 1;
-            $res = M( 'live' )->where ( $map )->find ();
-            if($res['invalidDate'] < time()){
-                $this->mzError ( '直播已经结束!' );
-            }
-            $res['title'] = $res['subject'];
-        }else if($this->base_config['live_opt'] == 2) {
-            $res = false;
-        }else if($this->base_config['live_opt'] == 3) {
-            $res = D('zy_live')->where('id='.$id)->find();
-        }
-
-        //找不到直播课程
-        if ( !$res ) {
-            $this->mzError ( '找不到直播课程' );
-        }
-
-        if($this->base_config['live_opt'] == 1) {
-            if ( $res['invalidDate'] < time() ) {
-                $this->mzError ( '直播已结束' );
-            }
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $live_info = M('live')->where('number='.$id)->order('live_id desc')->find();
-            if($tid == $live_info['speaker']){
-                $this->mzError ( '您是此直播课堂的老师，无需购买' );
-            }
-        }else if($this->base_config['live_opt'] == 2) {
-            $this->mzError ( '直播已结束' );
-        }else if($this->base_config['live_opt'] == 3) {
-            if ( $res['endTime'] / 1000 < time() ) {
-                $this->mzError ( '直播已结束' );
-            }
-        }
-
-        $learnc = D('ZyLearnc' , 'classroom' );
-        if (!$learnc->consume($this->mid ,$res['price'])) {
-            $this->mzError ( '余额不足!' ); //余额扣除失败，可能原因是余额不足
-        }
-        //订单数据
-        $data = array(
-                'uid'     => $this->mid,
-                'live_id' => $id,
-                'price'   => $res['price'],
-                'ctime'   => time(),
-        );
-        $id = M('zy_order_live')->add($data);
-        if ( !$id ) {
-            $this->mzError ( '购买失败!' );
-        }
-        //添加流水记录
-        $learnc->addFlow($this->mid, 0, $res['price'], '购买直播课程<'.$res['title'].'>', $id, 'zy_order_live');
-        // 记录购买的直播课程的ID
-        session ( 'mzbugvideoid', $id );
-        $this->mzSuccess ( '购买成功', 'selfhref' );
     }
 
     /**
@@ -1587,167 +1106,59 @@ class IndexAction extends CommonAction {
         // 是否已购买
         $is_buy = M('ZyOrderLive','classroom')->isBuyLive($this->mid,$id);
 
+        $map['live_id'] = $id;
+        $map['type']    = $info['live_type'];
+        $map['startDate']   = array('elt' , time() );
+        $map['invalidDate'] = array('egt' , time() );
+        $res = model('Live')->liveRoom->where ( $map)->order('startDate ASC')->find();
+
+        if( !$res ) {
+            $this->error ( '直播未开始或已经结束' );
+        }
+        if( ($this->mid != $info['teacher_id']) && !is_admin($this->mid)){
+            if($info['price'] > 0 && $is_buy <= 0){
+                $this->error('请先购买');
+            }
+            if($res['startDate'] >= time()){
+                $this->error ( '还未到直播时间' );
+            }
+            if($res['invalidDate'] <= time()){
+                $this->error ( '直播已经结束' );
+            }
+        }
+
+        $teacher_info = M('zy_teacher')->where('id ='.$info['teacher_id'])->field('id,name')->find();
 
         if( $info['live_type'] == 1) {//展示互动
-            $map['live_id'] = $id;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $res = M( 'zy_live_zshd' )->where ( $map)->order('startDate ASC')->find();
-            if( !$res ) {
-                $this->error ( '直播未开始或已经结束' );
-            }
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
-            $teacher_info = M('zy_teacher')->where('id ='.$res['speaker_id'])->field('id,name')->find();
             $teacherJoinUrl = $res['teacherJoinUrl']."?nickname=".$teacher_info['name']."&token=".$res['teacherToken'];
         } else if($info['live_type'] == 2) {//三芒
             $url = $this->getClass();
             $teacherJoinUrl = $url['url'].'?param='.$url['param'];
         } else if($info['live_type'] == 3) {//光慧
-            $map['live_id'] = $id;
-            $map['startDate'] = array('elt' , time()*1000 );
-            $map['invalidDate']   = array('egt' , time()*1000 );
-            $res = M('zy_live_gh')->where($map)->order('startDate ASC')->find();
-
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] / 1000 >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] / 1000 <= time()){
-
-                    $this->error ( '直播已经结束' );
-                }
-            }
-
             $gh_config   =  model('Xdata')->get('live_AdminConfig:ghConfig');
             $teacherJoinUrl = $gh_config['video_url'].'/teacher/index.html?liveClassroomId='.$res['room_id'].'&customer='.$gh_config['customer'].'&customerType=taobao&sp=0';
         } else if($info['live_type'] == 4){//cc
-            $map['live_id'] = $id;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $res = M( 'zy_live_cc' )->where ( $map)->order('startDate ASC')->find();
-            if( !$res ) {
-                $this->error ( '直播未开始或已经结束' );
-            }
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
-            $teacher_info = M('zy_teacher')->where('id ='.$res['speaker_id'])->field('id,name')->find();
             $teacherJoinUrl = "{$res['teacherJoinUrl']}&publishname={$teacher_info['name']}&publishpassword={$res['teacherToken']}";
         } else if($info['live_type'] == 5){//微吼
-            $map['live_id'] = $id;
-            $map['type'] = 5;
-            $map['startDate']   = array('elt' , time() );
-            $map['invalidDate'] = array('egt' , time() );
-            $res = M( 'zy_live_thirdparty' )->where ( $map)->order('startDate ASC')->find();
-            if( !$res ) {
-                $this->error ( '直播未开始或已经结束' );
-            }
-            if( ($this->mid != $res['speaker_id']) && !is_admin($this->mid)){
-                if($info['price'] > 0 && $is_buy <= 0){
-                    $this->error('请先购买');
-                }
-                if($res['startDate'] >= time()){
-                    $this->error ( '还未到直播时间' );
-                }
-                if($res['invalidDate'] <= time()){
-                    $this->error ( '直播已经结束' );
-                }
-            }
 //            $teacher_info = M('zy_teacher')->where('id ='.$res['speaker_id'])->field('id,name')->find();
             $teacherJoinUrl = $res['teacherJoinUrl'];
+        } else if($info['live_type'] == 6) {//cc小班课
+            $teacherJoinUrl = "{$res['teacherJoinUrl']}&autoLogin=true&username={$teacher_info['name']}&password={$res['teacherToken']}";
         }
 
         $this->assign('teacherJoinUrl' , $teacherJoinUrl);
         $this->display();
     }
 
-    //直播数据处理
-    protected function live_data($live_type,$id)
-    {
-        $count = 0;
-        //第三方直播类型
-        if($live_type == 1){
-            $live_data = M('zy_live_zshd')->where(array('live_id'=>$id,'is_del'=>0))->order('invalidDate asc')->select();
-            if($live_data){
-                foreach ($live_data as $item=>$value){
-                    if($value['invalidDate'] < time()){
-                        $count = $count + 1 ;
-                    }
-                }
-            }else {
-                $live_data = array(1);
-                $count = 1;
-            }
-        }elseif ($live_type == 3) {
-            $live_data = M('zy_live_gh')->where(array('live_id' => $id, 'is_del' => 0))->order('invalidDate asc')->select();
-            if ($live_data) {
-                foreach ($live_data as $item => $value) {
-                    if ($value['invalidDate'] < time()) {
-                        $count = $count + 1;
-                    }
-                }
-            } else {
-                $live_data = array(1);
-                $count = 1;
-            }
-        } elseif ($live_type == 4){
-            $live_data = M('zy_live_cc')->where(array('live_id'=>$id,'is_del'=>0))->order('invalidDate asc')->select();
-            if($live_data){
-                foreach ($live_data as $item=>$value){
-                    if($value['invalidDate'] < time()){
-                        $count = $count + 1 ;
-                    }
-                }
-            }else{
-                $live_data = array(1);
-                $count = 1;
-            }
-        } elseif ($live_type == 5){
-            $live_data = M('zy_live_thirdparty')->where(array('live_id'=>$id,'is_del'=>0,'type'=>$live_type))->order('invalidDate asc')->select();
-            if($live_data){
-                foreach ($live_data as $item=>$value){
-                    if($value['invalidDate'] < time()){
-                        $count = $count + 1 ;
-                    }
-                }
-            }else{
-                $live_data = array(1);
-                $count = 1;
-            }
-        }
-        $live_data_info['count'] = count($live_data);
-        $live_data_info['now'] = $count;
-
-        return $live_data_info;
-    }
-
     public function getLivePlayback(){
-        $type = $_GET['type'];
         $this->assign('jumpUrl','/');
-        if($type == 1) {
-            $live_info = M('zy_live_zshd')->where('id=' . intval($_GET['id']))->field('roomid,studentToken,playback_url')->find();
 
+        $live_info = model('Live')->liveRoom->where('id='.intval($_GET['id']) )->field('live_id,roomid,studentClientToken,playback_url,type')->find();
+        $liveInfo = model('Live')->findLiveAInfo(array('id'=>$live_info['live_id']),'id,video_title');
+
+        $this->assign($liveInfo);
+
+        if($live_info['type'] == 1) {
             $list_url = $this->zshd_config['api_url'] . '/courseware/list?';
 
             $param = 'roomId=' . $live_info['roomid'];
@@ -1764,21 +1175,19 @@ class IndexAction extends CommonAction {
                 $playback_url = $list_live['coursewares'][0]['url'] . "?nickname=currency_playback&token={$list_live['coursewares'][0]['token']}";
 
                 if (!$live_info['playback_url']) {
-                    M('zy_live_thirdparty')->where('id=' . intval($_GET['id']))->save(['playback_url' => $playback_url]);
+                    model('Live')->liveRoom->where('id=' . intval($_GET['id']))->save(['playback_url' => $playback_url]);
                 }
             } else {
                 $this->error("额 服务器查询失败了。。");
             }
-//        $info_url   = $this->zshd_config['api_url'].'/training/courseware/info?';
-        }else if($type == 3){
-            $live_info = M('zy_live_gh')->where('id='.intval($_GET['id']) )->field('room_id')->find();
+        //$info_url   = $this->zshd_config['api_url'].'/training/courseware/info?';
+        }else if($live_info['type'] == 3){
 
             $playback_url = $this->gh_config['video_url'].'/playback/index.html?liveClassroomId='.$live_info['room_id'].'&customer='.$this->gh_config['customer'].'&customerType=taobao&sp=0';
             if(!$live_info['playback_url']){
-                M('zy_live_thirdparty')->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
+                model('Live')->liveRoom->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
             }
-        }else if($type == 4){
-            $live_info = M('zy_live_cc')->where('id='.intval($_GET['id']) )->field('roomid,studentClientToken,playback_url')->find();
+        }else if($live_info['type'] == 4){
 
             $info_url  = $this->cc_config['api_url'].'/live/info?';
 
@@ -1794,7 +1203,7 @@ class IndexAction extends CommonAction {
                     $this->error("该直播课时还没有回放。。");
                 }
                 if(!$live_info['playback_url']){
-                    M('zy_live_thirdparty')->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
+                    model('Live')->liveRoom->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
                 }
 
 //            $pk_url  = $this->cc_config['api_url'].'/record/download?';
@@ -1809,10 +1218,9 @@ class IndexAction extends CommonAction {
             }else{
                 $this->error("额 服务器查询失败了。。");
             }
-        }else if($type == 5){
+        }else if($live_info['type'] == 5){
 
             $info_url  = $this->wh_config['api_url'].'/api/vhallapi/v2/record/list';
-            $live_info = M('zy_live_thirdparty')->where('id='.intval($_GET['id']) )->field('roomid')->find();
 
             $pl_data['webinar_id'] = $live_info['roomid'];
             $pl_data['auth_type']  = $find_data['auth_type'] = 2;
@@ -1830,16 +1238,16 @@ class IndexAction extends CommonAction {
                         $playback_url .= $val->url;
                     }
                 }
+                $playback_url  = $this->wh_config['api_url']."/webinar/inituser/{$live_info['roomid']}";
 
                 if(!$live_info['playback_url']){
-                    M('zy_live_thirdparty')->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
+                    model('Live')->liveRoom->where('id='.intval($_GET['id']) )->save(['playback_url'=>$playback_url]);
                 }
             }else if($info_res->code == 10019){
                 $this->error("该直播课时还没有回放。。");
             }else{
                 $this->error("额 服务器查询失败了。。");
             }
-            $this->assign('header',5);
         }
 
         if(!$_GET['ac']){

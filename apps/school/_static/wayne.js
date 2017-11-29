@@ -165,7 +165,7 @@ admin.delVideoLib=function(type){
     },'json');
 };
 
-//批量删除套餐
+//批量删除班级
 admin.delAlbumAll=function(action,status){
 
     var ids=admin.getChecked();

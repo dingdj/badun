@@ -492,107 +492,80 @@ class AccountAction extends Action
      */
     public function doAuthenticate(){
     
-    	$verifyInfo = M('user_verified')->where('uid='.$this->mid)->find();
+		$verifyInfo = M('zy_teacher')->where('uid='.$this->mid)->find();
+    	$myAdminLevelhidden         = getCsvInt(t($_POST['teacher_categoryhidden']),0,true,true,',');  //处理分类全路径
+        $fullcategorypath           = explode(',',$_POST['teacher_categoryhidden']);
+        $category                   = array_pop($fullcategorypath);
+        $category                   = $category == '0' ? array_pop($fullcategorypath) : $category; //过滤路径最后为0的情况
 
-		$data['usergroup_id'] = intval($_POST['usergroup_id']);
-
-		if($_POST['user_verified_category_id']){
-			$data['user_verified_category_id']=intval($_POST['user_verified_category_id']);
-		}else{
-			$data['user_verified_category_id'] = M("user_verified_category")->where(array('pid'=>$data['usergroup_id']))->getField("user_verified_category_id");
-		}
-        //if(!$data['usergroup_id']) $data['usergroup_id'] = 5;
-       	$data['company'] 	= t($_POST['company']);
-        $data['realname'] 	= t($_POST['realname']);
-        $data['idcard'] 	= t($_POST['idcard']);
+        $data['teacher_category'] = '0' ? array_pop($fullcategorypath) : $category;
+        $data['fullcategorypath'] = $myAdminLevelhidden;//分类全路径
+       	//$data['company'] 	= t($_POST['company']);
+        $data['name'] 	= t($_POST['realname']);
+        //$data['idcard'] 	= t($_POST['idcard']);
         $data['phone'] 		= t($_POST['phone']);
         $data['reason'] 	= filter_keyword(t($_POST['reason']));
-		$data['specialty'] 	= t($_POST['specialty']);
-		$data['address'] 	=filter_keyword(t($_POST['address']));
-		$data['s_address'] 	= t($_POST['s_address']);
-		$data['other_data'] = t($_POST['other_data_ids']);
-        $data['identity_id']= t($_POST['identity_ids']);
+		//$data['specialty'] 	= t($_POST['specialty']);
+		//$data['address'] 	=filter_keyword(t($_POST['address']));
+		//$data['s_address'] 	= t($_POST['s_address']);
+		//$data['other_data'] = t($_POST['other_data_ids']);
+        //$data['identity_id']= t($_POST['identity_ids']);
         $data['attach_id']  = t($_POST['attach_ids']);
-		$data['info']       = t($_POST['info']);
-        $data['verified']   = 2;
+		//$data['info']       = t($_POST['info']);
+        //$data['verified']   = 2;
+		$data['Teach_areas'] = filter_keyword(t($_POST['address']));
+		$data['verified_status'] = 2;
+		$data['is_reject'] 	 = 0;
+		$data['is_del'] 	 = 0;
+		
 		$Regx1 = '/^[0-9]*$/';
         $Regx2 = '/^[A-Za-z0-9]*$/';
         $Regx3 = '/^[A-Za-z|\x{4e00}-\x{9fa5}]+$/u';
 
-        if($data['usergroup_id'] == 5){
-        	// if(strlen($data['company'])==0){
-        	// 	//$this->error('企业名称不能为空');
-        	// 	echo '企业名称不能为空';exit;
-        	// }
-        	// if(strlen($data['realname'])==0){
-        	// 	//$this->error('法人姓名不能为空');	
-        	// 	echo '法人姓名不能为空';exit;
-        	// }
-        	// if(strlen($data['idcard'])==0){
-        	// 	//$this->error('营业执照号不能为空');	
-        	// 	echo '营业执照号不能为空';exit;
-        	// }
-        	// if(strlen($data['phone'])==0){
-        	// 	//$this->error('联系电话不能为空');
-        	// 	echo '联系电话不能为空';exit;	
-        	// }
-        	// if(strlen($data['reason'])==0){
-        	// 	//$this->error('认证理由不能为空');
-        	// 	echo '认证理由不能为空';exit;	
-        	// }
-        	// if(preg_match($Regx3, $data['realname'])==0 || strlen($data['realname'])>30){
-         //        echo '请输入正确的法人姓名';exit;
-         //    }  
-        	// if(strlen($data['info'])==0){
-        	// 	$this->error('认证资料不能为空');	
-        	// }
-        	// if(preg_match($Regx2, $data['idcard'])==0){
-        	// 	//$this->error('请输入正确的营业执照号');	
-        	// 	echo '请输入正确的营业执照号';exit;	
-        	// }
-        	
-        }else{
-        	if(strlen($data['realname'])==0){
-        		$this->error('真实姓名不能为空');
-        		//echo '真实姓名不能为空';exit;
-        	}
-        	if(strlen($data['idcard'])==0){
-        		$this->error('身份证号码不能为空');
-        		//echo '身份证号码不能为空';exit;
+        
+		if(strlen($data['name'])==0){
+			$this->error('真实姓名不能为空');
+			//echo '真实姓名不能为空';exit;
+		}
+		/*if(strlen($data['idcard'])==0){
+			$this->error('身份证号码不能为空');
+			//echo '身份证号码不能为空';exit;
 
-        	}
-        	if(strlen($data['phone'])==0){
-        		$this->error('联系电话不能为空');
-        		//echo '联系电话不能为空';exit;
-        	}
-        	if(strlen($data['reason'])==0){
-        		$this->error('认证理由不能为空');
-        		//echo '认证理由不能为空';exit;
-        	}
-        	// if(strlen($data['info'])==0){
-        	// 	$this->error('认证资料不能为空');	
-        	// }
-        	if(preg_match($Regx3, $data['realname'])==0 || strlen($data['realname'])>30){
-                $this->error('请输入正确的姓名格式');
-                //echo '请输入正确的姓名格式';exit;
-            }  
-        	if(preg_match($Regx2, $data['idcard'])==0 || preg_match($Regx1, substr($data['idcard'],0,17))==0 || strlen($data['idcard'])!==18){
-        		$this->error('请输入正确的身份证号码');
-                // echo '请输入正确的身份证号码';exit;
-        	}
-        	if(strlen($data['phone']) !== 11 || preg_match($Regx1, $data['phone'])==0){
-                $this->error('请输入正确的联系电话格式');
-                //echo '请输入正确的联系电话格式';exit;
-            }
-        }
-
+		}*/
+		if(strlen($data['phone'])==0){
+			$this->error('联系电话不能为空');
+			//echo '联系电话不能为空';exit;
+		}
+		if(strlen($data['reason'])==0){
+			$this->error('认证理由不能为空');
+			//echo '认证理由不能为空';exit;
+		}
+		// if(strlen($data['info'])==0){
+		// 	$this->error('认证资料不能为空');	
+		// }
+		if(preg_match($Regx3, $data['name'])==0 || strlen($data['name'])>30){
+			$this->error('请输入正确的姓名格式');
+			//echo '请输入正确的姓名格式';exit;
+		}  
+		/*if(preg_match($Regx2, $data['idcard'])==0 || preg_match($Regx1, substr($data['idcard'],0,17))==0 || strlen($data['idcard'])!==18){
+			$this->error('请输入正确的身份证号码');
+			// echo '请输入正确的身份证号码';exit;
+		}*/
+		if(strlen($data['phone']) !== 11 || preg_match($Regx1, $data['phone'])==0){
+			$this->error('请输入正确的联系电话格式');
+			//echo '请输入正确的联系电话格式';exit;
+		}
+		if(t($_POST['school']) != ''){
         $mhm_id = model('School')->getSchooldStrByMap(array('title'=>filter_keyword(t($_POST['school']))),'id');
         if(!$mhm_id){
             $this->error('请输入正确的机构名称');
         }else{
             $data['mhm_id'] = $mhm_id;
         }
-
+		}else{
+			$data['mhm_id'] = 1;
+		}
+		$data['ctime'] = time();
         preg_match_all('/./us', $data['reason'], $matchs);   //一个汉字也为一个字符
         if(count($matchs[0])>140){
         	//$this->error('认证理由不能超过140个字符');	
@@ -603,10 +576,12 @@ class AccountAction extends Action
         // 	$this->error('认证资料不能超过140个字符');	
         // }
     	if($verifyInfo){
-    		$res = M('user_verified')->where('uid='.$verifyInfo['uid'])->save($data);
+    		//$res = M('user_verified')->where('uid='.$verifyInfo['uid'])->save($data);
+			$res = M('zy_teacher')->where('uid='.$verifyInfo['uid'])->save($data);
     	}else{
     		$data['uid'] = $this->mid; 
-    		$res = M('user_verified')->add($data);
+    		//$res = M('user_verified')->add($data);
+			$res = M('zy_teacher')->add($data);
     	}
         if($res !== false){
         	model('Notify')->sendNotify($this->mid,'public_account_doAuthenticate');

@@ -20,5 +20,20 @@ class SingleModel extends Model{
 		}
     	return $cate_list;
     }
+
+	/**
+	 * 根据分类获取底部导航数据
+	 * @param $cate_id  int 分类id
+     * @param $field  string 所需字段
+	 * @return void
+	 */
+	public function getNavById($cate_id ,$field){
+		$map['cate_id'] = $cate_id;
+		$map['is_del']  = 0;
+		$order = 'sort ASC';
+		$list = $this->where($map)->order($order)->field($field)->findAll();
+
+		return $list;
+	}
 	 
 }

@@ -27,141 +27,163 @@ function emailReg(cate){
 }
 //邮箱注册下一部
 function onemaliNext(){
-	user=$.trim($("#erusername").val());//获取用户邮箱地址
-	verify=$.trim($("#erverify").val());//获取验证码
-    password=$.trim($("#erpasswrod").val());//获取密码
-    password2=$.trim($("#erpasswrod2").val());//获取密码
+	user      = $.trim($("#erusername").val());//获取用户邮箱地址
+	verify    = $.trim($("#erverify").val());//获取验证码
+	uname     = $.trim($("#eruname").val());//获取用户昵称
+    password  = $.trim($("#erpasswrod").val());//获取密码
+    password2 = $.trim($("#erpasswrod2").val());//获取密码
+    mount_reg = $.trim($("#mount_reg").val());//挂载机构
+    mhm_id    = $.trim($("#this_mhm_id").val());//机构
 
-    var ckpassword=function(){
-    	//检查密码
-    	if(password=="" ||password.length<6 || password.length>20){
-    		 ui.error('对不起，密码长度不正确!');
-    		 return;
-    	}
-        if(password2=="" ||password2.length<6 || password2.length>20){
-            ui.error('对不起，确认密码长度不正确!');
-            return;
-        }
-        if(password != password2){
-            ui.error('两次输入密码不一致');
-            return;
-        }
-    	type=1;//设置为邮箱注册状态
-    	$(".regsiter-main").css("z-index","1002");
-        $(".reg_set_info").css("display","none");
-        $(".reg_set_user_info").css("display","block");
-    }
-    var ckverify = function(){
-		//检查验证码
-		if(verify=="" || verify.length !=5){
-            ui.error('对不起，验证码长度不正确!');
-			 return;
-		}else{
-			 $.ajax({
-			        type: "POST",
-			        url:CLICK_VERIFY,
-			        data:"verify="+verify,
-			        dataType:"text",
-			        success:function(data){
-			            if(data==0){
-                            ui.error('对不起，验证码不正确!');
-			            	 return;
-			            }else{
-			            	ckpassword();
-			            }
-			        }
-			    });
-		}
-	};
-    
-	//检查邮箱
-	if(user==""){
-        ui.error('对不起，邮箱不能为空!');
-		 return;
+    //检查信息是否为空
+	if(user == ""){
+        ui.error('请输入邮箱');
+		return;
 	}
+	if(uname == ""){
+        ui.error('请输入昵称');
+		return;
+	}
+	if(password == ""){
+        ui.error('请输入密码');
+		return;
+	}
+	if(password2 == ""){
+        ui.error('请再次输入密码');
+		return;
+	}
+	if(verify == ""){
+        ui.error('请输入验证码');
+		return;
+	}
+
+	//验证邮箱
 	if(!user.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
-        ui.error('对不起，邮箱格式错误!');
-		 return;
-	}else{
-		//验证此邮箱是否已被注册
-	    $.ajax({
-	        type: "POST",
-	        url:CLICK_EMIL,
-	        data:"email="+user,
-	        dataType:"text",
-	        
-	        success:function(data){
-	            if(data==0){
-                    ui.error('对不起，此邮箱已被注册，请更换!');
-	            	 return;
-	            }else{
-	            	ckverify();
-	            }
-	           
-	        }
-	    });
-	    
+        ui.error('邮箱格式错误');
+		return;
 	}
-	
+    
+    //验证昵称
+	if( uname.length > 10){//检查昵称
+        ui.error('昵称长度不能大于10位');
+		return;
+	}
 
+	//检查密码
+	if( password.length<6 || password.length>20 ){
+		 ui.error('密码长度为6-20位');
+		 return;
+	}
+    if( password != password2 ){
+        ui.error('两次输入密码不一致');
+        return;
+    }
+
+	//检查验证码
+	if( verify.length != 5){
+        ui.error('验证码长度不正确');
+		 return;
+	}
+
+	$.ajax({
+		async:false,
+        type: "POST",
+        url:REG_ADDRESS,
+        data:"email="+user+"&uname="+uname+"&password="+password+"&type=1&mount_reg="+mount_reg+"&verify="+verify+"&mhm_id="+mhm_id,
+        dataType:"json",
+        success:function(data){
+            if( data.status == '0'){
+                ui.error(data.info);
+            	return;
+            }else{
+                ui.success("恭喜您，注册成功!");
+                location = data.data;
+            }
+        }
+    });
 }
 
 
 //手机注册下一部
 function phoneNext(){
-	user=$.trim($("#prphone").val());//获取用户手机号
-	verify=$.trim($("#prverify").val());//获取手机验证码
-    password=$.trim($("#prpassword").val());//获取密码
-    password2=$.trim($("#prpassword2").val());//获取密码
-	this_mhm_id=$.trim($("#this_mhm_id").val());//机构
-	mount_reg=$.trim($("#mount_reg").val());//机构
-    //检查密码
-	if(password=="" ||password.length<6 || password.length>20){
-        ui.error('对不起，密码长度不正确!');
-		 return;
-	}
-	if(password2=="" ||password2.length<6 || password2.length>20){
-        ui.error('对不起，确认密码长度不正确!');
-		 return;
-	}
-    if(password != password2){
-        ui.error('两次输入密码不一致');
-        return;
-    }
+	user      = $.trim($("#prphone").val());//获取用户邮箱地址
+	verify    = $.trim($("#prverify").val());//获取验证码
+	uname     = $.trim($("#uname").val());//获取用户昵称
+    password  = $.trim($("#prpassword").val());//获取密码
+    password2 = $.trim($("#prpassword2").val());//获取密码
+    mount_reg = $.trim($("#mount_reg").val());//挂载机构
+    mhm_id    = $.trim($("#this_mhm_id").val());//机构
 
-    //检查验证码
-	if(verify=="" ||verify.length!=6){
-        ui.error('对不起，手机验证码长度不正确!');
-		 return;
+    //检查信息是否为空
+	if(user == ""){
+        ui.error('请输入手机号');
+		return;
 	}
+	if(verify == ""){
+        ui.error('请输入验证码');
+		return;
+	}
+	if(uname == ""){
+        ui.error('请输入昵称');
+		return;
+	}
+	if(password == ""){
+        ui.error('请输入密码');
+		return;
+	}
+	if(password2 == ""){
+        ui.error('请再次输入密码');
+		return;
+	}
+	
+
 	//检查手机号格式
 	if(!user.match(/^1[3|4|5|7|8][0-9]\d{8}$/)){
         ui.error('对不起，请填写正确的手机号!');
 		 return;
-	}else{
-		//验证手机
-	    $.ajax({
-	        type: "POST",
-	        url:CLICK_PHONEVER,
-	        data:"phone="+user+"&verify="+verify,
-	        dataType:"json",
-	        success:function(data){
-	        	 if(data.status=='0'){
-                     ui.error(data.info);
-	            	 return;
-	            }else{
-	            	type=2;
-	            	$(".reg_set_info").css("display","none");
-	            	$(".reg_set_user_info").css("display","block");
-	            	$("#loging-worap-regsiter").css("z-index","200");
-	            	$(".regsiter-main").css("z-index","1001");
-	            }
-	        }
-	    }); 
 	}
-	
 
+	//检查验证码
+	if( verify.length !=6 ){
+        ui.error('手机验证码长度不正确!');
+		return;
+	}
+
+	//验证昵称
+	if( uname.length > 10){//检查昵称
+        ui.error('昵称长度不能大于10位');
+		return;
+	}
+
+	//检查密码
+	if( password.length<6 || password.length>20 ){
+		 ui.error('密码长度为6-20位');
+		 return;
+	}
+    if( password != password2 ){
+        ui.error('两次输入密码不一致');
+        return;
+    }
+
+
+	$.ajax({
+		async:false,
+        type: "POST",
+        url:REG_ADDRESS,
+        data:"phone="+user+"&uname="+uname+"&password="+password+"&type=2&mount_reg="+mount_reg+"&verify="+verify+"&mhm_id="+mhm_id,
+        dataType:"json",
+        success:function(data){
+            if( data.status == '0'){
+                ui.error(data.info);
+            	return;
+            }else{
+                ui.success("恭喜您，注册成功!");
+                location = data.data;
+            }
+        }
+    });
 }
+
 var timerc; 
 function dtime(){
         if(timerc > 1){ 
@@ -215,7 +237,7 @@ function getPhoneVerify(){
 	        success:function(data){
 	            if(data==0){
                     ui.error('对不起，此手机已被注册，请更换!');
-	            	 return;
+	            	return;
 	            }else{
 	            	phoneVerify();
 	            }
@@ -286,14 +308,14 @@ function setUserInfo(){
 	var city=$("#city").val();//取得市
 	var area=$("#area").val();//取得区
 	var ckemailreg=function(){
-		if(province==0){//检查省
+		/*if(province==0){//检查省
             ui.error('对不起，请选择地区所在省!');
 			 return;
 		}
 		if(city==0){//检查市
             ui.error('对不起，请选择所在城市!');
 			 return;
-		}
+		}*/
 		// if(mhm_id==0){//检查机构
          //    ui.error('对不起，请选择机构!');
 		// 	 return;
@@ -419,7 +441,7 @@ function appendHtml(data,clickid,type){
     	} else if( clickid == 'getcollectvideolist' ) {
     		text = '您还没有收藏课程';
     	} else if( clickid == 'getbuyalbumslist' ) {
-    		text = '您还没有购买套餐';
+    		text = '您还没有购买班级';
     	}
 		 else if( clickid == 'getupvideoslist') {
 			text = '您还没有上传课程';
@@ -439,7 +461,7 @@ function appendHtml(data,clickid,type){
     	} else if( clickid == 'getTeacherFace' ){
     		text = '您还没有上传面授课程';
     	}else {
-    		text = '您还没有收藏套餐';
+    		text = '您还没有收藏班级';
     	}
 		$('.user-Release-l').hide();
         $(".user-imglist").append("<span>"+text+"</span>");

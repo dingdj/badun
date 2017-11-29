@@ -25,7 +25,7 @@
             </div>
         </div>
         <if condition="$l['learn_status'] == 1">
-            <a href="javascript:;"  class="finish" style="color: #898a8b;display: block;">待讲师确认</a>
+            <a href="javascript:;"  class="finish" style="color: #fff;display: block;">待讲师确认</a>
             <else/>
             <if condition="$l['learn_status'] != 2">
                 <a href="javascript:;"  class="finish" onclick="saveFinished('{$l.id}',1)">确定完成</a>
@@ -34,5 +34,5 @@
     </li>
 </foreach>
 <else/>
-    <li style="border: none;box-shadow: none;">你还没有相对应的约课。。</li>
+    <li style="border: none;box-shadow: none;">你还没有相对应的线下课。。</li>
 </if>

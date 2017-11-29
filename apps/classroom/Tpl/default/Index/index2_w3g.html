@@ -1,0 +1,245 @@
+<include file="public/public_header_w3g"/>
+
+<div class="cover"></div>
+
+<div class="min-height-wrap">
+    <!--banner-->
+    <div class="device">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <volist name="ad_list" id="adlt">
+                    <div class="swiper-slide"><a href="{$adlt['bannerurl']}" style="background: url({:getCover($adlt['banner'],1920,435)}) center center no-repeat"></a> </div>
+                </volist>
+                <!--<div class="swiper-slide"><a href="#" style="background: url(images/banner01.png) center center no-repeat"></a> </div>
+                <div class="swiper-slide"><a href="#" style="background: url(images/banner02.png) center center no-repeat"></a> </div>
+                <div class="swiper-slide"><a href="#" style="background: url(images/banner03.png) center  center no-repeat"></a> </div>-->
+            </div>
+        </div>
+        <div class="pagination"></div>
+    </div>
+
+    <!--公开课-->
+    <div class="mw-inner-box">
+        <h3>{$site['site_keyword']}公开课</h3>
+        <div class="f-cb">
+            <ul>
+                <if condition="$openVideo['data'] neq ''" >
+                    <volist name="openVideo.data" id="vo" offset="0" length='3'>
+                        <li>
+                            <a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+                            <div class="img-box"><img src="{:getCover($vo['cover'] ,334 , 232 )}"> </div>
+                            <h4>{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</h4>
+                            </a>
+                        </li>
+                    </volist>
+                    <else/>
+                    <span>暂时没有公开课数据。。</span>
+                </if>
+            </ul>
+        </div>
+    </div>
+
+    <!--热门课-->
+    <div class="mw-inner-box">
+        <h3>热门课程</h3>
+        <div class="custom-card">
+            <ul style="display: block;">
+                <if condition="$hotVideo['data'] neq ''" >
+                    <volist name="hotVideo.data" id="vo" offset="0" length='4'>
+                        <li>
+                            <a <eq name="vo.type" value="1">href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vo['id']))}"</eq>>
+                            <div class="img-box"><img src="{:getCover($vo['cover'] ,334 , 232 )}" alt="" /></div>
+                            <h4>{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</h4>
+                            </a>
+                        </li>
+                    </volist>
+                    <else/>
+                    <span>暂时没有课程数据。。</span>
+                </if>
+                <!--<li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/1f2f9892-e0ec-47c8-8d58-aeda5058b198.png"></div>
+                        <h4>创客机器人</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/77B7396AED21F7DEC4B26DB746CFAA25.png"></div>
+                        <h4>马术基础课</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/dc74c94b-b566-4c9d-97cc-8a63ae197675.png"></div>
+                        <h4>篮球英语</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/6efcf80e-dccc-4949-b6de-e4c57a244940.png"></div>
+                        <h4>游学学英语</h4>
+                    </a>
+                </li>-->
+            </ul>
+            <if condition="$hotVideo['data'] neq ''" >
+            <a href="{:U('classroom/Video/index')}" class="more-course-next">更多课程</a>
+            </if>
+        </div>
+    </div>
+
+    <!--直播课-->
+    <div class="mw-inner-box">
+        <h3>直播早知道</h3>
+        <div class="mw-rank-tabs">
+            <ul class="bro1">
+                <php>if(empty($live) == false){</php>
+                <volist name="live_ctime" id="time" key="k" offset="0" length='5'>
+                    <php>if($time != $nowTime){</php>
+                    <li><a href="javascript:;" onClick="showLive(this,{$k})">{:date('m',$time)}月{:date('d',$time)}日</a></li>
+                    <php>}else{</php>
+                    <li><a href="javascript:;" onClick="showLive(this,{$k})">今日</a></li>
+                    <php>}</php>
+                </volist>
+                <php>}else{</php>
+                <span>暂时没有最近直播数据。。</span>
+                <php>}</php>
+                <!--<li class="on"><a href="javascript:void(0)">9月17日</a></li>
+                <li><a href="javascript:void(0)">9月18日</a></li>
+                <li><a href="javascript:void(0)">今天</a></li>
+                <li><a href="javascript:void(0)">9月20日</a></li>
+                <li><a href="javascript:void(0)">9月21日</a></li>-->
+            </ul>
+        </div>
+        <div class="custom-card">
+            <volist name="live" id="le"  key='k' offset="0" length="5">
+                <ul class="live_{$k}" style="display: none;">
+                    <volist name="le" id="vo" offset="0" length="4">
+                        <li>
+                            <a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
+                                <div class="img-box"><img src="{:cutImg($vo['cover'] ,300, 208 )}"></div>
+                                <h4>{:msubstr(t($vo['video_title']),0,7,'utf-8',true)}</h4>
+                            </a>
+                        </li>
+                    </volist>
+                </ul>
+            </volist>
+            <!--<ul>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/1f2f9892-e0ec-47c8-8d58-aeda5058b198.png"></div>
+                        <h4>创客机器人</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/77B7396AED21F7DEC4B26DB746CFAA25.png"></div>
+                        <h4>马术基础课</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/dc74c94b-b566-4c9d-97cc-8a63ae197675.png"></div>
+                        <h4>篮球英语</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/6efcf80e-dccc-4949-b6de-e4c57a244940.png"></div>
+                        <h4>游学学英语</h4>
+                    </a>
+                </li>
+            </ul>-->
+            <if condition="$live neq null" >
+            <a href="{:U('live/Index/index')}" class="more-course-next">更多直播</a>
+            </if>
+        </div>
+    </div>
+
+    <!--名师-->
+    <div class="mw-inner-box">
+        <h3>名师阵容</h3>
+        <div class="custom-card teacher-index">
+            <ul style="display: block;">
+                <if condition="$teacher neq ''" >
+                    <volist name="teacher" id="tea" offset="0" length="2">
+                        <li>
+                            <a href="{:U('classroom/Teacher/view',array('id'=>$tea['id']))}">
+                                <div class="img-box"><img src="{:getCover($tea['head_id'],321,321)}"></div>
+                                <h4>{:msubstr(t($tea['name']),0,5,'utf-8',true)}</h4><small>{:msubstr(t($tea['inro']),0,10,'utf-8',true)}</small>
+                            </a>
+                        </li>
+                    </volist>
+                    <else/>
+                    <span>暂时没有讲师数据。。</span>
+                </if>
+                <!--<li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/1f2f9892-e0ec-47c8-8d58-aeda5058b198.png"></div>
+                        <h4>王明</h4><small>江湖人称“猪儿嫩”</small>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/709f2512-c4da-41b9-a0af-42c5f7bdefc0.png"></div>
+                        <h4>张则妃</h4><small>练家子，有几手</small>
+                    </a>
+                </li>-->
+            </ul>
+            <if condition="$teacher neq ''" >
+            <a href="{:U('classroom/Teacher/index')}" class="more-course-next">更多名师</a>
+            </if>
+        </div>
+    </div>
+
+    <!--学员-->
+    <div class="mw-inner-box">
+        <h3>明星学员</h3>
+        <div class="custom-card student-index">
+            <ul style="display: block;">
+                <if condition="$star_user neq ''" >
+                    <volist name="star_user" id="user" offset="0" length="2">
+                        <li>
+                            <a href="{:U('classroom/UserShow/index',array('uid'=>$user['uid']))}" class="imgbox">
+                                <div class="img-box"><img src="{:getUserFace($user['uid'],b)}"></div>
+                                <h4>{:msubstr(t($user['uname']),0,10,'utf-8',true)}</h4>
+                            </a>
+                        </li>
+                    </volist>
+                    <else/>
+                    <span>暂时没有学员数据。。</span>
+                </if>
+                <!--<li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/4A1280FD7A7EBE48C6EC2B5978D195DF.png"></div>
+                        <h4>慕娥</h4>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <div class="img-box"><img src="images/BB1F2F5C859020E9FF69573A147BE65B.png"></div>
+                        <h4>贺胜辉</h4>
+                    </a>
+                </li>-->
+            </ul>
+            <!--<a href="#" class="more-course-next">更多学员</a>-->
+        </div>
+    </div>
+
+    <!--体验-->
+    <div class="experience">
+        <a href="/" class="experience-index">马上体验</a>
+    </div>
+
+
+<script>
+    $(function(){
+        $(".live_1").show();
+    });
+    $(".bro1 li:first-child").addClass("on");
+    function showLive(cate,id){
+        $(cate).parent().addClass('on').siblings().removeClass('on');
+        $(".live_"+id).show().siblings().hide();
+    }
+</script>
+
+<include file="public/public_footer_w3g"/>

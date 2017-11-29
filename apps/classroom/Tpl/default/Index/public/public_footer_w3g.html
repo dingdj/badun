@@ -1,0 +1,28 @@
+<!--footer-->
+<div class="follow-tel">
+    <h5>咨询热线</h5>
+    <b>{$site.site_phone}</b>
+    <div class="code">
+        <img src="{:getCover($site['wx_qrcode'],120,120)}">
+        <p>{$site['site_keyword']}<br/>教育研究院</p>
+    </div>
+    <div class="code">
+        <img src="{:getCover($site['wb_qrcode'],120,120)}">
+        <p>{$site['site_keyword']}<br/>教育联盟</p>
+    </div>
+    <ul class="ftwrapper ">
+        <if condition="$cate_id">
+            <volist name="cate_id" id="cate">
+                <li value="{$cate['id']}"><a href="javasctipt:;" onclick="singleCate(this,{$cate['id']})" >{$cate['title']}</a></li>
+            </volist>
+            <else/>
+            <li><a href="{:U('classroom/Video/index')}">主要课程</a></li>
+            <li><a href="{:U('classroom/Index/about')}">关于我们</a></li>
+        </if>
+    </ul>
+    <strong>{$site['site_footer']}</strong>
+</div>
+</div>
+
+</body>
+</html>

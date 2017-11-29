@@ -1,0 +1,215 @@
+<include file="__THEME__/public_header_w3g" />
+
+<link href="__THEMEW3G__/css/style_3g.css" rel="stylesheet">
+<link href="__THEMENEW__/icon/iconfont.css" rel="stylesheet">
+
+<div class="cover"></div>
+
+<div class="min-height-wrap">
+    <div class="hy-open">
+        <ul class="yh_coupon">
+            <li><a href="javascript:void(0);">优惠券</a></li>
+            <li><a href="javascript:void(0);">打折卡</a></li>
+            <li><a href="javascript:void(0);">课程卡</a></li>
+            <li><a href="javascript:void(0);">实体卡</a></li>
+        </ul>
+        <div class="yh_all_per">
+            <div class="yh_coupon_order">
+                <!--优惠券-->
+                <h3>选择优惠券</h3>
+                <if condition="$videoCoupon">
+                    <dl class="yh_blue_carlist">
+                        <volist name="videoCoupon" id="vcn">
+                            <dd>
+                                <div class="txt">
+                                    <h3>¥{$vcn['price']}<small>满{$vcn['maxprice']}元可用</small></h3>
+                                    <p>卡券编号 : {$vcn['code']}</p>
+                                    <p>仅限<em>{:msubstr($vcn['school_title'],0,7,'utf-8',true)}</em>下的课程使用</p>
+                                    <p>有效期 : {$vcn['stime']} - {$vcn['etime']}</p>
+                                </div>
+                                <a href="javascript:void(0);" onclick="buyvCoupon({$vcn['cid']},{$vcn['coupon_id']},1,{$price['price']})">确<br>定<br>使<br>用</a>
+                            </dd>
+                        </volist>
+                    </dl>
+                    <else/>
+                    <p style="color: #555;font-size: 12px;">您暂未获得相关优惠券。。</p>
+                </if>
+            </div>
+
+            <!--打折卡-->
+            <div class="yh_coupon_order">
+                <h3>选择打折卡</h3>
+                <if condition="$discount">
+                    <volist name="discount" id="dct">
+                        <dl class="yh_red_carlist">
+                            <dd>
+                                <a href="javascript:void(0);" class="hy_red_date">
+                                    <h3>{$dct.discount}折<small>有效期：{$dct['stime']} - {$dct['etime']}</small></h3>
+                                </a>
+                                <div class="txt">
+                                    <p>券编号：<br>{$dct.code}</p>
+                                    <p>发卡单位：{$dct.school_title}</p>
+                                    <a href="javascript:void(0)" onclick="buyvCoupon({$dct['cid']},{$dct['coupon_id']},2,{$price['price']})">确认使用</a>
+                                </div>
+                            </dd>
+                        </dl>
+                    </volist>
+                    <else/>
+                    <p style="color: #555;font-size: 12px;">您暂未获得相关打折卡。。</p>
+                </if>
+            </div>
+
+            <!--课程卡-->
+            <div class="yh_coupon_order">
+                <h3>选择课程卡</h3>
+                <if condition="$courseCard">
+                    <volist name="courseCard" id="dct">
+                        <dl class="yh_red_carlist">
+                            <dd>
+                                <a href="javascript:void(0);" class="hy_red_date">
+                                    <h3>课程卡<small>有效期：{$dct['stime']} - {$dct['etime']}</small></h3>
+                                </a>
+                                <div class="txt">
+                                    <p>券编号：<br>{$dct.code}</p>
+                                    <p>发卡单位：{$dct.school_title}</p>
+                                    <a href="javascript:void(0)" onclick="doExchange({$cou['video_id']},{$cou['video_type']},{$cou['cid']})">确认使用</a>
+                                </div>
+                            </dd>
+                        </dl>
+                    </volist>
+                    <else/>
+                    <p style="color: #555;font-size: 12px;">您暂未获得相关课程卡。。</p>
+                </if>
+            </div>
+
+            <!--实体卡-->
+            <div class="yh_coupon_order">
+                <h3>卡券编号：</h3>
+                <dl class="yh_white_carlist">
+                    <dd><input type="text" class="number" placeholder="请输入卡券标号" autofocus data-id="{$mhm_id}" data-price="{$price}" value=""></dd>
+                </dl>
+            </div>
+        </div>
+
+        <!--优惠金额-->
+        <!--<div class="hy_tit_price">优惠金额：<span>¥0.00</span></div>-->
+    </div>
+</div>
+
+<script src="__THEMEW3G__/js/coupon_3g.js"></script>
+<script>
+    var uid = "{$uid}";
+    var vtype = "{$data['vtype']}"
+    function buyvCoupon(cid,coupon_id,discount_type,price) {
+        var vid = "{$_GET['id']}";
+        if(uid<=0){
+            alert("请先登录");
+            return false;
+        }
+        if(!cid || !coupon_id || !discount_type){
+            alert('参数错误');
+            return false;
+        }
+        if(price<=0){
+            alert('该课程不需要您购买');
+            return false;
+        }
+        $.post(U("classroom/PayVideo/checkCoupon"),{cid:cid,coupon_id:coupon_id,discount_type:discount_type,price:price},function(e){
+            if(e.status == 1){
+                alert(e.info);
+                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html"+'?cid='+coupon_id;
+            }else{
+                alert(e.info);
+            }
+        },'json');
+    }
+
+    function randomString(len) {
+        len = len || 32;
+        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+        var maxPos = $chars.length;
+        var pwd = '';
+        for (i = 0; i < len; i++) {
+            pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return pwd;
+    }
+
+    //使用课程卡
+    function doExchange(vid,vtype,coupon_id){
+        var url = '';
+        if(vtype == 1){
+            vtype = 'zy_video';
+            url = "{:U('classroom/Video/view',array('id'=>$id))}";
+        }else if(vtype == 2){
+            vtype = 'zy_live';
+            url = "{:U('live/Index/view',array('id'=>$id))}";
+        }else if(vtype == 3){
+            vtype = 'zy_album';
+            url = "{:U('classroom/Album/view',array('id'=>$id))}";
+        }
+        $.post(U("classroom/PayVideo/add_order"),{vid:vid,vtype:vtype,coupon_id:coupon_id},function(text){
+            if(text.status == 1){
+                alert('使用成功');
+                window.location.href = url;
+            } else {
+                alert('使用失败');
+                return false;
+            }
+        },'json');
+    }
+
+    //获取实体卡数据
+    $('.number').keydown(function(event){
+        var code = $("input[name='card']").val();
+        var sid = $(this).data('id');
+        var price = $(this).data('price');
+        var vid = "{$_GET['id']}",
+            vtype = '',
+            url = '',
+            coupon_id = '';
+        if (event.keyCode == 13) {
+            $.ajax({
+                type:"POST",
+                url:"{:U('classroom/PayVideo/getExchangeCard')}",
+                data:{code:code,mhm_id:sid,vid:vid,price:price},
+                dataType:"json",
+                success:function(data){
+                    if(data.status != 0){
+                        coupon_id = data.id;
+                        if(data.type == 1 || data.type == 2){
+                            buyvCoupon(coupon_id,data.coupon_id,data.type,price);
+                        }else if(data.type == 5) {
+                            if (data.video_type == 1) {
+                                vtype = 'zy_video';
+                                url = "{:U('classroom/Video/view',array('id'=>$id))}";
+                            } else if (data.video_type == 2) {
+                                vtype = 'zy_live';
+                                url = "{:U('live/Index/view',array('id'=>$id))}";
+                            } else if (data.video_type == 3) {
+                                vtype = 'zy_album';
+                                url = "{:U('classroom/Album/view',array('id'=>$id))}";
+                            }
+                            $.post(U("classroom/PayVideo/add_order"), {vid: vid,vtype: vtype,coupon_id: coupon_id}, function (data) {
+                                if (data.status == 1) {
+                                    alert('购买成功');
+                                    window.location.href = url;
+                                } else {
+                                    removeUse(sid);
+                                    alert('购买失败');
+                                    return false;
+                                }
+                            }, 'json');
+                        }
+                    }else{
+                        alert(data.info);
+                        return false;
+                    }
+                }
+            });
+        }
+
+    });
+</script>
+
+<include file="__THEME__/public_footer_w3g" />

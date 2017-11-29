@@ -20,7 +20,7 @@
                 <div class="content-card">
                     <ul class="comment_list">
                         <if condition="$wendadata['data'] eq null">
-                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关问题。。</li>
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 0;">您还没有相关问题。。</li>
                             <else/>
                             <volist name="wendadata['data']" id="vo">
                                 <li class="li">
@@ -62,7 +62,7 @@
                 <div class="content-card">
                     <ul class="comment_list">
                         <if condition="$andata['data'] eq null">
-                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有相关回答。。</li>
+                            <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 0;">您还没有相关回答。。</li>
                             <else/>
                             <volist name="andata['data']" id="vo">
                                 <li class="li">

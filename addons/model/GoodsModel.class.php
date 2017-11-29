@@ -158,7 +158,7 @@ class GoodsModel extends Model{
 	 * @param int $cate_limit 分类的条数
 	 * @return array 数据数组
      */
-    public function getListForCate($topLimit = -1,$limit = 6,$cate_id = 0,$cate_limit = 20){
+    public function getListForCate($map = array() ,$topLimit = -1,$limit = 6,$cate_id = 0,$cate_limit = 20){
         $cate_id = intval($cate_id) ?:0; 
         $cate_mod = model('CategoryTree')->setTable('goods_category');
         if($cate_id == 0){
@@ -173,7 +173,9 @@ class GoodsModel extends Model{
                 return $list;
             }
             $sub_cate = $cate_mod->getSubCateIdByPid($v['id']);
-            $data = $this->getList(array('goods_category'=>array('in',$sub_cate),'status'=>1,'is_del'=>0),'ctime desc',$limit);
+			$where = array( 'goods_category'=>array('in',$sub_cate) ,'status'=>1,'is_del'=>0);
+			$where = $map ? array_merge($where , $map) : $where;
+            $data = $this->getList($where ,'ctime desc',$limit);
             if($data['data'] && $data['gtLastPage'] !== true){
                 $item = [
                     'cate_id' => (int)$v['id'],

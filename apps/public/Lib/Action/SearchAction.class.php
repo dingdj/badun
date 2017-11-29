@@ -165,4 +165,22 @@ class SearchAction extends Action
 		$data['tag_id']   = model('Tag')->getTagId($data['name']);
 		exit(json_encode($data));
 	}
+	/**
+	 * 根据机构名称搜索机构
+	 * @Author MartinSun<syh@sunyonghong.com>
+	 * @Date   2017-09-27
+	 * @return [type] [description]
+	 */
+	public function getSchoolList(){
+		$keyword = $_POST['school_name'];
+		$map['title'] = array('like','%'.h($keyword).'%');
+		$limit = intval($_POST['limit']) ?: 8;
+		$list = model("School")->getListBySearch($map,$limit,"REPLACE(title,'".h($keyword)."','')");
+		if($list['data']){
+			$data = array('status'=>1,'data'=>$list['data']);
+		}else{
+			$data = array('status'=>0,'message'=>'暂无相关机构');
+		}
+		exit(json_encode($data));
+	}
 }

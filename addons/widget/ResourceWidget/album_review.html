@@ -41,13 +41,15 @@
 
 
 <script type="text/javascript">
-    var review_kztype = '{$kztype}';//数据分类 1:课程;2:套餐;
-    var review_kzid   = '{$kzid}';//课程或者套餐ID
+    var review_kztype = '{$kztype}';//数据分类 1:课程;2:班级3;线下课;
+    var review_kzid   = '{$kzid}';//课程或者班级ID
     var review_type   = '{$type}';//分类类型 1:提问,2:点评,3:笔记
     var review_page   = 0;       //当前分页
     var review_uid    = '{$mid}';
     var review_limit  = 10;
     var id = '{$mid}';
+    var type = '课程';
+    startype = '{$startype}';
 
     //点赞
     function zan(){
@@ -105,7 +107,14 @@
 
         if(score == 0){
             //ui.error('请给课程打分!');
-            notes('请给'+(review_kztype==1?'课程':'套餐')+'打分!','failure');
+            if(review_kztype == 1){
+                type = '课程';
+            }else if(review_kztype == 2){
+                type = '班级';
+            }else if(review_kztype == 3){
+                type = '线下课';
+            }
+            notes('请给'+type+'打分!','failure');
             return false;
         }
         var content = $('#review_con').val();
@@ -159,7 +168,7 @@
         var url = "{:U('widget/Resource/getList')}";
         var html = '';
         var html_list = '';
-        $.post(url,{limit:review_limit,kztype:review_kztype,kzid:review_kzid,type:review_type,p:page},function(data){
+        $.post(url,{limit:review_limit,kztype:review_kztype,kzid:review_kzid,type:review_type,p:page,startype:startype},function(data){
             if(data.data==""){
                 if($('#dpmsg').text() == "对不起，暂时没有点评，快来坐沙发！"){
                 }
@@ -167,7 +176,8 @@
                     html += '<span id="dpmsg">对不起，暂时没有点评，快来坐沙发！</span>';
                 }
             }else{
-              /*  html += ' <div class="classmain-bd">';*/
+                $('#dpmsg').hide();
+                /*  html += ' <div class="classmain-bd">';*/
                 /*html += '  <div class="classmain_con">';*/
                 html_list += '<div class="big">';
                 html_list += '<div>综合评分</div>';
@@ -269,6 +279,7 @@
             }else{
                 $(".review_con").children().not('#review-comments').remove();
                 $(".review_con").append(html);
+                $(".indo-mess").html('');
                 $(".indo-mess").append(html_list);
                 $('#review-comments').hide();
             }

@@ -59,7 +59,7 @@ class AdminSpecialAction extends AdministratorAction
 	public function special()
 	{
 		$_REQUEST['tabHash'] = 'special';
-		//取得所有的套餐分类
+		//取得所有的班级分类
 		$specialCategory = model ( 'ZySpecialCategory' )->getHashSpecialCategory();
 		$specialCategory[0] = "全部";
 		arsort($specialCategory,SORT_NUMERIC);
@@ -380,7 +380,7 @@ class AdminSpecialAction extends AdministratorAction
 	{
 		$id   = intval($_GET['id']);
 		
-		//取得所有的套餐分类
+		//取得所有的班级分类
 		$specialCategory = model ( 'ZySpecialCategory' )->getHashSpecialCategory();
 		
 		$this->_initTabSpecial();

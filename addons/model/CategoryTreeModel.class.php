@@ -110,19 +110,20 @@ class CategoryTreeModel extends Model
     /**
      * 获取指定父分类的树形结构
      * @return integer $pid 父分类ID
+     * @return integer $isApp 是否为app请求（1是，0否）
      * @return array 指定父分类的树形结构
      */
-    public function getNetworkList($pid = 0)
+    public function getNetworkList($pid = 0,$isApp = 0)
     {
         // 子分类树形结构
         if ($pid != 0) {
-            return $this->_MakeTree($pid);
+            return $this->_MakeTree($pid,0,$isApp);
         }
         // 全部分类树形结构
         $list = S('category_cache_' . $this->_talbe);
         if (!$list) {
             set_time_limit(0);
-            $list = $this->_MakeTree($pid);
+            $list = $this->_MakeTree($pid,0,$isApp);
             S('category_cache_' . $this->_talbe, $list);
         }
 
@@ -144,21 +145,26 @@ class CategoryTreeModel extends Model
      * 递归形成树形结构
      * @param integer $pid 父分类ID
      * @param integer $level 等级
+     * @param integer $isApp 是否为app请求
      * @return array 树形结构
      */
-    private function _MakeTree($pid, $level = 0)
+    private function _MakeTree($pid, $level = 0, $isApp)
     {
         $result = $this->_model->where('pid=' . $pid)->order('sort ASC')->findAll();
         $list   = [];
         if ($result) {
             foreach ($result as $key => $value) {
-                $id                                             = $value[$this->_talbe . '_id'];
+                if($isApp == 1){
+                    $id                                         = $key;
+                }else{
+                    $id                                         = $value[$this->_talbe . '_id'];
+                }
                 $list[$id]['id']                                = $value[$this->_talbe . '_id'];
                 $list[$id]['pid']                               = $value['pid'];
                 isset($value['is_del']) && $list[$id]['is_del'] = $value['is_del'];
                 $list[$id]['title']                             = $value['title'];
                 $list[$id]['level']                             = $level;
-                $child                                          = $this->_MakeTree($value[$this->_talbe . '_id'], $level + 1) ?: [];
+                $child                                          = $this->_MakeTree($value[$this->_talbe . '_id'], $level + 1 ,$isApp) ?: [];
                 $child && $list[$id]['child']                   = $child;
             }
         }

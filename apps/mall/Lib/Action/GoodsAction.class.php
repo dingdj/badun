@@ -233,7 +233,8 @@ class GoodsAction extends Action
             $goodsOrder['data'][$key]['ctime'] = date("Y-m-d H:i",$val['ctime']);
         }
         //获取用户收货地址
-        $address = model('Address')->where(array('uid'=>$uid,'is_default'=>1,'is_del'=>0))->field('id,location,address')->find();
+        $address = M('Address')->where(array('uid'=>$uid,'is_default'=>1,'is_del'=>0))->field('id,location,address')->find();
+        $address = $address ?: M('Address')->where(array('uid'=>$uid,'is_del'=>0))->field('id,location,address')->find();
         $url = $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         $this->assign('data',$data);
         $this->assign('address',$address);

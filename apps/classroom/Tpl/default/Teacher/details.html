@@ -17,48 +17,13 @@
             <div class="teacher-info ">
                 <div class="teacher-base-info">
                     <div class="new-title">基本信息</div>
-                    <div class="info">{$data.name}&nbsp;&nbsp;&nbsp;&nbsp;ID：{$data.identification}&nbsp;&nbsp;&nbsp;&nbsp;{$data.sex}&nbsp;&nbsp;&nbsp;&nbsp;{$data.teacher_age}年教龄&nbsp;&nbsp;&nbsp;&nbsp;{$data.graduate_school}</div>
+                    <div class="info">{$data.name}&nbsp;&nbsp;&nbsp;&nbsp;{$data.sex}&nbsp;&nbsp;&nbsp;&nbsp;{$data.teacher_age}年教龄&nbsp;&nbsp;&nbsp;&nbsp;{$data.graduate_school}</div>
                 </div>
                 <div class="teacher-intro">
                     <div class="new-title">老师介绍</div>
                     <div class="info">{$data.inro}</div>
                 </div>
-                <div class="teacher-experience2">
-                    <div class="new-title">过往经历</div>
-                    <php>if(!$experience){</php>
-                        <span>暂无讲师过往经历</span>
-                    <php>}else{</php>
-                    <ul>
-                        <volist name="experience" id="vo">
-						<li>
-							<i class="icon-circle"></i>
-							<div class="title">{$vo.Time}&nbsp;&nbsp;{$vo.title}</div>
-							<div class="detail">
-								<div>{$vo.content}</div>
-							</div>
-						</li>
-                        </volist>
-                    </ul>
-                    <php>}</php>
-                </div>
-                <div class="teacher-success2">
-                    <div class="new-title">相关案例</div>
-                    <php>if(!$case){</php>
-                        <span>暂无讲师相关案例</span>
-                    <php>}else{</php>
-                    <ul>
-                    <volist name="case" id="vo">
-					<li>
-						<i class="icon-star"></i>
-						<div class="title"><strong class="date">{$vo.Time}</strong><strong>{$vo.title}</strong></div>
-						<div class="detail">
-							<div>{$vo.content}</div>
-						</div>
-					</li>
-                    </volist>
-                    </ul>
-                    <php>}</php>
-                </div>
+                
             </div>
         </div>
     </div>

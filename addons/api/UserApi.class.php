@@ -470,40 +470,722 @@ class UserApi extends Api
         }
     }
 
-    //我的银行卡方法
-    public function card()
+    //用户账户余额(余额，收入，积分，当前绑定的银行卡信息）
+    public function accountInfo(){
+        $account['learn'] = D('ZyLearnc','classroom')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+        $account['split'] = D('ZySplit','classroom')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+        $account['score'] = M('credit_user')->where('uid = '.$this->mid)->getField('score') ? : 0;
+
+//        $card = D('ZyBcard','classroom')->getUserOnly($this->mid);
+//        $account['card_info'] = $card ? "{$card['accounttype']}".substr($card['account'],-4) : "";
+
+        $this->exitJson($account,1);
+    }
+
+    //用户账户余额
+    public function account(){
+        $learncoin_info = M('zy_learncoin')->where('uid = '.$this->mid)->find();
+
+        //选择模版
+        $tab = intval($_GET['tab']);
+        $tpls = array('index','integral_list');
+        if(!isset($tpls[$tab])) $tab = 0;
+        $method = 'account_'.$tpls[$tab];
+        if(method_exists($this, $method)){
+            $data_info = $this->$method();
+        }
+
+        if($tab == 0) {
+            $config['learncoin_info'] = $learncoin_info;
+            //读取系统设置的支付方式&支付配置
+            $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $rechange_default = array_filter(explode("\n", $split_score['rechange_default']));
+            foreach($rechange_default as &$val) {
+                $rechange_arr = array_filter(explode('=>', $val));
+                $val_arr['rechange'] = trim($rechange_arr[0]) ? : 0;
+                $val_arr['give'] = trim($rechange_arr[1]) ? : 0;
+                $val = $val_arr;
+            }
+            $config['rechange_default'] = $rechange_default;
+            $payConfig = model('Xdata')->get("admin_Config:payConfig");
+            $config['pay'] = $payConfig['pay'];
+            $config['pay_note'] = "1元人民币=1余额";
+
+            if (!$config) {
+                $this->exitJson(array(), 0, "暂时没有相关信息");
+            } else {
+                $this->exitJson($config,1);
+            }
+        }
+
+        if($tab == 1) {
+            if (!$data_info) {
+                $this->exitJson(array(), 0, "暂时没有相关流水");
+            }
+
+            $data['balance'] = $learncoin_info['balance'] ? : 0;
+            $data = array_merge($data, $data_info);
+
+            $this->exitJson($data,1);
+        }
+    }
+
+    //余额流水记录
+    protected function account_integral_list(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $limit = intval($this->limit) ? : 5;
+        $st    = t($this->st) ? : 0;
+        $et    = t($this->et) ? : 0;
+
+        if($this->st){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($this->et){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = D('ZyLearnc','classroom')->flowModel->where($map)->order('ctime DESC,id DESC')->findPage($limit);
+        foreach($data['data'] as $key=>$value){
+            switch ($value['type']){
+                case 0:$data['data'][$key]['type'] = "消费";break;
+                case 1:$data['data'][$key]['type'] = "充值";break;
+                case 2:$data['data'][$key]['type'] = "冻结";break;
+                case 3:$data['data'][$key]['type'] = "解冻";break;
+                case 4:$data['data'][$key]['type'] = "冻结扣除";break;
+                case 5:$data['data'][$key]['type'] = "分成收入";break;
+                case 6:$data['data'][$key]['type'] = "增加积分";break;
+                case 7:$data['data'][$key]['type'] = "扣除积分";break;
+            }
+        }
+        $total= D('ZyLearnc')->flowModel->where($map)->sum('num') ? : 0;
+
+        $flow_data['total'] = $total;
+        $flow_data['data'] = $data['data'] ? : [];
+        unset($data);
+
+        return $flow_data;
+    }
+
+    //用户账户收入余额
+    public function spilt(){
+        $spilt_info = D('ZySplit','classroom')->where('uid = '.$this->mid)->find();
+
+        //选择模版
+        $tab = intval($this->tab);
+        $tpls = array('index','integral_list','take','take_list');
+        if(!isset($tpls[$tab])) $tab = 0;
+        $method = 'spilt_'.$tpls[$tab];
+        if(method_exists($this, $method)){
+            $data_info = $this->$method();
+        }
+
+        if($tab == 0) {
+            $config['spilt_info'] = $spilt_info;
+            $card_list = D('ZyBcard','classroom')->getUserBcard($this->mid,'id,accounttype,account,accountmaster');
+            if($card_list){
+                foreach($card_list as $key => &$val){
+                    $val['card_info'] = $val['accounttype']." ".substr($val['account'],-4);//$val['accounttype']."(".hideStar($val['account']).")";//$val['accounttype'].substr($val['account'],-4)
+                }
+            }else{
+                $card_list = [];
+                $card_info = "未绑定";
+            }
+
+            $alipay_info = D('ZyBcard','classroom')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->field('id,account,accountmaster')->find();
+
+            if($alipay_info){
+                $alipay_info['accountmaster'] = hideStar($alipay_info['accountmaster']);
+                $alipay_info['account'] = hideStar($alipay_info['account']);
+
+            }else{
+                $alipay_info['account'] = "";
+            }
+            $account_balance = M('zy_learncoin')->where('uid = '.$this->mid)->getField('balance');
+
+            if($card_list) {
+                foreach ($card_list as $key => &$val) {
+                    $val['card_info'] = $val['accounttype'] . " " . substr($val['account'], -4);//$val['accounttype']."(".hideStar($val['account']).")";//$val['accounttype'].substr($val['account'],-4)
+                }
+            }
+
+            $config['pay_type'] = [
+                ['pay_num' =>'lcnpay','pay_type_note'=>"当前账户余额¥{$account_balance}",'learn_balance'=>$account_balance],
+                ['pay_num' =>'unionpay','pay_type_note'=>"{$card_info}",'card_list'=>$card_list],
+                ['pay_num' =>'alipay','pay_type_note'=>$alipay_info['account']],
+            ];
+
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $config['pay_note'] = "注：提现到余额后不能再转至银行卡或支付宝,转账比例为1：1";
+            $config['withdraw_basenum'] = $recharge_intoConfig['withdraw_basenum'];
+
+            if (!$config) {
+                $this->exitJson(array(), 0, "暂时没有相关信息");
+            } else {
+                $this->exitJson($config,1);
+            }
+        }
+
+        if($tab == 1 || $tab == 3) {
+            $data['balance'] = $spilt_info['balance'] ?: 0;
+            $data = array_merge($data, $data_info);
+
+            $this->exitJson($data, 1);
+        }
+
+        if($tab == 2) {
+            $data['balance'] = $spilt_info['balance'] ?: 0;
+            $data = array_merge($data, $data_info);
+
+            $this->exitJson($data, 1);
+        }
+    }
+
+    //收入余额流水记录
+    protected function spilt_integral_list(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $limit = intval($this->limit) ? : 5;
+        $st    = t($this->st) ? : 0;
+        $et    = t($this->et) ? : 0;
+
+        if($this->st){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($this->et){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = D('ZySplit','classroom')->flowModel->where($map)->order('ctime DESC,id DESC')->findPage($limit);
+        foreach($data['data'] as $key=>$value){
+            switch ($value['type']){
+                case 0:$data['data'][$key]['type'] = "消费";break;
+                case 1:$data['data'][$key]['type'] = "充值";break;
+                case 2:$data['data'][$key]['type'] = "冻结";break;
+                case 3:$data['data'][$key]['type'] = "解冻";break;
+                case 4:$data['data'][$key]['type'] = "冻结扣除";break;
+                case 5:$data['data'][$key]['type'] = "分成收入";break;
+                case 6:$data['data'][$key]['type'] = "增加积分";break;
+                case 7:$data['data'][$key]['type'] = "扣除积分";break;
+            }
+        }
+        $total= D('ZySplit','classroom')->flowModel->where($map)->sum('num') ? : 0;
+
+        $flow_data['total'] = $total ? : 0;
+        $flow_data['data'] = $data['data'] ? : [];
+        unset($data);
+
+        return $flow_data;
+    }
+
+    //分成收入申请提现页面
+    protected function spilt_take(){
+        $card = D('ZyBcard','classroom')->getUserOnly($this->mid);
+        if(!$card){
+            $this->exitJson(array(), 0, '请先绑定银行卡！');
+        }
+
+        //申请提现
+        $withdraw_num = intval($this->withdraw_num);
+        if($withdraw_num){
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+            if($withdraw_num<0||$withdraw_num<$withdraw_basenum||$withdraw_num%$withdraw_basenum!=0){
+                $this->exitJson(array(), 0, "只允许提现为{$withdraw_basenum}的倍数");
+            }
+            $result = D('ZyService','classroom')->applySpiltWithdraw(
+                $this->mid, $withdraw_num, $card['id']);
+            if($result){
+                $this->exitJson(array(), 1, '提交成功，请等待审核');
+            }else{
+                switch ($result) {
+                    case 1:
+                        $this->exitJson(array(), 1, "申请提现的收入余额不是系统指定的倍数，或小于0");
+                        break;
+                    case 2:
+                        $this->exitJson(array(), 2, "没有找到用户对应的提现银行卡/账户");
+                        break;
+                    case 3:
+                        $this->exitJson(array(), 3, "有未完成的提现记录，需要等待完成");
+                        break;
+                    case 4:
+                        $this->exitJson(array(), 4, "余额转冻结失败：可能是余额不足");
+                        break;
+                    case 5:
+                        $this->exitJson(array(), 5, "提现记录添加失败");
+                        break;
+                }
+            }
+        }
+
+        $info_data = D('ZyWithdraw','classroom')->getUnfinished($this->mid,2);
+        $data['data'] = $info_data[0];
+        unset($info_data);
+
+        $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+        $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+        $data['withdraw_basenum'] = $withdraw_basenum;
+
+        return $data;
+    }
+
+    //分成收入申请提现列表页面
+    protected function spilt_take_list(){
+        $map['uid']   = $this->mid;
+        $map['wtype'] = 2;
+
+        $limit = intval($this->limit) ? : 5;
+        $st    = t($this->st) ? : 0;
+        $et    = t($this->et) ? : 0;
+
+        if($st){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($et){
+            $map['ctime'][] = array('lt', $et);
+        }
+
+        $data = D('ZyWithdraw','classroom')->order('ctime DESC, id DESC')->where($map)->findPage($limit);
+
+        $total= D('ZyWithdraw','classroom')->where(array('uid'=>$this->mid,'status'=>2,'wtype'=>2))->sum('wnum');
+
+        $flow_data['total'] = $total ? : 0;
+        $flow_data['data'] = $data['data'] ? : [];
+        unset($data);
+
+        return $flow_data;
+    }
+
+    //取消提现
+    public function cancleWithdraw(){
+        $id = intval($this->id);
+        if(!$id){
+            $this->exitJson(array(), 0, '参数错误');
+        }
+        $result = D('ZyService','classroom')->setWithdrawStatus($id, $this->mid, 4);
+        if ($result === true) {
+            $this->exitJson(array(), 1, '取消成功');
+        } else {
+            switch ($result) {
+                case 1:
+                    $this->exitJson(array(), 0, "设置的状态不存在");
+                    break;
+                case 2:
+                    $this->exitJson(array(), 0, "没有找到对应的提现记录");
+                    break;
+                case 3:
+                    $this->exitJson(array(), 0, "收入余额冻结扣除失败");
+                    break;
+                case 4:
+                    $this->exitJson(array(), 0, "学币解冻失败");
+                    break;
+                case 5:
+                    $this->exitJson(array(), 0, "提现记录状态改变失败");
+                    break;
+                case 6:
+                    $this->exitJson(array(), 0, "提现已完成或已经关闭");
+                    break;
+            }
+        }
+    }
+
+    //申请提现
+    public function applyWithdraw(){
+        $card = D('ZyBcard','classroom')->getUserOnly($this->mid);
+        if(!$card){
+            $this->exitJson(array(), 0, '请先绑定银行卡！');
+        }
+    }
+
+    //提现
+    public function withdraw()
     {
-        $userAuthInfo = D('user_verified')->where('verified=1 AND uid=' . $this->mid)->find();
-//         if(!$userAuthInfo){
-        //            $this->exitJson( array() ,10027,'请先进行认证！');
-        //         }
-        $data = D('ZyBcard', 'classroom')->getUserOnly($this->mid);
-        $this->exitJson($data);
+        $card = D('ZyBcard', 'classroom')->getUserOnly($this->mid);
+        if (!$card) {
+            $this->exitJson(array(), 10037, '请先绑定银行卡');
+        }
+        $num    = intval($this->data['money']);
+        $result = D('ZyService', 'classroom')->applyWithdraw($this->mid, $num, $card['id']);
+        if (true === $result) {
+            $this->exitJson(true, 10038, '申请提现成功');
+        } else {
+            $this->exitJson(array(), 10039, '申请提现失败');
+        }
+    }
+
+    //用户账户积分
+    public function credit(){
+        $credit_info = M('credit_user')->where('uid = '.$this->mid)->find();
+
+        //选择模版
+        $tab = intval($_GET['tab']);
+        $tpls = array('index','integral_list');
+        if(!isset($tpls[$tab])) $tab = 0;
+        $method = 'credit_'.$tpls[$tab];
+        if(method_exists($this, $method)){
+            $data_info = $this->$method();
+        }
+
+        if($tab == 0) {
+            $config['credit_info'] = $credit_info;
+            $account['learn'] = D('ZyLearnc','classroom')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+            $account['split'] = D('ZySplit','classroom')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+            $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $sple_score = array_filter(explode(':',$split_score['sple_score']))[1]/array_filter(explode(':',$split_score['sple_score']))[0];
+
+            $config['pay_type'] = [
+                ['pay_num' =>'lcnpay','pay_type_note'=>"当前账户可用¥{$account['learn']}",'balance'=>$account['learn']],
+                ['pay_num' =>'spipay','pay_type_note'=>"当前账户可用¥{$account['split']}",'balance'=>$account['split']],
+            ];
+            $config['pay_note'] = "注：余额&收入与积分的兑换比例为 {$sple_score}";
+
+            if (!$config) {
+                $this->exitJson(array(), 0, "暂时没有相关信息");
+            } else {
+                $this->exitJson($config,1);
+            }
+        }
+
+        if($tab == 1) {
+            if (!$data_info) {
+                $this->exitJson(array(), 0, "暂时没有相关流水");
+            }
+
+            $data['score'] = $credit_info['score'] ? : 0;
+            $data = array_merge($data, $data_info);
+
+            $this->exitJson($data,1);
+        }
+    }
+
+    //充值积分
+    public function rechargeScore(){
+        $type = t($this->type);
+        $exchange_score = intval(t($this->exchange_score));
+
+        //系统设置的计算分成、余额与积分的比例值
+        $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+        $sple_score = array_filter(explode(':',$split_score['sple_score']))[1]/array_filter(explode(':',$split_score['sple_score']))[0];
+
+        //需要扣除的余额/收入
+        $exchange_balance = $exchange_score / $sple_score;
+
+        if($type == 'lcnpay'){
+            $balance = D('ZyLearnc','classroom')->where(['uid'=>$this->mid])->getField('balance');
+
+            if($exchange_score < 1){
+                $this->exitJson(array(), 0, "充值的数量最少为1");
+            }
+
+            if(!floatval($balance)){
+                $this->exitJson(array(), 0, "您暂无可充值的余额");
+            }
+            unset($balance);
+
+            if(!D('ZyLearnc','classroom')->isSufficient($this->mid,$exchange_balance)){
+                $this->exitJson(array(), 0, "您的余额不够此次充值的数量");
+            }
+
+            //扣除账号余额
+            $consume = D('ZyLearnc','classroom')->consume($this->mid,$exchange_balance);
+            if(!$consume){
+                $this->exitJson(array(), 0, '出错了，请稍后再试');
+            }
+
+            $lnc_flow = D('ZyLearnc','classroom')->addFlow($this->mid,0,$exchange_balance,'充值为积分：'.$exchange_score,'','credit_user_flow');
+
+            //添加积分并加相关流水
+            $credit = model('Credit')->recharge($this->mid,$exchange_score);
+            if($credit){
+                $credit_flow = model('Credit')->addCreditFlow($this->mid,1,$exchange_score,$lnc_flow,'zy_split_balance','余额充值积分：'.$exchange_score);
+                D('ZyLearnc','classroom')->flowModel->where(['id'=>$lnc_flow])->save(['rel_id'=>$credit_flow]);
+
+                $this->exitJson(array(), 1, "充值成功");
+            } else {
+                $this->exitJson(array(), 0, "充值失败");
+            }
+        } else if($type == 'spipay'){
+            $balance = D('ZySplit','classroom')->where(['uid' => $this->mid])->getField('balance');
+
+            if ($exchange_score < 1) {
+                $this->exitJson(array(), 0, "充值的数量最少为1");
+            }
+
+            if (!floatval($balance)) {
+                $this->exitJson(array(), 0, "您暂无可充值的收入");
+            }
+            unset($balance);
+
+            if (!D('ZySplit','classroom')->isSufficient($this->mid, $exchange_balance)) {
+                $this->exitJson(array(), 0, "您的收入余额不够此次充值的数量");
+            }
+
+            //扣除分成收入
+            $consume = D('ZySplit','classroom')->consume($this->mid, $exchange_balance);
+            if (!$consume) {
+                $this->exitJson(array(), 0, "出错了，请稍后再试");
+            }
+
+            //加相关分成扣除流水
+            $split_flow = D('ZySplit','classroom')->addFlow($this->mid, 0, $exchange_balance, '充值为积分：' . $exchange_score, '', 'credit_user_flow');
+
+            //添加积分并加相关流水
+            $credit = model('Credit')->recharge($this->mid, $exchange_score);
+            if ($credit) {
+                $credit_flow = model('Credit')->addCreditFlow($this->mid, 1, $exchange_score, $split_flow, 'zy_split_balance', '收入充值积分：' . $exchange_score);
+                D('ZySplit','classroom')->flowModel->where(['id' => $split_flow])->save(['rel_id' => $credit_flow]);
+
+                $this->exitJson(array(), 1, "充值成功");
+            } else {
+                $this->exitJson(array(), 1, "充值失败");
+            }
+        }
+    }
+
+    //用户积分流水记录
+    protected function credit_integral_list(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $limit = intval($this->limit) ? : 5;
+        $st    = t($this->st) ? : 0;
+        $et    = t($this->et) ? : 0;
+
+        if($this->st){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($this->et){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = M('credit_user_flow')->where($map)->order('ctime DESC,id DESC')->findPage($limit);
+        foreach($data['data'] as $key=>$value){
+            switch ($value['type']){
+                case 0:$data['data'][$key]['type'] = "消费";break;
+                case 1:$data['data'][$key]['type'] = "充值";break;
+                case 2:$data['data'][$key]['type'] = "冻结";break;
+                case 3:$data['data'][$key]['type'] = "解冻";break;
+                case 4:$data['data'][$key]['type'] = "冻结扣除";break;
+                case 5:$data['data'][$key]['type'] = "分成收入";break;
+                case 6:$data['data'][$key]['type'] = "增加积分";break;
+                case 7:$data['data'][$key]['type'] = "扣除积分";break;
+            }
+        }
+        $total= M('credit_user_flow')->where($map)->sum('num');
+
+        $flow_data['total'] = $total ? : 0;
+        $flow_data['data'] = $data['data'] ? : [];
+        unset($data);
+
+        return $flow_data;
+    }
+
+    //处理收入 转为余额/提现
+    public function applySpiltWithdraw(){
+        $tw_type = t($this->type);
+        $exchange_balance = floatval(t($this->exchange_balance));
+
+        if($tw_type == 'lcnpay'){//收入兑换余额
+            $balance = D('ZySplit','classroom')->where(['uid'=>$this->mid])->getField('balance');
+
+            if($exchange_balance < 1){
+                $this->exitJson(array(), 0, '兑换的数量最少为1');
+            }
+
+            if(!floatval($balance)){
+                $this->exitJson(array(), 0, '您暂无可兑换的收入');
+            }
+            unset($balance);
+
+            if(!D('ZySplit','classroom')->isSufficient($this->mid,$exchange_balance)){
+                $this->exitJson(array(), 0, '您的收入余额不够此次兑换的数量');
+            }
+
+            //扣除分成收入
+            $consume = D('ZySplit','classroom')->consume($this->mid,$exchange_balance);
+            if(!$consume){
+                $this->exitJson(array(), 0, '出错了，请稍后再试');
+            }
+            $split_flow = D('ZySplit','classroom')->addFlow($this->mid,0,$exchange_balance,'转账为余额：'.$exchange_balance,'','zy_learncoin_flow');
+
+            //添加余额并加相关流水
+            $learnc = D('ZyLearnc','classroom')->recharge($this->mid,$exchange_balance);
+            if($learnc){
+                $learnc_flow = D('ZyLearnc','classroom')->addFlow($this->mid,1,$exchange_balance,'收入转账为余额：'.$exchange_balance,$split_flow,'zy_split_balance');
+                D('ZySplit','classroom')->flowModel->where(['id'=>$split_flow])->save(['rel_id'=>$learnc_flow]);
+
+                $this->exitJson(array(), 1, '转账成功');
+            } else {
+                $this->exitJson(array(), 0, '转账失败');
+            }
+        } else if($tw_type == 'unionpay') {//申请提现-银行卡
+            $card = D('ZyBcard','classroom')->getUserOnly($this->mid);
+            if (!$card[0]) {
+                $this->exitJson(array(), 0, '请先绑定银行卡');
+            }
+            $card_id = intval($this->card_id);
+
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+            if($exchange_balance<0||$exchange_balance<$withdraw_basenum||$exchange_balance%$withdraw_basenum!=0){
+                $this->exitJson(array(), 0, "只允许提现为{$withdraw_basenum}的倍数");
+            }
+
+            $result = D('ZyService','classroom')->applySpiltWithdraw($this->mid, $exchange_balance, $card_id);
+
+            if (true === $result) {
+                $this->exitJson(array(), 1, '提现申请成功，请等待审核');
+            } else {
+                switch ($result) {
+                    case 1:
+                        $info = "申请提现的收入余额不是系统指定的倍数，或小于0";
+                        break;
+                    case 2:
+                        $info = "没有找到用户对应的提现银行卡/账户";
+                        break;
+                    case 3:
+                        $info = "有未完成的提现记录，需要等待完成";
+                        break;
+                    case 4:
+                        $info = "余额转冻结失败：可能是余额不足";
+                        break;
+                    case 5:
+                        $info = "提现记录添加失败";
+                        break;
+                }
+                $this->exitJson(array(), 0, $info);
+            }
+        } else if($tw_type == 'alipay') {
+            $card = D('ZyBcard','classroom')->getUserOnlyAliAccount($this->mid);
+            if (!$card) {
+                $this->exitJson(array(), 0, "请先绑定支付宝");
+            }
+
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+            if ($exchange_balance < 0 || $exchange_balance < $withdraw_basenum || $exchange_balance % $withdraw_basenum != 0) {
+                $this->exitJson(array(), 0, "只允许提现为{$withdraw_basenum}的倍数");
+            }
+
+            $result = D('ZyService','classroom')->applySpiltWithdraw($this->mid, $exchange_balance, $card['id']);
+
+            if (true === $result) {
+                $this->exitJson(array(), 1, "提现申请成功，请等待审核");
+            } else {
+                switch ($result) {
+                    case 1:
+                        $info = "申请提现的收入余额不是系统指定的倍数，或小于0";
+                        break;
+                    case 2:
+                        $info = "没有找到用户对应的提现银行卡/账户";
+                        break;
+                    case 3:
+                        $info = "有未完成的提现记录，需要等待完成";
+                        break;
+                    case 4:
+                        $info = "余额转冻结失败：可能是余额不足";
+                        break;
+                    case 5:
+                        $info = "提现记录添加失败";
+                        break;
+                }
+                $this->exitJson(array(), 0, $info);
+            }
+        }
+    }
+
+    //支付宝账户
+    public function alipayInfo(){
+        $alipay_info = D('ZyBcard','classroom')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->field('id,account,accountmaster')->find();
+
+        if($alipay_info){
+            $alipay_info['account'] = hideStar($alipay_info['account']);
+            $alipay_info['accountmaster'] = hideStar($alipay_info['accountmaster']);
+        }
+
+        if (!$alipay_info) {
+            $this->exitJson(array(), 0, "暂时没有相关信息");
+        } else {
+            $this->exitJson($alipay_info,1);
+        }
+    }
+
+    //绑定、修改支付宝账号
+    public function saveAlipay(){
+        $real_name      = t($this->real_name);
+        $alipay_account = t($this->alipay_account);
+        if(!$real_name){
+            $this->exitJson(array(), 0, "请输入真实姓名");
+        }
+        if(!$alipay_account){
+            $this->exitJson(array(), 0, "请输入支付宝账号");
+        }
+        $phone = "/^1[3|4|5|7|8][0-9]\d{8}$/";
+        $email = "/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/";
+        if (!preg_match( $phone, $alipay_account) &&  !preg_match( $email, $alipay_account)){
+            $this->exitJson(array(), 0, "请输入正确的支付宝账号");
+        }
+
+        $data['uid'] = $this->mid;
+        $data['account'] = $alipay_account;
+        $data['accountmaster'] = $real_name;
+        $data['accounttype'] = "alipay";
+
+        $is_bond = D('ZyBcard','classroom')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->getField('id');
+
+        if(!$is_bond){
+            $res = D('ZyBcard','classroom')->add($data);
+        } else {
+            $res = D('ZyBcard','classroom')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->save($data);
+        }
+        if($res){
+            $this->exitJson(array(), 1, "操作成功");
+        }else{
+            $this->exitJson(array(), 0, "操作成功");
+        }
+    }
+
+    //删除绑定支付宝账号
+    public function doBondAlipay(){
+        $bond = D('ZyBcard','classroom')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->delete();
+
+        if($bond){
+            $this->exitJson(array(), 1, "解绑成功");
+        }else{
+            $this->exitJson(array(), 0, "解绑失败");
+        }
     }
 
     //添加新的银行卡界面
-    public function addCard()
+    public function addBankCard()
     {
-        $data["bank"] = array(
-            '中国银行',
-            '中国工商银行',
-            '中国农业银行',
-            '中国建设银行',
-            '交通银行',
-            '招商银行',
-            '民生银行',
-            '中信银行',
-            '北京银行',
-            '广东发展银行',
-            '上海浦东发展银行',
-            '中国邮政储蓄银行',
-        );
-        $data["area"] = M("area")->findAll();
-        $this->exitJson($data);
+        $area_id = intval($this->area_id);
+
+        $data = [];
+        if($area_id == -1){
+            $data["bank"] = D('ZyBcard','classroom')->getBanks();
+        } else {
+            $data["area"] = M("area")->where(['pid'=>$area_id])->findAll();
+        }
+        $this->exitJson($data,1);
+    }
+
+    //银行卡列表
+    public function banks(){
+        $card_list = D('ZyBcard','classroom')->getUserBcard($this->mid,'id,accounttype,account,accountmaster');
+        if($card_list) {
+            foreach ($card_list as $key => &$val) {
+                $val['card_info_endnum'] = substr($val['account'], -4);
+                $val['card_info_abb'] = hideStar($val['account']);
+            }
+        }
+
+        $data['card_list'] = $card_list ? : [];
+        $this->exitJson($data,1);
     }
 
     //添加银行卡方法
-    public function saveCard()
+    public function saveBankCard()
     {
         $id            = intval($this->data['id']);
         $account       = $this->data['account']; //获取银行卡号
@@ -516,9 +1198,9 @@ class UserApi extends Api
         $area          = $this->data['area']; //区ID
         $tel_num       = $this->data['tel_num']; //获取银行预留手机号
         $userAuthInfo  = D('user_verified')->where('verified=1 AND uid=' . $this->mid)->find();
-//         if(!$userAuthInfo){
-        //            $this->exitJson( array() ,10028,'请先进行认证！');
-        //         }
+        //if(!$userAuthInfo){
+        //  $this->exitJson( array() ,10028,'请先进行认证！');
+        //}
         if ($account == "") {
             $this->exitJson(array(), 10028, '请输入账号！');
         }
@@ -535,16 +1217,27 @@ class UserApi extends Api
             $this->exitJson(array(), 10028, '银行卡类型不合法！');
         }
 
+        $card_count = D('ZyBcard','classroom')->where(array('uid'=>$this->mid,'is_school'=>0,'accounttype'=>['neq','alipay']))->field('id')->count();
+        if($card_count >= 10){
+            $this->exitJson(array(), 10028, '最多绑定10张银行卡');
+        }
+
         if (empty($id)) {
-            $res = M("zy_bcard")->where("account=" . $account . " and id !=" . $id)->select();
+            $res = M("zy_bcard")->where(['account'=>$account,'uid'=>$this->mid])->find();
+
             if ($res) {
                 $this->exitJson(array(), 10028, '该账号已存在,请重新输入！');
             }
-
         }
         if (!preg_match("/^1[34578]\d{9}$/", $tel_num)) {
             $this->exitJson(array(), 10028, '手机号不合法！');
         }
+
+        $res = M("zy_bcard")->where(['account'=>$account,'uid'=>$this->mid])->find();
+        if ($res) {
+            $this->exitJson(array(), 10028, '该账号已存在,请重新输入！');
+        }
+
         $data = array(
             'account'       => $account,
             'accountmaster' => $accountmaster,
@@ -557,86 +1250,99 @@ class UserApi extends Api
             'tel_num'       => $tel_num,
             'uid'           => $this->mid,
         );
-        if ($id) {
-            $res = M('ZyBcard')->where(array('id' => $id, 'uid' => $this->mid))->save($data);
-        } else {
-            $res = M('ZyBcard')->add($data);
-        }
+
+        $res = M('ZyBcard')->add($data);
+
         if ($res) {
-            $this->exitJson(true);
+            $this->exitJson([],1);
         }
         $this->exitJson(array(), 10028, '对不起，添加失败！');
+    }
+
+    //解绑银行卡
+    public function doBondUncard(){
+        $id = intval($this->id);
+
+        $bond = D('ZyBcard')->where(['id'=>$id,'uid'=>$this->mid,'accounttype'=>['neq','alipay']])->delete();
+
+        if($bond){
+            $this->exitJson([],1);
+        }else{
+            $this->exitJson(array(), 10028, '对不起，解绑失败！');
+        }
     }
 
     //充值
     public function pay()
     {
-        $money = round($this->data['money'], 2);
-        if ($money <= 0) {
-            $this->exitJson(array(), 0, '充值金额不正确');
+        $pay_list = array('alipay','unionpay','wxpay','cardpay');
+        if(!in_array($this->pay_for,$pay_list)){
+            $this->exitJson(array(), 0, '支付方式错误');
         }
 
-        $config    = model('Xdata')->get('admin_Config:rechargeIntoConfig');
-        $rmb       = floor($config['RMB']) ?: 1;
-        $score     = floor($config['score']) ?: 1;
-        $add_score = round($money * $score / $rmb);
-        if ($money <= 0) {
-            $this->exitJson(array(), 0, '充值金额不正确');
+        $money_str = t($this->data['money']);
+        $money = array_filter(explode('=>',$money_str))[0] ? : 0;
+
+        if($this->pay_for != 'cardpay' && $money <= 0){
+            $this->exitJson(array(), 0, '请选择或填写充值金额');
         }
 
-        $money        = '0.01'; //提供测试使用
         $re           = D('ZyRecharge', 'classroom');
         $pay_pass_num = date('YmdHis', time()) . mt_rand(1000, 9999) . mt_rand(1000, 9999);
+
+        if ($_POST['pay'] == 'cardpay'){
+            $note = "{$this->site['site_keyword']}-余额充值：充值卡 ".t($_POST['card_number']);
+        }else{
+            $note = "{$this->site['site_keyword']}-余额充值：{$money_str}元";
+        }
 
         //添加充值记录
         $pay_id = $re->addRechange(array(
             'uid'          => $this->mid,
             'type'         => 2,
             'money'        => $money,
-            'note'         => "积分充值-{$add_score}个",
-            'pay_type'     => $this->data['pay_for'] ?: 'alipay',
+            'note'         => $note,
+            'pay_type'     => $this->pay_for == 'wxpay' ? 'app_wxpay' : $this->pay_for,
             'pay_pass_num' => $pay_pass_num,
         ));
         if (!$pay_id) {
             $this->exitJson(array(), 0, '操作异常');
         }
 
-        $pay_for = in_array($this->pay_for, array('alipay', 'wxpay')) ? [$this->pay_for] : ['alipay', 'wxpay'];
+        $pay_for = in_array($this->pay_for, array('alipay', 'wxpay','cardpay')) ? [$this->pay_for] : ['alipay', 'wxpay','cardpay'];
         foreach ($pay_for as $p) {
             switch ($p) {
                 case "alipay":
                     $pay_data['alipay'] = $this->alipay(array(
-                        'score'        => $add_score,
                         'out_trade_no' => $pay_pass_num,
                         'total_fee'    => $money,
-                        'subject'      => "积分充值:{$add_score}个",
-                    ), 'score');
+                        'subject'      => "{$this->site['site_keyword']}-余额充值",
+                        'money_str'    => $money_str,
+                    ), 'account');
                     break;
                 case "wxpay":
                     $pay_data['wxpay'] = $this->wxpay([
-                        'subject'      => "积分充值:{$add_score}个",
-                        'total_fee'    => $money * 100,
                         'out_trade_no' => $pay_pass_num,
-                    ], 'score');
+                        'total_fee'    => $money * 100,
+                        'subject'      => "{$this->site['site_keyword']}-余额充值",
+                        'money_str'    => $money_str,
+                    ], 'account');
+                    break;
+                case 'cardpay':
+                    $res = $this->cardpay([
+                        'out_trade_no' => $pay_pass_num,
+                        'card_number'  => t($this->card_number),
+                        'subject'      => "{$this->site['site_keyword']}-充值卡充值余额",
+                    ], 'account');
+                    if($res === true){
+                        $this->exitJson([], 1,"充值成功");
+                    }else{
+                        $this->exitJson([], 0,$res);
+                    }
                     break;
             }
         }
         $this->exitJson($pay_data, 1);
-    }
-    //提现
-    public function withdraw()
-    {
-        $card = D('ZyBcard', 'classroom')->getUserOnly($this->mid);
-        if (!$card) {
-            $this->exitJson(array(), 10037, '请先绑定银行卡');
-        }
-        $num    = intval($this->data['money']);
-        $result = D('ZyService', 'classroom')->applyWithdraw($this->mid, $num, $card['id']);
-        if (true === $result) {
-            $this->exitJson(true, 10038, '申请提现成功');
-        } else {
-            $this->exitJson(array(), 10039, '申请提现失败');
-        }
     }
 
     //修改用户资料
@@ -682,7 +1388,7 @@ class UserApi extends Api
         $data['follow']        = (int) M('UserFollow')->where(array('uid' => $userid))->count(); //加载关注数量
         $data['fans']          = (int) M('UserFollow')->where(array('fid' => $userid))->count(); //加载关注数量
         $data['collect_video'] = (int) M('zy_collection')->where(array('uid' => $userid, 'source_table_name' => 'zy_video'))->count(); //我收藏的课程
-        $data['collect_album'] = (int) M('zy_collection')->where(array('uid' => $userid, 'source_table_name' => 'album'))->count(); //我收藏的套餐
+        $data['collect_album'] = (int) M('zy_collection')->where(array('uid' => $userid, 'source_table_name' => 'album'))->count(); //我收藏的班级
         $data['card']          = (int) M('zy_bcard')->where('uid=' . $this->mid)->count(); //我的银行卡
         $intr                  = M('user')->where('uid=' . $this->mid)->getField('intro'); //我的简介
         $data['intr']          = ($intr && $intr != 'null') ? $intr : '你什么都还没说哦';
@@ -830,7 +1536,7 @@ class UserApi extends Api
                     'question',
                 ));
                 $data['isBuy']       = D('ZyOrder', 'classroom')->isBuyVideo($this->mid, $id);
-                $data['is_play_all'] = ($data['isBuy'] || intval($data['mzprice']['price']) <= 0) ? 1 : 0;
+                $data['is_play_all'] = ($data['isBuy'] || floatval($data['mzprice']['price']) <= 0) ? 1 : 0;
                 //$data ['user'] = M ( 'User' )->getUserInfo ( $data ['uid'] );
                 $data['school_info']   = model('School')->getSchoolInfoById($data['mhm_id']);
                 $video_list[$video_id] = $data;
@@ -909,4 +1615,151 @@ class UserApi extends Api
         }
 
     }
+
+    /*
+     *我购买的线下课
+     */
+    public function getLineClassList(){
+        $this->user_id = (!$this->user_id) ? $this->mid : $this->user_id;
+        $size = $this->count ? $this->count : 10;
+
+        $lineclass = D('ZyLineClass', 'classroom')->getUserBuyLineclass($this->user_id,$size);
+        $lineclass['data'] ? $this->exitJson($lineclass['data']) : $this->exitJson(array(), 0, '没有购买的线下课程');
+    }
+
+    /*
+     *我收藏的线下课
+     */
+    public function getCollectLineClass(){
+        $this->user_id = (!$this->user_id) ? $this->mid : $this->user_id;
+        $size = $this->count ? $this->count : 10;
+
+        $collect = D('ZyCollection', 'classroom')->where(['source_table_name' => 'zy_teacher_course', 'uid' => $this->user_id])->findPage($size);
+        foreach($collect['data'] as $key=>$val){
+            $val = D('ZyLineClass', 'classroom')->getLineclassById($val['source_id'],2) ? : [];
+            unset($val['source_table_name']);
+            $collect['data'][$key] = $val;
+        }
+        $collect['data'] ? $this->exitJson($collect['data']) : $this->exitJson(array(), 0, '没有收藏的线下课程');
+    }
+
+    //所有会员等级
+    public function getUserVipList(){
+        $map['is_del'] = 0;
+        $vip_data = M('user_vip')->where($map)->order('sort asc')->select();
+        foreach ($vip_data as &$value) {
+            $value['cover'] = getCover($value['cover'] , 100 ,100);
+        }
+        $this->exitJson($vip_data,1);
+    }
+
+    //获取当前用户vip等级
+    public function getUserVip(){
+        $user_vip_data = M('zy_learncoin')->where(array('uid'=>$this->mid))->find();
+        unset($user_vip_data['balance']);
+        unset($user_vip_data['frozen']);
+
+        $vip_info = M('user_vip')->where('is_del=0 and id=' . $user_vip_data['vip_type'])->find();
+        $user_vip_data['vip_type_txt'] = $vip_info['title'] ? : "开通会员";
+        $user_vip_data['cover'] = getCover($vip_info['cover'] , 100 ,100);
+
+        $this->exitJson($user_vip_data,1);
+    }
+
+    //获取最新的会员用户
+    public function getNewUserVipList(){
+        $limit = $this->limit ? : 6;
+        $vip_uid = M('zy_learncoin')->where(['vip_type'=>['neq',0],'vip_expire'=>['egt',time()]])->order('ctime desc')->field('uid')->findAll();
+        $vip_uid = array_filter(getSubByKey($vip_uid,'uid'));
+        $vip_user = model('User')->where(['uid'=>['in',$vip_uid]])->limit($limit)->field('uid,uname')->select();
+        foreach($vip_user as $key => $value){
+            $vip_user[$key]['user_head_portrait'] = getUserFace($value['uid'],'m');
+        }
+        $this->exitJson($vip_user,1);
+    }
+
+    //充值
+    public function rechargeVip()
+    {
+        $pay_list = array('alipay','unionpay','wxpay');
+        if(!in_array($this->pay_for,$pay_list)){
+            $this->exitJson(array(), 0, '支付方式错误');
+        }
+
+        $type = intval($this->user_vip);
+
+        $vip = M('user_vip')->where('id=' . $type)->find();
+
+        $vip_type_time  = $this->vip_type_time;
+        $vip_time       = $this->vip_time >= 1 ? $this->vip_time : 1 ;
+        if($vip_type_time == 'year'){
+            $vip_length = "+{$vip_time} year";
+            $money      = $vip['vip_year']*$vip_time;
+            $vip_length_info = "{$vip_time}年";
+        } else {
+            $vip_length = "+{$vip_time} month";
+            $money      = $vip['vip_month']*$vip_time;
+            $vip_length_info = "{$vip_time}月";
+        }
+
+        $re = D('ZyRecharge','classroom');
+        $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
+
+        $id = $re->addRechange(array(
+            'uid'      => $this->mid,
+            'type'     => "3,{$type}",
+            'vip_length' => $vip_length,
+            'money'    => $money,
+            'note'     => "{$this->site['site_keyword']}-{$vip['title']}充值+$vip_length_info",
+            'pay_type' => $this->pay_for == 'wxpay' ? 'app_wxpay' : $this->pay_for,
+            'pay_pass_num'=>$pay_pass_num,
+        ));
+        if(!$id)$this->exitJson(array(), 0, '操作异常');
+
+        if($this->pay_for == 'alipay'){
+            $pay_data['alipay'] = $this->alipay(array(
+                'out_trade_no' => $pay_pass_num,
+                'subject'      => "{$this->site['site_keyword']}-{$vip['title']}充值",
+                'total_fee'    => $money,
+            ),'vip');
+        }elseif($this->pay_for == 'unionpay'){
+            $this->unionpay(array(
+                'out_trade_no' => $pay_pass_num,
+                'money' => $money,
+                'subject' => "{$this->site['site_keyword']}-{$vip['title']}充值",
+            ),'vip');
+        }elseif($this->pay_for == 'wxpay'){
+            $pay_data['wxpay'] = $this->wxpay(array(
+                'out_trade_no'  => $pay_pass_num,
+                'total_fee'     => $money * 100,//单位：分
+                'subject' => "{$this->site['site_keyword']}-{$vip['title']}充值",
+            ),'vip');
+        }
+        $this->exitJson($pay_data, 1);
+    }
+
+    public function userVipCourse(){
+        $time = time();
+        $order = '';
+        $where = "is_del=0 AND is_activity=1 AND uctime>$time AND listingtime<$time";
+
+        if(t($this->vip_id)){
+            $where .= " AND vip_level = {$this->vip_id}";
+        }
+        $limit = $this->limit ? : 4;
+        $data = M('zy_video')->where($where)->order($order)->limit($limit)->field("id,uid,video_title,cover,
+        mhm_id,teacher_id,v_price,t_price,vip_level,type,endtime,starttime,limit_discount,uid,teacher_id")->select();
+
+        foreach ($data as &$value) {
+            $value['price']       = getPrice($value, $this->mid); // 计算价格
+            $value['imageurl']    = getCover($value['cover'], 280, 160);
+            $value['video_score'] = round($value['video_score'] / 20); // 四舍五入
+            $value['teacher_name'] = D('ZyTeacher', 'classroom')->where(array('id' => $value['teacher_id']))->getField('name');
+            $value['buy_count']     = (int) D('ZyOrderCourse', 'classroom')->where(array('video_id' => $value['id']))->count();
+            $value['section_count'] = (int) M('zy_video_section')->where(['vid' => $value['id'], 'pid' => ['neq', 0]])->count();
+        }
+        $this->exitJson($data ? : array(),1);
+    }
+
+
 }

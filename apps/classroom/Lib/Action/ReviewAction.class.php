@@ -33,7 +33,7 @@ class ReviewAction extends CommonAction
 	 * @return void
 	 */
 	public function add(){
-		//查看此人是否已经购买此课程//套餐
+		//查看此人是否已经购买此课程//班级
 		if(intval($_POST['kztype']) == 1 || intval($_POST['kztype']) == 4){
             $kztype = intval($_POST['kztype']);
             if($kztype == 4){
@@ -45,13 +45,13 @@ class ReviewAction extends CommonAction
 				$this->mzError('需要购买之后才能点评!');
 			}
 		}else if(intval($_POST['kztype']) == 2){
-			//套餐
+			//班级
 			$isbuy = isBuyAlbum($this->mid,intval($_POST['id']));
 			if(!$isbuy){
 				$this->mzError('需要购买之后才能点评!');
 			}
-		}else{
-			//套餐
+		}else if(intval($_POST['kztype']) == 3){
+			//线下课
 			$isbuy = M('zy_order_teacher')->where(array('uid'=>$this->mid, 'video_id'=>intval($_POST['id'])))->getField('pay_status');
 			if($isbuy != 3){
 				$this->mzError('需要购买之后才能点评!');
@@ -68,7 +68,7 @@ class ReviewAction extends CommonAction
 		$data['type']		         = intval($_POST['kztype']);//
 		$data['uid'] 			     = intval($this->mid);
 		$data['is_secret'] 			 = intval($_POST['is_secret']);
-		$data['oid'] 			     = intval($_POST['id']);//对应的ID【套餐ID/课程ID】
+		$data['oid'] 			     = intval($_POST['id']);//对应的ID【班级ID/课程ID】
 		$data['review_source'] 	     = 'web网页';
 		$data['review_description']  = filter_keyword(t($_POST['content']));
 		$data['ctime']			     = time();
@@ -90,11 +90,15 @@ class ReviewAction extends CommonAction
             $uid = M('album')->where('id='.$data['oid'])->getField('uid');
             $data['tid'] = M('zy_teacher')->where('uid ='.$uid)->getField('id');
         }
+		if($data['type']==3)
+		{
+			$data['tid'] = M('zy_teacher_course')->where('course_id='.$data['oid'])->getField('teacher_id');
+		}
 
 
 		$i = M('ZyReview')->add($data);
 		if($i){
-			//点评之后 要计算此套餐的总评分
+			//点评之后 要计算此班级的总评分
 			$star = M('ZyReview')->where(array('oid'=>intval($_POST['id']),'parent_id'=>0,'type'=>array('eq',intval($_POST['kztype']))))->Avg('star');
 			
 			if(intval($_POST['kztype']) == 1){
@@ -105,7 +109,7 @@ class ReviewAction extends CommonAction
 			}else{
 				$_data['album_score'] = intval($star);
 				$_data['album_comment_count'] = array('exp','`album_comment_count` + 1');
-				//套餐	
+				//班级	
 				M('Album')->where(array('id'=>array('eq',$data['oid'])))->save($_data);
 			}
 			//session('mzaddreview',time()+180);
@@ -138,7 +142,7 @@ class ReviewAction extends CommonAction
 		$data['star']		         = 0;//分数
 		$data['type']		         = intval($_POST['kztype']);//
 		$data['uid'] 			     = intval($this->mid);
-		$data['oid'] 			     = intval($_POST['kzid']);//对应的ID【套餐ID/课程ID】
+		$data['oid'] 			     = intval($_POST['kzid']);//对应的ID【班级ID/课程ID】
 		$data['review_source'] 	     = 'web网页';
 		$data['review_description']  = t($_POST['content']);
 		$data['ctime']			     = time();

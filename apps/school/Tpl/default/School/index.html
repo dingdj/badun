@@ -125,7 +125,7 @@
                                                 <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">
                                         </if>
                                     </if>{:msubstr(t($val['video_binfo']),0,15,'utf-8',true)}</a>
-                                    <span style="width:initial;float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
+                                    <!--<span style="width:initial;float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>-->
                                 </h3>
                                 <p><a href="{$val['domain']}">{:msubstr(t($val['mhm_title']),0,15,'utf-8',true)}</a></p>
                                 <div class="info">
@@ -212,9 +212,7 @@
                                     </if>
                                 </if>{:msubstr(t($val['video_binfo']),0,15,'utf-8',true)}</a>
 
-                                <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
-
-
+                                <!--<span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>-->
                             </h3>
                             <div class="info">
 
@@ -238,7 +236,7 @@
 
     <div class="itembox pt40">
         <div class="user-con-title">
-            <h2>套餐</h2>
+            <h2>班级</h2>
             <if condition="$count['album'] gt 4">
                 <if condition="$school['doadmin']">
                     <a href="javascript:;" class="album_list">更多></a>
@@ -260,10 +258,14 @@
                                     <!-- <if condition="$val['mount_iand']">
                                         <a href="{:U('classroom/Album/view',array('id'=>$vos['id']))}">{:msubstr(t($vos['album_title']),0,10,'utf-8',true)}</a>
                                         <else/>
-                                        <a href="{:U('classroom/Album/view_mount',array('id'=>$vos['id'],'mid'=>$mhm_id.''.$album_mount_url_str))}">{$vos['cate_name']} · 套餐</a>
+                                        <a href="{:U('classroom/Album/view_mount',array('id'=>$vos['id'],'mid'=>$mhm_id.''.$album_mount_url_str))}">{$vos['cate_name']} · 班级</a>
                                      </if> -->
                                     <a href="{:U('classroom/Album/view',array('id'=>$vos['id']))}">{:msubstr(t($vos['album_title']),0,10,'utf-8',true)}</a>
-                                    <strong>¥{$vos.price}</strong>
+                                    <if condition="$vos['price']">
+                                        <strong>¥{$vos.price}</strong>
+                                        <else/>
+                                        <strong style="color: #56b02a;">免费</strong>
+                                    </if>
                                 </h5>
                                 <p><em>共{$vos.video_count}门课程</em><em>收藏：{$vos.collect_count}次</em><em>购买：{$vos.order_count}次</em></p>
                                 <a href="{:U('classroom/Album/view',array('id'=>$vos['id']))}" class="all-album-list-txt">查看详情</a>
@@ -274,7 +276,7 @@
             </ul>
         </div>
         <php>}else{</php>
-        <p style="font-size: 15px;padding: 10px;">暂时没有相关套餐信息</p>
+        <p style="font-size: 15px;padding: 10px;">暂时没有相关班级信息</p>
         <php>}</php>
     </div>
 
@@ -286,9 +288,9 @@
         <div class="center_left ">
             <div class="top">
                 <ul>
-                    <li><p>{$count['cate']}</p><span>课程</span></li>
+                    <li><p>{$count['cate']}</p><span>点播</span></li>
                     <li><p>{$count['live_cate']}</p><span>直播</span></li>
-                    <li><p>{$count['album']}</p><span>套餐</span></li>
+                    <li><p>{$count['album']}</p><span>班级</span></li>
                     <li><p>{$count['teacher']}</p><span>讲师</span></li>
                 </ul>
             </div>

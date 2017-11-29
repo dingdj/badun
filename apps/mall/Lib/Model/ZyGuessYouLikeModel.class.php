@@ -10,7 +10,7 @@ class ZyGuessYouLikeModel extends Model {
 
     /**
      *记录猜你喜欢的类型及分类id
-     * @param $type 0点播1套餐2直播3讲师
+     * @param $type 0点播1班级2直播3讲师
      * @param $cate_id 分类全路径第一个id极好的
      * @param $uid 用户id
      * @return 状态 ture为成功
@@ -40,7 +40,7 @@ class ZyGuessYouLikeModel extends Model {
     }
 
     /**
-     * @param $type 类型 0点播1套餐2直播3讲师
+     * @param $type 类型 0点播1班级2直播3讲师
      * @param $uid 用户id
      * @return $data
      */

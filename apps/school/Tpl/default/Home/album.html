@@ -5,8 +5,8 @@
     <!--中 -->
     <div class="user-con fl user-pbottom">
         <div class="user-con-title">
-            <a href="#" class="onactive" onclick="navClick(this,'getbuyalbumslist')">我购买的套餐</a>
-            <a onclick="navClick(this,'getcollectalbumslist')" href="#">我收藏的套餐</a>
+            <a href="#" class="onactive" onclick="navClick(this,'getbuyalbumslist')">我购买的班级</a>
+            <a onclick="navClick(this,'getcollectalbumslist')" href="#">我收藏的班级</a>
             <div class="user-Release-l"> 
                 <a href="javascript:;" class="operation" onclick="manageBang(this)">
 	            	<i></i><span class="fl" id="magsta">管理</span>
@@ -101,13 +101,13 @@
 
     }
     /**
-     * 删除套餐法
+     * 删除班级法
      * @param id
      */
     function delalbum(cate,id){
         var id=id;
         url="{:U('classroom/Album/delalbum')}";
-        //删除我购买的套餐
+        //删除我购买的班级
         if(btnclick=="getbuyalbumslist"){
             fdata="type=2&rtype=1&id="+id;
         }else if(btnclick=="getcollectalbumslist"){

@@ -1,32 +1,24 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 
 <div class="body">
     <div class="header2">
-        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <a href="{:U('classroom/User/index')}" class="icon-back"></a>
         <div>我的分享</div>
     </div>
-
 
     <div class="body">
         <ul class="classlistnav">
             <li class = "on">   <a href="javascript:;"  type="getWenda"  onclick=" navClick(this,'share')" >我的分享</a></li>
-            <li>    <a  href="javascript:;" type="getAnswer"  onclick=" navClick(this,'income')">我的分享收入余额</a></li>
-
+            <!--<li>    <a  href="javascript:;" type="getAnswer"  onclick=" navClick(this,'income')">我的分享收入余额</a></li>-->
         </ul>
     </div>
 
     <div class="centerbox">
-
         <ul class="comment_list" style="padding-top:20px;">
         </ul>
-
     </div>
-
-
-
 </div>
-
 
 <if condition="$data['data']">
     <div class="loadding">
@@ -98,7 +90,6 @@ $(function() {
         }
     });
 });
-
 
     function delShare(obj,sid) {
         $.ajax({
@@ -182,5 +173,5 @@ function appendHtml(data){
 
 </script>
 <!--footer-->
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>
 

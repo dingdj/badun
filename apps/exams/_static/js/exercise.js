@@ -67,7 +67,7 @@ $(function(){
                 return false;
             }
         });
-	})
+	});
 
 	/*查看解析*/
 	$(".test-paper .choice .look").on("click",function(){
@@ -204,20 +204,20 @@ $(function(){
 
     // 暂停与启动
     $("#stopTime").click(function(){
-    	if($("#loging-back").length == 0){
-			var html = '<div id="loging-back"></div>';
+    	if($("#model-back").length == 0){
+			var html = '<div id="model-back"></div>';
 				html += '<dl class="rest-worap">';
 				html += '<dt><h4>暂停</h4><i>×</i></dt>';
 				html += '<dd><div class="rest-img-dem"></div><a href="javascript:(0);">继续答题</a></dd></dl>';
 			$("body").children(":first").before(html);
 		}
-		$("#loging-back").show();
+		$("#model-back").show();
 		$(".rest-worap").show();
 		clearInterval(t);
 		$("#stopTime").text('已暂停');
     });
     $('.rest-worap i,.rest-worap a').live("click",function(){
-		$("#loging-back").hide();
+		$("#model-back").hide();
 		$(".rest-worap").hide()
 		t = startTime();
 		$("#stopTime").text('暂停');

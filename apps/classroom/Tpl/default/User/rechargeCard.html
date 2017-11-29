@@ -53,8 +53,7 @@
                                         <i class="icon-date"></i>
                                     </if>
                                     <div class="prcie"><span>¥</span>{$vo.recharge_price}</div>
-                                    <p>充值卡<br>有效期&nbsp;:&nbsp;{:date("Y.m.d",$vo['stime'])} - {:date("Y.m
-                                    .d",$vo['etime'])}</p>
+                                    <p>充值卡<br>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
                                 </div>
                                 <div class="txt">
                                     <div class="item">卡券编号&nbsp;:&nbsp;{$vo.code}</div>

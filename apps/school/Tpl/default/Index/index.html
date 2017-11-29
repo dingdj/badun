@@ -25,7 +25,7 @@ var GET_PHONEVERIFY="{:U('public/Passport/getVerify')}";
             <div class="teacher-box">
                 <dl class="card-body" style="background:transparent">
                     <dd class="clearfix select-catename" data-catename="subject_category">
-                        <ul class="select-list pb20" style="background: #fafafa">
+                        <ul class="select-list pb20">
                             <li class="<eq name='cateId' value=''>selected</eq>"><a href="{:U('school/Index/index')}"  id="cate0">全部</a></li>
                             <volist name="selCate" id="vo">
                                 <li class="<eq name='vo.school_category_id' value='$cateId'>selected</eq>" >
@@ -90,7 +90,6 @@ var GET_PHONEVERIFY="{:U('public/Passport/getVerify')}";
                                     {$vo.title}</a>
                                     <php>if($vo['school_vip_cover']){</php><img src="{$vo.school_vip_cover}" alt="{$vo.school_vip_name}" width="19px" height="19px"><php>}</php>
                                 </div>
-                                <div class="tag">{$vo['new_str_tag']}</div>
                                 <p>{$vo['info']}</p>
                                 <div class="info">
                                 <!--
@@ -142,43 +141,7 @@ var GET_PHONEVERIFY="{:U('public/Passport/getVerify')}";
                 <php>}</php>
             </div>
         </div>
-            <div class="jg_right">
-                <div class="jg_rightitem">
-                    <h3 class="jg_rightitem_tit"><em></em>精选课程</h3>
-                    <ul class="jglist">
-                        <volist name="favourit" id="fav">
-                            <li>
-                                <div class="pic">
-                                    <a href="{:U('classroom/Video/view',array('id'=>$fav['id']))}"><img src="{:cutImg($fav['cover'],218,130)}" class="lazyloading" alt="{$fav['video_title']}"></a>
-                                </div>
-                                <h3><a href="{:U('classroom/Video/view',array('id'=>$fav['id']))}">{$fav['video_title']}</a></h3>
-                                <div class="info">
-                                    <div class="fl">{$fav['mhmName']}<em>认证</em></div>
-                                    <if condition="$fav['mzprice']['price'] eq 0"><div class="fr green">免费</div> <else/><div class="fr red">￥{$fav['mzprice']['price']}</div></if>
-                                </div>
-                            </li>
-                        </volist>
-                    </ul>
-                </div>
-                <div class="jg_rightitem">
-                    <h3 class="jg_rightitem_tit"><em></em>热门推荐</h3>
-                    <ul class="jglist">
-                        <volist name="hotData" id="hot">
-                            <li>
-                                <div class="pic">
-                                    <a href="{:U('classroom/Video/view',array('id'=>$hot['id']))}"><img src="{:cutImg($hot['cover'],218,130)}" class="lazyloading" alt="{$hot['video_title']}"></a>
-                                </div>
-                                <h3><a href="{:U('classroom/Video/view',array('id'=>$hot['id']))}">{$hot['video_title']}</a></h3>
-                                <div class="info">
-                                    <div class="fl">{$hot['mhmName']}<em>认证</em></div>
-                                    <if condition="$hot['mzprice']['price'] eq 0"><div class="fr green">免费</div> <else/><div class="fr red">￥{$hot['mzprice']['price']}</div></if>
-                                </div>
-                            </li>
-                        </volist>
-                    </ul>
-                </div>
-            </div>
-        <div class="clear"></div>
+
         <php>if($guess_you_like){</php>
         <div class="guess_like">
             <h3 class="guess_like_tit">猜你喜欢</h3>

@@ -1,10 +1,12 @@
 <include file="__THEME__/admin_header" />
 <include file="__THEME__/swfupload" />
 <div id="container" class="so_main">
+	<div class="page_tit">我的机构</div>
+
 	<div class="tit_tab">
 		<ul>
 			<li><a href="{:U('school/AdminSchool/index',array('tabHash'=>'index'))}" class="on">我的机构</a></li>
-			<li><a href="{:U('school/AdminSchool/teacherVerify',array('tabHash'=>'teacherVerify'))}">待审核讲师列表</a></li>
+			<!--<li><a href="{:U('school/AdminSchool/teacherVerify',array('tabHash'=>'teacherVerify'))}">待审核讲师列表</a></li>-->
 		</ul>
 	</div>
 	<form method="POST" action="{:U('school/AdminSchool/editSchool',array('tid'=>$tid))}" name="detail_form" >
@@ -40,13 +42,9 @@
 			<dl class="lineD">
 		      	<dt>独立域名：</dt>
 		      	<php>if($doadmin){</php>
-				<dd>{$doadmin}.igenwoxue.com</dd>
+					<dd>{$doadmin}</dd>
 				<php>}</php>
 		    </dl>
-			<dl class="lineD">
-				<dt>视频空间：</dt>
-				<dd>{$videoSpace}GB</dd>
-			</dl>
 			<dl class="lineD">
 				<dt>优惠券最低满减：</dt>
 				<dd>{$max_price_sys}</dd>
@@ -130,18 +128,18 @@
 					<textarea name="info" rows="10" cols="80">{$info}</textarea>
 				</dd>
 			</dl>
-			<dl class="lineD">
-				<dt>关于我们：</dt>
-				<dd>
-					{:W('Editor',array('contentName'=>'about_us','value'=>$about_us,'width'=>'99%','height'=>'350'))}
-				</dd>
-			</dl>
-			<dl class="lineD">
-				<dt>机构qq：</dt>
-				<dd>
-					<input name="school_qq" id="school_qq" type="text" value="{$school_qq}">
-				</dd>
-			</dl>
+			<!--<dl class="lineD">-->
+				<!--<dt>关于我们：</dt>-->
+				<!--<dd>-->
+					<!--{:W('Editor',array('contentName'=>'about_us','value'=>$about_us,'width'=>'99%','height'=>'350'))}-->
+				<!--</dd>-->
+			<!--</dl>-->
+			<!--<dl class="lineD">-->
+				<!--<dt>机构qq：</dt>-->
+				<!--<dd>-->
+					<!--<input name="school_qq" id="school_qq" type="text" value="{$school_qq}">-->
+				<!--</dd>-->
+			<!--</dl>-->
 			<div class="page_btm">
 				<input type="text" style="display:none">
 				<input type="submit" class="btn_b" value="保存" id="form_submit" >

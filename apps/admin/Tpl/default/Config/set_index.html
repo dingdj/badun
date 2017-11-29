@@ -7,7 +7,7 @@
 <script src="http://apps.bdimg.com/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="__APP__/js/jquery-ui.min.js"></script>
 <div id="container" class="so_main">
-    <div class="page_tit">{:L('PUBLIC_MAILTITLE_ADMIN')} - 首页配置</div>
+    <div class="page_tit">首页配置</div>
 
     <div class="list">
         
@@ -19,8 +19,9 @@
             <dl class="lineD">
                 <dt>首页模板：</dt>
                 <dd>
-                    <label><input type="radio" name="tpl" value="index" <eq name="config.tpl" value="index">checked="checked"</eq> />旧版 </label>
-                    <label><input type="radio" name="tpl" value="index_new" <eq name="config.tpl" value="index_new">checked="checked"</eq>/>新版 </label>
+                    <!--<label><input type="radio" name="tpl" value="index" <eq name="config.tpl" value="index">checked="checked"</eq> />新风主题 </label>-->
+                    <label><input type="radio" name="tpl" value="index_new" <eq name="config.tpl" value="index_new">checked="checked"</eq>/>简雅主题 </label>
+                    <label><input type="radio" name="tpl" value="index_new2" <eq name="config.tpl" value="index_new2">checked="checked"</eq>/>清月主题 </label>
                 </dd>
             </dl>
             <!--<dl class="lineD">-->
@@ -30,8 +31,8 @@
                     <!--<label><input type="radio" name="use_old_header" value="0" <eq name="config.use_old_header" value="0">checked="checked"</eq>/>否 </label>-->
                 <!--</dd>-->
             <!--</dl>-->
-            <dl class="lineD sort" <eq name="config.tpl" value="index">style="display:none;"</eq>>
-                <dt>首页模块定义(拖动可排序)：</dt>
+            <dl class="lineD sort" <if condition="$config['tpl'] eq index OR $config['tpl'] eq index_new2">style="display:none;"</if>>
+                <dt>首页模块定义：</dt>
                 <dd>
                     <table width="100%" cellspacing="0" cellpadding="0" border="0" id='sortable' >
                     <volist name="config.sort" id="item">
@@ -62,6 +63,114 @@
                                 </td>
                             </tr>
                         </eq>
+                        <eq name="item" value="counts">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('counts',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="counts" />
+                                    <input type="hidden" name="sort[]" value="counts" />
+                                    <span>数据统计</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="teacher">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('teacher',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="teacher" />
+                                    <input type="hidden" name="sort[]" value="teacher" />
+                                    <span>讲师团队</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="school">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('school',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="school" />
+                                    <input type="hidden" name="sort[]" value="school" />
+                                    <span>入驻机构</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="group">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('group',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="group" />
+                                    <input type="hidden" name="sort[]" value="group" />
+                                    <span>推荐小组</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="hotTopic">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('hotTopic',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="hotTopic" />
+                                    <input type="hidden" name="sort[]" value="hotTopic" />
+                                    <span>热门资讯</span>
+                                </td>
+                            </tr>
+                        </eq>
+                    </volist>
+                    </table>
+                </dd>
+            </dl>
+            <dl class="lineD sort_new" <if condition="$config['tpl'] neq index_new2">style="display:none;"</if>>
+                <dt>首页模块定义：</dt>
+                <dd>
+                    <table width="100%" cellspacing="0" cellpadding="0" border="0" id='sortable' >
+                    <volist name="config.sort_new" id="item">
+                        <eq name="item" value="six">
+                          <tr>
+                            <td>
+                                <input type="checkbox" <php>if(in_array('six',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="six" />
+                                <input type="hidden" name="sort_new[]" value="six" />
+                                <span>进阶之路</span>
+                            </td>
+                          </tr>
+                        </eq>
+                        <eq name="item" value="open">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('open',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="open" />
+                                    <input type="hidden" name="sort_new[]" value="open" />
+                                    <span>公开课</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="hotVideo">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('hotVideo',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="hotVideo" />
+                                    <input type="hidden" name="sort_new[]" value="hotVideo" />
+                                    <span>热门课程</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="live_new">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('live_new',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="live_new" />
+                                    <input type="hidden" name="sort_new[]" value="live_new" />
+                                    <span>直播早知道</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="teacher_new">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('teacher_new',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="teacher_new" />
+                                    <input type="hidden" name="sort_new[]" value="teacher_new" />
+                                    <span>名师阵容</span>
+                                </td>
+                            </tr>
+                        </eq>
+                        <eq name="item" value="starUser">
+                            <tr>
+                                <td>
+                                    <input type="checkbox" <php>if(in_array('starUser',$config['item'])){</php>checked="checked"<php>}</php> class="checkbox" name="item[]" value="starUser" />
+                                    <input type="hidden" name="sort_new[]" value="starUser" />
+                                    <span>明星学员</span>
+                                </td>
+                            </tr>
+                        </eq>
                     </volist>
                     </table>
                 </dd>
@@ -81,8 +190,13 @@ $(function(){
         tpl = $(this).val();
         if(tpl == 'index'){
             $(".sort").hide();
+            $(".sort_new").hide();
+        }else if(tpl == 'index_new2'){
+            $(".sort").hide();
+            $(".sort_new").show();
         }else{
             $(".sort").show();
+            $(".sort_new").hide();
         }
     });
     $("#sortable").sortable({

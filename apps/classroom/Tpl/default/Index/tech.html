@@ -1,0 +1,54 @@
+<include file="public/public_header"/>
+		<!--顶部导航栏-->
+		<div class="tech-all">
+			<div class="tech-cen">
+
+				<div class="tech1"></div>
+				<div class="tech2">
+                    <volist name="selCate" id="vo" offset="0" length='2'>
+                        <div class="tech22">
+                            <a href="javascript:;" onclick="switchnav(this,{$vo.zy_teacher_category_id})">{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                        </div>
+                    </volist>
+				</div>
+
+                <volist name="selCate" id="vo" offset="0" length='2'>
+                    <div class="tech3" id="tech-{$vo.zy_teacher_category_id}">
+                        <h1>{:msubstr(t($vo['title']),0,10,'utf-8',true)}</h1>
+                    </div>
+                    <div <if condition="count($vo['child']) gt 3">class="tech7"<else/>class="tech4"</if>>
+                        <div class="tech5">
+                            <ul>
+                                <volist name="vo.child" id="ch" offset="0" length='6'>
+                                    <li><a href="{:U('classroom/Teacher/view',array('id'=>$ch['id']))}"><img src="{:cutImg($ch['head_id'],360,360)}"></a>
+                                        <div class="tech51">
+                                            <h5><a href="{:U('classroom/Teacher/view',array('id'=>$ch['id']))}">{:msubstr(t($ch['name']),0,5,'utf-8',true)}</a></h5>
+                                        </div>
+                                        <div class="tech52">
+                                            <h5><a href="{:U('classroom/Teacher/view',array('id'=>$ch['id']))}">{:msubstr(t($ch['teacher_title']),0,5,'utf-8',true)}</a></h5>
+                                        </div>
+                                    </li>
+                                </volist>
+                            </ul>
+                        </div>
+                        <a class="indclassbox_more" href="javascript:;" onclick="techMore({$vo.zy_teacher_category_id})">更多讲师</a>
+                    </div>
+                </volist>
+			</div>
+		</div>
+
+<script>
+    $(function(){
+        $(".tech2 div:first-child").removeClass('tech22').addClass('tech21');
+    });
+    function switchnav(obj , id){
+        $('body,html').animate({scrollTop: ($("#tech-"+id).offset().top - 100)},200);
+        $(obj).parent().siblings().removeClass('tech21').addClass('tech22');
+        $(obj).parent().removeClass('tech22').addClass('tech21');
+    }
+    function techMore(id){
+        window.location.href = "{:U('classroom/Teacher/index')}"+'?cateId='+id;
+    }
+</script>
+
+<include file="public/public_footer"/>

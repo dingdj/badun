@@ -5,7 +5,7 @@
             <ul>
                 <li>
                     <a href="/">首页</a><span>&gt;</span>
-                    <a href="{:U('classroom/Album/index')}">套餐</a>
+                    <a href="{:U('classroom/Album/index')}">班级</a>
                 </li>
             </ul>
         </div>
@@ -133,17 +133,20 @@
                             <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
                                 <input type="hidden" value="{$vo['id']}" name="vid" />
                                 <input type="hidden" value="zy_album" name="check_type" />
-                                <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                                <input type="hidden" value="班级：{$vo['album_title']}" name="title" />
                                 <input type="hidden" id="money" value="{$vo['price']}" name="money" />
                             </form>
                             <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],530,260)}" alt=""></a>
-                            <i class="taoke_bg"></i>
                             <div class="txt">
-                                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[套餐]  {:msubstr($vo['album_title'],0,20)}</a></h3>
+                                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[班级]  {:msubstr($vo['album_title'],0,20)}</a></h3>
                                 <p>{:msubstr($vo['album_intro'],0,50)}</p>
                                 <div class="price">
-                                    <span class="c1">套餐价格：</span>
-                                    <span class="c2"><em>¥</em> {$vo['price']}</span>
+                                    <span class="c1">班级价格：</span>
+                                    <if condition="$vo['price']">
+                                        <span class="c2"><em>¥</em> {$vo['price']}</span>
+                                        <else/>
+                                        <span class="c2" style="color: #56b02a;">免费</span>
+                                    </if>
                                     <span class="c3">原价：¥ {$vo['oPrice']}</span>
                                 </div>
                                 <div class="intro">
@@ -154,9 +157,10 @@
                                     </div>
                                 </div>
                                 <div class="intro">
+                                    <div class="fl">课程数：<span><php>echo count($vo['video']);</php>个</span></div>
                                     <div class="fl">收藏数：<span>{$vo['collect_count']}次</span></div>
                                     <div class="fl">评论数：<span>{$vo['comment_count']}次</span></div>
-                                    <div class="fl">购买数：<span>{$vo['order_count']}次</span></div>
+                                    <div class="fl">班内人数：<span>{$vo['order_count']}人</span></div>
                                 </div>
                             </div>
                         </div>
@@ -176,79 +180,37 @@
                                 </volist>
                             </ul>
                             <div class="rightbox">
-                                <div class="rightbox-item">共有 <php>echo count($vo['video']);</php> 门课程组合</div>
-                                <div class="rightbox-item">套餐价格：<span class="price">¥ <em>{$vo['price']}</em></span></div>
-                                <div class="rightbox-item">原价：<span class="del">¥{$vo['oPrice']}</span></div>
-                                <div class="rightbox-item">立即节省：  ¥{$vo['disPrice']}</div>
                                 <div class="rightbox-item">
-                                    <php>if($vo['price'] < 0 ){</php>
-                                    <a href="javascript:;">免费套餐</a>
+                                    <php>if($vo['price'] <= 0 ){</php>
+                                    <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" style="display: block;float: left;width: 100%;line-height: 40px;text-align: center;background-color: #00bed4;color: #fff;font-size: 16px;border-radius: 4px;margin-top: 20px;">免费班级</a>
                                     <php>}else{</php>
                                     <eq name="vo.isBuy" value="0">
-                                        <a href="javascript:;" class="charge_video">立即购买</a>
+                                        <a href="javascript:;" class="charge_video">立即加入</a>
                                         <else />
-                                        <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">已购买</a>
+                                        <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">已加入</a>
                                     </eq>
                                     <php>}</php>
                                 </div>
                             </div>
                         </div>
-                        <div class="bot">
-                            <ul>
-                                <li>课程数：<php>echo count($vo['video']);</php>个</li>
-                                <li>套餐价格： <span>¥{$vo['price']}</span></li>
-                                <li>
-                                    <gt name="vo.isCollect" value="0">
-                                        <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="0">取消收藏</a>
-                                        <else />
-                                        <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="1">收藏套餐</a>
-                                    </gt>
 
-                                </li>
-                            </ul>
-                        </div>
                     </li>
                 </volist>
                 <php>}else{</php>
-                <span>没有相关套餐。。</span>
+                <span>没有相关班级。。</span>
                 <php>}</php>
             </ul>
+             <php>if($album_list && $album_list['totalPages'] >1 ){</php>
             <div class="page">
                 <div class="pagebox">
                     {$album_list.html}
                 </div>
             </div>
+            <php>}</php>
         </div>
         
         <div class="clear"></div>
-        <php>if($like){</php>
-        <div class="guess_like">
-            <h3 class="guess_like_tit">猜你喜欢</h3>
-            <ul class="classlist02 clearfix">
-                <volist name="like" id="val" offset="3" length="5">
-                    <li>
-                        <div class="pic">
-                            <php>if($val['type'] == 2){</php>
-                                <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
-                                <div class="txt">
-                                    <div class="fl orange class">直播中</div>
-                                    <span class="fl">进度：{$val['live']['now']}/{$val['live']['count']}节</span>
-                                </div>
-                            <php>}else{</php>
-                                <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
-                            <php>}</php>
-                        </div>
-                        <h3><a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],10)}</a></h3>
-                        <div class="info">
-                            <div class="price"><php>if($val['t_price'] == 0) {</php><span style="color: #56b02a;">免费</span><php>} else {</php>￥{$val['t_price']}<php>}</php>
-                                <if condition="$val['free_status']"><span class="sx">{$val['free_status']}</span></if>
-                            </div>
-                        </div>
-                    </li>
-                </volist>
-            </ul>
-        </div>
-        <php>}</php>
+        
     </div>
 </div>
 <script type="text/javascript">
@@ -264,7 +226,7 @@
     }
     //购买操作
     $('a.charge_video').on('click',function () {
-        if(uid<=0){
+        if('{$uid}' == ''){
             reg_login();
             return false;
         }
@@ -283,14 +245,14 @@
             ui.error('该课程不需要您购买');
             return false;
         }
-        if(rechange_base>0 && money%rechange_base != 0){
+        /*if(rechange_base>0 && money%rechange_base != 0){
             if(rechange_base == 1){
                 ui.error('购买金额必须为整数');
             }else{
                 ui.error('购买金额必须为'+rechange_base+'的倍数');
             }
             return false;
-        }
+        }*/
 
         $.post(U("classroom/PayVideo/checkPay"),form.serialize(),function(data){
             if(data.status == 1){
@@ -368,7 +330,7 @@
         window.location.href = getRequestUrl(type,value,baseUrl,replace);
     });
 
-    //收藏套餐
+    //收藏班级
     function collectAlbum(cate,id){
         if(uid<=0){
             reg_login();
@@ -391,7 +353,7 @@
                         $(cate).html('取消收藏');
                         $(cate).attr('data-type',0);
                     }else{
-                        $(cate).html('收藏套餐');
+                        $(cate).html('收藏班级');
                         $(cate).attr('data-type',1);
                     }
                 }

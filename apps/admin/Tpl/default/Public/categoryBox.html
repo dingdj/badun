@@ -26,7 +26,6 @@
 var addTreeCategory = function()
 {
   var title = $.trim($('#category_title').val());
-  var attachId = parseInt($('#form_icon').val());
   var pid = "{$pid}";
   var stable = "{$stable}";
   var limit = "{$limit}";
@@ -42,7 +41,7 @@ var addTreeCategory = function()
     ui.error('分类名称不能超过'+limit+'个字');
     return false;
   }
-	var data = {title:title, pid:pid, stable:stable, attach_id:attachId, type:type};
+	var data = {title:title, pid:pid, stable:stable, type:type};
   // 提交添加
   $.post(U('admin/Public/doAddTreeCategory'), data, function(msg) {
     if(msg.status == 1) {
@@ -64,7 +63,6 @@ var addTreeCategory = function()
 var upTreeCategory = function()
 {
   var title = $.trim($('#category_title').val());
-  var attachId = parseInt($('#form_icon').val());
   var cid = "{$category['id']}";
   var stable = "{$stable}";
   var limit = "{$limit}";
@@ -85,7 +83,7 @@ var upTreeCategory = function()
     ui.box.close();
     return false;
   }*/
-	var data = {cid:cid, title:title, stable:stable, attach_id:attachId, type:type};
+	var data = {cid:cid, title:title, stable:stable, type:type};
   
   // 提交添加
   $.post(U('admin/Public/doUpTreeCategory'), data, function(msg) {

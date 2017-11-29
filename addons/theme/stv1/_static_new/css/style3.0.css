@@ -1,7 +1,8 @@
 /* 面包屑导航 */
-.grid-total{width: 100%;float: left;background-color: #fff;padding: 30px 0;}
-.screen-outer{width:1170px;margin:0 auto;display:flow-root;}
-.position-label-find{float:left;width:100%}
+.grid-total{width: 100%;float: left;background-color: #fff;padding: 0 0 30px;}
+.topbox{width:100%;background: #fff}
+.screen-outer{width:1200px;margin:0 auto;display:table;}
+.position-label-find{float:left;width:100%;line-height: 50px;}
 .position-label-find li{float:left;font-size:12px}
 .position-label-find li a{color:#888;line-height:24px}
 .position-label-find li .cuorse-label{float:left;border-radius:4px;border:1px dotted #00BED4;color:#00BED4;padding:0 5px;line-height:20px;margin-left:10px;cursor:pointer}
@@ -9,7 +10,7 @@
 .position-label-find li .course-find{border-radius:5px;border:1px solid #e5e5e5;line-height:20px;margin-left:10px}
 .position-label-find li .course-find input{height:13px;font-size:12px;border:0;color:#888;text-indent:5px}
 .position-label-find li .course-find i{font-size:14px;color:#888;padding:0 5px;cursor:pointer}
-.all-find{float:left;width:100%;margin-top:30px}
+.all-find{float:left;width:100%}
 .school-choice{width:33.3%;float: left;}
 .school-choice:last-child{margin-right:0}
 .school-choice .region{float:left;color:#888;font-size:14px;height:30px;width:160px;border-radius:4px;border:1px solid #d3d3d3;padding:0 8px;line-height:30px;margin-left:20px;cursor:pointer;position:relative}
@@ -31,7 +32,7 @@
 .one-line-course-menu{border-radius:4px;border:1px dotted #dcdcdc;background-color:#fafafa;float:left;width:100%}
 .one-line-course-menu h5{color:#656565;font-size:14px;margin-top:25px;margin-left:20px}
 .one-line-course-menu h5 i{padding-right:10px}
-.one-line-course-menu h5 .one-menu{float:right;width:1080px}
+.one-line-course-menu h5 .one-menu{float:right;width:1110px}
 .line-course-menu li{float:left;margin-right:20px;margin-bottom:20px;padding:0 10px;line-height:24px;font-size:14px;border-radius:4px;margin-top:-2px}
 .line-course-menu li a{float:left;color:#333}
 .line-course-menu li a:hover{color:#00BED4;}
@@ -58,7 +59,7 @@
 .group-name li div a{color:#656565!important;}
 .group-name li div a:hover{color:#00BED4!important;}
 .course-all-tab{padding-bottom:50px;}
-.course-all-tab dl{background-color:#fff;float:left;width:1142px;padding:14px;margin-top:30px;border-radius:4px}
+.course-all-tab dl{background-color:#fff;float:left;width:1172px;padding:14px;margin-top:30px;border-radius:4px}
 .course-all-tab dd{float:left;width:460px;margin-left:26px}
 .course-all-tab dd:first-child{width:330px;height:200px;overflow:hidden;margin-left:0}
 .course-all-tab dd img{width:100%;min-height:200px}
@@ -81,12 +82,11 @@
 
 /* 线下课_课程主页 */
 /* 课程信息明细 */
-.course-deta .position-label-find li{line-height:36px}
-.course-deta dl{width:1130px;background-color:#fff;float:left;padding:20px;border-radius: 4px;}
+.course-deta dl{width:100%;background-color:#fff;float:left;padding:0 0 20px;border-radius: 4px;}
 .course-deta dd{float:left}
 .course-deta dd a{display:block;width:580px;height:350px;overflow:hidden}
 .course-deta dd a img{width:100%;min-height:350px}
-.course-deta .course-deta-txt{width:530px;float:right}
+.course-deta .course-deta-txt{width:560px;float:right}
 .course-deta .course-deta-txt h3{color:#444;font-size:24px;padding-bottom:10px}
 .course-deta .course-deta-txt small{display:block;color:#888;font-size:14px;margin-top:14px}
 .course-deta .course-deta-txt p{color:#888;font-size:16px;margin-top:55px}
@@ -95,10 +95,29 @@
 .course-deta .course-deta-txt b strong{font-size:16px}
 .course-deta .course-deta-txt button{display:block;width:160px;line-height:40px;border-radius:4px;border:1px solid #00BED4;color:#00BED4;font-size:16px;background-color:#fff;margin-top:20px}
 .course-deta .course-deta-txt button:hover{background-color:#00BED4;color:#fff}
+.classtopitem{margin-top:16px;color:#888;font-size:14px}
+.classtopitem .zhuang-left:hover ._share_my_firends{display:block}
+.classtopitem div{float:left;color:#666;font-size:14px;line-height:14px}
+.classtopitem a{color:#999;display:inline!important;width:auto!important;height:24px!important}
+._share_all_channel a{float:left}
+.classtopitem i{margin:-3px 6px 0 0;width:16px;height:16px}
+.classtopitem .icon-01{background-position:-538px -514px}
+.classtopitem .icon-02{background-position:-576px -516px}
+.classtopitem .icon-04{background-position:-509px -514px}
+.classtopitem .sc{padding-right:10px}
+._share_my_firends{height:62px;position:absolute;right:44px;bottom:3px;width:168px;top:0;left:0;display:none}
+._share_all_channel{margin-top:13px;width:155px;background-color:#fff;border-radius:4px;box-shadow:0 2px 8px rgba(83,87,88,.2);margin-top:10px}
+.side-ills-fell{width:0!important;position:absolute;height:0!important;top:23px;left:11px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:5px solid #FFF}
+._share_all_channel p{padding-top:4px;text-indent:10px;color:#666}
+.classtopitem .mb{position:relative}
+.classtopitem .icon-03{background-position:-117px -367px}
+.mb .qrcode-wrap{top:28px;position:absolute;left:-16px;z-index:2;display:none;padding:10px;width:100px;height:100px;border:1px solid #00BED4;background:#fff}
+.mb .fxp{display:none;width:110px;height:110px}
 
-/* left */
+
+    /* left */
 .center_left{float:left;width:870px;background-color:#fff;border-radius:4px;overflow:hidden}
-.mar01{margin-top:30px;padding-bottom:30px}
+.mar01{padding-top:20px;padding-bottom:30px}
 .center_left_tit{height:50px;line-height:50px;background-color:#fff;border-bottom:1px solid #e7e6e5}
 .center_left_tit li{float:left;border-bottom:2px solid transparent}
 .center_left_tit .on{border-color:#00BED4}
@@ -120,7 +139,7 @@
 .title{float:right}
 .title a{color:#776e6e}
 .video-review{width:100%;height:auto;overflow:hidden}
-.clearfix{display:none;height:auto;position:relative;zoom:1}
+.clearfix{height:auto;position:relative;zoom:1}
 .qa-ci-wrap{width:100%;background:0 0;color:#999;font-size:12px}
 form #review_form .reply-star{line-height:30px;width:100%}
 .form-label{float:left;padding-right:5px;padding:7px 0}
@@ -137,8 +156,8 @@ form #review_form .reply-star{line-height:30px;width:100%}
 .big .star i{margin:0 2px 0;font-size:18px;color:#FF6813}
 .wenda-listcon{overflow:hidden;width:100%;float:left}
 .classmain-bd{padding:0 10px;background-color:#fff;min-height:50px}
-.teacher-dp{overflow:hidden;padding-bottom:20px;padding-left:57px;min-height:85px;font-size:14px;line-height:24px;border-bottom:dashed 1px #ebebeb;margin-bottom:20px}
-.teacher-dp .name{width:60px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:6px;float: left;}
+.teacher-dp{overflow:hidden;padding-bottom:0!important;padding-left:57px;min-height:85px;font-size:14px;line-height:24px;margin-bottom:20px}
+.teacher-dp .name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:6px;float: left;}
 .teacher-dp dt{position:absolute;overflow:hidden;margin-left:-55px;width:40px}
 .teacher-dp .pic{overflow:hidden;width:40px;height:40px;border-radius:50%;margin-top: 14px;}
 .teacher-dp .pic img{width:100%}
@@ -151,13 +170,14 @@ form #review_form .reply-star{line-height:30px;width:100%}
 .replymegfooter{float:left;width:100%}
 .keyword-list,.wenda-time{float:left;color: #888;}
 .qa-comment-addon-r{float:right;color:#656565}
-.qa-total-reply{margin-right:20px;cursor:pointer}
+.qa-total-reply{margin-right:20px;cursor:pointer;float:left}
 .js-qacom-supported-user{cursor:pointer}
-.classmain #video_comment .video-review .review .icon-pl{margin-right:3px;font-size:18px}
+.classmain #video_comment .video-review .review .icon-pl{margin: 2px 3px 0 0;font-size: 18px;float: left;}
+.classmain #video_comment .video-review .tongwenreview .icon-zan{float: left;margin: 1px 3px 0 0;}
 .qa-tr-up{position:relative;display:none}
 .qa-tr-up i{font-size:14px;padding:0 5px}
 .qa-tr-up b{border-color:transparent transparent #cecece;border-style:solid;border-width:7px;bottom:-21px;height:0;left:7px;position:absolute;width:0}
-.qa-replies{margin-bottom:-1px;padding-left:75px;float:left;display:none}
+.qa-replies{margin-bottom:-1px;padding-left:59px;float:left;display:none}
 .qa-reply-c{position:relative;background:#f7f7f7;width:680px;margin-bottom:20px;border-radius: 4px;}
 .qa-reply-item{position:relative}
 .qa-reply-item-author{position:absolute;left:10px;top:10px;line-height:1em}
@@ -171,7 +191,7 @@ form #review_form .reply-star{line-height:30px;width:100%}
 .qa-reply-more{width:100%;height:50px;line-height:50px;text-align:center}
 .qa-reply-more :hover{color:#00BED4}
 .qa-reply-more a{color:#656565;font-size:14px}
-.qa-reply-ibox{padding:20px 0;border-bottom:1px solid #e3e5e5;display:none}
+.qa-reply-ibox{padding:20px 0;border-bottom:1px solid #e3e5e5}
 .qa-reply-iavator{width:60px;text-align:center;float:left}
 .qa-reply-iavator img{width:40px;border-radius:50%}
 .qa-reply-iwrap{padding:0 0 0 7px;overflow:hidden;margin-left:60px}
@@ -185,7 +205,7 @@ form #review_form .reply-star{line-height:30px;width:100%}
 .teacher-school h3{border-bottom:solid 1px #ddd;color:#333;font-size:16px;line-height:50px}
 .teacher-school-per{padding-bottom:20px;float:left}
 .teacher-school-per li{margin-top:20px;float:left}
-.teacher-school-per li div{float:left}
+.teacher-school-per li div{float:left;width:100%;}
 .teacher-school-per li div span{float:left;width:60px;height:60px;overflow:hidden;border-radius:50%}
 .teacher-school-per li div span img{width:60px;min-height:60px}
 .teacher-school-per li div h4{float:left;margin-left:10px;font-size:18px}

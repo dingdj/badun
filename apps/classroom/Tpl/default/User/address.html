@@ -24,6 +24,7 @@
                 <!-- <h3 class="addresstit">新增收货地址</h3> -->
                 <if condition="($data['usedCounts'] lt 10) OR ($_GET['id'] gt 0)">
                     <form class="addressbox" id="addressbox" method="POST" action="" onsubmit="return false;">
+                        <input class="inp01" name="id"  id="address_id" type="hidden" value="{$address['id']}" >
                         <dl>
                             <dt><span>*</span>所在地区：</dt>
                             <dd style="width: 450px;">
@@ -36,14 +37,13 @@
                         <dl>
                             <dt><span>*</span>详细地址：</dt>
                             <dd>
-                                <textarea class="tex01" name="address"  id="address" rows="10" cols="80">{$address['address']}</textarea>
+                                <input class="inp01" name="address" id="address" type="text" value="{$address['address']}" >
                             </dd>
                         </dl>
                         <dl>
                             <dt><span>*</span>收货人姓名：</dt>
                             <dd>
                                 <input class="inp01" name="name" id="name" type="text" value="{$address['name']}" >
-                                <input class="inp01" name="id"  id="address_id" type="hidden" value="{$address['id']}" >
                             </dd>
                         </dl>
                         <dl>

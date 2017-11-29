@@ -20,228 +20,102 @@ var GET_PHONEVERIFY="{:U('public/Passport/getVerify')}";
                     </li>
                 </ul>
             </div>
-        <div class="teacher-box">
-            <dl class="card-body" style="background: transparent">
-                <dd class="clearfix select-catename" data-catename="subject_category" style="background: #fafafa;padding:0">
-                   <!-- <span>科目</span>-->
-                    <ul class="select-list">
-                        <li class="<eq name='cateId' value=''>selected</eq>"><a href="{:U('classroom/Teacher/index')}"  id="cate0">全部</a></li>
-                        <volist name="selCate" id="vo">
-                            <li class="<eq name='vo.zy_teacher_category_id' value='$cateId'>selected</eq>" >
-                                <a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
-                            </li>
-                        </volist>
-                    </ul>
-                    <div class="subs" <php>if(!$cate){</php>style="display: none"<php>}</php> style="max-width:100%;background:#fff;margin:0">
-                        <ul class="sub-course" id="pre">
-                            <li class="<eq name='cate_id' value=''>selected</eq>"><a href='javascript:;' id='cate_no' class="screen" data-type="cateId" data-value="{$cateId}">不限</a></li>
-                            <volist name="cate" id="vo">
-                                <li class="<eq name='vo.zy_teacher_category_id' value='$cate_id'>selected</eq>" >
-                                    <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+        
+            <div class="teacher-box">
+                <dl class="card-body" style="background: transparent">
+                    <dd class="clearfix select-catename" data-catename="subject_category" style="background: #fafafa;padding:0">
+                       <!-- <span>科目</span>-->
+                        <ul class="select-list">
+                            <li class="<eq name='cateId' value=''>selected</eq>"><a href="{:U('classroom/Teacher/index')}"  id="cate0">全部</a></li>
+                            <volist name="selCate" id="vo">
+                                <li class="<eq name='vo.zy_teacher_category_id' value='$cateId'>selected</eq>" >
+                                    <a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
                                 </li>
                             </volist>
                         </ul>
-                        <div class="subs abb" <php>if(!$childCate){</php>style="display: none"<php>}</php>>
-                            <ul class="sub-course" id="citys">
-                                <li class="<eq name='cate_ids' value=''>selected</eq>"><a href='javascript:;' id='cate_no' class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}">不限</a></li>
-                                <volist name="childCate" id="vo">
-                                    <li class="<eq name='vo.zy_teacher_category_id' value='$cate_ids'>selected</eq>" >
-                                        <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                        <div class="subs" <php>if(!$cate){</php>style="display: none"<php>}</php> style="max-width:100%;background:#fff;margin:0">
+                            <ul class="sub-course" id="pre">
+                                <li class="<eq name='cate_id' value=''>selected</eq>"><a href='javascript:;' id='cate_no' class="screen" data-type="cateId" data-value="{$cateId}">不限</a></li>
+                                <volist name="cate" id="vo">
+                                    <li class="<eq name='vo.zy_teacher_category_id' value='$cate_id'>selected</eq>" >
+                                        <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
                                     </li>
                                 </volist>
                             </ul>
+                            <div class="subs abb" <php>if(!$childCate){</php>style="display: none"<php>}</php>>
+                                <ul class="sub-course" id="citys">
+                                    <li class="<eq name='cate_ids' value=''>selected</eq>"><a href='javascript:;' id='cate_no' class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}">不限</a></li>
+                                    <volist name="childCate" id="vo">
+                                        <li class="<eq name='vo.zy_teacher_category_id' value='$cate_ids'>selected</eq>" >
+                                            <a href="javascript:;"  class="screen" data-type="cateId" data-value="{$cateId}%2C{$cate_id}%2C{$vo.zy_teacher_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
+                                        </li>
+                                    </volist>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </dd>
-                <!--<dd class="clearfix select-catename" data-catename="area">-->
-                    <!--<span>区域</span>-->
-                    <!--<ul class="select-list">-->
-                       <!--<li class="<eq name='area_id' value=''>selected</eq>"><a href="{:U('classroom/Teacher/index')}" data-cate_id="0" class="select_cate">不限</a></li>-->
-                       <!--<volist name="area" id="vo">-->
-                          <!--<li class="<eq name='vo.area_id' value='$area_id'>selected</eq>"><a href="javascript:;"  data-type="area" data-value="{$vo.area_id}" class="select_cate screen">{$vo.title}</a></li>-->
-                        <!--</volist>-->
-                    <!--</ul>-->
-                <!--</dd>-->
-            </dl>
-        </div>
-        <div class="class_left">
-            <div class="content-card">
-                <dl class="card-body">
-                    <dt>
-                        <div class="nav-item sortList <eq name='sort_type' value=''>active</eq>"><a href="{:U('classroom/Teacher/index')}" >综合排序</a></div>
-                        <div class="nav-item sortList <eq name='sort_type' value="1">active</eq>"><a href="javascript:;" class="screen" data-type="sort_type" data-value="1">最热</a></div>
-                        <div class="nav-item sortList <eq name='sort_type' value="2">active</eq>"><a href="javascript:;" class="screen" data-type="sort_type" data-value="2">最新</a></div>
-                        <div class="nav-item"><label><input type="checkbox" <php>if($live_type == 2){</php>checked="checked" data-type="live_type"<php>}else{</php>data-type="live_type" data-value="2"<php>}</php>class="screen" >直播课</label></div>
-                        <div class="nav-item"><label><input type="checkbox" <php>if($course_type == 1){</php>checked="checked" data-type="course_type"<php>}else{</php>data-type="course_type" data-value="1"<php>}</php>class="screen">点播课</label></div>
-                        <div class="nav-item top-pager">
-                            <php>if($data['nowPage'] >= 2  ){</php>
-                            <a href="{:U('classroom/Teacher/index',array('p'=>$data['nowPage']-1))}" class="prevPage"><i class="icon-prev"></i></a>
-                            <php>}else{</php>
-                            <a href="javascript:;" class="prevPage"><i class="icon-prev"></i></a>
-                            <php>}</php>
-                            <span id="nowPage">{$data.nowPage}</span>
-                            <php>if($data['nowPage'] < $data['totalPages']){</php>
-                            <a href="{:U('classroom/Teacher/index',array('p'=>$data['nowPage']+1))}" class="nextPage"><i class="icon-next"></i></a>
-                            <php>}else{</php>
-                            <a href="javascript:;" class="nextPage"><i class="icon-next"></i></a>
-                            <php>}</php>
-                        </div>
-                    </dt>
+                    </dd>
+                    <!--<dd class="clearfix select-catename" data-catename="area">-->
+                        <!--<span>区域</span>-->
+                        <!--<ul class="select-list">-->
+                           <!--<li class="<eq name='area_id' value=''>selected</eq>"><a href="{:U('classroom/Teacher/index')}" data-cate_id="0" class="select_cate">不限</a></li>-->
+                           <!--<volist name="area" id="vo">-->
+                              <!--<li class="<eq name='vo.area_id' value='$area_id'>selected</eq>"><a href="javascript:;"  data-type="area" data-value="{$vo.area_id}" class="select_cate screen">{$vo.title}</a></li>-->
+                            <!--</volist>-->
+                        <!--</ul>-->
+                    <!--</dd>-->
                 </dl>
-                <div class="card-main">
-                    <ul class="teacherlist">
-                    <php>if($listData){</php>
-                        <volist name="listData" id="vo">
-                            <li>
-                                <div class="teacher-photo"><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['head_id'],100,100)}" class="lazyloading" alt="{$vo.name}"></a></div>
-                                <div class="teacher-info">
-                                    <div><a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="name">{:msubstr(t($vo['name']),0,10,'utf-8',true)}</a><php>if($vo['teacher_title_cover']){</php><img src="{$vo.teacher_title_cover}" width="19px" height="19px" alt="{$vo.teacher_title_category}"><php>}</php><span class="school">{:msubstr(t($vo['school']),0,10,'utf-8',true)}</span></div>
-                                    <div class="intro">{:limitNumber($vo['inro'],30)}</div>
-                                    <div class="info">
-                                        <div class="score">
-                                            <if condition="$vo['star'] GT 0 "> <i class="icon-star"></i>
-                                            <else /><i class="icon-star_no"></i></if>
-                                            <if condition="$vo['star'] GT 1 "> <i class="icon-star"></i>
-                                            <else /><i class="icon-star_no"></i></if>
-                                            <if condition="$vo['star'] GT 2 "> <i class="icon-star"></i>
-                                            <else /><i class="icon-star_no"></i></if>
-                                            <if condition="$vo['star'] GT 3 "> <i class="icon-star"></i>
-                                            <else /><i class="icon-star_no"></i></if>
-                                            <if condition="$vo['star'] GT 4 "> <i class="icon-star"></i>
-                                            <else /><i class="icon-star_no"></i></if>
-                                        </div>
-                                        <div class="review">({$vo.review_count})人&nbsp;&nbsp;</div>
-                                        <div class="address">|&nbsp;&nbsp;<i class="icon-address"></i>{$vo.Teacher_areas}</div>
-                                        <div class="follow">|&nbsp;&nbsp;{$vo.follow_count}人关注</div>
-                                        <div class="video">|&nbsp;&nbsp;{$vo.video_count}门课程</div>
+            </div>
+            <div class="class_left">
+                <div class="content-card">
+                    <dl class="card-body">
+                        <dt>
+                            <div class="nav-item sortList <eq name='sort_type' value=''>active</eq>"><a href="{:U('classroom/Teacher/index')}" >综合排序</a></div>
+                            <div class="nav-item sortList <eq name='sort_type' value="1">active</eq>"><a href="javascript:;" class="screen" data-type="sort_type" data-value="1">最热</a></div>
+                            <div class="nav-item sortList <eq name='sort_type' value="2">active</eq>"><a href="javascript:;" class="screen" data-type="sort_type" data-value="2">最新</a></div>
+                            <div class="nav-item"><label><input type="checkbox" <php>if($live_type == 2){</php>checked="checked" data-type="live_type"<php>}else{</php>data-type="live_type" data-value="2"<php>}</php>class="screen" >直播课</label></div>
+                            <div class="nav-item"><label><input type="checkbox" <php>if($course_type == 1){</php>checked="checked" data-type="course_type"<php>}else{</php>data-type="course_type" data-value="1"<php>}</php>class="screen">点播课</label></div>
+                            <div class="nav-item top-pager">
+                                <php>if($data['nowPage'] >= 2  ){</php>
+                                <a href="{:U('classroom/Teacher/index',array('p'=>$data['nowPage']-1))}" class="prevPage"><i class="icon-prev"></i></a>
+                                <php>}else{</php>
+                                <a href="javascript:;" class="prevPage"><i class="icon-prev"></i></a>
+                                <php>}</php>
+                                <span id="nowPage">{$data.nowPage}</span>
+                                <php>if($data['nowPage'] < $data['totalPages']){</php>
+                                <a href="{:U('classroom/Teacher/index',array('p'=>$data['nowPage']+1))}" class="nextPage"><i class="icon-next"></i></a>
+                                <php>}else{</php>
+                                <a href="javascript:;" class="nextPage"><i class="icon-next"></i></a>
+                                <php>}</php>
+                            </div>
+                        </dt>
+                    </dl>
+                    <div class="card-main">
+                        <ul class="teacher_list">
+                            <php>if($listData){</php>
+                                <volist name="listData" id="vo">
+                                <li>
+                                    <div class="teacher_picture">
+                                        <a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['head_id'],120,120)}" class="lazyloading" alt="{$vo.name}"></a>
                                     </div>
-                                    <div class="tag">
-                                        <span>{$vo.teacher_age}年教龄</span>
-                                        <span>{$vo.teacher_title_category}</span>
-                                        <php>foreach($vo['label'] as $k=>$v){</php>
-                                        <php>if($k < 4){</php><span>{:msubstr(t($v),0,10,'utf-8',true)}</span><php>}</php>
-                                        <php>}</php>
-                                        <span>{:limitNumber($vo['teach_evaluation'],15)}</span>
-                                    </div>
+                                    <p class="teacher_name">{:msubstr(t($vo['name']),0,10,'utf-8',false)}</p>
+                                    <p class="shcool">{:msubstr(t($vo['school']),0,10,'utf-8',false)}</p>
+                                    <p class="introduce">{$vo['inro']}</p>
+                                </li>
+                                </volist>
+                            <php>}else{</php>
+                                <span>没有相关讲师。。</span>
+                            <php>}</php>
+                        </ul>
 
-                                    <div class="list">热门课程：
-                                        <php>if($vo['video']){</php>
-                                            <a href="{:U('classroom/Video/view',array('id'=>$vo['video']['id']))}">{:getShort($vo['video']['video_title'],15)}</a>&nbsp;&nbsp;
-                                            <span>播放{$vo['video']['video_order_count']}</span>次&nbsp;&nbsp;
-
-                                            <php>if($vo['video']['t_price'] == 0){</php><span style="color:green ;">免费</span>
-                                            <php>}else{</php><span>￥{$vo['video']['t_price']}</span>元<php>}</php>
-                                        <php>}else{</php>
-                                            <span> 无</span>
-                                        <php>}</php>
-                                    <a href="{:U('classroom/Teacher/view',array('id'=>$vo['id']))}" class="more">进入讲师主页</a>
-                                    </div>
-                                    <php>if($vo['collection'] > 0){</php>
-                                      <a href="javascript:;"onClick="collectTeacher(this,0,{$vo['id']})" class="sc on"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
-                                    <php>}else{</php>
-                                      <a href="javascript:;"onClick="collectTeacher(this,1,{$vo['id']})" class="sc"><i class="icon-sc"></i>{$vo['collect_num']}收藏</a>
-                                    <php>}</php>
-                                </div>
-                            </li>
-                        </volist>
-
-                        <php>}else{</php>
-                        <span>没有相关讲师。。</span>
+                        <php>if($data['totalPages'] > 1){</php>
+                            <div class="page">
+                                <div class="pagebox"> {$data.html} </div>
+                            </div>
                         <php>}</php>
-                    </ul>
-                    <php>if($data['totalPages'] > 1){</php>
-                    <div class="page">
-                        <div class="pagebox">
-                            {$data.html}
-                        </div>
                     </div>
-                    <php>}</php>
                 </div>
             </div>
         </div>
-        <div class="teacher_right">
-            <div class="teacher_side">
-                <h3 class="teacher_side_tit">精选课程</h3>
-                <div class="teacher_side_wrappers">
-                    <ul class="classlist03 clearfix">
-                    <volist name="bestVideo" id="vo">
-                        <li>
-                            <div class="pic">
-                                <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],220,124)}" class="lazyloading" alt="{$vo.video_title}"></a>
-                            </div>
-                            <h3><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span></h3>
-                            <div class="info">
-                                <php>if($vo['school_title']){</php>
-                                <div class="name">{:limitNumber($vo['school_title'],5)} <span >认证</span></div>
-                                <php>}</php>
-                                <div class="price"><if condition="$vo['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vo['t_price']}</if></div>
-                            </div>
-                        </li>
-                    </volist>
-                    </ul>
-                </div>
-            </div>
-            <div class="teacher_side bg">
-                <h3 class="class_right_tit ">热门课程推荐</h3>
-                <div class="teacher_side_wrappers">
-                    <ul class="classlist03 clearfix">
-                    <volist name="video" id="vo" offset="4" length='4'>
-                        <li>
-                            <div class="pic">
-                                <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],220,124)}" class="lazyloading" alt="{$vo.video_title}"></a>
-                            </div>
-                            <h3><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{:msubstr(t($vo['video_title']),0,10,'utf-8',true)}</a><span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span></h3>
-                            <div class="info">
-                                <php>if($vo['school_title']){</php>
-                                <div class="name">{:limitNumber($vo['school_title'],5)} <span >认证</span></div>
-                                <php>}</php>
-                                <div class="price"><if condition="$vo['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vo['t_price']}</if></div>
-                            </div>
-                        </li>
-                    </volist>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="clear"></div>
-        <php>if($guess_you_like){</php>
-        <div class="guess_like">
-            <h3 class="guess_like_tit">猜你喜欢</h3>
-            <ul class="classlist02 clearfix">
-                <volist name="guess_you_like" id="val" offset="2" length='5'>
-                    <li>
-                        <div class="pic">
-                            <php>if($val['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
-                            <php>}</php>
-                            <php>if($val['type'] == 2){</php>
-                            <div class="txt">
-                                <div class="fl orange class">直播中</div>
-                                <span class="fl">进度：{$val['live']['now']}/{$val['live']['count']}节</span>
-                            </div>
-                            <php>}</php>
-                        </div>
-                        <h3>
-                            <php>if($val['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],11)}</a>
-                            <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],11)}</a>
-                            <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
-                            <php>}</php>
-                        </h3>
-                        <!--<div  class="name">{$val['mhmName']}</div>-->
-                        <div class="info">
-                            <div class="fr">{$val['teacherInfo']['name']}</div>
-                            <div class="price"><if condition="$val['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$val['t_price']}</if></div>
-                        </div>
-                    </li>
-                </volist>
-            </ul>
-        </div>
-        <php>}</php>
     </div>
 </div>
 <script>

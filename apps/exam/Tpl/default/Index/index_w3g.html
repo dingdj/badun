@@ -1,8 +1,12 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
     <style>
         .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
         .btn {float: right;margin-top: -55px;}
+        .r03 dd {padding-bottom:10px;}
+        .r03 dd .select-list {width: 100%;display: inline-block;}
+        .r03 dd .select-list li {margin-bottom: 12px;border-right: transparent;}
+        .r03 dd .select-list a {width: 90%;}
     </style>
     <div class="min-height-wrap">
         <div class="maskbox"></div>
@@ -14,10 +18,11 @@
                         <dl>
                             <dt>考试分类</dt>
                             <dd name="group-list">
-                                <a href="{:U('exam/Index/index')}" >全部考试</a>
+                                <!--<a href="{:U('exam/Index/index')}" >全部考试</a>
                                 <volist name="selCate" id="vo">
                                         <a href="{:U('exam/Index/index',array('cateId'=>$vo['id']))}" <eq name="cateId" value="$vo['id']">style="color: #00BED4;background-color: #fff;border-color: #00BED4;"</eq>>{:msubstr($vo['title'],0,5,"utf-8",true)}</a>
-                                </volist>
+                                </volist>-->
+                                {$selcate}
                             </dd>
                         </dl>
                     </div>
@@ -111,4 +116,4 @@
         }
     }
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

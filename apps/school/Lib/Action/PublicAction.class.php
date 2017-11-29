@@ -167,8 +167,8 @@ class PublicAction extends CommonAction
 	/**
 	 * classroom/Public/collect
 	 * 收藏功能
-	 * 套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
-	 *  1=>'album',//套餐收藏
+	 * 班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+	 *  1=>'album',//班级收藏
 	 *	2=>'zy_video',//课程收藏
 	 *	3=>'zy_question',//提问收藏
 	 *	4=>'zy_note',//笔记收藏
@@ -179,7 +179,7 @@ class PublicAction extends CommonAction
 	public function collect(){
 		$zyCollectionMod = D('ZyCollection');
 		$type   = intval($_POST['type']);//0:取消收藏;1:收藏;
-		$sctype = intval($_POST['sctype']);//套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+		$sctype = intval($_POST['sctype']);//班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏
 		$source_id = intval($_POST['source_id']);//资源ID
 		if($sctype <= 0){
 			$this->mzError('收藏资源错误!');

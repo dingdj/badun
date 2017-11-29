@@ -82,7 +82,7 @@ class ZyOrderLiveModel extends Model{
      */
     public function isBuyLive($uid, $live_id){
         $live = $this->where(array('uid'=>$uid, 'live_id'=>$live_id))->field('id,pay_status')->find();
-        if($live['pay_status'] == 3 || $live['pay_status'] == 6){
+        if($live['pay_status'] == 3 || $live['pay_status'] == 4 || $live['pay_status'] == 6){
             return $live['id'];
         }else{
             return false;
@@ -98,7 +98,7 @@ class ZyOrderLiveModel extends Model{
      */
     public function isBuyVideo($uid, $videoId){
         $video = $this->where(array('uid'=>$uid, 'live_id'=>$videoId))->field('id,pay_status')->find();
-        if($video['pay_status'] == 3){
+        if($video['pay_status'] == 3 || $video['pay_status'] == 4 || $video['pay_status'] == 6){
             return $video['id'];
         }else{
             return false;

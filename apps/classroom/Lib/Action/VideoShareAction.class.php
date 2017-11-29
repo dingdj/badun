@@ -1,6 +1,6 @@
 <?php
 /**
- * 云课堂点播(套餐)控制器
+ * 云课堂点播(班级)控制器
  * @version CY1.0
  */
 tsload(APPS_PATH . '/classroom/Lib/Action/CommonAction.class.php');
@@ -60,7 +60,7 @@ class VideoShareAction extends CommonAction {
 
             $video_id = M( 'album' )->where ( $map )->getField('id');
             if(!$video_id){
-                $this->mzError("套餐不存在");
+                $this->mzError("班级不存在");
             }
         }
         if($type == 3){
@@ -115,7 +115,7 @@ class VideoShareAction extends CommonAction {
                 $credit = M('credit_setting')->where('id=18')->field('id,name,score,count')->find();
                 if($credit['score'] > 0){
                     $stype = 6;
-                    $note = '分享套餐获得的积分';
+                    $note = '分享班级获得的积分';
                 }
             }else if($type == 2){
                 $credit = M('credit_setting')->where('id=12')->field('id,name,score,count')->find();

@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 <style>
     .selectul li {width: 50%;}
     .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
@@ -75,7 +75,7 @@
             <volist name="listData" id="l">
                 <li>
                     <i class="<switch name='l.attach_info.extension'><case value='ppt|pptx|pptm|ppsx|potm|ppam|ppsm'>icon-01</case><case value='word|doc|docx|docm|dotx'>icon-02</case>
-                            <case value='pdf'>icon-03</case><case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-04</case><case value='txt'>icon-05</case><default/></switch>"></i>
+                            <case value='pdf'>icon-03</case><case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-04</case><case value='txt'>icon-05</case><case value='zip'>icon-06</case><default/></switch>"></i>
                     <h3>{:msubstr(t($l['title']),0,20,'utf-8',true)}</h3>
                     <p>更新时间：{:date("Y-m-d H:i",$l['ctime'])}</p>
                     <p>文件大小：{$l['attach_info']['size']}</p>
@@ -259,6 +259,8 @@
             dataType: "json",
             success: function (data) {
                 if(data.status == 1){
+                    $(".layer-shade").hide();
+                    $(".downbox").hide();
                     var url = '{:U("classroom/Library/downLink")}'+'&source_id='+down_id;
                     window.location.href = url;
                 }
@@ -266,4 +268,4 @@
         });
     }
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

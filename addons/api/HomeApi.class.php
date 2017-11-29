@@ -7,34 +7,34 @@ class HomeApi extends Api
 {
     protected $search_order_list = array(
         1 => array(
-            'default' => 'video_order_count DESC,video_score DESC,video_comment_count DESC', //默认
-            'saledesc' => 'video_order_count DESC', //订单量递减
-            'saleasc' => 'video_order_count ASC', //订单量递增
-            'scoredesc' => 'video_score DESC', //评分递减
-            'scoreasc' => 'video_score ASC', //评分递增
-            't_price' => 't_price ASC', //价格递增
+            'default'      => 'video_order_count DESC,video_score DESC,video_comment_count DESC', //默认
+            'saledesc'     => 'video_order_count DESC', //订单量递减
+            'saleasc'      => 'video_order_count ASC', //订单量递增
+            'scoredesc'    => 'video_score DESC', //评分递减
+            'scoreasc'     => 'video_score ASC', //评分递增
+            't_price'      => 't_price ASC', //价格递增
             't_price_down' => 't_price DESC', //价格递减
-            'new' => 'ctime desc',
+            'new'          => 'ctime desc',
         ),
         2 => array(
-            'default' => 'video_order_count DESC,video_score DESC,video_comment_count DESC',
-            'saledesc' => 'video_order_count DESC', //订单量递减
-            'saleasc' => 'video_order_count ASC', //订单量递增
-            'scoredesc' => 'video_score DESC',
-            'scoreasc' => 'video_score ASC',
-            't_price' => 't_price ASC',
+            'default'      => 'video_order_count DESC,video_score DESC,video_comment_count DESC',
+            'saledesc'     => 'video_order_count DESC', //订单量递减
+            'saleasc'      => 'video_order_count ASC', //订单量递增
+            'scoredesc'    => 'video_score DESC',
+            'scoreasc'     => 'video_score ASC',
+            't_price'      => 't_price ASC',
             't_price_down' => 't_price DESC',
-            'new' => 'ctime desc',
+            'new'          => 'ctime desc',
         ),
         3 => array(
             'defult' => 'view_count desc,collect_num desc,ctime desc',
-            'new' => 'ctime desc',
-            'hot' => 'view_count desc,collect_num desc',
+            'new'    => 'ctime desc',
+            'hot'    => 'view_count desc,collect_num desc',
         ),
         4 => array(
             'default' => 'reservation_count desc,review_count desc,views desc',
-            'hot' => 'reservation_count desc',
-            'new' => 'ctime desc',
+            'hot'     => 'reservation_count desc',
+            'new'     => 'ctime desc',
         ),
     );
     /**
@@ -42,32 +42,32 @@ class HomeApi extends Api
      */
     public function getwentilist()
     {
-        $type = t($this->data['type']);
-        $zyQuestionMod = D('ZyQuestion', 'classroom');
+        $type            = t($this->data['type']);
+        $zyQuestionMod   = D('ZyQuestion', 'classroom');
         $zyCollectionMod = D('ZyCollection', 'classroom');
 
         if ($type == 'me') {
-            $map['uid'] = intval($this->mid);
+            $map['uid']       = intval($this->mid);
             $map['parent_id'] = 0;
-            $order = 'ctime DESC';
+            $order            = 'ctime DESC';
 
             $data = $zyQuestionMod->where($map)->order($order)->limit($this->_limit())->select();
             foreach ($data as &$value) {
-                $value['qst_title'] = msubstr($value['qst_title'], 0, 15);
+                $value['qst_title']       = msubstr($value['qst_title'], 0, 15);
                 $value['qst_description'] = msubstr($value['qst_description'], 0, 153);
-                $value['strtime'] = friendlyDate($value['ctime']);
-                $value['qcount'] = $zyQuestionMod->where(array('parent_id' => array('eq', $value['id'])))->count();
+                $value['strtime']         = friendlyDate($value['ctime']);
+                $value['qcount']          = $zyQuestionMod->where(array('parent_id' => array('eq', $value['id'])))->count();
             }
         } elseif ($type == 'question') {
-            $thistable = C('DB_PREFIX').'zy_question';
-            $uid = $this->mid;
+            $thistable = C('DB_PREFIX') . 'zy_question';
+            $uid       = $this->mid;
             //找到所有的答案
-            $sql = "SELECT `id`,`parent_id` FROM {$thistable} WHERE `uid` = {$uid} and `parent_id` in(SELECT `id` FROM {$thistable} WHERE parent_id =0)";
-            $data = M()->query($sql);
-            $_myIds = array();
+            $sql     = "SELECT `id`,`parent_id` FROM {$thistable} WHERE `uid` = {$uid} and `parent_id` in(SELECT `id` FROM {$thistable} WHERE parent_id =0)";
+            $data    = M()->query($sql);
+            $_myIds  = array();
             $_myPIds = array();
             foreach ($data as $key => $value) {
-                $_myIds[] = $value['id'];
+                $_myIds[]  = $value['id'];
                 $_myPIds[] = $value['parent_id'];
             }
 
@@ -82,7 +82,7 @@ class HomeApi extends Api
             //把答案的问题
             $_data = M('ZyQuestion')->where(array('id' => array('in', (string) $_myPIds)))->select();
 
-            foreach ($data as  &$value) {
+            foreach ($data as &$value) {
                 $_value = array();
                 foreach ($_data as $k => $v) {
                     if ($value['parent_id'] == $v['id']) {
@@ -93,13 +93,13 @@ class HomeApi extends Api
                 $value['wenti'] = $_value;
             }
             foreach ($data as &$value) {
-                $value['wenti']['qst_title'] = msubstr($value['wenti']['qst_title'], 0, 15);
+                $value['wenti']['qst_title']       = msubstr($value['wenti']['qst_title'], 0, 15);
                 $value['wenti']['qst_description'] = msubstr($value['wenti']['qst_description'], 0, 149);
-                $value['wenti']['strtime'] = friendlyDate($value['wenti']['ctime']);
-                $value['wenti']['qcount'] = M('ZyQuestion')->where(array('parent_id' => array('eq', $value['wenti']['id'])))->count();
-                $value['qst_title'] = msubstr($value['qst_title'], 0, 15);
-                $value['qst_description'] = msubstr($value['qst_description'], 0, 31);
-                $value['qcount'] = M('ZyQuestion')->where(array('parent_id' => array('eq', $value['id'])))->count();
+                $value['wenti']['strtime']         = friendlyDate($value['wenti']['ctime']);
+                $value['wenti']['qcount']          = M('ZyQuestion')->where(array('parent_id' => array('eq', $value['wenti']['id'])))->count();
+                $value['qst_title']                = msubstr($value['qst_title'], 0, 15);
+                $value['qst_description']          = msubstr($value['qst_description'], 0, 31);
+                $value['qcount']                   = M('ZyQuestion')->where(array('parent_id' => array('eq', $value['id'])))->count();
             }
         }
         if ($data) {
@@ -112,26 +112,26 @@ class HomeApi extends Api
     //加载我的笔记
     public function getNoteList()
     {
-        $type = 'me';
-        $zyNoteMod = D('ZyNote', 'classroom');
+        $type            = 'me';
+        $zyNoteMod       = D('ZyNote', 'classroom');
         $zyCollectionMod = D('ZyCollection', 'classroom');
         if ($type == 'me') {
-            $map['uid'] = intval($_REQUEST['uid']) ? intval($_REQUEST['uid']) : $this->mid;
+            $map['uid']       = intval($_REQUEST['uid']) ? intval($_REQUEST['uid']) : $this->mid;
             $map['parent_id'] = 0;
-            $order = 'ctime DESC';
-            $data = $zyNoteMod->where($map)->order($order)->limit($this->_limit())->select();
+            $order            = 'ctime DESC';
+            $data             = $zyNoteMod->where($map)->order($order)->limit($this->_limit())->select();
             foreach ($data as &$value) {
-                $value['userface'] = getUserFace($value['uid']);
-                $value['uname'] = getUserName($value['uid']);
-                $value['note_title'] = msubstr($value['note_title'], 0, 15);
+                $value['userface']         = getUserFace($value['uid']);
+                $value['uname']            = getUserName($value['uid']);
+                $value['note_title']       = msubstr($value['note_title'], 0, 15);
                 $value['note_description'] = msubstr($value['note_description'], 0, 150);
-                $value['strtime'] = friendlyDate($value['ctime']);
-                $value['qcount'] = $zyNoteMod->where(array('parent_id' => array('eq', $value['id'])))->count();
+                $value['strtime']          = friendlyDate($value['ctime']);
+                $value['qcount']           = $zyNoteMod->where(array('parent_id' => array('eq', $value['id'])))->count();
                 if ($value['type'] == 1) {
                     //是课程
-                    $value['video_title'] = M('zy_video')->where('id='.$value['oid'].' and is_del=0')->getField('video_title');
+                    $value['video_title'] = M('zy_video')->where('id=' . $value['oid'] . ' and is_del=0')->getField('video_title');
                 } else {
-                    $value['video_title'] = M('album')->where('id='.$value['oid'].' and is_del=0')->getField('album_title');
+                    $value['video_title'] = M('album')->where('id=' . $value['oid'] . ' and is_del=0')->getField('album_title');
                 }
             }
         }
@@ -143,20 +143,20 @@ class HomeApi extends Api
      */
     public function getReviewList()
     {
-        $type = 'me';
+        $type        = 'me';
         $zyReviewMod = D('ZyReview');
         if ($type == 'me') {
-            $map['uid'] = intval($this->mid);
+            $map['uid']       = intval($this->mid);
             $map['parent_id'] = 0;
-            $order = 'ctime DESC';
+            $order            = 'ctime DESC';
 
             $data = $zyReviewMod->where($map)->order($order)->limit($this->_limit())->select();
             foreach ($data as &$value) {
-                $value['star'] = $value['star'] / 20;
+                $value['star']               = $value['star'] / 20;
                 $value['review_description'] = msubstr($value['review_description'], 0, 150);
-                $value['strtime'] = friendlyDate($value['ctime']);
-                $value['qcount'] = $zyReviewMod->where(array('parent_id' => array('eq', $value['id'])))->count();
-                $_map['id'] = array('eq', $value['oid']);
+                $value['strtime']            = friendlyDate($value['ctime']);
+                $value['qcount']             = $zyReviewMod->where(array('parent_id' => array('eq', $value['id'])))->count();
+                $_map['id']                  = array('eq', $value['oid']);
                 //找到评论的内容
                 if ($value['type'] == 1) {
                     $value['title'] = M('ZyVideo')->where($_map)->getField('`video_title` as `title`');
@@ -171,7 +171,7 @@ class HomeApi extends Api
     //系统消息
     public function notify()
     {
-        $list = D('notify_message', 'classroom')->where('uid='.$this->mid)->order('ctime desc')->limit($this->_limit())->select();
+        $list = D('notify_message', 'classroom')->where('uid=' . $this->mid)->order('ctime desc')->limit($this->_limit())->select();
         foreach ($list as &$v) {
             if ($appname != 'public') {
                 $v['app'] = model('App')->getAppByName($v['appname']);
@@ -184,8 +184,8 @@ class HomeApi extends Api
     //获取账户余额接口
     public function learnc()
     {
-        $money = D('ZyLearnc', 'classroom')->getUser($this->mid);
-        $credit = model('Credit')->getUserCredit($this->mid);
+        $money          = D('ZyLearnc', 'classroom')->getUser($this->mid);
+        $credit         = model('Credit')->getUserCredit($this->mid);
         $money['score'] = (int) $credit['credit']['score']['value'];
         $this->exitJson($money);
     }
@@ -194,8 +194,8 @@ class HomeApi extends Api
     public function account_pay()
     {
         $map['uid'] = $this->mid;
-        $st = t($this->data['st']);
-        $et = t($this->data['et']);
+        $st         = t($this->data['st']);
+        $et         = t($this->data['et']);
         if (!$st) {
             $st = '';
         }
@@ -222,11 +222,11 @@ class HomeApi extends Api
     public function feedback()
     {
         $data = [
-            'uid' => (int) $this->mid,
-            'content' => filter_keywordh($this->content),
-            'ctime' => time(),
+            'uid'         => (int) $this->mid,
+            'content'     => filter_keyword(h($this->content)),
+            'ctime'       => time(),
             'contact_way' => $this->way,
-            'type' => 0,
+            'type'        => 0,
         ];
         if (!$data['content']) {
             $this->exitJson((object) [], 0, '反馈意见内容不能为空');
@@ -242,9 +242,9 @@ class HomeApi extends Api
      */
     public function getCateList()
     {
-        $pid = (int) $this->id ?: 0;
+        $pid       = (int) $this->id ?: 0;
         $cate_list = model('CategoryTree')->setTable('zy_currency_category')->getNetworkList($pid);
-        $list = $this->parseCateList($cate_list,0);
+        $list      = $this->parseCateList($cate_list, 0);
         if ($list) {
             $this->exitJson($list, 1);
         }
@@ -255,30 +255,33 @@ class HomeApi extends Api
      */
     public function getRecCateList()
     {
-        $limit = (int) $this->count ?: 20;
-        $cate_list = model('CategoryTree')->setTable('zy_currency_category')->getAllCategory(['pid' => array('neq',0), 'is_h5_and_app' => 1], $limit);
-        $list = $this->parseCateList($cate_list);
+        $limit                = (int) $this->count ?: 20;
+        $map['is_h5_and_app'] = 1;
+        $map['is_choice_app'] = 1;
+        $map['_logic']        = 'OR';
+        $cate_list            = model('CategoryTree')->setTable('zy_currency_category')->getAllCategory($map, $limit);
+        $list                 = $this->parseCateList($cate_list);
         if ($list) {
             $this->exitJson($list, 1);
         }
         $this->exitJson([], 0, '没有更多分类了');
     }
     /** 分类数据解析 **/
-    public function parseCateList($list,$pid = false)
+    public function parseCateList($list, $pid = false)
     {
         $data = [];
         if ($list) {
             foreach ($list as $v) {
-                $item['id'] = $v['id'];
+                $item['id']    = $v['id'];
                 $item['title'] = $v['title'];
-                $childs = $this->parseCateList($v['child'],($pid === false) ? false : $v['id']);
+                $childs        = $this->parseCateList($v['child'], ($pid === false) ? false : $v['id']);
                 if ($childs) {
                     $item['childs'] = $childs;
                 }
                 $item['icon'] = getCover($v['middle_ids']);
-                $data[] = $item;
+                $data[]       = $item;
             }
-            $pid !== false && array_unshift($data,['id'=>$pid,'title'=>'全部','icon'=>'']);
+            $pid !== false && array_unshift($data, ['id' => $pid, 'title' => '全部', 'icon' => '']);
         }
 
         return (array) $data ?: [];
@@ -289,7 +292,7 @@ class HomeApi extends Api
      */
     public function getAdvert()
     {
-        $place_list = [19 => 'app_goods_banner', 20 => 'app_home',22=>'app_ad'];
+        $place_list = [19 => 'app_goods_banner', 20 => 'app_home', 22 => 'app_ad'];
         if (!$this->place) {
             $this->exitJson((object) [], 0, '请指定广告位置');
         }
@@ -298,36 +301,37 @@ class HomeApi extends Api
             $this->exitJson((object) [], 0, '请指定有效的广告配置');
         }
         $map = [
-            'is_active' => 1,
+            'is_active'    => 1,
             'display_type' => 3,
-            'place' => $place,
+            'place'        => $place,
         ];
         if ($info = M('ad')->where($map)->find()) {
             $info['content'] = unserialize($info['content']);
             foreach ($info['content'] as &$v) {
-                $v['banner'] = getCover($v['banner'], 'auto', 'auto', false);
+                $v['banner'] = getCover($v['banner'], 1080, 480);
             }
             $this->exitJson($info['content'], 1);
         }
         $this->exitJson((object) [], 0, '该位置暂时没有广告');
     }
 
-
     /**
      * @name 获取首页所有分类
      */
-    public function indexAllReCate(){
-        $limit = 5;
-        $cate_list = model('CategoryTree')->setTable('zy_currency_category')->getAllCategory(['pid' => array('eq',0)], $limit);
-        $list = $this->parseCateList($cate_list);
-        $list = $list ?: [];
+    public function indexAllReCate()
+    {
+        $limit     = 5;
+        $cate_list = model('CategoryTree')->setTable('zy_currency_category')->getAllCategory(['pid' => array('eq', 0)], $limit);
+        $list      = $this->parseCateList($cate_list);
+        $list      = $list ?: [];
         $this->exitJson($list, 1);
     }
 
     /**
      * @name 获取首页直播大厅
      */
-    public function indexNewLive(){
+    public function indexNewLive()
+    {
         $list = model('Live')->getLatelyLive(5);
         $list = $list ?: [];
         $this->exitJson($list, 1);
@@ -336,10 +340,11 @@ class HomeApi extends Api
     /**
      * @name 获取首页推荐讲师
      */
-    public function indexReTeacher(){
-        $list = M()->query('SELECT `id`,`name`,`head_id` FROM `'.C('DB_PREFIX').'zy_teacher` WHERE is_del=0 and is_best=1 order by `best_sort` ASC  LIMIT 3');
+    public function indexReTeacher()
+    {
+        $list = M()->query('SELECT `id`,`name`,`head_id` FROM `' . C('DB_PREFIX') . 'zy_teacher` WHERE is_del=0 and is_best=1 order by `best_sort` ASC  LIMIT 3');
         if (!$list) {
-            $list = M()->query('SELECT `id`,`name`,`head_id` FROM `'.C('DB_PREFIX').'zy_teacher` WHERE is_del=0 order by `ctime` DESC  LIMIT 3');
+            $list = M()->query('SELECT `id`,`name`,`head_id` FROM `' . C('DB_PREFIX') . 'zy_teacher` WHERE is_del=0 order by `ctime` DESC  LIMIT 3');
         }
         if ($list) {
             foreach ($list as &$val) {
@@ -351,49 +356,52 @@ class HomeApi extends Api
     }
 
     /**
-    * @name 获取首页推荐机构
-    */
-    public function indexReSchool(){
+     * @name 获取首页推荐机构
+     */
+    public function indexReSchool()
+    {
         $map['is_best'] = 1;
-        $order = 'best_sort ASC';
-        $list = model('School')->getList($map, 4 , $order);
-        $list = $list ?: [];
+        $order          = 'best_sort ASC';
+        $list           = model('School')->getList($map, 4, $order);
+        $list           = $list ?: [];
         $this->exitJson($list, 1);
     }
 
     /**
-    * @name 获取首页精选课程
-    */
-    public function indexHotCourse(){
-        $map ['is_best']     = 1;
-        $map ['is_del']      = 0;
-        $map['uctime']       = array('GT',time());
-        $map['listingtime']  = array('LT',time());
-        $bestVideo  = D('ZyVideo')->where($map)->order('ctime desc')->limit(4)->findAll();
+     * @name 获取首页精选课程
+     */
+    public function indexHotCourse()
+    {
+        $map['is_best']     = 1;
+        $map['is_del']      = 0;
+        $map['uctime']      = array('GT', time());
+        $map['listingtime'] = array('LT', time());
+        $bestVideo          = D('ZyVideo')->where($map)->order('ctime desc')->limit(4)->findAll();
         foreach ($bestVideo as &$val) {
             //获取课程的最新价格
-            $val['mzprice'] = getPrice ( $val, $this->mid, true, true );
+            $val['mzprice'] = getPrice($val, $this->mid, true, true);
             $val['price']   = $val['mzprice']['price'];
-            $val['cover'] = getCover($val['cover'], 280, 160);
+            $val['cover']   = getCover($val['cover'], 280, 160);
         }
         $bestVideo = $bestVideo ?: [];
         $this->exitJson($bestVideo, 1);
     }
 
     /**
-    * @name 获取首页最新课程
-    */
-    public function indexNewCourse(){
-        $map ['is_del']      = 0;
-        $map ['is_activity'] = 1;
-        $map['uctime']       = array('GT',time());
-        $map['listingtime']  = array('LT',time());
-        $video  = D('ZyVideo')->where($map)->order('ctime desc','id desc')->limit(4)->findAll();
+     * @name 获取首页最新课程
+     */
+    public function indexNewCourse()
+    {
+        $map['is_del']      = 0;
+        $map['is_activity'] = 1;
+        $map['uctime']      = array('GT', time());
+        $map['listingtime'] = array('LT', time());
+        $video              = D('ZyVideo')->where($map)->order('ctime desc', 'id desc')->limit(4)->findAll();
         foreach ($video as &$val) {
             //获取课程的最新价格
-            $val['mzprice'] = getPrice ( $val, $this->mid, true, true );
+            $val['mzprice'] = getPrice($val, $this->mid, true, true);
             $val['price']   = $val['mzprice']['price'];
-            $val['cover'] = getCover($val['cover'], 280, 160);
+            $val['cover']   = getCover($val['cover'], 280, 160);
         }
         $video = $video ?: [];
         $this->exitJson($video, 1);
@@ -403,16 +411,16 @@ class HomeApi extends Api
     public function index()
     {
         $list = [
-            'video' => [],
-            'school' => [],
-            'like' => [],
+            'video'   => [],
+            'school'  => [],
+            'like'    => [],
             'teacher' => [],
-            'live' => [],
+            'live'    => [],
         ];
         //推送到APP的课程
-        $video_mode = D('ZyVideo', 'classroom');
+        $video_mode      = D('ZyVideo', 'classroom');
         $video_mode->mid = $this->mid;
-        $video = $video_mode->cateVideo('APP', array('is_choice_pc' => 1), 20);
+        $video           = $video_mode->cateVideo('APP', array('is_choice_pc' => 1), 20);
         if ($video) {
             $list['video'] = $video;
         }
@@ -420,39 +428,39 @@ class HomeApi extends Api
         $youLike = D('ZyGuessYouLike', 'classroom')->getGYLData(2, $this->mid, 4);
         if (!$youLikeModel) {
             $map = [
-                'is_del' => 0,
+                'is_del'      => 0,
                 'is_activity' => 1,
-                'uctime' => ['gt', time()],
+                'uctime'      => ['gt', time()],
                 'listingtime' => ['lt', time()],
             ];
             $youLike = D('ZyVideo', 'classroom')->where($map)->order('endtime,starttime,limit_discount')->limit(4)->select();
 
             if ($youLike) {
-                foreach ($youLike  as &$value) {
-                    $value['price'] = getPrice($value, $this->mid);// 计算价格
-                     $value['imageurl'] = getCover($value['cover'], 280, 160);
+                foreach ($youLike as &$value) {
+                    $value['price']       = getPrice($value, $this->mid); // 计算价格
+                    $value['imageurl']    = getCover($value['cover'], 280, 160);
                     $value['video_score'] = round($value['video_score'] / 20); // 四舍五入
-                     if ($value['type'] == 2) {
-                         $value['live_id'] = (int) $value['id'];
-                     }
+                    if ($value['type'] == 2) {
+                        $value['live_id'] = (int) $value['id'];
+                    }
                 }
             }
         }
         $list['like'] = $youLike ?: [];
         //入住机构
-        $school = model('School')->getList('', 4);
+        $school                            = model('School')->getList('', 4);
         $school['data'] && $list['school'] = $school['data'];
-        $time = time();
-        $beVideos = M()->query('SELECT zv.`id`, zv.`teacher_id`,zv.`video_title`,zt.`name`,zt.`inro`,zt.`head_id` FROM `'.C('DB_PREFIX').'zy_video` zv,`'.C('DB_PREFIX')."zy_teacher` zt WHERE zv.teacher_id=zt.id AND zt.id AND zt.is_del=0 and zv.`is_del`=0 AND `is_activity`=1 AND `uctime`>'$time' AND `listingtime`<'$time' and teacher_id >0 GROUP BY `teacher_id` ORDER BY `video_order_count` DESC ,`id` DESC  LIMIT 3");
+        $time                              = time();
+        $beVideos                          = M()->query('SELECT zv.`id`, zv.`teacher_id`,zv.`video_title`,zt.`name`,zt.`inro`,zt.`head_id` FROM `' . C('DB_PREFIX') . 'zy_video` zv,`' . C('DB_PREFIX') . "zy_teacher` zt WHERE zv.teacher_id=zt.id AND zt.id AND zt.is_del=0 and zv.`is_del`=0 AND `is_activity`=1 AND `uctime`>'$time' AND `listingtime`<'$time' and teacher_id >0 GROUP BY `teacher_id` ORDER BY `video_order_count` DESC ,`id` DESC  LIMIT 3");
         if (!$beVideos) {
-            $beVideos = M()->query('SELECT `id` as teacher_id,`type`,`name`,`inro`,`label`,`head_id` FROM `'.C('DB_PREFIX').'zy_teacher` WHERE is_del=0 order by `id` DESC  LIMIT 3');
+            $beVideos = M()->query('SELECT `id` as teacher_id,`type`,`name`,`inro`,`label`,`head_id` FROM `' . C('DB_PREFIX') . 'zy_teacher` WHERE is_del=0 order by `id` DESC  LIMIT 3');
         }
         if ($beVideos) {
             foreach ($beVideos as $k => $val) {
                 $beVideos[$k]['headimg'] = getCover($val['head_id'], 80, 80);
-                $beVideos[$k]['label'] = $val['label'] ?: '';
-                $beVideos[$k]['type'] = ($val['type'] == 1) ? 1 : 2;
-                $beVideos[$k]['id'] = $val['teacher_id'];
+                $beVideos[$k]['label']   = $val['label'] ?: '';
+                $beVideos[$k]['type']    = ($val['type'] == 1) ? 1 : 2;
+                $beVideos[$k]['id']      = $val['teacher_id'];
                 if ($val['type'] == 1) {
                     $beVideos[$k]['live_id'] = (int) $val['id'];
                 }
@@ -474,28 +482,39 @@ class HomeApi extends Api
         //联查所有资源
         $table_list = [
             1 => [
-                    'keyword' => 'video_title',
-                    'mod' => array('ZyVideo', 'classroom'),
-                    'cate_id' => 'fullcategorypath',
+                'keyword'      => 'video_title',
+                'mod'          => array('ZyVideo', 'classroom'),
+                'cate_id'      => 'fullcategorypath',
+                'extend_field' => [
+                    // 此处填写除以上别名字段的其他条件字段,格式 ['字段'=>['paramName'=>'参数名称','value'=>'参数值处理方法']]
+                    // ps. 当参数名称和字段一样时,可以直接写处理方法
+                    'type'      => 'intval({__value__})',
+                    'vip_level' => ['paramName' => 'vip_id', 'value' => 'intval({__value__})'],
+                ], // 扩展条件
             ],
             2 => [
-                    'keyword' => 'video_title',
-                    'mod' => 'Live',
-                    'cate_id' => 'fullcategorypath',
+                'keyword'      => 'video_title',
+                'mod'          => 'Live',
+                'cate_id'      => 'fullcategorypath',
+                'extend_field' => [
+                    'type'      => 'intval({__value__})',
+                    'vip_level' => ['paramName' => 'vip_id', 'value' => 'intval({__value__})'],
+                ],
             ],
             3 => [
-                    'keyword' => 'title',
-                    'mod' => 'School',
-                    'cate_id' => 'school_category',
+                'keyword' => 'title',
+                'mod'     => 'School',
+                'cate_id' => 'school_category',
             ],
             4 => [
-                    'keyword' => 'name',
-                    'mod' => array('ZyTeacher', 'classroom'),
-                    'cate_id' => 'teacher_category',
+                'keyword' => 'name',
+                'mod'     => array('ZyTeacher', 'classroom'),
+                'cate_id' => 'teacher_category',
             ],
         ];
-        $sql = '';
+        // 存放列表数据
         $list = [];
+        // 默认情况下,搜索所以资源
         if (!array_key_exists($this->type, $table_list)) {
             foreach ($table_list as $k => $table) {
                 $data = $this->getSearchData($table);
@@ -509,8 +528,9 @@ class HomeApi extends Api
                 }
             }
         } else {
+            // 如果指定了资源类型,查询指定的资源
             $table = $table_list[$this->type];
-            $data = $this->getSearchData($table);
+            $data  = $this->getSearchData($table);
             if ($data['data'] && $data['gtLastPage'] === false) {
                 $list[] = [
                     'type' => (int) $this->type,
@@ -527,21 +547,45 @@ class HomeApi extends Api
      */
     private function getSearchData($tableInfo)
     {
+        // 实例化数据模型,使用model或者D方法实例化
         $mod = (is_string($tableInfo['mod'])) ? model($tableInfo['mod']) : D($tableInfo['mod'][0], $tableInfo['mod'][1]);
+        // 检测是否已经定义搜索列表方法
         if (method_exists($mod, 'getListBySearch')) {
             $mod->mid = $this->mid;
-            $_map = $map = [];
-            $this->keyword && $_map['keyword'] = array('like', '%'.h($this->keyword).'%');
-            $this->cate_id && $_map['cate_id'] = array('like', '%,'.intval($this->cate_id).',%');
-            $this->type && $_map['type'] = intval($this->type);
+            $_map     = $map     = [];
+            // 公共字段
+            $this->keyword && $_map['keyword'] = array('like', '%' . h($this->keyword) . '%');
+            $this->cate_id && $_map['cate_id'] = array('like', '%,' . intval($this->cate_id) . ',%');
+
+            // 公共字段别名检测
             $in_map = array_intersect_key($_map, $tableInfo);
             if (!empty($in_map)) {
                 foreach ($in_map as $k => $v) {
-                    $map[$tableInfo[$k]] = $v;//重置查询条件
+                    // 重置查询条件
+                    $map[$tableInfo[$k]] = $v;
                 }
             }
+            // 扩展条件字段
+            if (isset($tableInfo['extend_field']) && !empty($tableInfo['extend_field'])) {
+                foreach ($tableInfo['extend_field'] as $param => $val) {
+                    // 解析
+                    $field = $param;
+                    if (is_array($val)) {
+                        $param = $val['paramName'];
+                        $val   = $val['value'];
+                    }
+                    // 是否设置了值
+                    if (!isset($this->data[$param])) {
+                        continue;
+                    }
+                    // 替换参数值,并加入筛选条件
+                    $string_method = str_replace("{__value__}", $this->$param, $val);
+                    $map[$field]   = eval('return ' . $string_method . ';');
+                }
+            }
+            // 获取排序方式
             $order = $this->search_order_list[$this->type][$this->order] ?: '';
-
+            // 调用数据模型下的搜索数据列表方法
             return $mod->getListBySearch($map, $this->count, $order);
         }
 
@@ -553,21 +597,21 @@ class HomeApi extends Api
      */
     public function getArea()
     {
-        $area_mod = model('CategoryTree')->setTable('area');
-        $list = $area_mod->getAllCategory(array('pid' => 0), 0);
+        $area_mod  = model('CategoryTree')->setTable('area');
+        $list      = $area_mod->getAllCategory(array('pid' => 0), 0);
         $aliasList = M('area')->where('(title like "%市辖区%" or title like "县%" or title LIKE "区%" or title LIKE "市%") AND (area_id % 100 = 0)')->field('area_id,pid')->select();
         $aliasList = array_column($aliasList, 'pid', 'area_id');
-        $data = [];
+        $data      = [];
         foreach ($list as $v) {
             $v['area_id'] = $v['id'];
-            $where = in_array($v['id'], $aliasList) ? array('area_id' => $v['id']) : array('pid' => $v['id']);
-            $v['letter'] = getFirstLetter($v['title']);
-            $child = $area_mod->getAllCategory($where);
+            $where        = in_array($v['id'], $aliasList) ? array('area_id' => $v['id']) : array('pid' => $v['id']);
+            $v['letter']  = getFirstLetter($v['title']);
+            $child        = $area_mod->getAllCategory($where);
             foreach ($child as $k => $c) {
                 $v['child'][] = [
                     'area_id' => $c['id'],
-                    'title' => $c['title'],
-                    'letter' => getFirstLetter($c['title']),
+                    'title'   => $c['title'],
+                    'letter'  => getFirstLetter($c['title']),
                 ];
             }
             unset($v['pid'], $v['id']);
@@ -587,7 +631,7 @@ class HomeApi extends Api
      */
     public function getHotKeyword()
     {
-        $limit = intval($this->count) ?: 10;
+        $limit           = intval($this->count) ?: 10;
         $search_keywords = M('search_keywords')->where('is_del = 0')->order('sort asc')->field('id,sk_name,sk_url,sk_text,is_color')->limit($limit)->select();
         $this->exitJson($search_keywords, 1);
     }

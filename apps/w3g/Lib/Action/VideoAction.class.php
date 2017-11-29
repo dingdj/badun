@@ -76,13 +76,13 @@ class VideoAction extends Action
     }
 
     /**
-     * 套餐观看页面
+     * 班级观看页面
      */
     public function watch() {
         include SITE_PATH . '/api/cc/spark_config.php';
         $this->assign('sp_config', $spark_config);
         $aid = intval($_GET['aid']);
-        $type = intval($_GET['type']); //数据分类 1:课程;2:套餐;
+        $type = intval($_GET['type']); //数据分类 1:课程;2:班级;
       
         if ($type == 1) { //课程
             $data = M("ZyVideo")->where(array('id' => array('eq', $aid)))->select();
@@ -197,7 +197,7 @@ class VideoAction extends Action
     	$this->display("watch");
     }
     /**
-     * 取得套餐目录----课程标题
+     * 取得班级目录----课程标题
      * @param int $return 
      * @return void|array
      */

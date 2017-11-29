@@ -439,20 +439,20 @@ class AdminLineClassAction extends AdministratorAction
      * @return void
      */
     private function _initClassroomListAdminMenu(){
-        $this->pageTab[] = array('title'=>'通过审核课程列表','tabHash'=>'index','url'=>U('classroom/AdminLineClass/index'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('classroom/AdminLineClass/index'));
         //$this->pageTab[] = array('title'=>'待审核课程列表','tabHash'=>'unauditList','url'=>U('classroom/AdminLineClass/unauditList'));
-        $this->pageTab[] = array('title'=>'课程回收站','tabHash'=>'recycle','url'=>U('classroom/AdminLineClass/recycle'));
-        $this->pageTab[] = array('title'=>'添加课程','tabHash'=>'addVideo','url'=>U('classroom/AdminLineClass/addVideo'));
+        $this->pageTab[] = array('title'=>'回收站','tabHash'=>'recycle','url'=>U('classroom/AdminLineClass/recycle'));
+        $this->pageTab[] = array('title'=>'添加','tabHash'=>'addVideo','url'=>U('classroom/AdminLineClass/addVideo'));
     }
 
     /**
      * 课程后台的标题
      */
     private function _initClassroomListAdminTitle(){
-        $this->pageTitle['index'] = '通过审核课程';
+        $this->pageTitle['index'] = '已审';
         //$this->pageTitle['unauditList'] = '待审核课程';
-        $this->pageTitle['recycle'] 	= '课程回收站';
-        $this->pageTitle['addVideo']    = '添加课程';
+        $this->pageTitle['recycle'] 	= '回收站';
+        $this->pageTitle['addVideo']    = '添加';
     }
 
 

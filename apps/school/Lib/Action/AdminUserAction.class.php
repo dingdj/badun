@@ -53,12 +53,13 @@ class AdminUserAction extends AdministratorAction
         $_REQUEST['tabHash'] = 'index';
         // 初始化用户列表管理菜单
         $this->_initUserListAdminMenu('index');
+        $this->pageTitle['index']       = '列表';
         // 数据的格式化与listKey保持一致
 
         $listData = $this->_getUserList('20', [], 'index');
         // 列表批量操作按钮
         $this->pageButton[] = array('title' => L('搜索'), 'onclick' => "admin.fold('search_form')");
-        $this->pageButton[] = array('title' => L('用户导出'), 'onclick' => "admin.exportUser()");
+        $this->pageButton[] = array('title' => L('导出'), 'onclick' => "admin.UserexportUser()");
 
         $this->displayList($listData);
     }
@@ -358,11 +359,11 @@ class AdminUserAction extends AdministratorAction
     private function _initUserListAdminMenu($type)
     {
         // tab选项
-        $this->pageTab[] = array('title' => L('PUBLIC_USER_LIST'), 'tabHash' => 'index', 'url' => U('school/AdminUser/index'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('school/AdminUser/index'));
 //        $this->pageTab[] = array('title' => L('PUBLIC_PENDING_LIST'), 'tabHash' => 'pending', 'url' => U('school/AdminUser/pending'));
 //        $this->pageTab[] = array('title' => L('PUBLIC_DISABLE_LIST'), 'tabHash' => 'dellist', 'url' => U('school/AdminUser/dellist'));
         // $this->pageTab[] = array('title'=>'在线用户列表','tabHash'=>'online','url'=>U('admin/User/online'));
-        $this->pageTab[] = array('title' => L('PUBLIC_ADD_USER_INFO'), 'tabHash' => 'addUser', 'url' => U('school/AdminUser/addUser'));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'addUser', 'url' => U('school/AdminUser/addUser'));
 //        $this->pageTab[] = array('title' => L('批量添加用户'), 'tabHash' => 'importUser', 'url' => U('school/AdminUser/importUser'));
 
         // 搜索选项的key值
@@ -406,80 +407,29 @@ class AdminUserAction extends AdministratorAction
 
     public function exportUser()
     {
-        $uids = explode(",", $_GET["uid"]);
+        $uids       = explode(",", $_GET["uid"]);
         $map["uid"] = array("in", $uids);
-        $listData = model('User')->where($map)->field("uid,uname,email,phone,sex,reg_ip,ctime")->select();
-        require_once 'PHPExcel/PHPExcel.php';
-        require_once 'PHPExcel/PHPExcel/Writer/Excel5.php';
-        require_once 'PHPExcel/PHPExcel/Writer/Excel2007.php';
-        $objPHPExcel = new PHPExcel();
-        /* 设置输出的excel文件为2007兼容格式 */
-        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
-        /* 设置当前的sheet */
-        $objPHPExcel->setActiveSheetIndex(0);
-        $objActSheet = $objPHPExcel->getActiveSheet();
-        /* sheet标题 */
-        $objActSheet->setTitle("用户信息导出");
-        //合并单元格
-        $objActSheet->mergeCells('A1:G1');
-        $objActSheet->setCellValue('A1', "用户信息导出");
-        $objStyleA1 = $objPHPExcel->getActiveSheet()->getStyle('A1');
-        $objActSheet->setCellValue("A2", "用户ID");
-        $objActSheet->setCellValue("B2", "用户昵称");
-        $objActSheet->setCellValue("C2", "邮箱");
-        $objActSheet->setCellValue("D2", "电话号码");
-        $objActSheet->setCellValue("E2", "性别");
-        $objActSheet->setCellValue("F2", "注册IP");
-        $objActSheet->setCellValue("G2", "注册时间");
-        $objStyleA1->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);//设置垂直居中
-        $objStyleA1->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);//设置横向居中
-        //颜色填充
-        $objStyleA1->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
-        $objStyleA1->getFill()->getStartColor()->setARGB(PHPExcel_Style_Color::COLOR_YELLOW);
-        //字体设置
-        $objStyleA1->getFont()->setName('Candara');
-        $objStyleA1->getFont()->setSize(16);
-        $objStyleA1->getFont()->setBold(true);
-        $objStyleA1->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_RED);
-        $objStyleA1->getFont()->setBold(true);
-        $objActSheet->getColumnDimension('A')->setWidth(20);
-        $objActSheet->getColumnDimension('B')->setWidth(20);
-        $objActSheet->getColumnDimension('C')->setWidth(20);
-        $objActSheet->getColumnDimension('D')->setWidth(20);
-        $objActSheet->getColumnDimension('E')->setWidth(20);
-        $objActSheet->getColumnDimension('F')->setWidth(20);
-        $objActSheet->getColumnDimension('G')->setWidth(20);
-        for ($i = 0; $i < count($listData); $i++) {
-            $k = $i + 3;
-            $uid = $listData[$i]['uid'];
-            $uname = $listData[$i]['uname'];
-            $email = $listData[$i]['email'];
-            $phone = $listData[$i]['phone'];
-            $sex = $listData[$i]['sex'] == 1 ? "男" : "女";
-            $reg_ip = $listData[$i]['reg_ip'];
-            $ctime = date("Y-m-d H:i:s", $listData[$i]['ctime']);
-            //设置值
-            $objActSheet->setCellValue("A$k", "$uid");
-            $objActSheet->setCellValue("B$k", "$uname");
-            $objActSheet->setCellValue("C$k", "$email");
-            $objActSheet->setCellValue("D$k", "$phone");
-            $objActSheet->setCellValue("E$k", "$sex");
-            $objActSheet->setCellValue("F$k", "$reg_ip");
-            $objActSheet->setCellValue("G$k", "$ctime");
-        }
-        /* 生成到浏览器，提供下载 */
-        ob_end_clean();  //清空缓存
-        header("Pragma: public");
-        header("Expires: 0");
-        header("Cache-Control:must-revalidate,post-check=0,pre-check=0");
-        header("Content-Type:application/force-download");
-        header("Content-Type:application/vnd.ms-execl");
-        header("Content-Type:application/octet-stream");
-        header("Content-Type:application/download");
-        header("Content-Disposition:attachment;filename=export.xls");
-        header("Content-Transfer-Encoding:binary");
-        $objWriter->save('php://output');
+        $listData   = model('User')->where($map)->field("uid,uname,email,phone,sex,reg_ip,ctime")->select();
+		if(!$listData){
+			$this->error("暂无用户可导出");
+		}
+		$xlsCell = [
+			['uid', '用户ID'],
+			['uname', '用户昵称'],
+			['email', '邮箱'],
+			['phone', '电话号码'],
+			['sex', '性别'],
+			['reg_ip', '注册IP'],
+			['ctime', '注册时间']
+		];
+		if ($listData) {
+			foreach ($listData as &$v) {
+				$v['sex'] = $v['sex'] == 1 ? "男" : "女";
+				$v['ctime'] = date("Y-m-d H:i:s", $v['ctime']);
+			}
+			unset($v);
+		}
+		model('Excel')->export('用户信息导出', $xlsCell, $listData);
     }
 
     /**
@@ -612,6 +562,7 @@ class AdminUserAction extends AdministratorAction
     {
         // 初始化用户列表管理菜单
         $this->_initUserListAdminMenu();
+        $this->pageTitle['addUser']       = '添加';
         //注册配置(添加用户页隐藏审核按钮)
         $regInfo = model('Xdata')->get('admin_Config:register');
         $this->pageKeyList = array('email', 'uname', 'password', 'sex');

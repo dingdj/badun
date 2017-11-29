@@ -1,218 +1,141 @@
-<include file="__THEME__/public_header_onelevel" />
+<include file="__THEME__/public_header" />
 
-<link href="__THEMENEW__/css/integral.css" rel="stylesheet" type="text/css">
-<link href="__THEMENEW__/css/integral_media.css" rel="stylesheet" type="text/css">
+<link  href="__APP__/icon/iconfont.css" rel="stylesheet" type="text/css">
+<link  href="__APP__/css/mall.css" rel="stylesheet" type="text/css">
+<!--banner-->
+<div class="device">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <php>if($ad_list){</php>
+                <volist name="ad_list" id="vo">
+                    <div class="swiper-slide swiper-no-swiping" style="background: url({:cutImg($vo['banner'],1920,420)}) center no-repeat">
+                        <a target="_blank" href="{$vo.bannerurl}">
+                           <!--<img src="{:getCover($vo['banner'],1920,420)}" />-->
+                        </a>
+                    </div>
+                </volist>
+            <php>}else{</php>
+                <div class="swiper-slide swiper-no-swiping"><img src="http://www.ichangfu.com/images/banner06.jpg"> </div>
+                <div class="swiper-slide swiper-no-swiping"><img src="http://abc.2008php.com/2013_Website_appreciate/2013-07-08/20130708131255.jpg"> </div>
+                <div class="swiper-slide swiper-no-swiping"><img src="http://cdn.shenghuoxiangdao.com/Images/shxd/big/201608/2016082816465498fafc7d54844d47920cc2382a6e3a9c.jpg"></div>
+            <php>}</php>
+        </div>
+    </div>
+    <div class="pagination"></div>
+</div>
 
-<div class="banner-box">
-    <div class="ma-box">
-        <div class="content-place">
+<!--hot-goods-->
+<div class="content">
+    <div class="wrap hot-goods-box">
+        <h2>热销商品</h2>
+        <div class="picScroll-left">
+            <div class="bd">
+                <ul class="picList" style="height: auto">
+                    <volist name="ranking_list" id="vo">
+                        <li>
+                            <div class="pic">
+                                <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+                                <img src="{:getCover($vo['cover_ids'],160,160)}" />
+                                </a>
+                            </div>
+                            <div class="title">
+                                <h6><a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a></h6>
+                                <p><b>{$vo.price}积分</b><small>{$vo.stock}库存</small></p>
+                            </div>
+                            <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}" class="shopping-goods">立即兑换</a>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+            <div class="hd">
+                <a class="next icon icon-youjiantou"></a>
+                <a class="prev icon icon-zuojiantou"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--最近上新-->
+<div class="content">
+    <div class="wrap new-goods-box">
+        <h2>最近上新</h2>
+        <div class="new-goods-01">
             <ul>
+                <volist name="new_goods" id="new" offset="0" length="3">
                 <li>
-                    <a href="/" style="color: #999;">首页</a><span>&gt;</span>
-                    <a href="{:U('mall/Index/index')}" style="color: #999;">积分商城</a>
+                    <a href="{:U('mall/Goods/view',array('id'=>$new['id']))}">
+                        <div class="pic">
+                            <img src="{:getCover($new['cover'],160,160)}">
+                        </div>
+                        <div class="tit">
+                            <h6>{:msubstr(t($new['title']),0,50,'utf-8',true)}<small>库存{$new.stock}件</small></h6>
+                            <b>{:intval($new['price'])}积分</b>
+                        </div>
+                    </a>
+                </li>
+                </volist>
+            </ul>
+        </div>
+        <div class="new-goods-02">
+            <ul>
+                <volist name="new_goods" id="new" offset="3" length="5">
+                <li>
+                    <a href="{:U('mall/Goods/view',array('id'=>$new['id']))}">
+                        <div class="pic">
+                            <img src="{:getCover($new['cover'],160,160)}">
+                        </div>
+                        <div class="tit">
+                            <h6>{:msubstr(t($new['title']),0,10,'utf-8',true)}</h6>
+                            <p><b>{:intval($new['price'])}积分</b><small>{$new.stock}库存</small></p>
+                        </div>
+                    </a>
+                </li>
+                </volist>
+                <li class="new-goods-02-last">
+                    <a href="{:U('mall/Goods/index')}" class="more-new-goods"></a>
                 </li>
             </ul>
         </div>
-        <div class="swiper-container">
-            <div class="swiper-wrapper">
-                <php>if($ad_list){</php>
-                    <volist name="ad_list" id="vo">
-                        <div class="swiper-slide">
-                            <a target="_blank" href="{$vo.bannerurl}">
-                                <img src="{:getCover($vo['banner'],1200,498)}" width="1200" height="498" class="lazyloading"/>
-                            </a>
-                        </div>
-                    </volist>
-                <php>}else{</php>
-                    <div class="swiper-slide">
-                        <a target="_blank" href="{:U(mall/Index/index)}">
-                            <img src="__THEMENEW__/image/mall_default_banner.png" width="1200" height="498" class="lazyloading"/>
+    </div>
+</div>
+
+<!--精选兑换 start-->
+<div class="content">
+    <div class="wrap selected-goods-box">
+        <h2>精选兑换</h2>
+        <div class="selected-goods-head">
+            <ul>
+                <foreach name="good_category" item="cate"><li><a href="javascript:(0)">{$cate.cate_name}</a></li></foreach>
+            </ul>
+            <a href="{:U('mall/Goods/index')}" class="more-selected-goods">更多</a>
+        </div>
+        <div class="selected-goods-content">
+            <foreach name="good_category" item="cate" key="k">
+            <ul class="selected-01" id="selected-{$k}">
+                <foreach name="cate.data_list" item="vo" >
+                    <li>
+                        <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
+                            <div class="pic">
+                                <img src="{:getCover($vo['cover_ids'],160,160)}">
+                            </div>
+                            <div class="tit">
+                                <h6>{:msubstr(t($vo['title']),0,10,'utf-8',true)}</h6>
+                                <p><b>积分{$vo.price}</b><small>库存{$vo.stock}</small></p>
+                            </div>
                         </a>
-                    </div>
-                <php>}</php>
-            </div>
-           <!-- 分页器 -->
-            <div class="swiper-pagination"></div>
-        </div>
-
-        <!-- 个人中心 
-        <div class="information-box">
-            <div class="distinguish"></div>
-            <div class="potrait">
-                <if condition="$_SESSION['mid']">
-                    <div class="information-box-img" style="background: none">
-                        <a target="_blank" title="{:getUserName($_SESSION['mid'])}" href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="otherHead" style="height: 64px;width: 64px;float: left;position: inherit;" >
-                            <img class="lazyloading" src="{:getUserFace($user['uid'],'b')}" style="border-radius: 50%;height: 64px;width: 64px;">
-                        </a></div>
-                    <else/>
-                    <div class="information-box-img"></div>
-                </if>
-            </div>
-            <div class="welcome">
-                <span>hi 您好！</span>
-                <span class="top1">欢迎来到{$site['site_keyword']}在线教育云平台！</span>
-            </div>
-            <div class="login">
-                <if condition="$_SESSION['mid']">
-                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">主页</a>
-                    <a href="{:U('classroom/User/setInfo')}">设置</a>
-                    <else/>
-                    <a href="{:U('public/Passport/login_g')}">登录</a>
-                    <a href="{:U('public/Passport/reg')}">注册</a>
-                </if>
-            </div>
-            <div class="distinguish top2"></div>
-            <div class="notice">
-                    <span><i></i>学院公告
-                        <div class="notice-txet">
-                            {$new_suggest}
-                        </div>
-                    </span>
-            </div>
-            <div class="distinguish"></div>
-        </div>
-        -->
-    </div>
-</div>
-
-<!-- 兑换排行榜 -->
-<div class="integral-box">
-    <div class="integral">
-        <div class="integral-name">
-            <div class="intar">
-                <div class="integral-icon"></div>
-                <h4>兑换排行榜</h4>
-            </div>
-            <div class="integral-ma">
-                <a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多
-                    <span></span>
-                </a>
-            </div>
-            <div class="added"><a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多</a></div>
-        </div>
-        <div class="integral-hoice">
-            <volist name="ranking_list" id="vo" key="k">
-                <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
-                <div class="integral-num">
-                    <h3>{$k}</h3>
-                    <span>{:msubstr(t($vo['title']),0,10,'utf-8',true)}</span>
-                    <small>{$vo.price}<i class="fonc">积分</i></small><i>库存{$vo.stock}份</i>
-                    <img src="{:cutImg($vo['cover_ids'],190,125)}" class="lazyloading" />
-                </div>
-                </a>
-            </volist>
-        </div>
-    </div>
-</div>
-
-<hr/>
-
-<foreach name="good_category" item="l" key="k">
-    <!-- 商品第一层 -->
-    <div class="goods-box">
-        <div class="goods">
-            <div class="goods-name">{$l.cate_name}
-                <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}" class="mor">更多<i></i></a>
-            </div>
-            <div class="goods-exhibition">
-                <foreach name="l.data_list" item="vo" >
-                    <a href="{:U('mall/Goods/view',array('id'=>$vo['goods_id']))}">
-                        <div class="exhibition-img">
-                            <img src="{:cutImg($vo['cover_ids'],277,182)}">
-                        </div>
-                        <div class="goods-per">
-                            <h3>{$vo.title|msubstr=0,6,'utf-8',true}</h3>
-                            <span><i>{$vo.price}<small>积分</small></i><small>运费<i>{$vo.fare}</i>积分</small></span>
-                            <small class="places">剩余{$vo.stock}名额</small>
-                        </div>
-                    </a>
+                    </li>
                 </foreach>
-            </div>
-            <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">
-                <img src="{:cutImg($l['middle_ids'],300,574)}" class="gooks-imgs">
-            </a>
+            </ul>
+            </foreach>
         </div>
     </div>
-    <div class="added">
-        <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">更多</a>
-    </div>
-    <hr/>
-</foreach>
-
+</div>
 <script>
-    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
-        $(window).load(function () {
-            $("#linsde").height(44);
-
-            var goods =  $(".goods-exhibition a").siblings();
-            for(var i=0;i<goods.length;i++){
-                if((i+1)%2==0){
-                    goods.eq(i).css("float","right");
-                }
-            }
-            $(".swiper-slide").removeClass("swiper-no-swiping"); 
-        });
-
-        $(".modular").on("click",function(){
-            $(".win").show();
-            $(".window-box").animate({marginLeft:"0"});
-        });
-
-        $(".win").on("click",function(){
-            $(".window-box").animate({marginLeft:'-70%'});
-            $(".win").hide();
-        });
-    }
+$(function(){
+   $("#selected-0").siblings().hide();
+});
 </script>
-<script>
-    var url="{:U('mall/Index/getRankingList')}";
-    var p = 1;
-    $(function(){
-        var totalPages = parseInt('{$ranking.totalPages}');
-        $(".next").click(function(){
-            if(p < totalPages){
-                p = p+1;
-                ajaxReturn();
-            }
-        });
-        $(".prev").click(function(){
-            if(p > 1){
-                p = p-1;
-                ajaxReturn();
-            }
-        });
 
-        var mySwiper = new Swiper ('.swiper-container', {
-           //竖着滚动 direction: 'vertical',
-            loop: true,
-            autoplay: 5000,
-            autoplayDisableOnInteraction : true,
-            
-            //分页器
-            paginationClickable :true,
-            pagination: '.swiper-pagination',
-            
-            //前进后退按钮
-            nextButton: '.swiper-button-next',
-            prevButton: '.swiper-button-prev',  
-        }) 
-        $(".swiper-slide").addClass("swiper-no-swiping"); 
-    });
-
-    //查看更多
-    function ajaxReturn() {
-        $.ajax({
-            type: "GET",
-            url: url,
-            data: {p:p},
-            dataType: "json",
-            success: function (data) {
-                if(data.data){
-                    $(".ranking_list").html('');
-                    $(".ranking_list").append(data.data);
-                }
-            }
-        });
-    }
-</script>
-<include file="__THEME__/public_footer_onelevel" />
+<script src="__APP__/js/idangerous.swiper.min.js"></script>
+<script src="__APP__/js/mall.js"></script>
+<include file="__THEME__/public_footer" />

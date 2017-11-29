@@ -195,14 +195,14 @@ class AdminLearnRecordAction extends AdministratorAction {
             }else if($value['type']==2){
                 $list['data'][$key]['oid']  = getAlbumNameForID($value['oid']);
                 $url = U('classroom/Album/view', array('id' => $value['oid']));
-                $type = "未知套餐";
+                $type = "未知班级";
             }else{
                 $list['data'][$key]['oid']  = '不存在';
             }
             $list['data'][$key]['oid'] = getQuickLink($url, $list['data'][$key]['oid'],$type);
 
 //            $list['data'][$key]['oid'] = '<div style="width:160px;height:30px;overflow:hidden;">'.$list['data'][$key]['oid'].'</div>';
-            $list['data'][$key]['type']     = ($value['type']==1)?'课程':'套餐';
+            $list['data'][$key]['type']     = ($value['type']==1)?'课程':'班级';
             $list['data'][$key]['ctime']    = date('Y-m-d',$value['ctime']);
         }
         unset($val);

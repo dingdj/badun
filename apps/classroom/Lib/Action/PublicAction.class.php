@@ -195,7 +195,7 @@ class PublicAction extends CommonAction
                 $credit = M('credit_setting')->where(array('id'=>20,'is_open'=>1))->field('id,name,score,count')->find();
                 if($credit['score'] > 0){
                     $atype = 6;
-                    $note = '套餐评价点赞获得的积分';
+                    $note = '班级评价点赞获得的积分';
                 }
                 model('Credit')->addUserCreditRule($cuid,$atype,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
             }
@@ -206,8 +206,8 @@ class PublicAction extends CommonAction
 	/**
 	 * classroom/Public/collect
 	 * 收藏功能
-	 * 套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
-	 *  1=>'album',//套餐收藏
+	 * 班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+	 *  1=>'album',//班级收藏
 	 *	2=>'zy_video',//课程收藏
 	 *	3=>'zy_question',//提问收藏
 	 *	4=>'zy_note',//笔记收藏
@@ -219,9 +219,9 @@ class PublicAction extends CommonAction
 
 		$zyCollectionMod = D('ZyCollection');
 		$type   = intval($_POST['type']);//0:取消收藏;1:收藏;
-		$sctype = intval($_POST['sctype']);//套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+		$sctype = intval($_POST['sctype']);//班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏
 		$source_id = intval($_POST['source_id']);//资源ID
-		$is_video = intval($_POST['is_video']);//判断收藏类型(1课程;2直播;3套餐;4资讯)
+		$is_video = intval($_POST['is_video']);//判断收藏类型(1课程;2直播;3班级;4资讯;5线下课;)
 
 		if($sctype <= 0){
 			$this->mzError('收藏资源错误!');
@@ -256,7 +256,7 @@ class PublicAction extends CommonAction
                     $credit = M('credit_setting')->where(array('id'=>48,'is_open'=>1))->field('id,name,score,count')->find();
                     if($credit['score'] < 0){
 						$ctype = 7;
-                        $note = '取消收藏套餐扣除的积分';
+                        $note = '取消收藏班级扣除的积分';
                     }
 				}else if($is_video == 4){
 					$credit = M('credit_setting')->where(array('id'=>52,'is_open'=>1))->field('id,name,score,count')->find();
@@ -289,7 +289,7 @@ class PublicAction extends CommonAction
                     $credit = M('credit_setting')->where(array('id'=>17,'is_open'=>1))->field('id,name,score,count')->find();
                     if($credit['score'] > 0){
                         $ctype = 6;
-                        $note = '收藏套餐获得的积分';
+                        $note = '收藏班级获得的积分';
                     }
                 }else if($is_video == 4){
 					$credit = M('credit_setting')->where(array('id'=>32,'is_open'=>1))->field('id,name,score,count')->find();

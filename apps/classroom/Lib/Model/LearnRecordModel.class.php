@@ -29,10 +29,14 @@ class LearnRecordModel extends Model {
         }
         foreach ($list['data'] as $key=>$val) {
             if ($type == 1) {
-                $list['data'][$key]['video_order_count'] = M('zy_order_course')->where('video_id='.$val['id'])->count();
-                $list['data'][$key]['video_section'] = M('zy_video_section')->where(array('vid' => $val['id'], 'pid' => ['gt', 0], 'cid' => ['gt', 0]))->count();
-                $list['data'][$key]['learn_nums'] = $this->where(array('vid' => $val['id']))->field('uid')->count();
-                $list['data'][$key]['learn_time'] = $this->where(array('vid' => $val['id']))->sum('totaltime') ? : 0;
+                if($val['is_activity'] != 1){
+                    unset($list['data'][$key]);
+                }else{
+                    $list['data'][$key]['video_order_count'] = M('zy_order_course')->where('video_id='.$val['id'])->count();
+                    $list['data'][$key]['video_section'] = M('zy_video_section')->where(array('vid' => $val['id'], 'pid' => ['gt', 0], 'cid' => ['gt', 0]))->count();
+                    $list['data'][$key]['learn_nums'] = $this->where(array('vid' => $val['id']))->field('uid')->count();
+                    $list['data'][$key]['learn_time'] = $this->where(array('vid' => $val['id']))->sum('totaltime') ? : 0;
+                }
             } else {
                 $list['data'][$key]['uname'] = getUserSpace($val['uid']);
                 $list['data'][$key]['course_order'] = M('zy_order_course')->where(array('is_del' => 0, 'pay_status' => 3, 'uid' => $val['uid']))->count();

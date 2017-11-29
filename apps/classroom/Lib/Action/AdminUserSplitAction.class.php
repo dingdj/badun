@@ -13,10 +13,10 @@ class AdminUserSplitAction extends AdministratorAction {
     public function _initialize() {
         parent::_initialize();
 
-        $this->pageTab[] = array('title'=>'云课堂用户分成余额列表','tabHash'=>'index','url'=>U('classroom/AdminUserSplit/index'));
-        $this->pageTab[] = array('title'=>'所有分成余额流水记录','tabHash'=>'flow','url'=>U('classroom/AdminUserSplit/flow'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'index','url'=>U('classroom/AdminUserSplit/index'));
+        $this->pageTab[] = array('title'=>'流水','tabHash'=>'flow','url'=>U('classroom/AdminUserSplit/flow'));
 //        $this->pageTab[] = array('title'=>'课程分成明细列表','tabHash'=>'splitVideo','url'=>U('classroom/AdminUserSplit/splitVideo'));
-//        $this->pageTab[] = array('title'=>'套餐分成明细列表','tabHash'=>'splitAlbum','url'=>U('classroom/AdminUserSplit/splitAlbum'));
+//        $this->pageTab[] = array('title'=>'班级分成明细列表','tabHash'=>'splitAlbum','url'=>U('classroom/AdminUserSplit/splitAlbum'));
 //        $this->pageTab[] = array('title'=>'直播课程分成明细列表','tabHash'=>'splitLive','url'=>U('classroom/AdminUserSplit/splitLive'));
     }
     
@@ -109,7 +109,7 @@ class AdminUserSplitAction extends AdministratorAction {
     public function splitAlbum(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','aid','video_title','sum','pid','platform_sum','oschool_uid','ouats_ouschool_sum','sid','school_sum','share_id','share_sum','ctime','ltime','note','mhm_id');
-        $this->pageTitle['splitAlbum'] = '套餐分成明细列表';
+        $this->pageTitle['splitAlbum'] = '班级分成明细列表';
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         //搜索项

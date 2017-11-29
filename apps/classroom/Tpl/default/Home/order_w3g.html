@@ -1,11 +1,11 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
     <style>
         .orderlist .mid .info{width: 50px;}
         .fqalistnav li{width: 33.33%;}
     </style>
     <div class="header2">
-    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<a href="{:U('classroom/User/index')}" class="icon-back"></a>
     	<div>我的订单</div>
     </div>
     <div class="body">
@@ -42,7 +42,14 @@
                         </span>
                         <a .chref="#">{$l.ctime|date="Y-m-d",###}</a>
                     </div>
-                    <div class="mid">    <php>if($ordertype == 'course') { </php> <a href="{:U('classroom/Video/view',array('id'=>$l['video_id']))}"> <php> } else {</php>     <a href="{:U('live/index/view',array('id'=>$l['live_id']))}">  <php>}</php>
+                    <div class="mid">
+                        <php>if($ordertype == 'course') { </php>
+                            <a href="{:U('classroom/Video/view',array('id'=>$l['video_id']))}">
+                        <php> } else if($ordertype == 'live'){</php>
+                            <a href="{:U('live/index/view',array('id'=>$l['live_id']))}">
+                        <php> } else if($ordertype == 'teacher'){</php>
+                            <a href="{:U('classroom/LineClass/view',array('id'=>$l['video_id']))}">
+                        <php>}</php>
                         <div class="pic"><img src="{:cutImg($l['cover'],151,80)}" style="max-width:151px" alt="{:limitNumber($l['video_name'],12)}" /></div>
                         <h3>{:limitNumber($l['video_name'],15)}</h3>
                         <p style="font-size: 13px;margin-top: 5px;">{:limitNumber($l['video_binfo'],30)}</p>
@@ -81,7 +88,7 @@
                                             <elseif condition="$check_type eq 'zy_teacher'"/>
                                             <input type="hidden" id="money" value="{$l['price']}" name="money" />
                                         </if>
-                                        <a href="javascript:;" id ="{$l.id}" onclick ="delCancel(this.id)">取消订单</a><br><br>
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="delCancel(this.id)">取消订单</a>
                                         <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
                                         <!--<a href="javascropt:;">评价课程</a>-->
                                     </form>
@@ -89,7 +96,7 @@
 
                                 <if condition="$l['pay_status'] eq 2">
                                     <form action="{:U('classroom/PayVideo/index')}" method="POST" id="pay_form">
-                                        <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a><br><br>
+                                        <a href="javascript:;" id ="{$l.id}" onclick ="delorder(this.id)">删除订单</a>
                                         <if condition="$check_type eq 'zy_video'">
                                             <input type="hidden" value="{$l.video_id}" name="vid" />
                                             <elseif condition="$check_type eq 'zy_album'"/>
@@ -129,7 +136,7 @@
                                     <a href="javascript:;" id ="{$l.id}" style="color: green;">退款成功</a>
                                 </if>
                                 <if condition="$l['pay_status'] eq 6">
-                                    <a href="javascript:;" id ="{$l.id}" onclick = checkResigInfo(this.id,"{$check_type}")>查看驳回原因</a><br><br>
+                                    <a href="javascript:;" id ="{$l.id}" onclick = checkResigInfo(this.id,"{$check_type}")>查看驳回原因</a>
                                     <a href="javascript:;" id ="{$l.id}" onclick ="applyForRefund(this.id)">重新申请退款</a>
                                 </if>
                             </if>
@@ -373,4 +380,4 @@
 
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

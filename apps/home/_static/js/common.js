@@ -303,7 +303,7 @@ function  upload_yz()
 		{
 			if(oHeadSearch[0].value.indexOf(arr[i])>-1)
 			{
-				tag('套餐标题内容不得包含敏感词','transparent');
+				tag('班级标题内容不得包含敏感词','transparent');
 				return false;
 			}
 			if(oHeadSearch[1].value.indexOf(arr[i])>-1)
@@ -324,7 +324,7 @@ function  upload_yz()
 		}
 		if(oHeadSearch[0].value=='')
 		{
-			tag('套餐标题内容不得为空','transparent');
+			tag('班级标题内容不得为空','transparent');
 			return false;
 		}
 		else if(oUploadTextareaA.value=='')

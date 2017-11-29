@@ -76,13 +76,13 @@
                     </dl>
 
 
-                    <dl class="video_tag">
+                    <!--<dl class="video_tag">
                         <dt>课程标签：</dt>
                         <dd>
                             <input type="text" class="inp01" name="video_tag" id="form_video_tag" class="head_search upload_input_a" >
                             <p>多个标签请以半角&lt;,&gt;逗号分割</p>
                         </dd>
-                    </dl>
+                    </dl>-->
 
                     <dl>
                         <dt><span>*</span>市场价格：</dt>
@@ -90,6 +90,14 @@
                             <input type="text"  class="inp01" name="v_price" id="form_v_price">
                         </dd>
                     </dl>
+
+                    <dl>
+                        <dt><span>*</span>销售价：</dt>
+                        <dd>
+                            <input type="text"  class="inp01" name="t_price" value="{$data.t_price}" id="form_t_price">
+                        </dd>
+                    </dl>
+
                     <!-- <dl>
                         <dt><span>*</span>参加限时打折：</dt>
                         <dd>
@@ -130,7 +138,7 @@
                     <dl class="lineD">
                         <dt><font color="red"> * </font>封面上传：</dt>
                         <dd id="image_cover">
-                            {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：520*320
+                            {:W('Upload',array('callback'=>'callback','uploadType'=>'image','limit'=>1,'inputname'=>'cover','urlquery'=>'input_id=cover'))}建议尺寸：580*320
                             <php>if($cover_path){</php>
                             <div id="small_cover">
                                 <img style="max-width:100px;padding:2px; border:1px solid #ccc" src="{$cover_path}" />
@@ -257,12 +265,18 @@
     return true;
   }
   function post_callback(_form,data){
+    var type = $("#video_type").val();
     if(data.status != undefined){
-      if(data.status == '0'){
+        var vid = data.data;
+        if(data.status == '0'){
         ui.error(data.info);
       } else {
         ui.success(data.info);
-        window.location.href = U('classroom/User/teacherVideo')+"&tabHash=index";
+        if(type == 2){
+            window.location.href = U('classroom/User/teacherVideo')+"&tabHash=index";
+        }else{
+            window.location.href = U('classroom/User/addcourse')+"&id="+vid;
+        }
       }
     }
   }

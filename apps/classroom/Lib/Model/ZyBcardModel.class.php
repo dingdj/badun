@@ -84,7 +84,26 @@ class ZyBcardModel extends Model {
      * @return array 如果有记录则返回数组
      */
     public function getUserOnly($uid,$school = 0){
-        return $this->where(array('uid'=>$uid,'is_school'=>$school))->order('id')->find();
+        return $this->where(array('uid'=>$uid,'is_school'=>$school,'accounttype'=>['neq','alipay']))->order('id')->field($field)->limit(10)->select();
+    }
+
+    /**
+     * 获取一个用户的银行卡记录
+     * @param integer $uid 提现账户记录ID
+     * @return array 如果有记录则返回数组
+     */
+    public function getUserBcard($uid,$field){
+        return $this->where(array('uid'=>$uid,'is_school'=>0,'accounttype'=>['neq','alipay']))->order('id')->field($field)->limit(10)->select();
+    }
+
+    /**
+     * 获取一个用户的唯一一条银行卡记录
+     * @param integer $uid 提现账户记录ID
+     * @return array 如果有记录则返回数组
+     */
+    public function getUserOnlyAliAccount($uid){
+        $alipay_info = D('ZyBcard')->where(['uid'=>$uid,'accounttype'=>'alipay'])->field('id,account,accountmaster')->find();
+        return $alipay_info;
     }
 
     public function getBanks(){

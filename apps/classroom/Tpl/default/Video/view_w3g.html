@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <!--content start-->
     <div class="body">
@@ -14,10 +14,11 @@
                     <div class="price">优惠价：<span>¥{$data['mzprice']['price']}</span></div>
                 </div>
                 <div class="xx" style="margin-top: 10px;">
-                    <div class="fx fr">
-                        <a href="javascript:;" onClick="shareVideo(this,{$vid})"><i class="icon-02"></i></a>
-                    </div>
-                    <div class="sc fr">
+                        <!--<div class="fx fr">-->
+                            <!--&lt;!&ndash;<a href="javascript:;" onClick="shareVideo(this,{$vid})"><i class="icon-02"></i></a>&ndash;&gt;-->
+                            <!--<a href="javascript:;" class="shareVideo"><i class="icon-02"></i></a>-->
+                        <!--</div>-->
+
                         <php>if($data['iscollect']){</php>
                         <a href="javascript:;" onClick="collectVideo(this,{$vid},0)"><i class="icon-01 hover"></i></a>
                         <php>}else{</php>
@@ -36,6 +37,37 @@
                         </form>
                         <a class="buy" href="javascript:void(0);" id="charge_video">立即购买</a>
                         <php>}</php>
+                    </div>
+                    <div class="_share_my_firends" id="share_my_firends" style="display:none;">
+                        <div class="_share_all_channel" >
+                            <p style="padding-top: 9px;color: #4D555D;">请点击右上角的分享按钮</p>
+                            <!--<i class="side-ills-fell"></i>-->
+                            <!--<p  style="padding-top: 4px; text-indent: 10px;">分享到：</p>-->
+                            <!--<div class="bdsharebuttonbox"  data-tag="share_1">-->
+                                <!--&lt;!&ndash; <a data-cmd="more" class="bds_more " href="#"></a> &ndash;&gt;-->
+                                <!--<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博" style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"  style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"  style="margin: 6px 6px 6px 7px;"></a>-->
+                                <!--<a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"  style="margin: 6px 6px 6px 7px;"></a>-->
+                            <!--</div>-->
+                            <!--<script>-->
+                                <!--var share_url = "{$share_url}";-->
+                                <!--window._bd_share_config={"common":{-->
+                                    <!--bdUrl:share_url,-->
+                                    <!--bdText:"",-->
+                                    <!--bdMini:"2",-->
+                                    <!--bdMiniList:["tsina","weixin","qzone","sqq","renren","copy"],-->
+                                    <!--bdPic:"",-->
+                                    <!--bdSize:"24"-->
+                                <!--},-->
+                                    <!--share:{},-->
+                                    <!--image:{"viewList":["tsina","weixin","qzone","sqq"],-->
+                                        <!--viewText:"分享到：","viewSize":"0"}};-->
+                                <!--with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];-->
+
+                            <!--</script>-->
+
+                        </div>
                     </div>
                 </div>
                 <!--<div class="txt">{$data.video_binfo}</div>-->
@@ -147,6 +179,7 @@
                             <dt>{:msubstr(t($vo['title']),0,15,'utf-8',true)}</dt>
                             <php>if($vo['child']){</php>
                                 <volist name="vo.child" id="vo1">
+                                    <if condition="$vo1['is_activity'] eq 1">
                                     <dd>
                                         <a href="{:U('classroom/Video/watch','id='.$vo1['vid'].'&s_id='.$vo1['id'])}">
                                             <php>if($vo1['video_type'] == 1){</php>
@@ -160,14 +193,14 @@
                                             <php>}</php>
 
                                             <php>if($vo1['is_free'] == 1){</php>
-                                                <em style="background: #ffba6f;">试听</em>
-                                            <php>}else if($video['is_charge'] == 1){</php>
                                                 <em style="background: #39b75d;" >免费</em>
                                             <php>}</php>
+                                            
                                             <span>{:limitNumber($vo1['title'],10)}</span>
                                             <span><i class="icon-01"></i></span>
                                         </a>
                                     </dd>
+                                    </if>
                                 </volist>
                             <php>}</php>
                         </dl>
@@ -188,6 +221,11 @@
         var index = $(this).index();
         $(".videoInfo").hide().eq(index).show();
     });
+
+   //第三方分享
+   $(".shareVideo").click(function(){
+       $("#share_my_firends").toggle("hide");
+   });
 
    function randomString(len) {
        len = len || 32;
@@ -247,14 +285,14 @@
 //           $('.mask').show();
            return false;
        }
-       if(rechange_base>0 && money%rechange_base != 0){
+       /*if(rechange_base>0 && money%rechange_base != 0){
            if(rechange_base == 1){
                alert('购买金额必须为整数');
            }else{
                alert('购买金额必须为'+rechange_base+'的倍数');
            }
            return false;
-       }
+       }*/
 
        $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
            var mount_url = "{$_GET['mid']}";
@@ -380,6 +418,57 @@
    }
 
 </script>
+
+<if condition="$is_wx">
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script>
+        wx.config({
+            debug: false,
+            appId: '<?php echo $signPackage["appId"];?>',
+            timestamp: '<?php echo $signPackage["timestamp"];?>',
+            nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+            signature: '<?php echo $signPackage["signature"];?>',
+            jsApiList: [
+                "onMenuShareTimeline",//朋友圈
+                "onMenuShareAppMessage",//朋友
+                "onMenuShareQQ",
+                "onMenuShareWeibo",
+                "onMenuShareQZone",
+            ]
+        });
+        var desc = "{$seo['_meta']}",
+                share_url = "{$share_url}",
+                img_url = "{:cutImg($data['cover'] ,640 , 340 )}";
+
+        wx.ready(function () {
+            wx.onMenuShareTimeline({
+                link: share_url,
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareAppMessage({
+                link: share_url,
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareQQ({
+                link: share_url,
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareWeibo({
+                link: share_url,
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareQZone({
+                link: share_url,
+                desc: desc,
+                imgUrl: img_url,
+            });
+        });
+    </script>
+</if>
 <!--footer-->
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>
 <!--<input type ="text"   id="urlcopy"   style="border:1px;border-bottom-style:none;border-top-style:none;border-left-style:none;border-right-style:none;"  >-->

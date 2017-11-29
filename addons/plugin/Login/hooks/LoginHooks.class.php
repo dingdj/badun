@@ -20,7 +20,7 @@ class LoginHooks extends Hooks {
     private static $validAlias   = array(
             'sina'      => '新浪微博', 
             'qzone'     => "QQ互联",
-            'weixin'    => "腾讯微信",
+            'weixin'    => "微信",
            // 'qq'        => '腾讯微博',
             //'renren'    => "人人网",
            // 'douban'    => "豆瓣",
@@ -36,7 +36,7 @@ class LoginHooks extends Hooks {
             'qzone'     => "http://connect.qq.com",
             'weixin'     => "https://open.weixin.qq.com",
             //'qq'        => 'http://open.t.qq.com/websites/',
-            'renren'    => "http://dev.renren.com",
+            //'renren'    => "http://dev.renren.com",
             /*'douban'    => "http://www.douban.com/service/apidoc/connect",
             'baidu'     => "http://developer.baidu.com",
             'taobao'    => "http://open.taobao.com",*/
@@ -567,9 +567,9 @@ class LoginHooks extends Hooks {
         }
         if (count ( array_filter ( $check ) ) == count ( $data[$type] ) && in_array($type,$platform_options['open'])) {
             $this->_loadTypeLogin($type);
-            if($type == 'weixin'){
-                header("Location: ".U('public/Passport/landed'));
-            }
+            // if($type == 'weixin'){
+            //     header("Location: ".U('public/Passport/landed'));
+            // }
             $object = new $type ();
             $url = Addons::createAddonShow('Login','no_register_display',array('type'=>$type));
             $url = $object->getUrl($url);

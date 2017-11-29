@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 根据套餐ID获取名称
+ * 根据班级ID获取名称
  */
 function getAlbumNameForID($vid) {
     static $names = array();
@@ -23,7 +23,7 @@ function getVideoNameForID($vid) {
 }
 
 /**
- * 取得课程或套餐的分类名字
+ * 取得课程或班级的分类名字
  * @param $id
  * @return string
  */
@@ -160,7 +160,7 @@ function unique_arr($array2D,$stkeep=false,$ndformat=true)
 
 /**
  * 查询资源是否存在
- * @param int $type 2:套餐;1:课程;
+ * @param int $type 2:班级;1:课程;
  * @param int $resid 资源ID
  * @param array $resource 需要判断的资源数组
  * video    //高清视频课程
@@ -433,12 +433,12 @@ function getRanking($limit = 10, $type = 'video') {
 }
 
 /**
- * 混合查询套餐和课程
+ * 混合查询班级和课程
  */
 function getRankingMix($limit = 10, $order = '', $page = 1, $album_where = "", $video_where = "") {
     $albumtable = C('DB_PREFIX') . 'album';
     $zy_videotable = C('DB_PREFIX') . 'zy_video';
-    //套餐
+    //班级
     $album_table = "SELECT `id`,`re_sort`,`be_sort`,2 as `type`,`album_category` as `category`,`uid`,`cover`,`album_title` as `title`,`album_score` as `score`,`album_order_count` as `order_count`,`album_intro` as `intro`,`ctime`,`is_offical` FROM `{$albumtable}` " . $album_where;
     //课程
     $video_table = "SELECT `id`,`re_sort`,`be_sort`,1 as `type`,`video_category` as `category`,`uid`,`cover`,`video_title` as `title`,`video_score` as `score`,`video_order_count` as `order_count`,`video_intro` as `intro`,`ctime`,`is_offical` FROM `{$zy_videotable}` " . $video_where;

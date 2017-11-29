@@ -1,0 +1,23 @@
+<include file="__THEME__/public_header_w3g"/>
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer_media.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/exam_2.0.css">
+
+<div class="min-height-wrap">
+    <!--Regular list-->
+    <div class="mw-inner-box">
+        <ul class="mw-custom-module">
+            <volist name="module" id="vo">
+                <li>
+                    <a href="{:U('exams/Index/paper',['c'=>0,'module_id'=>$vo['exams_module_id']])}">
+                        <h3>{$vo.title}<p>{$vo.description}</p></h3>
+                        <em><img src="{:getImageUrlByAttachId($vo['icon'])}"></em>
+                    </a>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<include file="__THEME__/public_footer_w3g"/>
+<script src="__APP__/js/public_header_footer_media.js"></script>

@@ -1,1 +1,5 @@
 config/config.inc.php
+.idea/
+_runtime/
+data/
+install/

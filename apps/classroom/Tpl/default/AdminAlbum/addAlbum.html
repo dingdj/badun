@@ -21,17 +21,17 @@
     <form method="POST" action="{:U('classroom/AdminAlbum/doAddAlbum')}" id="detail_form" name="detail_form" onsubmit="return j_validateCallback(this,checkForm,post_callback)">
         <input type="hidden" name="systemdata_list" value="album_Admin" class="s-txt">
         <input type="hidden" name="systemdata_key" value="addVideo" class="s-txt">
-        <input type="hidden" name="pageTitle" value="添加套餐" class="s-txt">
+        <input type="hidden" name="pageTitle" value="添加班级" class="s-txt">
         <input type="hidden" name="id" value="{$id}" />
         <div class="form2">
             <dl class="lineD" id="form_v_price">
-                <dt><font color="red"> * </font>套餐名称：</dt>
+                <dt><font color="red"> * </font>班级名称：</dt>
                 <dd>
                     <input name="album_title" type="text" value="" class="s-txt">
                 </dd>
             </dl>
             <dl class="lineD">
-                <dt><font color="red"> * </font>套餐分类：</dt>
+                <dt><font color="red"> * </font>班级分类：</dt>
                 <dd>
                     <php>$fullcategorypaths = trim($fullcategorypath , ',');</php>
                     {:W('CategoryLevel',array('table'=>'zy_package_category','id'=>'album_level','default'=>$fullcategorypaths ))}
@@ -40,7 +40,7 @@
             </dl>
 
             <dl class="lineD" id="dl_album">
-                <dt><font color="red"> * </font>套餐简介：</dt>
+                <dt><font color="red"> * </font>班级简介：</dt>
                 <dd>
                     <textarea name="album_intro" id="form_album_intro" rows="10" cols="80">{$album_intro}</textarea>
                 </dd>
@@ -54,7 +54,7 @@
             </dl>
             
             <dl class="lineD" id="form_v_price">
-                <dt>套餐包含课程：</dt>
+                <dt>班级包含课程：</dt>
                 <dd>
                     <input type="hidden" name="video_ids" id="albumids" value="{$album_video}" >
                 
@@ -152,17 +152,17 @@
         function checkForm(form){
             var album_title = form.find('input[name="album_title"]').val();
             if(''==album_title){
-                ui.error("套餐标题不能为空");
+                ui.error("班级标题不能为空");
                 return false;
             }
             var album_intro = form.find('textarea[name="album_intro"]').val();
             if(''==album_intro){
-                ui.error("套餐简介不能为空");
+                ui.error("班级简介不能为空");
                 return false;
             }
             var v_price = form.find('input[name="price"]').val();
             if(''==v_price || undefined == v_price || v_price < 0 || v_price > 1000){
-                ui.error("套餐价格不能为空，或者范围有错");
+                ui.error("班级价格不能为空，或者范围有错");
                 return false;
             }
 
@@ -180,18 +180,18 @@
 
             var myAdminLevelhidden = form.find('input[name="album_levelhidden"]').val();
             if('0'==myAdminLevelhidden){
-                ui.error("请选择套餐分类");
+                ui.error("请选择班级分类");
                 return false;
             }
             var cover = form.find('input[name="cover_ids"]').val();
             if(''==cover){
-                ui.error("请上传套餐封面");
+                ui.error("请上传班级封面");
                 return false;
             }
             /*
              var albumkey=form.find('input[name="albumkey"]').val();
              if(''==albumkey){
-             ui.error("请上传套餐视频");
+             ui.error("请上传班级视频");
              return false;
              }
              */
@@ -331,7 +331,7 @@
             });
         })
         var albumids="{$album_video}";
-        //选中套餐事件
+        //选中班级事件
         var selectAlbum=function(cate,id){
             if(albumids.indexOf(id.toString())>=0){
                 ui.error("已选择此课程，请勿重复选择!");
@@ -344,7 +344,7 @@
             $(".admin-kcid").css("display","none");
         }
 
-        //删除选中套餐
+        //删除选中班级
         var removeVideo=function(cate,id){
             var gid = id.toString()+",";
             albumids= albumids.replace(gid,"");

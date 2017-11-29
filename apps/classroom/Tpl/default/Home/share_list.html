@@ -5,7 +5,7 @@
                 <div class="mynote">
                     <div style="height: 35px;   float: left;width: 300px;">
                         <if condition="$vs['type'] eq 0"><em>分享课程：</em><a href="{:U('classroom/Video/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
-                        <if condition="$vs['type'] eq 1"><em>分享套餐：</em><a href="{:U('classroom/Album/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
+                        <if condition="$vs['type'] eq 1"><em>分享班级：</em><a href="{:U('classroom/Album/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
                         <if condition="$vs['type'] eq 2"><em>分享直播课程：</em><a href="{:U('live/Index/view',array('id'=>$vs['video_id']))}">{$vs.title}</a></if>
                     </div>
                     <div id="qrcode" class="fxp" style="float: left;  title="{$vs['share_url']}">

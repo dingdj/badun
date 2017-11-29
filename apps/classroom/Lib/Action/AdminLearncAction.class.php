@@ -1,6 +1,6 @@
 <?php
 /**
- * 学币列表信息管理控制器
+ * 余额列表信息管理控制器
  * @author ashangmanage <ashangmanage@phpzsm.com>
  * @version CY1.0
  */
@@ -12,19 +12,18 @@ class AdminLearncAction extends AdministratorAction {
      */
     public function _initialize() {
         parent::_initialize();
-        $this->pageTab[] = array('title'=>'云课堂用户学币列表','tabHash'=>'index','url'=>U('classroom/AdminLearnc/index'));
-        $this->pageTab[] = array('title'=>'所有学币流水记录','tabHash'=>'flow','url'=>U('classroom/AdminLearnc/flow'));
-		$this->pageTab[] = array('title'=>'用户充值记录', 'tabHash'=>'recharge', 'url'=>U('classroom/AdminLearnc/recharge'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'index','url'=>U('classroom/AdminLearnc/index'));
+        $this->pageTab[] = array('title'=>'流水','tabHash'=>'flow','url'=>U('classroom/AdminLearnc/flow'));
     }
     
     /**
-     * 学币列表信息管理
+     * 余额列表信息管理
      * @return void
      */
     public function index(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('uname','realname','idcard','catagroy','balance','frozen','vip_type','vip_expire','DOACTION');
-        $this->pageTitle['index'] = '云课堂用户学币列表';
+        $this->pageTitle['index'] = '列表';
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         //搜索项
@@ -32,7 +31,7 @@ class AdminLearncAction extends AdministratorAction {
         $vip_type = M('user_vip')->where('is_del=0')->getField('id,title');
         
         $this->opt['vip_type']    = $vip_type;
-        $this->opt['vip_type'][0] = '全部';
+        $this->opt['vip_type'][0] = '不限';
         $this->searchPostUrl = U('classroom/AdminLearnc/index', array('tabHash'=>'index'));
         //根据用户查找
         if(!empty($_POST['uid'])){
@@ -67,8 +66,7 @@ class AdminLearncAction extends AdministratorAction {
             }
                
             $value['DOACTION']  = '<a href="'.U(APP_NAME.'/'.MODULE_NAME.'/edit', array('id'=>$value['id'], 'tabHash'=>'edit')).'">编辑</a>';
-            $value['DOACTION'] .=  '| <a href="'.U('classroom/AdminLearnc/learn',array('uid'=>$value['uid'],'tabHash'=>'learn')).'">TA的学习记录</a>';
-            $value['DOACTION'] .=   '| <a href="'.U('classroom/AdminLearnc/uflow',array('uid'=>$value['uid'],'tabHash'=>'uflow')).'">TA的学币账户流水</a>';
+            $value['DOACTION'] .=   '| <a href="'.U('classroom/AdminLearnc/uflow',array('uid'=>$value['uid'],'tabHash'=>'uflow')).'">TA的余额账户流水</a>';
         }
 
         $this->displayList($list);
@@ -110,7 +108,8 @@ class AdminLearncAction extends AdministratorAction {
         $this->savePostUrl = U(APP_NAME.'/'.MODULE_NAME.'/edit');
         $this->submitAlias = '确 定';
         $this->pageKeyList = array('id','uid','balance','frozen','vip_type','vip_expire');
-        $this->opt['vip_type'] = M('user_vip')->where('is_del=0')->getField('id,title');
+        $user_vip = M('user_vip')->where('is_del=0')->getField('id,title');
+        $this->opt['vip_type'] = $user_vip ? $user_vip + [0=>'请选择'] : [0=>'请选择'];
         $data = D('ZyLearnc')->find($_GET['id']);
         $data['uid'] = getUserSpace($data['uid'], null, '_blank');
         $data['vip_expire'] = $data['vip_expire']>0?date('Y-m-d H:i:s', $data['vip_expire']):'';
@@ -191,7 +190,7 @@ class AdminLearncAction extends AdministratorAction {
         
         $this->pageKeyList = array('id','uname','realname','idcard','catagroy','type','num','balance','rel_id','note','ctime');
         $this->pageButton[] = array('title'=>'搜索记录','onclick'=>"admin.fold('search_form')");
-        $this->pageTitle[ACTION_NAME] = $uid?'账户流水-'.getUserName($uid):'所有学币流水记录';
+        $this->pageTitle[ACTION_NAME] = $uid?'账户流水-'.getUserName($uid):'流水';
         if($uid){
             $this->pageTab[]    = array('title'=>'账户流水-'.getUserName($_GET['uid']),'tabHash'=>ACTION_NAME,'url'=>U(APP_NAME.'/'.MODULE_NAME.'/'.ACTION_NAME,array('uid'=>$uid)));
             $this->pageButton[] = array('title'=>'&lt;&lt;&nbsp;返回来源页','onclick'=>"admin.zyPageBack()");
@@ -263,49 +262,4 @@ class AdminLearncAction extends AdministratorAction {
         $this->displayList($list);
     }
 
-	public function recharge(){
-		$this->pageTitle['recharge'] = '用户充值记录';
-		$this->pageKeyList = array('id','uname','realname','idcard','catagroy','money','type','vip_length','note','ctime','status','stime','pay_order','pay_type');
-        $this->pageButton[] = array('title'=>'搜索记录','onclick'=>"admin.fold('search_form')");
-		$this->searchKey    = array('uid','startTime','endTime');
-		$this->searchPostUrl= U(APP_NAME.'/'.MODULE_NAME.'/'.ACTION_NAME, array('uid'=>$uid, 'tabHash'=>ACTION_NAME));
-		$recharge = D('ZyRecharge');
-		$map['status'] = array('gt', 0);
-		if(!empty($_POST['uid'])){
-            $_POST['uid'] = t($_POST['uid']);
-            $map['uid'] = array('in', $_POST['uid']);
-        }
-		//时间范围内进行查找
-        if(!empty($_POST['startTime'])){
-            $map['ctime'][] = array('gt', strtotime($_POST['startTime']));
-        }
-        if(!empty($_POST['endTime'])){
-            $map['ctime'][] = array('lt', strtotime($_POST['endTime']));
-        }
-		$data = $recharge->where($map)->order('stime DESC,id DESC')->findPage();
-		$types = array('学币充值', '会员充值');
-		$status= array('未支付', '已成功', '失败');
-		$payType = array('alipay'=>'支付宝', 'unionpay'=>'银联');
-		foreach($data['data'] as &$val){
-            $user=D('user_verified')->where("uid=".$val["uid"])->find();
-            $user_group = model ( 'UserGroupLink' )->getUserGroup ( $val['uid'] );
-            $user_group = model ( 'UserGroup' )->getUserGroup ( $user_group[$val['uid']] );
-            $user_groups = '';
-            foreach($user_group as &$value) {
-                $user_groups .= $value['user_group_name'].'<br/>';
-            }
-            $val['realname'] = $user["realname"];
-            $val['idcard']   = $user["idcard"];
-            $val['catagroy'] = $user_groups;
-			$val['uname']   = getUserSpace($val['uid'], null, '_blank');
-			$val['ctime'] = friendlyDate($val['ctime']);
-			$val['type']  = isset($types[$val['type']])?$types[$val['type']]:'-';
-			$val['money'] = '￥'.$val['money'];
-			$val['status']= $status[$val['status']];
-			$val['stime'] = friendlyDate($val['stime']);
-			$val['stime'] = $val['stime']?$val['stime']:'-';
-			$val['pay_type']  = isset($payType[$val['pay_type']])?$payType[$val['pay_type']]:'-';
-		}
-		$this->displayList($data);
-	}
 }

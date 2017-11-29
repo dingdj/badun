@@ -18,13 +18,13 @@ class AdminCategoryAction extends AdministratorAction
     {
         parent::_initialize();
         $this->allSelected                   = false;
-        $this->pageTitle['subject']          = '专业分类管理';
-        $this->pageTitle['module']           = '板块分类管理';
-        $this->pageTitle['question']         = '试题类型';
-        $this->pageTitle['addQuestionType']  = '添加试题类型';
-        $this->pageTitle['editQuestionType'] = '编辑试题类型';
-        $this->pageTitle['addModule']        = '添加版块';
-        $this->pageTitle['editModule']       = '编辑版块';
+        $this->pageTitle['subject']          = '专业管理';
+        $this->pageTitle['module']           = '版块列表';
+        $this->pageTitle['question']         = '试题类型管理';
+        $this->pageTitle['addQuestionType']  = '添加';
+        $this->pageTitle['editQuestionType'] = '编辑';
+        $this->pageTitle['addModule']        = '添加';
+        $this->pageTitle['editModule']       = '编辑';
     }
 
     /**
@@ -35,6 +35,8 @@ class AdminCategoryAction extends AdministratorAction
      */
     public function subject()
     {
+        $this->pageTab[]   = array('title' => '专业', 'tabHash' => 'subject', 'url' => U('exams/AdminCategory/subject'));
+        $this->pageTab[]   = array('title' => '版块', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module'));
         $treeData = model('CategoryTree')->setTable('exams_subject')->getNetworkList();
         $this->displayTree($treeData, 'exams_subject');
     }
@@ -47,15 +49,18 @@ class AdminCategoryAction extends AdministratorAction
      */
     public function module()
     {
-        //$treeData = model('CategoryTree')->setTable('exams_module')->getNetworkList();
-        //$this->displayTree($treeData, 'exams_module',1);
-        $this->pageTab[]   = array('title' => '版块列表', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module', array('tabHash' => 'module')));
-        $this->pageTab[]   = array('title' => '添加版块', 'tabHash' => 'addModule', 'url' => U('exams/AdminCategory/addModule', array('tabHash' => 'addModule')));
+        $this->pageTab[]   = array('title' => '专业', 'tabHash' => 'subject', 'url' => U('exams/AdminCategory/subject'));
+        $this->pageTab[]   = array('title' => '版块', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module'));
+
+         // 列表批量操作按钮
+        $this->pageButton[] = array('title' => '添加', 'onclick' => "javascript:window.location.href='".U('exams/AdminCategory/addModule', array('tabHash' => 'addModule'))."'");
+        //$this->pageTab[]   = array('title' => '列表', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module', array('tabHash' => 'module')));
+        //$this->pageTab[]   = array('title' => '添加', 'tabHash' => 'addModule', 'url' => U('exams/AdminCategory/addModule', array('tabHash' => 'addModule')));
         $this->pageKeyList = ['exams_module_id', 'title', 'icon', 'description', 'btn_text', 'DOACTION'];
         $list              = M('exams_module')->order("sort DESC")->findPage();
         if ($list['data']) {
             foreach ($list['data'] as &$value) {
-                $value['icon']        = '<img width="60" height="60" src="' . getCover($value['icon'], 60, 60) . '" />';
+                $value['icon']        = '<img width="60" height="60" src="' . getAttachUrlByAttachId($value['icon']) . '" />';
                 $value['description'] = mStr($value['description'], 50);
                 $value['DOACTION']    = '<a href="' . U('exams/AdminCategory/editModule', ['tabHash' => 'editModule', 'module_id' => $value['exams_module_id']]) . '">编辑</a>';
                 $value['DOACTION'] .= ' - <a href="javascript:exams.deleteMoudle(' . $value['exams_module_id'] . ')">删除</a>';
@@ -88,7 +93,8 @@ class AdminCategoryAction extends AdministratorAction
             }
             exit;
         }
-        $this->pageTab[]          = array('title' => '版块列表', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module', array('tabHash' => 'module')));
+        $this->pageTab[]   = array('title' => '专业', 'tabHash' => 'subject', 'url' => U('exams/AdminCategory/subject',array('tabHash' => 'subject')));
+        $this->pageTab[]   = array('title' => '版块', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module'),array('tabHash' => 'module'));
         $this->pageTab[]          = array('title' => '添加版块', 'tabHash' => 'addModule', 'url' => U('exams/AdminCategory/addModule', array('tabHash' => 'addModule')));
         $this->pageKeyList        = ['title', 'icon', 'description', 'btn_text', 'is_practice', 'sort'];
         $this->savePostUrl        = U('exams/AdminCategory/addModule');
@@ -128,9 +134,9 @@ class AdminCategoryAction extends AdministratorAction
             $this->jumpUrl = U('exams/AdminCategory/module');
             $this->error('编辑的版块不存在');
         }
-        $this->pageTab[]          = array('title' => '版块列表', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module', array('tabHash' => 'module')));
-        $this->pageTab[]          = array('title' => '添加版块', 'tabHash' => 'addModule', 'url' => U('exams/AdminCategory/addModule', array('tabHash' => 'addModule')));
-        $this->pageTab[]          = array('title' => '编辑版块', 'tabHash' => 'editModule', 'url' => U('exams/AdminCategory/editModule', array('tabHash' => 'editModule', 'module_id' => $module_id)));
+       $this->pageTab[]   = array('title' => '专业', 'tabHash' => 'subject', 'url' => U('exams/AdminCategory/subject'));
+        $this->pageTab[]   = array('title' => '版块', 'tabHash' => 'module', 'url' => U('exams/AdminCategory/module'));
+        $this->pageTab[]          = array('title' => '编辑', 'tabHash' => 'editModule', 'url' => U('exams/AdminCategory/editModule', array('tabHash' => 'editModule', 'module_id' => $module_id)));
         $this->pageKeyList        = ['exams_module_id', 'title', 'icon', 'description', 'btn_text', 'is_practice', 'sort'];
         $this->savePostUrl        = U('exams/AdminCategory/editModule');
         $this->opt['is_practice'] = [1 => '允许'];
@@ -164,9 +170,9 @@ class AdminCategoryAction extends AdministratorAction
      */
     public function question($value = '')
     {
-        $this->pageTab[] = array('title' => '试题类型', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
-        $this->pageTab[] = array('title' => '添加类型', 'tabHash' => 'addQuestionType', 'url' => U('exams/AdminCategory/addQuestionType', array('tabHash' => 'addQuestionType')));
-
+        $this->pageTab[] = array('title' => '试题列表', 'tabHash' => 'index', 'url' => U('exams/AdminQuestion/index', array('tabHash' => 'index')));
+        $this->pageTab[] = array('title' => '试题类型列表', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
+        $this->pageButton[] = array('title' => '添加', 'onclick' => "javascript:window.location.href='".U('exams/AdminCategory/addQuestionType', array('tabHash' => 'addQuestionType'))."'");
         $this->pageKeyList = ['exams_question_type_id', 'question_type_title', 'question_type_key', 'DOACTION'];
         $list              = M('exams_question_type')->findPage();
         if ($list['data']) {
@@ -194,8 +200,9 @@ class AdminCategoryAction extends AdministratorAction
      */
     public function addQuestionType()
     {
-        $this->pageTab[] = array('title' => '试题类型', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
-        $this->pageTab[] = array('title' => '添加类型', 'tabHash' => 'addQuestionType', 'url' => U('exams/AdminCategory/addQuestionType', array('tabHash' => 'addQuestionType')));
+        $this->pageTab[] = array('title' => '试题列表', 'tabHash' => 'index', 'url' => U('exams/AdminQuestion/index', array('tabHash' => 'index')));
+        $this->pageTab[] = array('title' => '试题类型列表', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'addQuestionType', 'url' => U('exams/AdminCategory/addQuestionType', array('tabHash' => 'addQuestionType')));
         if ($_POST) {
             $data = [
                 'question_type_key'   => $_POST['question_type_key'],
@@ -210,7 +217,7 @@ class AdminCategoryAction extends AdministratorAction
             }
             exit;
         }
-        $this->pageKeyList              = ['question_type_title', 'question_type_key'];
+        $this->pageKeyList              = ['question_type_key' ,'question_type_title'];
         $this->savePostUrl              = U('exams/AdminCategory/addQuestionType');
         $this->opt['question_type_key'] = [
             'radio'       => '单选',
@@ -230,9 +237,9 @@ class AdminCategoryAction extends AdministratorAction
      */
     public function editQuestionType()
     {
-        $this->pageTab[] = array('title' => '试题类型', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
-        $this->pageTab[] = array('title' => '添加类型', 'tabHash' => 'addQuestionType', 'url' => U('exams/AdminCategory/addQuestionType', array('tabHash' => 'addQuestionType')));
-        $this->pageTab[] = array('title' => '编辑类型', 'tabHash' => 'editQuestionType', 'url' => U('exams/AdminCategory/editQuestionType', array('exams_question_type_id' => $_GET['question_type_id'], 'tabHash' => 'editQuestionType')));
+        $this->pageTab[] = array('title' => '试题列表', 'tabHash' => 'index', 'url' => U('exams/AdminQuestion/index', array('tabHash' => 'index')));
+        $this->pageTab[] = array('title' => '试题类型列表', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
+        $this->pageTab[] = array('title' => '编辑', 'tabHash' => 'editQuestionType', 'url' => U('exams/AdminCategory/editQuestionType', array('exams_question_type_id' => $_GET['question_type_id'], 'tabHash' => 'editQuestionType')));
         if ($_POST) {
             $data = [
                 'question_type_key'   => $_POST['question_type_key'],
@@ -247,7 +254,7 @@ class AdminCategoryAction extends AdministratorAction
             }
             exit;
         }
-        $this->pageKeyList              = ['exams_question_type_id', 'question_type_title', 'question_type_key'];
+        $this->pageKeyList              = ['exams_question_type_id', 'question_type_key', 'question_type_title'];
         $this->savePostUrl              = U('exams/AdminCategory/editQuestionType');
         $this->opt['question_type_key'] = [
             'radio'       => '单选',

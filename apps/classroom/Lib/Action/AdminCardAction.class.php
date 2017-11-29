@@ -49,6 +49,9 @@ class AdminCardAction extends AdministratorAction
 			}else{
 				$list['data'][$key]['is_school'] = '用户';
 			}
+			if($value['accounttype'] == 'alipay'){
+
+			}
 			$list['data'][$key]['DOACTION'] = '<a href="javascript:admin.BankCardEdit('.$value['id'].',\'delbackcard\',\'删除\',\'银行卡号\');">删除</a>';
 		}
 		

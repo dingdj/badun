@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <style>
     .maskbox {position: fixed;left: 0;top: 100px;width: 100%;height: 100%;z-index: 99;display: none;}
@@ -69,13 +69,14 @@
                     <if condition="$listData">
                         <ul class="malllist">
                             <volist name="listData" id="vo">
-                                <li style="width: 100%">
+                                <li style="width: 48%;margin:6px 1% 0">
                                     <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">
                                     <img src="{:cutImg($vo['cover_ids'],190,100)}" class="lazyloading" alt="{$vo.title}" />
                                     <h3>{$vo.title}</h3>
-                                    <p>{$vo.info|msubstr=0,10, 'utf-8',true}</p>
+                                    <!--<p>{$vo.info|msubstr=0,10, 'utf-8',true}</p>-->
                                     <div class="info">
-                                        <div class="num"><span>{$vo.price}</span>积分&nbsp;&nbsp;&nbsp;&nbsp;<span>{$vo.fare}</span>运费</div>
+                                        <div class="num"><span>{$vo.price}</span>积分</div>
+                                        <div class="num" style="float:right;"><span>{$vo.fare}</span>运费</div>
                                     </div>
                                     <div class="places">剩余<span>{$vo.stock}</span>名额</div>
                                     </a>
@@ -149,4 +150,4 @@
         }
     });
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

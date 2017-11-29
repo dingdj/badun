@@ -7,14 +7,70 @@
         <div class="center_right">
             <div class="center_right_tit">
                 <ul>
-                    <li  class="on" ><a href="javascript:;" onclick="navClick(this,'getbuycourselist')">已预约的课程</a></li>
-                    <li><a onclick="navClick(this,'failed')" href="javascript:;">已完成的约课</a></li>
+                    <!--<li class="on" ><a href="javascript:;" onclick="navClick(this,'getbuycourselist')">已预约的线下课</a></li>-->
+                    <li <if condition="$_GET['tab'] eq null">class="on"</if> ><a href="{:U('classroom/Home/course')}">已预约的线下课</a></li>
+                    <li><a onclick="navClick(this,'failed')" href="javascript:;">已完成的线下课</a></li>
+                    <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/course',['tab'=>1])}">收藏的线下课</a></li>
+
                 </ul>
             </div>
             <input type = "hidden"  id = "clickstate"  value = "done"/>
 
             <div class="center_right_con">
                 <ul class="user-imglist">
+                    <if condition="$data eq null">
+                        <li style="border: none;box-shadow: none;">你还没有相对应的线下课。。</li>
+                        <else/>
+                        <if condition="$_GET['tab'] eq null">
+                            <foreach name="data" item="l">
+                                <li style="height:200px;">
+                                    <div class="position-rt">
+                                        <div class="Operation-list" >
+                                            <a href="javascript:;" onclick="delcourse(this,{$l.id})">删除<span></span></a>
+                                        </div>
+                                        <div class="user-imglistbt">
+                                            课程名称：<a href="{:U('classroom/LineClass/view',array('id'=>$l['video_id']))}">{:msubstr($l['course_name'], 0, 10)}</a><br/>
+                                            老师： {$l.tname}<br/>
+                                            联系方式：<font color="#2388c0">
+                                            <if condition="$l['tphone']">
+                                                {$l.tphone}
+                                                <elseif condition="$l['temail']"/>
+                                                {$l.temail}
+                                                <else/>
+                                                暂无联系方式
+                                            </if>
+                                        </font><br/>
+                                            授课方式：线下授课<br/>
+                                            订单状态：{$l.pay_status}<br/>
+                                            订单时间：{:date("Y-m-d H:i",$l['ctime'])}<br/>
+                                            价格：<font color="#2388c0">{$l.price}</font><br/>
+                                        </div>
+                                    </div>
+                                    <if condition="$l['learn_status'] == 1">
+                                        <a href="javascript:;"  class="finish" style="color: #fff;display: block;">待讲师确认</a>
+                                        <else/>
+                                        <if condition="$l['learn_status'] != 2">
+                                            <a href="javascript:;"  class="finish" onclick="saveFinished('{$l.id}',1)">确定完成</a>
+                                        </if>
+                                    </if>
+                                </li>
+                            </foreach>
+                            <else/>
+                            <foreach name="data" item="l">
+                                <li>
+                                    <a href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}" class="img">
+                                        <img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" >
+                                    </a>
+                                    <div class="user-title">
+                                        <h3><a href="{:U('classroom/LineClass/view',array('id'=>$l['course_id']))}">{:msubstr(t($l['course_name']),0,10,'utf-8',true)}</a></h3>
+                                        <p><a href="{:U('classroom/Teacher/view',array('id'=>$l['teacher_id']))}">{$l['teacher_name']}</a></p>
+                                        <span><strong>¥{$l.price}</strong><small>{$l['course_order_count']}人在学</small></span>
+                                        <div class="sc fr"><a href="javascript:;" onclick="delcourse(this,{$l.collection_id})">删除</a></div>
+                                    </div>
+                                </li>
+                            </foreach>
+                        </if>
+                    </if>
                 </ul>
             </div>
         </div>
@@ -28,7 +84,7 @@ var btnclick="getbuycourselist";
 var fdata;
 var magstatus;
 var mid = "{$mid}";
-$(function(){
+/*$(function(){
     var url="{:U('classroom/Home/getbuycourselist')}";
 	//异步加载我购买的课程
     $.ajax({
@@ -40,7 +96,7 @@ $(function(){
             appendHtml(data,btnclick,'getbuycourselist');
         }
     });
-});
+});*/
     //头部点击事件
     function navClick(cate,type){
         $(".user-imglist").html("");
@@ -105,16 +161,21 @@ function ajaxBang(url,type,callback){
  */
 function delcourse(cate,id){
     var id=id;
-    url="{:U('classroom/Home/delCourse')}";
-    fdata="id="+id;
+    var tablename = 'zy_teacher_course';
+    url="{:U('classroom/Home/delCollect')}";
+    fdata="id="+id+"&tableName="+tablename;
     $.ajax({
         type: "POST",
         url:url,
         data:fdata,
         dataType:"json",
         success:function(data){
-           if(data.status==1){
-               $(cate).parent().parent().parent().fadeOut();
+           if(data==200){
+               ui.success('删除收藏成功');
+               window.location.reload();
+           }else{
+                ui.success('删除收藏失败');
+                return;
            }
         }
     });

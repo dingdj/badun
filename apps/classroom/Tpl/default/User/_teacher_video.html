@@ -7,14 +7,24 @@
                 <div class="position-rt">
                     <div class="position-rt-float">
                         <php>if($l['is_activity'] == 0){</php>
-                        <span class="position-rt-float-a" onclick="doClick('uploadvideo')"><a href="{:U('classroom/User/updateVideo','id='.$l['id'])}" class="a1">修改</a></span>
-                        <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
-                        <php>}else if($l['is_activity'] == 2 || $l['is_activity'] == 3){</php>
-                        <span class="position-rt-float-a"  style="width: 70px;">审核中</span>
+                            <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
+                            <if condition="$l['section_count'] eq 0">
+                                <span class="position-rt-float-a" onclick="doClick('uploadvideo')"><a href="{:U('classroom/User/updateVideo','id='.$l['id'])}" class="a1">修改</a></span>
+                            </if>
+                            <span class="position-rt-float-a" >审核未通过</span>
+                        <php>}else if($l['is_activity'] == 2 || $l['is_activity'] == 3  || $l['is_activity'] == 5  || $l['is_activity'] == 6){</php>
+                            <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
+                            <span class="position-rt-float-a"  style="width: 70px;">审核中</span>
+                        <php>}else if($l['is_activity'] == 4 || $l['is_activity'] == 7){</php>
+                            <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
+                            <span class="position-rt-float-a" ><a href="{:U('classroom/User/addcourse','id='.$l['id'])}" class="a1">添加章节</a></span>
+                            <if condition="$l['section_count'] gt 0">
+                                <span class="position-rt-float-a" ><a href="javascript:;"  onclick="SubmitAudit(this,{$l['id']})" class="a1">提交审核</a></span>
+                            </if>
                         <php>}else{</php>
-                        <span class="position-rt-float-a" ><a href="{:U('classroom/User/addcourse','id='.$l['id'])}" class="a1">章节管理</a></span>
-                        <span class="position-rt-float-a" onclick="doClick('uploadvideo')"><a href="{:U('classroom/User/updateVideo','id='.$l['id'])}" class="a1">修改</a></span>
-                        <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
+                            <span class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
+                            <span class="position-rt-float-a" onclick="doClick('uploadvideo')"><a href="{:U('classroom/User/updateVideo','id='.$l['id'])}" class="a1">修改</a></span>
+                            <span class="position-rt-float-a" ><a href="{:U('classroom/User/addcourse','id='.$l['id'])}" class="a1">章节管理</a></span>
                         <php>}</php>
                     </div>
                     <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 222,144)}"> </a> </div>
@@ -37,6 +47,9 @@
                 <php>if($l['is_activity'] == 2 || $l['is_activity'] == 3){</php>
                     <span class="position-rt-float-a">审核中</span>
                 <php>}else{</php>
+                    <if condition="$l['is_activity'] eq 4">
+                        <span class="position-rt-float-a">添加章节</span>
+                    </if>
                     <span  style="float:left;"  class="position-rt-float-a" onclick="doClick('uploadvideo')"><a href="{:U('classroom/User/updateVideo','id='.$l['id'])}" class="a1">修改</a></span>
                     <span  style=" margin-left:15px;"  class="position-rt-float-b" onclick="delvideo(this,{$l.id})">删除</span>
                 <php>}</php>

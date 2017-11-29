@@ -19,6 +19,7 @@ class AdminConfigAction extends AdministratorAction
 		$this->pageTitle['ghConfig']   = '光慧配置';
 		$this->pageTitle['ccConfig']   = 'CClive配置';
 		$this->pageTitle['whConfig']   = '微吼配置';
+		$this->pageTitle['cc_xbkConfig'] = 'CC小班课配置';
 
 		$this->pageTab[] = array('title'=>'基础配置','tabHash'=>'baseConfig','url'=>U('live/AdminConfig/baseConfig'));
 		$config = model('Xdata')->get('live_AdminConfig:baseConfig');
@@ -30,8 +31,11 @@ class AdminConfigAction extends AdministratorAction
 			$this->pageTab[] = array('title' => '光慧配置', 'tabHash' => 'ghConfig', 'url' => U('live/AdminConfig/ghConfig'));
 		}else if($config['live_opt'] == 4) {
 			$this->pageTab[] = array('title' => 'CClive配置', 'tabHash' => 'ccConfig', 'url' => U('live/AdminConfig/ccConfig'));
-		}else if($config['live_opt'] == 5) {
+        }else if($config['live_opt'] == 5) {
             $this->pageTab[] = array('title' => '微吼配置', 'tabHash' => 'whConfig', 'url' => U('live/AdminConfig/whConfig'));
+        }else if($config['live_opt'] == 6) {
+            $this->pageTab[] = array('title' => 'CC小班课配置', 'tabHash' => 'ccConfig', 'url' => U('live/AdminConfig/ccConfig'));
+            //$this->pageTab[] = array('title' => 'CC小班课配置', 'tabHash' => 'cc_xbkConfig', 'url' => U('live/AdminConfig/cc_xbkConfig'));
         }
 		parent::_initialize();
 	}
@@ -48,6 +52,7 @@ class AdminConfigAction extends AdministratorAction
 //				'3' => '光慧',//光慧
 				'4' => 'CClive',//CClive
 				'5' => '微吼直播',//微吼直播
+				'6' => 'CC小班课配置',//微吼直播
 		);
 		$this->displayConfig ();
 	}
@@ -94,6 +99,8 @@ class AdminConfigAction extends AdministratorAction
 				'user_id',
 				'api_key',
 				'api_url',
+				'xbk_api_url',
+				'xbk_max_users',
 		);
 		$this->displayConfig ();
 	}

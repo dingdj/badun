@@ -8,8 +8,8 @@
             <div class="center_right_tit">
                 <ul>
                     <ul>
-                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/album')}">购买的套餐</a></li>
-                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/album',['tab'=>1])}">收藏的套餐</a></li>
+                        <li <if condition="$_GET['tab'] eq null">class="on"</if> > <a href="{:U('classroom/Home/album')}">购买的班级</a></li>
+                        <li <if condition="$_GET['tab'] eq 1">class="on"</if> ><a href="{:U('classroom/Home/album',['tab'=>1])}">收藏的班级</a></li>
                     </ul>
                 </ul>
                 <input type ="hidden"   id ="type"   value="getbuyalbumslist" >
@@ -59,7 +59,7 @@
                         </foreach>
                         <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js" charset="utf-8"></script>
                         <else/>
-                        <li style="border: none;box-shadow: none;">您还没有相关套餐。。</li>
+                        <li style="border: none;box-shadow: none;">您还没有相关班级。。</li>
                     </if>
                 </ul>
                 <div class="page">
@@ -110,7 +110,7 @@
 
                         </foreach>
                         <else/>
-                        <li style="border: none;box-shadow: none;">您还没收藏套餐。。</li>
+                        <li style="border: none;box-shadow: none;">您还没收藏班级。。</li>
                     </if>
                 </ul>
                 <div class="page">
@@ -153,13 +153,13 @@
 //    });
 
     /**
-     * 删除套餐法
+     * 删除班级法
      * @param id
      */
     function delalbum(cate,id,btnclick){
         var id=id;
         url="{:U('classroom/Album/delalbum')}";
-        //删除我购买的套餐
+        //删除我购买的班级
         if(btnclick=="buy"){
             fdata="type=2&rtype=1&id="+id;
         }else if(btnclick=="col"){

@@ -13,7 +13,7 @@ class AdminOSplitAction extends AdministratorAction {
     public function _initialize() {
         parent::_initialize();
         $this->pageTab[] = array('title'=>'课程分成明细列表','tabHash'=>'splitVideo','url'=>U('school/AdminOSplit/splitVideo'));
-        $this->pageTab[] = array('title'=>'套餐分成明细列表','tabHash'=>'splitAlbum','url'=>U('school/AdminOSplit/splitAlbum'));
+        $this->pageTab[] = array('title'=>'班级分成明细列表','tabHash'=>'splitAlbum','url'=>U('school/AdminOSplit/splitAlbum'));
         $this->pageTab[] = array('title'=>'直播课程分成明细列表','tabHash'=>'splitLive','url'=>U('school/AdminOSplit/splitLive'));
     }
     
@@ -49,7 +49,7 @@ class AdminOSplitAction extends AdministratorAction {
     public function splitAlbum(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','vid','video_title','oschool_uid','ouats_ouschool_sum','ctime','ltime','note');
-        $this->pageTitle['splitAlbum'] = '套餐分成明细列表';
+        $this->pageTitle['splitAlbum'] = '班级分成明细列表';
 
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
@@ -130,7 +130,7 @@ class AdminOSplitAction extends AdministratorAction {
         }elseif($type == 'zy_split_live'){
             $sheet_title = "直播";
         }elseif($type == 'zy_split_album'){
-            $sheet_title = "套餐";
+            $sheet_title = "班级";
         }
         $time = time();
 
@@ -349,7 +349,7 @@ class AdminOSplitAction extends AdministratorAction {
                 $info_title = M('zy_video')->where('id = '.$val['lid'])->getField('video_title');
             }elseif($type == 'zy_split_album'){
                 $url = U('classroom/Album/view', array('id' => $val['aid']));
-                $title_info = "未知套餐";
+                $title_info = "未知班级";
                 $info_title = M('album')->where('id = '.$val['aid'])->getField('album_title');
             }
 

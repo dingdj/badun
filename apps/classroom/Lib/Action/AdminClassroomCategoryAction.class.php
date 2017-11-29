@@ -15,18 +15,18 @@ class AdminClassroomCategoryAction extends AdministratorAction
 	public function _initialize()
 	{
 		// 管理标题项目
-		$this->pageTitle['index'] 			    = '（点播、直播）分类配置';
-		$this->pageTitle['packageCategory'] 	= '套餐分类配置';
-		$this->pageTitle['libraryCategory']     = '文库分类配置';
-		$this->pageTitle['teacherCategory']     = '讲师分类配置';
-		$this->pageTitle['schoolCategory']      = '机构分类配置';
+		$this->pageTitle['index'] 			    = '（点播、直播、线下课）分类';
+		$this->pageTitle['packageCategory'] 	= '班级分类';
+		$this->pageTitle['libraryCategory']     = '文库分类';
+		$this->pageTitle['teacherCategory']     = '讲师分类';
+		$this->pageTitle['schoolCategory']      = '机构分类';
 
 		// 管理分页项目
-		$this->pageTab[] = array('title'=>$this->pageTitle['index'],'tabHash'=>'index','url'=>U('classroom/AdminClassroomCategory/index'));
-		$this->pageTab[] = array('title'=>$this->pageTitle['packageCategory'],'tabHash'=>'packageCategory','url'=>U('classroom/AdminClassroomCategory/packageCategory'));
-		$this->pageTab[] = array('title'=>$this->pageTitle['libraryCategory'],'tabHash'=>'libraryCategory','url'=>U('classroom/AdminClassroomCategory/libraryCategory'));
-		$this->pageTab[] = array('title'=>$this->pageTitle['teacherCategory'],'tabHash'=>'teacherCategory','url'=>U('classroom/AdminClassroomCategory/teacherCategory'));
-		$this->pageTab[] = array('title'=>$this->pageTitle['schoolCategory'],'tabHash'=>'schoolCategory','url'=>U('classroom/AdminClassroomCategory/schoolCategory'));
+		$this->pageTab[] = array('title'=>'（点播、直播、线下课）分类','tabHash'=>'index','url'=>U('classroom/AdminClassroomCategory/index'));
+		$this->pageTab[] = array('title'=>'班级分类','tabHash'=>'packageCategory','url'=>U('classroom/AdminClassroomCategory/packageCategory'));
+		$this->pageTab[] = array('title'=>'文库分类','tabHash'=>'libraryCategory','url'=>U('classroom/AdminClassroomCategory/libraryCategory'));
+		$this->pageTab[] = array('title'=>'讲师分类','tabHash'=>'teacherCategory','url'=>U('classroom/AdminClassroomCategory/teacherCategory'));
+		$this->pageTab[] = array('title'=>'机构分类','tabHash'=>'schoolCategory','url'=>U('classroom/AdminClassroomCategory/schoolCategory'));
 		parent::_initialize();
 	}
 	
@@ -35,7 +35,7 @@ class AdminClassroomCategoryAction extends AdministratorAction
         $treeData = model ( 'CategoryTree' )->setTable ( 'zy_currency_category' )->getNetworkList ();
         $this->displayCoverTree ( $treeData, 'zy_currency_category');
 	}
-	//套餐分类列表
+	//班级分类列表
 	public function packageCategory(){
         $treeData = model ( 'CategoryTree' )->setTable ( 'zy_package_category' )->getNetworkList ();
         $this->displayTree ( $treeData, 'zy_package_category',1);

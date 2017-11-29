@@ -209,7 +209,7 @@ class PassportAction extends CommonAction
 		// 添加样式
 		$this->appCssList[] = 'login.css';
 		if(model('Passport')->isLogged()){
-			U('index/Index/index','',true);//dengjb 个人中心
+			U('classroom/Index/index','',true);//dengjb 个人中心
 		}
 
 		// 获取邮箱后缀
@@ -524,7 +524,9 @@ class PassportAction extends CommonAction
      * 登录或注册页面
      */
     public function reg(){
-
+    	if( $this->mid ){
+    		header("Location: ". U('classroom/Index/index'));
+    	}
         $registerConf = model('Xdata')->get('admin_Config:register');
         $interest = M('zy_currency_category')->where('pid=0')->findALL();
         $school = model('School')->findALL();
@@ -648,7 +650,7 @@ class PassportAction extends CommonAction
     		M('ResphoneCode')->add($map);
     		$this->mzSuccess("发送成功，请注意查收！");
     	}else{
-    		$this->mzError(model('Sms')->getError());
+    		$this->mzError('请检查短信配置');
     	}
     	
     }
@@ -668,6 +670,9 @@ class PassportAction extends CommonAction
      * 异步注册
      */
     public function ajaxReg(){
+    	if( $this->mid ){
+    		header("Location: ". U('classroom/Index/index'));
+    	}
     	$phone=$_POST['phone'];
 		$email = t($_POST['email']);
 		$uname = t($_POST['uname']);
@@ -690,16 +695,16 @@ class PassportAction extends CommonAction
         	}
         	//检查验证码
         	if(md5(strtoupper($_POST['verify'])) != $_SESSION['verify']) {
-        		$this->mzError('验证码错误！');
+        		$this->mzError('验证码错误');
         	}
         	$map['login']=$email;
         	$map['email']=$email;
         }else{
         	if(!preg_match("/^[1][34578]\d{9}$/",$phone)) {
-        		$this->mzError("手机号格式错误！");
+        		$this->mzError("手机号格式错误");
         	}
         	if($phone!=$_SESSION['getverphone'] ||$_POST['verify']!=$_SESSION['phoneverify']){
-        		$this->mzError("对不起，验证码错误，请重试！");
+        		$this->mzError("验证码错误");
         	}
         	
         	$map['phone']=$phone;
@@ -708,7 +713,7 @@ class PassportAction extends CommonAction
 		
 
 		if($password=="" ||strlen($password)<6 || strlen($password)>20){
-			$this->mzError("对不起，密码长度不正确");
+			$this->mzError("密码长度为6-20位");
 		}
 		$login_salt = rand(11111, 99999);
 

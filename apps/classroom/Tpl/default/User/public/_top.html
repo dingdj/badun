@@ -101,7 +101,7 @@
             <if condition="$user['background_id']">
                 <div class="centerbox" style="background:url({:getAttachUrlByAttachId($user['background_id'])}) center center no-repeat;background-size: cover;">
                     <else/>
-                    <div class="centerbox" style="background:url(__APP__/image/centerbg.jpg) center center no-repeat;" id="cover_yulan">
+                <div class="centerbox" style="background:url(__APP__/image/centerbg.jpg) center center no-repeat;" id="cover_yulan">
             </if>
 
             <div class="wrap">
@@ -173,13 +173,14 @@
             <div class="wrap">
                 <ul class="look-home">
                     <li <php>if(ACTION_NAME=="index"){echo "class='on'";}</php>><a href="{:U('classroom/User/index')}">首页</a></li>
-                    <li <php>if(ACTION_NAME=="video"){echo "class='on'";}</php>><a href="{:U('classroom/Home/video')}">课程</a></li>
+                    <li <php>if(ACTION_NAME=="video"){echo "class='on'";}</php>><a href="{:U('classroom/Home/video')}">点播</a></li>
                     <!--<li <php>if(ACTION_NAME=="crow"){echo "class='on'";}</php>><a href="{:U('classroom/Home/crow')}">众筹</a></li>-->
                     <li <php>if(ACTION_NAME=="live"){echo "class='on'";}</php>><a href="{:U('classroom/Home/live')}">直播</a></li>
-                    <li <php>if(ACTION_NAME=="album"){echo "class='on'";}</php>><a href="{:U('classroom/Home/album')}">套餐</a></li>
+                    <li <php>if(ACTION_NAME=="course"){echo "class='on'";}</php>><a href="{:U('classroom/Home/course')}">线下课</a></li>
+                    <li <php>if(ACTION_NAME=="album"){echo "class='on'";}</php>><a href="{:U('classroom/Home/album')}">班级</a></li>
                     <li <php>if(ACTION_NAME=="share"){echo "class='on'";}</php>><a href="{:U('classroom/Home/share')}">分享</a></li>
                     <li <php>if(ACTION_NAME=="group"){echo "class='on'";}</php>><a href="{:U('classroom/Home/group')}">小组</a></li>
-                    <li <php>if(ACTION_NAME=="course"){echo "class='on'";}</php>><a href="{:U('classroom/Home/course')}">约课</a></li>
+                    <li <php>if(ACTION_NAME=="exams"){echo "class='on'";}</php>><a href="{:U('classroom/Home/exams')}">考试</a></li>
                     <li   id ="wendalist" <php>if(ACTION_NAME=="wenda"){echo "class='on'";}</php>><a href="{:U('classroom/Home/wenda')}">问答</a></li>
                     <div class="more-option-study">
                         <p>更多</p><i></i>
@@ -191,8 +192,8 @@
                             <li  id ="collect" <php>if(ACTION_NAME=="collect"){echo "class='on'";}</php>><a href="{:U('classroom/Home/collect')}">收藏</a></li>
                             <li <php>if(ACTION_NAME=="learn"){echo "class='on'";}</php>><a href="{:U('classroom/Home/learn')}">学习记录</a></li>
 
-                            <php>if($GLOBALS['ts']['teacher'] == 1){</php>
-                            <li <php>if(ACTION_NAME=="teacher_course"){echo "class='on'";}</php> ><a href="{:U('classroom/Home/teacher_course')}">约课管理</a></li>
+                            <php>if($GLOBALS['ts']['teacher'] == 1 && $is_teacher == 1){</php>
+                            <li <php>if(ACTION_NAME=="teacher_course"){echo "class='on'";}</php> ><a href="{:U('classroom/Home/teacher_course')}">线下课管理</a></li>
                             <li  id ="letuploadvideo"  <php>if(ACTION_NAME=="teacherVideo"){echo "class='on'";}</php> ><a href="{:U('classroom/User/teacherVideo')}">我的授课</a></li>
                             <php>}</php>
                         </div>

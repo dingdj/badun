@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+    <meta content="<neq name= '_keywords' value=''>{$_keywords}<else />{$site.site_header_keywords}</neq>" name="keywords">
+    <meta content="<neq name= '_description' value=''>{$_description}<else />{$site.site_header_description}</neq>" name="description">
+    <meta name="viewport" charset="UTF-8" content="user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta property="qc:admins" content="1403267155765154541656375" />
+    <meta property="wb:webmaster" content="fdcd9430a88b1552" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+
+    <link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
+    <!-- 站点css -->
+    <link href="__THEME__/css/css.php?t=css&f=common_new.css,basic_new.css,common.css,index.css,logincss.css,media.css,style.css,style_add.css,style_new.css,wenda.css,_header_footer.css&v={$site.sys_version}.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+
+    <script type="text/javascript" src="__THEME__/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="__THEME__/js/lazyload/jquery.lazyload.min.js"></script>
+    <script src="__THEME__/js/js.php?t=js&f=jquery.form.js,common.js,core.js,module.js,module.common.js,jwidget_1.0.0.js,jquery.atwho.js,jquery.caret.js,ui.core.js,ui.draggable.js,plugins/core.comment.js,plugins/core.digg.js&v={$site.sys_version}.js"></script>
+
+    <script type="text/javascript" src="__THEME__/js/user/user.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/title_common.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/cyjs_common.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/offlights.js"></script>
+    <script type="text/javascript" src="__THEME__/js/jquery.qrcode.min.js"></script>
+
+    <script>
+        //全局变量
+        var SITE_URL  = '<php> echo SITE_URL;</php>';
+        var UPLOAD_URL= '<php> echo UPLOAD_URL;</php>';
+        var THEME_URL = '__THEME__';
+        var APPNAME   = '<php> echo APP_NAME;</php>';
+        var MID		  = '<php> echo $mid;</php>';
+        var UID		  = '<php> echo $uid;</php>';
+        var initNums  =  '<php> echo $initNums;</php>';
+        var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
+        var _ROOT_    = '__ROOT__';
+        // Js语言变量
+        var LANG = new Array();
+        //注册登录模板
+        var REG_LOGIN="{:U('public/Passport/regLogin')}";
+        //邮箱验证地址
+        var CLICK_EMIL="{:U('public/Passport/clickEmail')}";
+        //异步注册地址
+        var REG_ADDRESS="{:U('public/Passport/ajaxReg')}";
+        //异步登录
+        var LOGIN_ADDRESS="{:U('public/Passport/ajaxLogin')}";
+        //退出登录
+        var LOGINOUT_ADDRESS="{:U('public/Passport/logout')}";
+
+        function login_box() {
+            reg_login();
+        }
+
+        function closeMsg(obj){
+            $(".news-msg").remove();
+        }
+
+        /**
+         * 退出成功
+         */
+        function logout(){
+            $.ajax({
+                type: "POST",
+                async:false,
+                url:LOGINOUT_ADDRESS,
+                dataType:"json",
+                success:function(data){
+                    ui.success("退出成功！");
+                    location.reload();
+                }
+            });
+        }
+
+        $(function(){
+            $('.backtop').click(function(){
+                $('body,html').animate({scrollTop:0},300);
+                return false;
+            });
+            $('.full-course').hover(function(){
+                $(this).addClass('hover');
+            },function(){
+                $(this).removeClass('hover');
+            });
+
+            /*header选择要搜索的类型*/
+            $(".direction a").on("click",function(){
+                var inputKey = $(this).index();
+                if(inputKey==0){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的课程');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }else if(inputKey==1){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的机构');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }else if(inputKey==2){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的老师');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }
+            });
+
+        });
+        
+        $(window).scroll(function(){
+            if($(window).scrollTop()>300){
+                $('.backtop').fadeIn(300);
+            }else{
+                $('.backtop').fadeOut(200);
+            }
+        });
+
+        if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+            $(window).load(function () {
+                $('.modular,.logos,.window-box').show();
+                $('.users').attr('style','display:block');
+            });
+        }
+    </script>
+
+    <php>if(!empty($langJsList)) {</php>
+    <volist name="langJsList" id="vo">
+        <script src="{$vo}?v={$site.sys_version}"></script>
+    </volist>
+    <php>}</php>
+
+    <!-- 站点js -->
+    <!--[if lt IE 9]>
+    <script src="__THEME__/js/lazyload/html5shiv.js"></script>
+    <![endif]-->
+    <!--[if lt IE 9]><script src="js/html5.js" type="text/javascript"></script><![endif]-->
+    
+
+</head>
+<body>
+
+

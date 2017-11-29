@@ -1,10 +1,10 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <div class="body">
     <div class="teachertop">
         <img class="bg" src="__THEME__/icon/bg2.jpg" alt="" style="max-height: 160px;"/>
-        <a class="teacher_nav" href="javascript:;"></a>
-        <div class="teacher_nav_box" id="show" style="display: none;">
+        <!--<a class="teacher_nav" href="javascript:;"></a>-->
+        <!--<div class="teacher_nav_box" id="show" style="display: none;">
             <dl>
                 <dd><a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的名片</a></dd>
                 <dd><a href="{:U('classroom/User/setInfo')}">个人资料</a></dd>
@@ -22,10 +22,10 @@
                 <dd><a href="{:U('classroom/Home/note')}">我的笔记</a></dd>
                 <dd><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></dd>
                 <dd><a href="{:U('classroom/User/address')}">收货地址</a></dd>
-                <!--<dd><a href="{:U('classroom/User/appcertific')}">申请认证</a></dd>-->
+                &lt;!&ndash;<dd><a href="{:U('classroom/User/appcertific')}">申请认证</a></dd>&ndash;&gt;
                 <dd><a href="{:U('classroom/User/changepsw')}">修改密码</a></dd>
             </dl>
-        </div>
+        </div>-->
         <div class="personal-box">
             <div class="center-pic">
                 <img src="{:getUserFace($user['uid'],'b')}" width="62" height="62" alt="{:getUserName($user['uid'])}" />
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="teacherbot">
+    <div class="teacherbot" style="margin-top:5px;">
         <php>if($_GET['uid'] == $_SESSION['mid']){</php>
         <div class="classitem bgw">
             <div class="classtit"><em></em>签到赚学分</div>
@@ -163,4 +163,4 @@
     }
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

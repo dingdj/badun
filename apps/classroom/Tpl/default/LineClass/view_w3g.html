@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 <link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
 <link rel="stylesheet" type="text/css" href="__THEME__/../_static_w3g/css/style_media.css">
 <style>
@@ -16,11 +16,11 @@
             <dd><p>开课时间：{:date('Y-m-d',$data['listingtime'])}～{:date('Y-m-d',$data['uctime'])}</p></dd>
             <dd><p>地点：{$data['user']['Teach_areas'] | default='无限制'}</p></dd>
             <!--<dd><p class="top01">原价：<small>¥96</small></p></dd>-->
-            <dd><b><strong>优惠价：</strong><if condition="$data['mzprice']['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['mzprice']['price']}</if></b></dd>
+            <dd><b><strong>优惠价：</strong><if condition="$data['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/>¥{$data['price']}</if></b></dd>
         </dl>
         <div class="course-deta-service">
-            <if condition="$data['is_buy'] eq 3"><button>已预约</button><else/><button onclick="meetingteacher(this,{$data['course_id']},{$data['user']['id']},{$data['course_price']})">预约课程</button></if>
-            <!--<span><i class="icon icon-shoucang"></i><i class="icon icon-fenxiang"></i></span>-->
+            <if condition="$data['is_buy'] eq 3"><button>已预约</button><else/><button onclick="meetingteacher(this,{$data['course_id']},{$data['user']['id']},{$data['price']})">预约课程</button></if>
+            <span><i class="icon icon-shoucang"></i><!--<i class="icon icon-fenxiang"></i>--></span>
         </div>
     </div>
 </div>
@@ -252,4 +252,48 @@
 </script>
 <script src="__THEME__/../_static_w3g/js/details_h5.js"></script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<if condition="$is_wx">
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script>
+        wx.config({
+            debug: false,
+            appId: '<?php echo $signPackage["appId"];?>',
+            timestamp: '<?php echo $signPackage["timestamp"];?>',
+            nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+            signature: '<?php echo $signPackage["signature"];?>',
+            jsApiList: [
+                "onMenuShareTimeline",//朋友圈
+                "onMenuShareAppMessage",//朋友
+                "onMenuShareQQ",
+                "onMenuShareWeibo",
+                "onMenuShareQZone",
+            ]
+        });
+        var desc = "{$seo['_meta']}",
+            img_url = "{:getCover($data['cover'] ,520 , 320 )}";
+
+        wx.ready(function () {
+            wx.onMenuShareTimeline({
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareAppMessage({
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareQQ({
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareWeibo({
+                desc: desc,
+                imgUrl: img_url,
+            });
+            wx.onMenuShareQZone({
+                desc: desc,
+                imgUrl: img_url,
+            });
+        });
+    </script>
+</if>
+<include file="__THEME__/public_footer_w3g"/>

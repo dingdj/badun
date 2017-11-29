@@ -1,6 +1,6 @@
 <?php
 /**
- * 云课堂点播(套餐)控制器
+ * 云课堂点播(班级)控制器
  * @version CY1.0
  */
 tsload(APPS_PATH . '/classroom/Lib/Action/CommonAction.class.php');
@@ -19,7 +19,7 @@ class AlbumAction extends CommonAction {
 
 
     /**
-     * 课程套餐班课
+     * 课程班级班课
      */
     public function index() {
         $cateId = intval($_GET['cid']);
@@ -40,7 +40,7 @@ class AlbumAction extends CommonAction {
             $map.= ' AND `vip_level` = "'.$vid.'"';
         }
 
-        /*TODO:讲师，会员类型、班型。先读取满足条件的课程，再读取套餐*/
+        /*TODO:讲师，会员类型、班型。先读取满足条件的课程，再读取班级*/
         if(!empty($tid)){
             $vMap['is_del'] = 0;
             $vMap['teacher_id'] = $tid;
@@ -103,6 +103,13 @@ class AlbumAction extends CommonAction {
         }
 
         $album_list = D('Album')->getList($map,$order,6);
+        foreach ($album_list['data'] as $key=>$val){
+            $all_price = getAlbumPrice($val['id'],$this->mid);
+            $album_list['data'][$key]['price'] = $all_price['price'];
+            $album_list['data'][$key]['oPrice'] = $all_price['oriPrice'];
+            $album_list['data'][$key]['disPrice'] = $all_price['disPrice'];
+            $album_list['data'][$key]['isBuy'] =  D('ZyOrderAlbum')->isBuyAlbum($this->mid ,$val['id'] ) ? 1 : 0;
+        }
 
         $this->assign('lower',t($_GET['lower']));
         $this->assign('album_list',$album_list);
@@ -194,11 +201,11 @@ class AlbumAction extends CommonAction {
                 $price = is_admin($this->mid) ? 0 : $val['price'];
                 $val['mzprice'] = array('overplus'=>$price);
             } else {
-                //获取套餐价格
+                //获取班级价格
                 $val['mzprice'] = $this->album->getAlbumMoeny( $video_ids ,$this->mid);
             }
 
-            //格式化套餐评分
+            //格式化班级评分
             $val['score']    = round($val['album_score']/20);
         }
 
@@ -222,7 +229,7 @@ class AlbumAction extends CommonAction {
 
 
     /**
-     * 套餐详情页
+     * 班级详情页
      */
     public function view() {
         $this->view_info();
@@ -231,7 +238,16 @@ class AlbumAction extends CommonAction {
 
     private function view_info(){
         $id = intval($_GET['id']);
-		$share_url = $this->addVideoShare($id,1);
+
+        $map['id'] = array('eq', $id);
+        $map['status'] = 1;
+        $album_data = D('Album')->where($map)->find();
+
+        //设置seo详情
+        $this->seo['_title'] = $album_data['album_intro'] ? $album_data['album_title'].' — '.$album_data['album_intro'] : $album_data['album_title'].$this->seo['_bak_title'];
+        $this->seo['_meta'] = $album_data['album_intro'] ? : $this->seo['_meta'];
+
+        $share_url = $this->addVideoShare($id,1);
         $code = t ( $_GET ['code'] );
         if($code){
 			$code = explode('@@@', $code);
@@ -260,19 +276,23 @@ class AlbumAction extends CommonAction {
             unset($data);
             unset($map);
         }
-        $map['id'] = array('eq', $id);
-        $map['status'] = 1;
-        $data = D('Album')->where($map)->find();
+        $data = $album_data;
+        //计算价格
+        $all_price = getAlbumPrice($data['id'],$this->mid);
+        $data['price'] = $all_price['price'];
+        $data['oPrice'] = $all_price['oriPrice'];
+        $data['disPrice'] = $all_price['disPrice'];
+
         if (!$data) {
              $this->assign('isAdmin', 1);
-            $this->error('套餐不存在!');
+            $this->error('班级不存在!');
         }
         //获取评论数
         $data['reviewCount'] = D('ZyReview')->getReviewCount(2, intval($data['id']));
 
         $data['album_title'] = msubstr($data['album_title'], 0, 24);
         $data['album_intro'] = msubstr($data['album_intro'], 0, 100);
-        //套餐分类
+        //班级分类
         //$data['album_category_name'] = getCategoryName($data['album_category'], true);
 
         //是否收藏
@@ -296,16 +316,7 @@ class AlbumAction extends CommonAction {
         }
 
         $tch_ids = array();
-        //如果为管理员/机构管理员 则免费
-//        if(is_admin($this->mid)) {
-//            $data['t_price'] = 0;
-//        }
-//        if(is_school($this->mid) == $data['mhm_id']){
-//            $data['t_price'] = 0;
-//        }
         //原价
-        $oPrice = 0.00;
-
         foreach($videoData as $key=>$val) {
             $tch_ids[$key] = $val['teacher_id'];
             $oPrice += $val['t_price'];
@@ -315,46 +326,25 @@ class AlbumAction extends CommonAction {
                 $secmap = array();
                 $secmap['vid'] = $val['id'];
                 $secmap['pid'] = array('neq', 0);
+                $secmap['is_activity'] = 1;
                 $count = M('zy_video_section')->where($secmap)->count();
                 $videoData[$key]['sectionNum'] = $count;
             }
 
             if ($val['type'] == 2) {
                 $videoData[$key]['sectionNum'] = 0;
-                if ($val['live_type'] == 1) {
-                    $videoData[$key]['sectionNum'] = M('zy_live_zshd')->where(array('live_id' => $val['id'], 'is_del' => 0, 'is_active' => 1))->count();
-                    if (!$videoData[$key]['sectionNum']) {
-                        $videoData[$key]['sectionNum'] = 0;
-                    }
-                    $live_id[$key] =M('zy_live_zshd') -> where(array('live_id'=>$val['id'],'is_del'=> 0,'is_active'=>1))->getField('speaker_id');
 
+                $videoData[$key]['sectionNum'] = model('Live')->liveRoom->where(array('live_id' => $val['id'], 'is_del' => 0, 'is_active' => 1))->count();
+                if (!$videoData[$key]['sectionNum']) {
+                    $videoData[$key]['sectionNum'] = 0;
                 }
-                if ($val['live_type'] == 3) {
-                    $videoData[$key]['sectionNum'] = M('zy_live_gh')->where(array('live_id' => $val['id'], 'is_del' => 0, 'is_active' => 1))->field('speaker_id')->count();
-                    if (!$videoData[$key]['sectionNum']) {
-                        $videoData[$key]['sectionNum'] = 0;
-                    }
-                    $live_id[$key] =M('zy_live_gh') -> where(array('live_id'=>$val['id'],'is_del'=> 0,'is_active'=>1))->getField('speaker_id');
-
-                }
-                if ($val['live_type'] == 4) {
-                    $videoData[$key]['sectionNum'] = M('zy_live_cc')->where(array('live_id' => $val['id'], 'is_del' => 0, 'is_active' => 1))->field('speaker_id')->count();
-                    if (!$videoData[$key]['sectionNum']) {
-                        $videoData[$key]['sectionNum'] = 0;
-                    }
-                    $live_id[$key] =M('zy_live_cc') -> where(array('live_id'=>$val['id'],'is_del'=> 0,'is_active'=>1))->getField('speaker_id');
-
-                }
-
+                $live_id[$key] = model('Live')-> where(array('id'=>$val['id'],'is_del'=> 0,'is_active'=>1))->getField('teacher_id');
             }
         }
         if($live_id){
             $tch_ids = array_merge($tch_ids,$live_id);
         }
 
-        //获取套餐价格
-        $data['oPrice'] = ($oPrice - $data['price']) > 0 ? $oPrice : $data['price'];
-        $data['disPrice'] = ($oPrice - $data['price']) > 0 ? ($oPrice - $data['price']) : 0.00;
         $data['video_count'] = count($videoData);
 
         $tids = array_unique(array_filter($tch_ids));//去掉重复讲师id
@@ -389,7 +379,7 @@ class AlbumAction extends CommonAction {
             //当前用户关注状态
             $mhmData['state']=model('Follow')->getFollowState($this->mid,$mhmData['uid']);
             //域名跳转处理
-            $mhmData['domain'] = getDomain($mhmData['doadmin']);
+            $mhmData['domain'] = getDomain($mhmData['doadmin'],$mhm_id);
         }
         //获取当前用户可支配的余额
         $data['balance'] = D("zyLearnc")->getUser($this->mid);
@@ -410,12 +400,8 @@ class AlbumAction extends CommonAction {
             $mhm_id = model('User')->where('uid='.$uid)->getField('mhm_id');
         }
 
-
-
 		$commentSwitch = model('Xdata')->get('admin_Config:commentSwitch');
 		$switch = $commentSwitch['album_switch'];
-
-
 
         $like = $this->getLike();
         $this->assign('like',$like);
@@ -434,7 +420,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 套餐详情页
+     * 班级详情页
      */
     public function view_mount() {
         $this->view_info();
@@ -456,7 +442,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 取得套餐目录----课程标题
+     * 取得班级目录----课程标题
      * @param int $return
      * @return void|array
      */
@@ -474,10 +460,10 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 加载课程/套餐笔记
+     * 加载课程/班级笔记
      */
     public function getnotelist(){
-        $type=intval($_REQUEST['type']);//获取笔记类型 【1:课程;2:套餐;】
+        $type=intval($_REQUEST['type']);//获取笔记类型 【1:课程;2:班级;】
         $oid=intval($_REQUEST['oid']);//获取对应的栏目id
         $map=array(
             'type'=>$type,
@@ -497,10 +483,10 @@ class AlbumAction extends CommonAction {
         echo json_encode($data);exit;
     }
     /**
-     * 加载课程/套餐提问
+     * 加载课程/班级提问
      */
     public function getquestionlist(){
-        $type=intval($_REQUEST['type']);//获取笔记类型 【1:课程;2:套餐;】
+        $type=intval($_REQUEST['type']);//获取笔记类型 【1:课程;2:班级;】
         $oid=intval($_REQUEST['oid']);//获取对应的栏目id
         $map=array(
                 'type'=>$type,
@@ -519,11 +505,11 @@ class AlbumAction extends CommonAction {
 
 
     /**
-     * 套餐观看页面
+     * 班级观看页面
      */
     public function watch() {
         $aid = intval($_GET['aid']);
-        $type = intval($_GET['type']); //数据分类 1:课程;2:套餐;
+        $type = intval($_GET['type']); //数据分类 1:课程;2:班级;
         if ($type == 1) { //课程
             $data = M("ZyVideo")->where(array('id' => array('eq', $aid)))->select();
             $data[0]['mzprice'] = getPrice($data[0], $this->mid, true, true);
@@ -838,7 +824,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 删除购买的套餐和课程 <!--type   1:课程;2:套餐;3;直播-->
+     * 删除购买的班级和课程 <!--type   1:课程;2:班级;3;直播-->
      * @param int $return
      * @return void|array
      */
@@ -860,7 +846,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 删除购买的直播 <!--type   1:课程;2:套餐;-->
+     * 删除购买的直播 <!--type   1:课程;2:班级;-->
      * @param int $return
      * @return void|array
      */
@@ -877,7 +863,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 删除收藏的套餐和课程 <!--type   1:课程;2:套餐;-->
+     * 删除收藏的班级和课程 <!--type   1:课程;2:班级;-->
      * @param int $return
      * @return void|array
      */
@@ -903,7 +889,7 @@ class AlbumAction extends CommonAction {
             $credit = M('credit_setting')->where(array('id'=>48,'is_open'=>1))->field('id,name,score,count')->find();
             if($credit['score'] < 0){
                 $ctype = 7;
-                $note = '取消收藏套餐扣除的积分';
+                $note = '取消收藏班级扣除的积分';
             }
         }
         model('Credit')->addUserCreditRule($this->mid,$ctype,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
@@ -917,7 +903,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 删除上传的套餐和课程 <!--type   1:课程;2:套餐;-->
+     * 删除上传的班级和课程 <!--type   1:课程;2:班级;-->
      * @param int $return
      * @return void|array
      */
@@ -939,7 +925,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 把套餐分享到点播去
+     * 把班级分享到点播去
      * @param int $return
      * @return void|array
      */
@@ -958,7 +944,7 @@ class AlbumAction extends CommonAction {
     }
 
     /**
-     * 前台创建套餐
+     * 前台创建班级
      */
     public function creat_album() {
         $post = $_POST;
@@ -995,25 +981,25 @@ class AlbumAction extends CommonAction {
         if (bccomp($total_price, $total_price_post) != 0) {
             exit(json_encode(array('status' => '999', 'info' => '亲，可不要随便改价格哦，我们会发现的!')));
         }
-        //创建套餐
+        //创建班级
         $create_result = M("Album")->data($data)->add();
         $total_price = floatval($total_price);
 
-        //创建套餐失败
+        //创建班级失败
         if (!$create_result)
-            exit(json_encode(array('status' => '0', 'info' => '创建套餐失败，请稍后再试')));
+            exit(json_encode(array('status' => '0', 'info' => '创建班级失败，请稍后再试')));
 
-        //创建套餐之后付款，并且添加套餐购买记录 不成功则向前台发送对应的错误信息
+        //创建班级之后付款，并且添加班级购买记录 不成功则向前台发送对应的错误信息
         $pay_result = D("ZyService")->buyAlbum($this->mid, $create_result, $total_price);
         if ($pay_result['status'] != '1') {
             M("album")->where(' id = ' . $create_result)->delete();
             exit(json_encode(array('status' => $pay_result['status'], 'info' => $pay_result['info'])));
         }
         //添加消费记录
-        M('ZyLearnc')->addFlow($this->mid, 0, $total_price, $note = '购买套餐<' . $data['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
+        M('ZyLearnc')->addFlow($this->mid, 0, $total_price, $note = '购买班级<' . $data['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
 
 
-        //添加套餐中的课程购买记录
+        //添加班级中的课程购买记录
         $insert_value = "";
         foreach ($avideos['data'] as $key => $video) {
             if (!$video['is_buy']) {
@@ -1028,7 +1014,7 @@ class AlbumAction extends CommonAction {
             $query = "INSERT INTO " . C("DB_PREFIX") . "zy_order (`uid`,`muid`,`video_id`,`old_price`,`discount`,`discount_type`,`price`,`order_album_id`,`percent`,`user_num`,`master_num`,`learn_status`,`ctime`,`is_del`) VALUE " . trim($insert_value, ',');
             $table = new Model();
             if ($table->query($query) !== false || $total_price == 0) {
-                echo(json_encode(array('status' => '1', 'info' => '创建套餐成功', 'album_id' => $create_result)));
+                echo(json_encode(array('status' => '1', 'info' => '创建班级成功', 'album_id' => $create_result)));
                 foreach ($avideos['data'] as $key => $video) {
                     if (!$video['is_buy'] && ($this->mid != $video['video_info']['uid'])) {
                         $rvid = M("zy_order")->where('video_id=' . $video['video_info']['id'])->field("id")->find();
@@ -1039,7 +1025,7 @@ class AlbumAction extends CommonAction {
                 }
             }
         } else {
-            echo(json_encode(array('status' => '1', 'info' => '创建套餐成功', 'album_id' => $create_result)));
+            echo(json_encode(array('status' => '1', 'info' => '创建班级成功', 'album_id' => $create_result)));
         }
 
     }
@@ -1104,14 +1090,14 @@ class AlbumAction extends CommonAction {
 
             $tuid = '';
             foreach ($live_zshd_hour as $key =>$val){
-                //判断套餐下没有相关讲师用户不存在的课程
+                //判断班级下没有相关讲师用户不存在的课程
                 $teacher_info = M('zy_teacher')->where(array('id'=>$val['speaker_id']))->field('uid,name')->find();
                 $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
                 if(!$teacher_uinfo['uid']){
-                    $tuid .= $val['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid .= $val['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-                //拼接套餐下所有讲师信息以便线下分成
+                //拼接班级下所有讲师信息以便线下分成
                 $key = $key+1;
                 $teacher_user_info .= "【{$key}】 讲师id为: ".$teacher_info['uid']." ,讲师名字为：".$teacher_info['name'].
                     " ;其用户id为： ".$teacher_uinfo['uid']." ,用户名为： ".$teacher_uinfo['uname']." 。
@@ -1122,7 +1108,7 @@ class AlbumAction extends CommonAction {
             $live_zshd_hour['video_count']   = $video_count;
             $live_info['teacher_uinfo'] = $teacher_user_info;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程id
+            //班级中包含有 没有相关讲师用户不存在的课程id
             if ($tuid) {
                 echo 9;
             }
@@ -1137,14 +1123,14 @@ class AlbumAction extends CommonAction {
 
             $tuid = '';
             foreach ($live_gh_hour as $key =>$val){
-                //判断套餐下没有相关讲师用户不存在的课程
+                //判断班级下没有相关讲师用户不存在的课程
                 $teacher_info = M('zy_teacher')->where(array('id'=>$val['speaker_id']))->field('uid,name')->find();
                 $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
                 if(!$teacher_uinfo['uid']){
-                    $tuid .= $val['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid .= $val['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-                //拼接套餐下所有讲师信息以便线下分成
+                //拼接班级下所有讲师信息以便线下分成
                 $key = $key+1;
                 $teacher_user_info .= "【{$key}】 讲师id为: ".$teacher_info['uid']." ,讲师名字为：".$teacher_info['name'].
                     " ;其用户id为： ".$teacher_uinfo['uid']." ,用户名为： ".$teacher_uinfo['uname']." 。
@@ -1156,7 +1142,7 @@ class AlbumAction extends CommonAction {
             $live_gh_hour['video_count']    = $video_count;
             $live_info['teacher_uinfo']     = $teacher_user_info;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程id
+            //班级中包含有 没有相关讲师用户不存在的课程id
             if ($tuid) {
                 echo 9;
             }
@@ -1235,9 +1221,9 @@ class AlbumAction extends CommonAction {
         $data['order_id']     = $order_id;
         $data['uid']          = intval($uid);//购买用户ID
         $data['mhm_id']       = intval($live_info['mhm_id']);//机构ID
-        $data['vid']          = intval($live_info['id']);//所购买课程的id(包括点播、直播、套餐)
+        $data['vid']          = intval($live_info['id']);//所购买课程的id(包括点播、直播、班级)
         $data['note']         = t("购买直播课堂：{$live_info['video_title']}。");
-        $data['split_type']   = 2;//分成类型 0课程,1套餐,2直播
+        $data['split_type']   = 2;//分成类型 0课程,1班级,2直播
         $data['sum']          = $prices;//购买金额
         $data['pid']          = 1;//获得平台分成的管理员用户id
         $data['platform_sum'] = $prices * $proportion['sss_platform'];//平台分成的自营金额
@@ -1269,14 +1255,14 @@ class AlbumAction extends CommonAction {
 
             $tuid = '';
             foreach ($live_zshd_hour as $key =>$val){
-                //判断套餐下没有相关讲师用户不存在的课程
+                //判断班级下没有相关讲师用户不存在的课程
                 $teacher_info = M('zy_teacher')->where(array('id'=>$val['speaker_id']))->field('uid,name')->find();
                 $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
                 if(!$teacher_uinfo['uid']){
-                    $tuid .= $val['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid .= $val['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-                //拼接套餐下所有讲师信息以便线下分成
+                //拼接班级下所有讲师信息以便线下分成
                 $key = $key+1;
                 $teacher_user_info .= "【{$key}】 讲师id为: ".$teacher_info['uid']." ,讲师名字为：".$teacher_info['name'].
                     " ;其用户id为： ".$teacher_uinfo['uid']." ,用户名为： ".$teacher_uinfo['uname']." 。
@@ -1287,7 +1273,7 @@ class AlbumAction extends CommonAction {
             $live_zshd_hour['video_count']   = $video_count;
             $live_info['teacher_uinfo'] = $teacher_user_info;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程id
+            //班级中包含有 没有相关讲师用户不存在的课程id
             if ($tuid) {
                 echo 9;
             }
@@ -1302,14 +1288,14 @@ class AlbumAction extends CommonAction {
 
             $tuid = '';
             foreach ($live_gh_hour as $key =>$val){
-                //判断套餐下没有相关讲师用户不存在的课程
+                //判断班级下没有相关讲师用户不存在的课程
                 $teacher_info = M('zy_teacher')->where(array('id'=>$val['speaker_id']))->field('uid,name')->find();
                 $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
                 if(!$teacher_uinfo['uid']){
-                    $tuid .= $val['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid .= $val['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-                //拼接套餐下所有讲师信息以便线下分成
+                //拼接班级下所有讲师信息以便线下分成
                 $key = $key+1;
                 $teacher_user_info .= "【{$key}】 讲师id为: ".$teacher_info['uid']." ,讲师名字为：".$teacher_info['name'].
                     " ;其用户id为： ".$teacher_uinfo['uid']." ,用户名为： ".$teacher_uinfo['uname']." 。
@@ -1321,7 +1307,7 @@ class AlbumAction extends CommonAction {
             $live_gh_hour['video_count']    = $video_count;
             $live_info['teacher_uinfo']     = $teacher_user_info;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程id
+            //班级中包含有 没有相关讲师用户不存在的课程id
             if ($tuid) {
                 echo 9;
             }
@@ -1348,7 +1334,7 @@ class AlbumAction extends CommonAction {
             unset($data['school_sum']); //机构获得的金额
         }
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = intval($live_info['id']);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = intval($live_info['id']);//所购买课程的id(包括点播、直播、班级)
         $map['split_type'] = 2;
         $split_video = M('zy_split_video')->where($map)->getField('id');
 
@@ -1368,14 +1354,14 @@ class AlbumAction extends CommonAction {
 
 
     /**
-     * 购买套餐操作
+     * 购买班级操作
      */
     public function buyOperating($order_id,$uid,$album = array()) {
         $_POST['id'] = 18;
         $uid = 3;
         $order_id = 1;
         $album = D("Album")->getAlbumOneInfoById($_POST['id'],'id,price,mhm_id,album_title');
-        //找不到套餐
+        //找不到班级
         if (!$album){
             return 2;
         }
@@ -1391,9 +1377,9 @@ class AlbumAction extends CommonAction {
         $data['order_id']     = $order_id;
         $data['uid']          = intval($uid);//购买用户ID
         $data['mhm_id']       = intval($album['mhm_id']);//机构ID
-        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、套餐)
-        $data['note']         = t("购买套餐：{$album['album_title']}。");
-        $data['split_type']   = 1;//分成类型 0课程,1套餐,2直播
+        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、班级)
+        $data['note']         = t("购买班级：{$album['album_title']}。");
+        $data['split_type']   = 1;//分成类型 0课程,1班级,2直播
         $data['sum']          = $prices;//购买金额
         $data['pid']          = 1;//获得平台分成的管理员用户id
         $data['platform_sum'] = $prices * $proportion['pac_platform'];//平台分成的金额
@@ -1405,7 +1391,7 @@ class AlbumAction extends CommonAction {
             $school_info = model('School')->where(array('id'=>$album['mhm_id']))->field('uid,school_and_teacher')->find();
             $school_uid = M('user')->where(array('uid'=>$school_info['uid']))->getField('uid');
 
-            //套餐所绑定的机构管理员不存在
+            //班级所绑定的机构管理员不存在
             if(!$school_uid){
                 return 6;
             }
@@ -1423,14 +1409,14 @@ class AlbumAction extends CommonAction {
 
             $albumId        = intval($album['id']);
 
-            //获取套餐下所有的课程ID
+            //获取班级下所有的课程ID
             $video_ids      = trim(D("Album")->getVideoId($albumId), ',');
             $v_map['id']      = array('in', array($video_ids));
             $v_map["is_del"]  = 0;
             $album_info     = M("zy_video")->where($v_map)->field("id,video_title,mhm_id,teacher_id,
                               v_price,t_price,vip_level,endtime,starttime,limit_discount")
                 ->select();
-            //套餐下所有的课程数量 套餐下没有课程
+            //班级下所有的课程数量 班级下没有课程
             $album['video_count'] = count($album_info);
             if($album['video_count'] <= 0){
                 return 3;
@@ -1442,10 +1428,10 @@ class AlbumAction extends CommonAction {
             //通过课程取得专辑价格
             $video_id   = '';
             $tuid       = '';
-            $teacher_user_info = "此套餐下课程所有讲师信息分别为  ";
+            $teacher_user_info = "此班级下课程所有讲师信息分别为  ";
             foreach ($album_info as $key => $video) {
                 if($video['mhm_id'] != $album['mhm_id']){
-                    $video_id       .= $video['id'].',';//课程和套餐的机构id不一致
+                    $video_id       .= $video['id'].',';//课程和班级的机构id不一致
                 }
                 $album_info[$key]['price'] = getPrice($video, $this->mid, true, true);
                 //价格为0的 限时免费的  不加入购物记录
@@ -1460,26 +1446,26 @@ class AlbumAction extends CommonAction {
                     $illegal_count  += 1;
                     $video_gid       = $video['id'];//过期id
                 }
-                //判断套餐下没有相关讲师用户不存在的课程id
+                //判断班级下没有相关讲师用户不存在的课程id
                 $teacher_info = M('zy_teacher')->where(array('id'=>$video['teacher_id']))->field('uid,name')->find();
                 $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
                 if(!$teacher_uinfo['uid']){
-                    $tuid       .= $video['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid       .= $video['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-                //拼接套餐下所有讲师信息以便线下分成
+                //拼接班级下所有讲师信息以便线下分成
                 $teacher_user_info .= "讲师id为: ".$teacher_info['uid']." ,讲师名字为：".$teacher_info['name'].
                             " ;其用户id为： ".$teacher_uinfo['uid']." ,用户名为： ".$teacher_uinfo['uname']." 。";
                 $album_info['teacher_uinfo'] = $teacher_user_info;
                 $album_info['tuid_str'] .= $teacher_uinfo['uid'].",";
             }
 
-            //套餐中包含有 没有相关讲师用户不存在的课程id
+            //班级中包含有 没有相关讲师用户不存在的课程id
             if ($tuid) {
                 return 9;
             }
 
-            //套餐中包含有与套餐的机构不一致的课程 $video_id为返回的课程id
+            //班级中包含有与班级的机构不一致的课程 $video_id为返回的课程id
             if ($video_id) {
                 return 10;
             }
@@ -1504,13 +1490,13 @@ class AlbumAction extends CommonAction {
             }
             $data['note'] .= $album_info['teacher_uinfo'];
         } else {
-            //套餐不属于机构
+            //班级不属于机构
             return 5;
         }
         $data['ctime'] = time();//机构教师分成的金额
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、班级)
         $map['split_type'] = 1;
         $split_video = M('zy_split_video')->where($map)->getField('id');
         if ($split_video) {
@@ -1528,7 +1514,7 @@ class AlbumAction extends CommonAction {
     }
 
     public function addAlbumSplit($order_id,$uid,$album = array()){
-        //找不到套餐
+        //找不到班级
         if (!$album){
             return 2;
         }
@@ -1543,9 +1529,9 @@ class AlbumAction extends CommonAction {
         $data['status']       = 0;
         $data['order_id']     = $order_id;
         $data['uid']          = intval($uid);//购买用户ID
-        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、套餐)
-        $data['note']         = t("购买套餐：{$album['album_title']} ");
-        $data['split_type']   = 1;//分成类型 0课程,1套餐,2直播
+        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、班级)
+        $data['note']         = t("购买班级：{$album['album_title']} ");
+        $data['split_type']   = 1;//分成类型 0课程,1班级,2直播
         $data['sum']          = $prices;//购买金额
         $data['pid']          = 1;//获得平台分成的管理员用户id
         $data['platform_sum'] = $prices * $proportion['pac_platform'];//平台分成的金额
@@ -1575,20 +1561,20 @@ class AlbumAction extends CommonAction {
 
             $albumId        = intval($album['id']);
 
-            //获取套餐下所有的课程ID
+            //获取班级下所有的课程ID
             $video_ids      = trim(D("Album")->getVideoId($albumId), ',');
             $v_map['id']      = array('in', array($video_ids));
             $v_map["is_del"]  = 0;
             $album_info     = M("zy_video")->where($v_map)->field("id,video_title,mhm_id,teacher_id,
                               v_price,t_price,vip_level,endtime,starttime,limit_discount")
                 ->select();
-            //套餐下所有的课程数量 套餐下没有课程
+            //班级下所有的课程数量 班级下没有课程
             $album['video_count'] = count($album_info);
             if($album['video_count'] <= 0){
                 return 3;
             }
 
-            //套餐不属于机构
+            //班级不属于机构
             if(!$album['mhm_id']){
                 return 5;
             }
@@ -1611,7 +1597,7 @@ class AlbumAction extends CommonAction {
                 return 7;
             }
 
-            //套餐所绑定的机构管理员不存在
+            //班级所绑定的机构管理员不存在
             if(!$school_uid){
                 return 8;
             }
@@ -1624,7 +1610,7 @@ class AlbumAction extends CommonAction {
             $tuid_scount = 0;
             foreach ($album_info as $key => $video) {
                 if($video['mhm_id'] != $album['mhm_id']){
-                    $video_id       .= $video['id'].',';//课程和套餐的机构id不一致
+                    $video_id       .= $video['id'].',';//课程和班级的机构id不一致
                 }
                 $album_info[$key]['price'] = getPrice($video, $this->mid, true, true);
                 //价格为0的 限时免费的  不加入购物记录
@@ -1640,20 +1626,20 @@ class AlbumAction extends CommonAction {
                     $video_gid       = $video['id'];//过期id
                 }
 
-                //判断套餐下课程是否有是平台管理员或者机构管理员的 有就把相应的那一份分到其账户下
+                //判断班级下课程是否有是平台管理员或者机构管理员的 有就把相应的那一份分到其账户下
                 $t_uid = M('zy_teacher')->where(array('id'=>$video['teacher_id']))->getField('uid');
                 $teacher_uid = M('user')->where(array('uid'=>$t_uid))->getField('uid');
                 $album_info[$key]['teacher_uid'] = $teacher_uid;
 
-                //判断套餐下没有相关讲师用户不存在的课程id
+                //判断班级下没有相关讲师用户不存在的课程id
                 if(!$teacher_uid){
-                    $tuid       .= $video['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid       .= $video['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 //判断讲师用户id是否与平台管理员(为1)一样 返回tuid_pcount+1
                 if($teacher_uid == 1){
                     $tuid_pcount += 1;
                     unset($album_info[$key]['teacher_uid']);
-                //判断讲师用户id是否与套餐机构管理员(为1)一样 有scount+1
+                //判断讲师用户id是否与班级机构管理员(为1)一样 有scount+1
                 }
                 if($teacher_uid == $school_uid){
                     $tuid_scount += 1;
@@ -1666,7 +1652,7 @@ class AlbumAction extends CommonAction {
             }
             $album_info['tuid_str'] = $tuid_str;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程
+            //班级中包含有 没有相关讲师用户不存在的课程
             if ($tuid) {
                 return 0;
             }
@@ -1674,7 +1660,7 @@ class AlbumAction extends CommonAction {
             if ($tuid_pcount > 0) {
                 $album['tuid_pcount'] = $tuid_pcount;
             }
-            //判断讲师用户id是否有与套餐机构管理员 有直接把讲师的那一份加到套餐机构管理员上 $tuid_scount为几份
+            //判断讲师用户id是否有与班级机构管理员 有直接把讲师的那一份加到班级机构管理员上 $tuid_scount为几份
             if ($tuid_scount > 0) {
                 $album['tuid_scount'] = $tuid_scount;
             }
@@ -1704,7 +1690,7 @@ class AlbumAction extends CommonAction {
             if($tuid_pcount > 0){
                 $platform_sum_add = $each_teacher_num * $tuid_pcount;
                 $platform_sum_new = $data['platform_sum'] + $platform_sum_add;
-                $data['note']         .= "；此套餐下平台管理员有{$tuid_pcount}堂课程，分成的金额为{$data['platform_sum']}元加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元";
+                $data['note']         .= "；此班级下平台管理员有{$tuid_pcount}堂课程，分成的金额为{$data['platform_sum']}元加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元";
                 $data['platform_sum'] = $platform_sum_new;//平台分成的金额 + 机构获得的金额
             }
 
@@ -1712,18 +1698,18 @@ class AlbumAction extends CommonAction {
             if($tuid_scount > 0){
                 $platform_sum_add = $each_teacher_num * $tuid_scount;
                 $platform_sum_new = $data['school_sum'] + $platform_sum_add;
-                $data['note']         .= "；此套餐下机构管理员有{$tuid_pcount}堂课程，分成的金额为{$data['school_sum']}元加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元";
+                $data['note']         .= "；此班级下机构管理员有{$tuid_pcount}堂课程，分成的金额为{$data['school_sum']}元加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元";
                 $data['school_sum']   = $platform_sum_new;//平台分成的金额 + 机构获得的金额
             }
 
         } else {
-            //套餐不属于机构
+            //班级不属于机构
             return 5;
         }
         $data['ctime'] = time();//机构教师分成的金额
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、班级)
         $map['split_type'] = 1;
         $split_video = M('zy_split_video')->where($map)->getField('id');
         if ($split_video) {
@@ -1770,7 +1756,7 @@ class AlbumAction extends CommonAction {
             $credit = M('credit_setting')->where(array('id'=>19,'is_open'=>1))->field('id,name,score,count')->find();
             if($credit['score'] > 0){
                 $type = 6;
-                $note = '套餐点评获得的积分';
+                $note = '班级点评获得的积分';
             }
             model('Credit')->addUserCreditRule($this->mid,$type,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
 
@@ -1855,7 +1841,7 @@ class AlbumAction extends CommonAction {
     
     
     /**
-     * 异步加载套餐列表
+     * 异步加载班级列表
      */
     public function ajaxList(){
         $cid = intval(t($_GET['cid']));
@@ -1874,7 +1860,7 @@ class AlbumAction extends CommonAction {
             $map.= ' AND `vip_level` = "'.$vid.'"';
         }
 
-        /*TODO:讲师，会员类型、班型。先读取满足条件的课程，再读取套餐*/
+        /*TODO:讲师，会员类型、班型。先读取满足条件的课程，再读取班级*/
         if(!empty($tid)){
             $vMap['is_del'] = 0;
             $vMap['teacher_id'] = $tid;
@@ -1930,7 +1916,7 @@ class AlbumAction extends CommonAction {
             $this->assign('list',$list);
             $html = $this->fetch ( 'ajaxList' );
         }else{
-            $html = '暂无此类套餐';
+            $html = '暂无此类班级';
         }
         
         $list['data'] = $html;

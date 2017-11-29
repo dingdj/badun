@@ -20,10 +20,11 @@ class AdminExamsUserAction extends AdministratorAction
         parent::_initialize();
         $this->allSelected                 = false;
         $this->mod                         = D('ExamsUser', 'exams');
-        $this->pageTitle['index']          = '成绩列表';
+        $this->pageTitle['index']          = '列表';
         $this->pageTitle['waitHalleExams'] = '待批阅考试';
         $this->pageTitle['doHaddleExams']  = '阅卷';
-        $this->pageTab[]                   = array('title' => '成绩列表', 'tabHash' => 'index', 'url' => U('exams/AdminExamsUser/index'));
+		$this->pageTitle['haddleExamsInfo']  = '详情';
+        $this->pageTab[]                   = array('title' => '列表', 'tabHash' => 'index', 'url' => U('exams/AdminExamsUser/index'));
         $this->pageTab[]                   = array('title' => '待批阅试卷', 'tabHash' => 'waitHalleExams', 'url' => U('exams/AdminExamsUser/waitHalleExams'));
 
     }
@@ -46,15 +47,16 @@ class AdminExamsUserAction extends AdministratorAction
         $map['exams_mode']                                 = ['in', '1,2,3'];
         $this->pageButton[]                                = array('title' => '导出', 'onclick' => "exams.exportExams('" . urlencode(sunjiami(json_encode($map), "hll")) . "')");
         $list                                              = $this->mod->getExamsUserPageList($map);
-        $this->pageKeyList                                 = ['exams_users_id', 'exams_paper_title', 'uname', 'score', 'right_count', 'wrong_count', 'examiner_uname', 'create_time', 'anser_time', 'update_time'];
+        $this->pageKeyList                                 = ['exams_users_id', 'exams_paper_title', 'uname', 'score', 'right_count', 'wrong_count', 'examiner_uname', 'create_time', 'anser_time', 'update_time','DOACTION'];
         if ($list['data']) {
             foreach ($list['data'] as &$v) {
                 $v['uname']             = getUsername($v['uid']);
                 $v['create_time']       = date("Y-m-d H:i", $v['create_time']);
                 $v['update_time']       = date("Y-m-d H:i", $v['update_time']);
-                $v['anser_time']        = ceil($v['anser_time'] / 60) . ' 分钟' . ($v['anser_time'] % 60) . '秒';
+                $v['anser_time']        = floor($v['anser_time'] / 60) . ' 分钟' . ($v['anser_time'] % 60) . '秒';
                 $v['exams_paper_title'] = $v['paper_info']['exams_paper_title'];
                 $v['examiner_uname']    = $v['examiner_uid'] == 0 ? '系统' : getUsername($v['examiner_uid']);
+				$v['DOACTION'] = '<a href="' . U('exams/AdminExamsUser/haddleExamsInfo', ['tabHash' => 'haddleExamsInfo', 'paper_id' => $v['exams_paper_id'], 'exams_users_id' => $v['exams_users_id']]) . '">详情</a>';
                 //$v['DOACTION']    = '<a target="_blank" href="' . U('exams/Index/examsresult', ['joinType' => '2', 'paper_id' => $v['exams_paper_id'],'temp'=>$v['exams_users_id']]) . '">查看答题</a>';
                 //$v['DOACTION'] .= ' - <a href="' . U('exams/AdminPaper/assembly', ['tabHash' => 'assembly', 'paper_id' => $v['exams_paper_id']]) . '">组卷</a>';
                 //$v['DOACTION'] .= ' - <a href="javascript:exams.deletePaper(' . $v['exams_paper_id'] . ')">删除</a>';
@@ -63,7 +65,16 @@ class AdminExamsUserAction extends AdministratorAction
         }
         $this->displayList($list);
     }
-
+	/**
+     * 详情
+     * @Author MartinSun<syh@sunyonghong.com>
+     * @Date   2017-10-22
+     * @return [type] [description]
+     */
+	public function haddleExamsInfo(){
+		$this->assign('is_info',1);
+		return $this->doHaddleExams();
+	}
     /**
      * 待审阅
      * @Author MartinSun<syh@sunyonghong.com>
@@ -88,7 +99,7 @@ class AdminExamsUserAction extends AdministratorAction
                 $v['uname']             = getUsername($v['uid']);
                 $v['create_time']       = date("Y-m-d H:i", $v['create_time']);
                 $v['update_time']       = date("Y-m-d H:i", $v['update_time']);
-                $v['anser_time']        = ceil($v['anser_time'] / 60) . ' 分钟' . ($v['anser_time'] % 60) . '秒';
+                $v['anser_time']        = floor($v['anser_time'] / 60) . ' 分钟' . ($v['anser_time'] % 60) . '秒';
                 $v['exams_paper_title'] = $v['paper_info']['exams_paper_title'];
                 //$v['DOACTION']    = '<a target="_blank" href="' . U('exams/Index/examsresult', ['joinType' => '2', 'paper_id' => $v['exams_paper_id'],'temp'=>$v['exams_users_id']]) . '">查看答题</a>';
                 $v['DOACTION'] = '<a href="' . U('exams/AdminExamsUser/doHaddleExams', ['tabHash' => 'doHaddleExams', 'paper_id' => $v['exams_paper_id'], 'exams_users_id' => $v['exams_users_id']]) . '">阅卷</a>';
@@ -120,6 +131,10 @@ class AdminExamsUserAction extends AdministratorAction
                 $config_score = $score_options[$option_type];
                 // 检测得分是否大于配置分数
                 foreach ($val as $question_id => $v_score) {
+					if($v_score === ''){
+						$res = ['status' => 0, 'message' => '请对第' . $_POST['question_num'][$question_id] . '题评分'];
+                        echo json_encode($res);exit;
+					}
                     if ($v_score > $config_score) {
                         $res = ['status' => 0, 'message' => '第' . $_POST['question_num'][$question_id] . '题所得分数不能大于' . $config_score];
                         echo json_encode($res);exit;

@@ -39,11 +39,11 @@
                     <if condition="$coupon['video_type']">
                         <label><input type="radio" name="video_type" value="1" <eq name="coupon.video_type" value="1">checked="checked"</eq>>点播 </label>
                         <label><input type="radio" name="video_type" value="2" <eq name="coupon.video_type" value="2">checked="checked"</eq>>直播 </label>
-                        <label><input type="radio" name="video_type" value="3" <eq name="coupon.video_type" value="3">checked="checked"</eq>>套餐 </label>
+                        <label><input type="radio" name="video_type" value="3" <eq name="coupon.video_type" value="3">checked="checked"</eq>>班级 </label>
                         <else/>
                         <label><input type="radio" name="video_type" value="1" checked="checked">点播 </label>
                         <label><input type="radio" name="video_type" value="2" >直播 </label>
-                        <label><input type="radio" name="video_type" value="3" >套餐 </label>
+                        <label><input type="radio" name="video_type" value="3" >班级 </label>
                     </if>
                 </dd>
             </dl>

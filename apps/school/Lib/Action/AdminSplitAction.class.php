@@ -12,17 +12,17 @@ class AdminSplitAction extends AdministratorAction {
      */
     public function _initialize() {
         parent::_initialize();
-        $this->pageTab[] = array('title'=>'课程分成明细列表','tabHash'=>'splitVideo','url'=>U('school/AdminSplit/splitVideo'));
-        $this->pageTab[] = array('title'=>'套餐分成明细列表','tabHash'=>'splitAlbum','url'=>U('school/AdminSplit/splitAlbum'));
-        $this->pageTab[] = array('title'=>'直播课程分成明细列表','tabHash'=>'splitLive','url'=>U('school/AdminSplit/splitLive'));
-        $this->pageTab[] = array('title'=>'线下课程分成明细列表','tabHash'=>'splitLineClass','url'=>U('school/AdminSplit/splitLineClass'));
+        $this->pageTab[] = array('title'=>'点播分成','tabHash'=>'splitVideo','url'=>U('school/AdminSplit/splitVideo'));
+        $this->pageTab[] = array('title'=>'班级分成','tabHash'=>'splitAlbum','url'=>U('school/AdminSplit/splitAlbum'));
+        $this->pageTab[] = array('title'=>'直播分成','tabHash'=>'splitLive','url'=>U('school/AdminSplit/splitLive'));
+        $this->pageTab[] = array('title'=>'线下课分成','tabHash'=>'splitLineClass','url'=>U('school/AdminSplit/splitLineClass'));
     }
     
 
     public function splitVideo(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','vid','video_title','sid','school_sum','share_id','share_sum','ctime','ltime','note');
-        $this->pageTitle['splitVideo'] = '课程分成明细列表';
+        $this->pageTitle['splitVideo'] = '点播分成';
 
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
@@ -49,7 +49,7 @@ class AdminSplitAction extends AdministratorAction {
         $map['is_del'] = 0;
         $list = $this->_list('zy_split_course',$map = [],$order,20);
 
-        $this->pageButton[] = array('title'=>'导出当前结果','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_course')");
+        $this->pageButton[] = array('title'=>'导出','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_course')");
 //        $this->pageButton[] = array('title' => "删除记录", 'onclick' => "admin.delSplits('zy_split_course')");
 
         $this->displayList($list);
@@ -58,7 +58,7 @@ class AdminSplitAction extends AdministratorAction {
     public function splitAlbum(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','aid','video_title','sid','school_sum','share_id','share_sum','ctime','ltime','note');
-        $this->pageTitle['splitAlbum'] = '套餐分成明细列表';
+        $this->pageTitle['splitAlbum'] = '班级分成';
 
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
@@ -84,7 +84,7 @@ class AdminSplitAction extends AdministratorAction {
         $map['is_del'] = 0;
         $list = $this->_list('zy_split_album',$map = [],$order,20);
 
-        $this->pageButton[] = array('title'=>'导出当前结果','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_album')");
+        $this->pageButton[] = array('title'=>'导出','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_album')");
 //        $this->pageButton[] = array('title' => "删除记录", 'onclick' => "admin.delSplits('zy_split_album')");
 
         $this->displayList($list);
@@ -93,7 +93,7 @@ class AdminSplitAction extends AdministratorAction {
     public function splitLive(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','lid','video_title','sid','school_sum','share_id','share_sum','ctime','ltime','note');
-        $this->pageTitle['splitLive'] = '直播课程分成明细列表';
+        $this->pageTitle['splitLive'] = '直播分成';
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
 
@@ -119,7 +119,7 @@ class AdminSplitAction extends AdministratorAction {
         $map['is_del'] = 0;
         $list = $this->_list('zy_split_live',$map = [],$order,20);
 
-        $this->pageButton[] = array('title'=>'导出当前结果','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_live')");
+        $this->pageButton[] = array('title'=>'导出','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_live')");
 //        $this->pageButton[] = array('title' => "删除记录", 'onclick' => "admin.delSplits('zy_split_live')");
 
         $this->displayList($list);
@@ -129,7 +129,7 @@ class AdminSplitAction extends AdministratorAction {
     public function splitLineClass(){
         // 页面具有的字段，可以移动到配置文件中！
         $this->pageKeyList = array('id','uid','vid','video_title','sum','pid','platform_sum','oschool_uid','ouats_ouschool_sum','sid','school_sum','ctime','ltime','note','mhm_id');
-        $this->pageTitle['splitLineClass'] = '线下课程分成明细列表';
+        $this->pageTitle['splitLineClass'] = '线下课分成';
         //按钮
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
 
@@ -146,7 +146,7 @@ class AdminSplitAction extends AdministratorAction {
         $order = 'id desc';
         $list = $this->_list('zy_split_teacher',$map = [],$order,20);
 
-        $this->pageButton[] = array('title'=>'导出当前结果','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_course')");
+        $this->pageButton[] = array('title'=>'导出','onclick'=>"admin.exportResult('{$list['list_ids']}','zy_split_course')");
 
         $this->displayList($list);
     }
@@ -178,7 +178,7 @@ class AdminSplitAction extends AdministratorAction {
         }elseif($type == 'zy_split_live'){
             $sheet_title = "直播";
         }elseif($type == 'zy_split_album'){
-            $sheet_title = "套餐";
+            $sheet_title = "班级";
         }
         $time = time();
 
@@ -415,7 +415,7 @@ class AdminSplitAction extends AdministratorAction {
                 $info_title = M('zy_video')->where('id = '.$val['lid'])->getField('video_title');
             }elseif($type == 'zy_split_album'){
                 $url = U('classroom/Album/view', array('id' => $val['aid']));
-                $title_info = "未知套餐";
+                $title_info = "未知班级";
                 $info_title = M('album')->where('id = '.$val['aid'])->getField('album_title');
             }elseif($type == 'zy_split_teacher'){
                 $url = U('classroom/LineClass/view', array('id' => $val['vid']));

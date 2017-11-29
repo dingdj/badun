@@ -1,6 +1,6 @@
 <?php
 /**
- * 套餐管理模型
+ * 班级管理模型
  * @author Ashang <Ashang@phpzsm.com>
  * @version CY1.0
  */
@@ -8,9 +8,9 @@ class AlbumModel extends Model {
 
 
     /**
-     * 获取套餐信息
-     * @param $id 套餐id
-     * array 返回的套餐数据
+     * 获取班级信息
+     * @param $id 班级id
+     * array 返回的班级数据
      */
     public function getAlbumById($id){
         $map['id'] = $id;
@@ -20,13 +20,13 @@ class AlbumModel extends Model {
         return $data;
     }
 
-    //根据套餐ID获取课程ID方法的暂留缓存
+    //根据班级ID获取课程ID方法的暂留缓存
     protected static $_getVideoId = array();
 
 
     /*
-     * 根据套餐ID获取课程ID
-     * @param integer $id 套餐ID
+     * 根据班级ID获取课程ID
+     * @param integer $id 班级ID
      * @return string 包含课程ID的字符串，用逗号分割的，首尾都有逗号
      */
     public function getVideoId($id){
@@ -38,7 +38,7 @@ class AlbumModel extends Model {
         return self::$_getVideoId[$id];
     }
 
-    //根据ID获取套餐名称
+    //根据ID获取班级名称
     public function getAlbumTitleById($id){
         $field = 'album_title';
         $map['id'] = $id;
@@ -46,14 +46,14 @@ class AlbumModel extends Model {
         return $data['album_title'];
     }
 
-    //根据ID获取套餐相关字段
+    //根据ID获取班级相关字段
     public function getAlbumOneInfoById($id,$field){
         $map['id'] = $id;
         $data = $this->where($map)->field($field)->find();
         return $data;
     }
 
-    /**获取精选套餐
+    /**获取精选班级
      * @param int $limit
      * @return mixed
      */
@@ -79,26 +79,26 @@ class AlbumModel extends Model {
         return $dataList;
     }
 
-    /**获取一个套餐集合的价格详细
-     * @param array $list套餐集合
+    /**获取一个班级集合的价格详细
+     * @param array $list班级集合
      * @return array
      */
     public function getAlbumMoneyList($list=array() , $uid){
         if(empty($list)) return array();
         foreach ($list as &$val){
             //$val['money_data'] = $this->getAlbumMoeny($val['album_video'] , $uid);
-            if( intval($val['price']) ) {
+            if( floatval($val['price']) ) {
                 $price = is_admin($uid) ? 0 : $val['price'];
                 $val['money_data'] = array('overplus'=>$price);
             } else {
-                //获取套餐价格
+                //获取班级价格
                 $val['money_data'] = $this->getAlbumMoeny( $val['album_video'] ,$uid);
             }
         }
         return $list;
     }
 
-    /**获取一个套餐的价格数组
+    /**获取一个班级的价格数组
      * @param $ids课程id集合
      * @return mixed
      */
@@ -139,7 +139,7 @@ class AlbumModel extends Model {
         return $_data;
     }
 
-    /**格式化套餐评分
+    /**格式化班级评分
      * @param $list
      * @return array
      */
@@ -153,7 +153,7 @@ class AlbumModel extends Model {
 
 
     /**
-     * 套餐分类
+     * 班级分类
      */
     public function albumCategory(){
         $map = array();
@@ -165,7 +165,7 @@ class AlbumModel extends Model {
 
 
     /**
-     * 获取套餐列表
+     * 获取班级列表
      * @param array  $map
      * @param string $order
      * @return array
@@ -184,12 +184,12 @@ class AlbumModel extends Model {
                     $vidoes = M('zy_video')->where($vMap)->select();
                     $teachers = array_unique(getSubByKey($vidoes,'teacher_id'));
 
-                    $live_zshd =M('zy_live_zshd') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
-                    $live_gh =M('zy_live_gh') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
-                    $live_cc =M('zy_live_cc') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
-                    $live_list = array_merge($live_zshd,$live_cc,$live_gh);
-                    $tids = array_unique(getSubByKey($live_list, 'speaker_id')) ? : [];
-                    $new_teacher = array_merge($teachers,$tids);
+//                    $live_zshd =M('zy_live_zshd') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
+//                    $live_gh =M('zy_live_gh') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
+//                    $live_cc =M('zy_live_cc') -> where(array('live_id'=>['in',$vids],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select() ? : [];
+//                    $live_list = array_merge($live_zshd,$live_cc,$live_gh);
+//                    $tids = array_unique(getSubByKey($live_list, 'speaker_id')) ? : [];
+                    $new_teacher = $teachers;//array_merge($teachers,$tids);
                     if($new_teacher){
                         $tMap['id'] = array('in',$new_teacher);
                         $tMap['is_del'] = 0;
@@ -198,12 +198,6 @@ class AlbumModel extends Model {
                         $list['data'][$key]['teachers'] = array();
                     }
                     $list['data'][$key]['video'] = $vidoes;
-                    $oprice = 0;
-                    foreach ($vidoes as $k=>$v){
-                        $oprice += $v['t_price'];
-                    }
-                    $list['data'][$key]['oPrice'] = ($val['price'] > $oprice) ? $val['price'] : $oprice;
-                    $list['data'][$key]['disPrice'] = ($oprice - $val['price']) > 0 ? ($oprice - $val['price']) : 0.00;
                 }else{
                     $list['data'][$key]['video'] = array();
                 }

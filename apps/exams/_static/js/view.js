@@ -1,7 +1,11 @@
 $(function(){
 	$(".card-main .classlist li").on('click',function(){
-		if($("#loging-back").length == 0){
-			var html = '<div id="loging-back"></div>';
+		if(MID <= 0){
+			reg_login();
+			return true;
+		}
+		if($("#model-back").length == 0){
+			var html = '<div id="model-back"></div>';
 				html += '<dl class="pattern-worap">';
 				html += '<dt><h4>选择模式</h4><i>×</i></dt>';
 				if($(this).data('is_practice') == 1){
@@ -11,7 +15,7 @@ $(function(){
 				}
 			$("body").children(":first").before(html);
 		}
-		$("#loging-back").show();
+		$("#model-back").show();
 		$(".pattern-worap").show();
 		// 获取参数
 		var paper_id = $(this).data("paper_id");
@@ -23,7 +27,7 @@ $(function(){
 		}
 	});
 	$('.pattern-worap i').live("click",function(){
-		$("#loging-back").hide();
+		$("#model-back").hide();
 		$(".pattern-worap").hide()
 	});
 })

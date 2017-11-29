@@ -1,5 +1,7 @@
 <include file="__THEME__/public_header" />
-
+<style>
+    .class_left{float: left;width: 930px;}
+</style>
 <div class="content">
     <div class="wrap">
         <div class="content-place">
@@ -55,8 +57,9 @@
                     <volist name="data.data" id="l">
                     <li>
                         <i class="<switch name='l.attach_info.extension'><case value='ppt|pptx|pptm|ppsx|potm|ppam|ppsm'>icon-01</case><case value='word|doc|docx|docm|dotx'>icon-02</case>
-                        <case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-03</case><case value='pdf'>icon-04</case><case value='txt'>icon-05</case><default/></switch>"></i>
+                        <case value='xls|xlsx|xltx|xltm|xlsb|xlam'>icon-03</case><case value='pdf'>icon-04</case><case value='txt'>icon-05</case><case value='zip'>icon-06</case><default/></switch>"></i>
                         <h3><a href="javascript:;">{:msubstr(t($l['title']),0,25,'utf-8',true)}</a></h3>
+                        <div class="info"><sapn>{$l.info}</saon></div>
                         <div class="info"><span>更新时间：{:date("Y-m-d H:i",$l['ctime'])}</span><span>文件大小：{$l['attach_info']['size']}</span><span>文件类型：{$l['attach_info']['extension']}</span></div>
                         <div class="num"><span>所需积分：<em class="price"><eq name="l.price" value="0">免费<else/>{$l.price}</eq></em></span>下载次数：<span class="downNums">{$l.down_nums}</span></div>
                         <php>if($l['collection'] > 0){</php>

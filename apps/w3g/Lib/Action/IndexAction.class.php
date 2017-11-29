@@ -22,9 +22,9 @@ class IndexAction extends CommonAction
         $ad_list = M('ad')->where($ad_map)->order('display_order DESC')->find();
         //序列化广告内容
         $ad_list = unserialize($ad_list['content']);
-        //获取精选套餐
+        //获取精选班级
         $best_recommend_list = D('Album',"classroom")->getBestRecommend();
-        //格式化精选套餐 3条带封面 其余标题连接
+        //格式化精选班级 3条带封面 其余标题连接
         $br_list = array(
             'big_list' => array() ,
             'title_list' => array()

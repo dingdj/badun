@@ -5,7 +5,7 @@
 	} ?>
 	<em class="rnum hot"><php>if($data['nowPage'] > 1){</php>{$page}.<php>} else {</php>{$key + 1}.<php>}</php></em>
 	<div class="box_mainb w276 fl">
-		<p class="sj_r">套餐</p>
+		<p class="sj_r">班级</p>
 		<php>if($vo['is_buy']){</php><p class="sj_l">已支付</p><php>}</php>
 		<?php if($vo['is_offical'] == 1):?>
 			<div class="tag_box">
@@ -57,7 +57,7 @@
 				</ul>
 			</div>
 			<div class="star_box clearfix">
-				<a class="fr look" href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" target="_blank">查看套餐</a>
+				<a class="fr look" href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" target="_blank">查看班级</a>
 			</div>
 		</div>
 	</div>

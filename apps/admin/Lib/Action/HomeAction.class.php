@@ -109,9 +109,9 @@ class HomeAction extends AdministratorAction {
         unset($serverInfo);
 
         // 开发团队
-        $statistics[L('PUBLIC_DEV_TEAM')] = array(
-            L('PUBLIC_COPYRIGHT') => '<a href="http://www.seition.com" target="_blank">'.L('PUBLIC_COMPANY').'</a>',
-        );
+        //$statistics[L('PUBLIC_DEV_TEAM')] = array(
+        //    L('PUBLIC_COPYRIGHT') => '<a href="http://www.seition.com" target="_blank">'.L('PUBLIC_COMPANY').'</a>',
+        //);
 
         $this->assign('statistics', $statistics);
         $this->display();
@@ -370,6 +370,7 @@ class HomeAction extends AdministratorAction {
      * 系统信息 - 管理日志 - 日志列表
      */
     public function logs() {
+        $this->pageTitle['logs'] = '列表';
         // 列表key值 DOACTION表示操作
         if($this->mid == 1) {
             $this->pageKeyList = array('id','uid','uname','app_name','ip','data','ctime','isAdmin','type_info');
@@ -383,8 +384,8 @@ class HomeAction extends AdministratorAction {
         $this->opt['isAdmin'] = array('0'=>L('PUBLIC_USER_LOGS'),'1'=>L('PUBLIC_MANAGEMENT_LOG'));
         $this->opt['app_name'] 	= array('0'=>L('PUBLIC_ALL_STREAM'),'admin'=>L('PUBLIC_SYSTEM_BACK'));	//TODO 从目录读取 或者应用表里读取
         // Tab选项
-        $this->pageTab[] = array('title'=>L('PUBLIC_SYSTEM_LOGLIST'),'tabHash'=>'list','url'=>U('admin/Home/logs'));
-        $this->pageTab[] = array('title'=>L('PUBLIC_SYSTEM_LOGSUM'),'tabHash'=>'down','url'=>U('admin/Home/logsArchive'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'list','url'=>U('admin/Home/logs'));
+        $this->pageTab[] = array('title'=>'归档','tabHash'=>'down','url'=>U('admin/Home/logsArchive'));
         // 指定查询的表尾
         $table = isset($_REQUEST['table']) ? t($_REQUEST['table']) : '';
         // 列表分页栏按钮
@@ -399,11 +400,12 @@ class HomeAction extends AdministratorAction {
      * 系统信息 - 管理日志 - 日志归档
      */
     public function logsArchive() {
+        $this->pageTitle['logsArchive'] = '归档';
         // 列表key值 DOACTION表示操作
         $this->pageKeyList = array('Name','Engine','Version','Rows','Data_length','Data_free','Create_time','Update_time','Collation','DOACTION');
         // Tab选项
-        $this->pageTab[] = array('title'=>L('PUBLIC_SYSTEM_LOGLIST'),'tabHash'=>'list','url'=>U('admin/Home/logs'));
-        $this->pageTab[] = array('title'=>L('PUBLIC_SYSTEM_LOGSUM'),'tabHash'=>'down','url'=>U('admin/Home/logsArchive'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'list','url'=>U('admin/Home/logs'));
+        $this->pageTab[] = array('title'=>'归档','tabHash'=>'down','url'=>U('admin/Home/logsArchive'));
         // 列表分页栏按钮
         $this->pageButton[] = array('title'=>L('PUBLIC_LOGS_REMOVE_SEX'),'onclick'=>"admin.cleanLogs(6)");
         $this->pageButton[] = array('title'=>L('PUBLIC_LOGS_REMOVE_SET'),'onclick'=>"admin.cleanLogs(12)");

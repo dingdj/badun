@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <link href="__THEMENEW__/css/swiper.min.css" rel="stylesheet" type="text/css">
 <link href="__THEMENEW__/css/integral.css" rel="stylesheet" type="text/css">
@@ -139,26 +139,25 @@
                 </div>
                 <div class="integral-hoice">
                     <volist name="ranking_list" id="vo" key="k">
-                        <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}">
+                        <a href="{:U("mall/Goods/view",array('id'=>$vo['goods_id']))}" class="clearFloat">
                         <div class="integral-num">
                             <img src="{$vo.cover}" class="lazyloading" />
                             <span>{:msubstr(t($vo['title']),0,16,'utf-8',true)}</span>
-                            <i>库存{$vo.stock}份</i><small>{$vo.price}<i class="fonc">积分</i></small>
+                            <i>库存{$vo.stock}</i><small>{$vo.price}积分</small>
                         </div>
                         </a>
                     </volist>
                 </div>
-                <div class="added"><a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多</a></div>
+                <!--<div class="added"><a href="{:U('mall/Goods/index',array('type'=>'ranking'))}">更多</a></div>-->
             </div>
         </div>
     </div>
-
-    <hr/>
 
     <foreach name="good_category" item="l" key="k">
         <!-- 商品第一层 -->
         <div class="goods-box">
             <div class="goods">
+                <!--<h4 class="quality-name"><em>品质兑换</em></h4>-->
                 <div class="goods-name">{$l.cate_name}
                     <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}" class="mor">更多<i></i></a>
                     <div class="goods-exhibition">
@@ -169,8 +168,10 @@
                                 </div>
                                 <div class="goods-per">
                                     <h3>{$vo.title|msubstr=0,6,'utf-8',true}</h3>
-                                    <span><i>{$vo.price}<small>积分</small></i><small>运费<i>{$vo.fare}</i>积分</small></span>
-                                    <small class="places">剩余{$vo.stock}名额</small>
+                                    <span><!--<small>运费<i>{$vo.fare}</i>积分</small>-->
+                                        <small class="places">剩余{$vo.stock}名额</small>
+                                        <i>{$vo.price}积分</i>
+                                    </span>
                                 </div>
                             </a>
                         </foreach>
@@ -184,19 +185,11 @@
         <div class="added">
             <a href="{:U('mall/Goods/index',array('cateId'=>$l['cate_id']))}">更多</a>
         </div>
-        <hr/>
     </foreach>
 </div>
 <script>
     if(navigator.userAgent.match(/(iPhone|Android|ios)/i)){
         $(window).load(function () {
-            var goods =  $(".goods-exhibition a").siblings();
-            for(var i=0;i<goods.length;i++){
-                if((i+1)%2==0){
-                    goods.eq(i).css("float","right");
-                }
-            }
-
             $(".swiper-slide").removeClass("swiper-no-swiping");
         });
 
@@ -245,4 +238,4 @@
         });
     }
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

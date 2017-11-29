@@ -1169,7 +1169,9 @@ admin.verify = function(id,status,isgroup,uid,$dotitle){
         id = admin.getChecked();
     }
     if(id == ''){
-        if(status == 2){
+        ui.error('请选择要通过认证的用户');
+        return false;
+        /*if(status == 2){
             if(isgroup == 6){
                 ui.error('请选择要通过认证的企业');
                 return false;
@@ -1185,13 +1187,13 @@ admin.verify = function(id,status,isgroup,uid,$dotitle){
                 ui.error('请选择要驳回认证的用户');
                 return false;
             }
-        }
+        }*/
     }
 
 
-    $.post(U('public/Message/doPost'),{to:uid,content:'11',dotype:'已通过',dotitle:$dotitle},function(msg) {
+    //$.post(U('public/Message/doPost'),{to:uid,content:'11',dotype:'已通过',dotitle:$dotitle},function(msg) {
 
-    },'json');
+    //},'json');
 
     if(status == 2){
         ui.box.load(U('admin/User/editVerifyInfo')+'&id='+id+'&status='+status,'编辑认证资料');

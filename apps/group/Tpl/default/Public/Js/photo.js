@@ -26,7 +26,7 @@ function ajax_set_face(e){
 	return false;
 }
 
-//将我的一张照片设置为该套餐的封面
+//将我的一张照片设置为该班级的封面
 function setcover(){
 	ymPrompt.confirmInfo({message:'你要将这张照片设置为封面么？',handler:ajax_set_cover});
 }

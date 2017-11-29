@@ -1,10 +1,10 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <!--header-->
 <!--container-->
 <div class="content">
     <div class="header2">
-        <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+        <a href="{:U('classroom/User/index')}" class="icon-back"></a>
         <div>我的直播</div>
     </div>
     <div class="body">
@@ -106,7 +106,7 @@ function appendHtml(data,clickid,type){
         } else if( clickid == 'getcollectvideolist' ) {
             text = '您还没有收藏课程';
         } else if( clickid == 'getbuyalbumslist' ) {
-            text = '您还没有购买套餐';
+            text = '您还没有购买班级';
         }
         else if( clickid == 'getupvideoslist') {
             text = '您还没有上传课程';
@@ -126,7 +126,7 @@ function appendHtml(data,clickid,type){
         } else if( clickid == 'getTeacherFace' ){
             text = '您还没有上传面授课程';
         }else {
-            text = '您还没有收藏套餐';
+            text = '您还没有收藏班级';
         }
         $('.user-Release-l').hide();
         $(".list02").append("<span>"+text+"</span>");
@@ -152,7 +152,7 @@ function appendHtml(data,clickid,type){
 function delalbum(cate,id){
     var id=id;
     url="{:U('classroom/Album/delalbum')}";
-    //删除我购买的套餐
+    //删除我购买的班级
     if(btnclick=="getbuyliveslist"){
         fdata="type=1&rtype=1&id="+id;
     }else if(btnclick=="getcollectlivelist"){
@@ -197,4 +197,4 @@ function dellive(cate,id){
 }
 
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

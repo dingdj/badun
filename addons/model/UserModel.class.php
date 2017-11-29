@@ -492,10 +492,17 @@ class UserModel extends Model {
 	 */
 	public function addUser($user) {
 		// 验证用户名称是否重复
-		$map ['uname'] = t ( $user ['uname'] );
-		$isExist = $this->where ( $map )->count ();
-		if ($isExist > 0) {
-			$this->error = '用户昵称已存在，请使用其他昵称';
+		$map1 ['uname'] = t ( $user ['uname'] );
+		$map2 ['email'] = t ( $user ['email'] );
+		
+		$uname = $this->where ( $map1 )->count ();
+		$email = $this->where ( $map2 )->count ();
+		if ($uname > 0) {
+			$this->error = '用户昵称已存在';
+			return false;
+		}
+		if ($email > 0) {
+			$this->error = '用户邮箱已存在';
 			return false;
 		}
 		if (is_object ( $user )) {
@@ -1285,7 +1292,7 @@ class UserModel extends Model {
 		$learnInfo = M('learn_record')->where(array('uid'=>$uid,'is_del'=>0))->field($field)->order($order)->limit(10)->select();
         foreach($learnInfo as $key=>&$value){
             $value['video_title'] = D('ZyVideo','classroom')->getVideoTitleById($value['vid']);
-            $value['ctime'] = date('Y/m/d',$value['ctime']);
+            $value['ctime'] = friendlyDate($value['ctime']);
             if($value['time'] == 0){
                 $section = M('zy_video_section')->where(array('zy_video_section_id'=>$value['sid']))->getField('cid');
                 $value['time'] = M('zy_video_data')->where(array('id'=>$section))->getField('duration');
@@ -1294,5 +1301,43 @@ class UserModel extends Model {
             }
         }
 		return $learnInfo;
+	}
+
+	/**
+	 * 统计用户的粉丝数
+	 *
+	 *
+	 * @return array 统计用户的粉丝数
+	 */
+	public function getUserFollowers(){
+		$uids = $this->getUserList();
+		$map['_string'] = " uid != 1 AND uid != 2 ";
+        $map['is_del'] = 0;
+        $map['identity'] = 1;
+        $map['is_active'] = 1;
+        $map['is_audit'] = 1;
+        $uids = model('User')->where($usermap)->field('uid')->findALL();
+		foreach ($uids as $k => $v) {
+            $uids[$k]['follow'] = model('Follow')->where("`fid`=".$v['uid'])->count();
+            if($uids[$k]['follow'] <= 1){
+                unset($uids[$k]);
+            }
+            $uid_new[$uids[$k]['uid']]['follow'] = $uids[$k]['follow'];
+            $uid_new[$uids[$k]['uid']]['uid']    = $uids[$k]['uid'];
+        }
+        arsort($uid_new);
+        rsort($uid_new);
+        foreach ($uid_new as $key => $val) {
+            if($val['follow'] == null){
+                unset($uid_new[$key]);
+            }
+            if($key < 3){
+                $user_ids[$key] = $val['uid'];
+            }
+        }
+        foreach ($user_ids as $k => $v) {
+            $user_list[$k] = model('User')->findUserInfo($v,'uid,uname,intro');
+        }
+		return $user_list;
 	}
 }

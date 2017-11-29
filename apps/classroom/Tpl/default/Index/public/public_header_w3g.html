@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$seo['_title']}</title>
+    <meta content="{$seo['_meta']}" name="keywords">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0 minimal-ui"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/public.css">
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/public_header_footer_media.css">
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/idangerous.swiper.css">
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/index_new/style_media.css">
+</head>
+<body>
+
+
+<script src="__THEME__/js/index_new/jquery-1.8.3.min.js"></script>
+<script src="__THEME__/js/index_new/public_header_footer_media.js"></script>
+<script src="__THEME__/js/index_new/idangerous.swiper.min.js"></script>
+<script src="__THEME__/js/index_new/index_3g.js"></script>
+<script>
+    if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+        $(window).load(function () {
+            $('.modular,.logos,.window-box').show();
+            $('.users').attr('style','display:block');
+        });
+    }
+    /**
+     * 退出成功
+     */
+    function logout(){
+        $.ajax({
+            type: "POST",
+            async:false,
+            url:"{:U('public/Passport/logout')}",
+            dataType:"json",
+            success:function(data){
+                alert("退出成功！");
+                location.reload();
+            }
+        });
+    }
+</script>
+<!--导航面板 strt-->
+<div class="shadow-panle"></div>
+<div class="window-panle" id="window-panle">
+    <dl>
+        <if condition="$_SESSION['mid']">
+            <dt><img src="{:getUserFace($user['uid'],'b')}" width="40" height="40"></dt>
+            <dd><a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">{:getUserName($user['uid'])}</a></dd>
+            <else/>
+            <dt><img src="__THEME__/images/head_img.png"></dt>
+            <dd><a href="{:U('public/Passport/login_g')}">登录</a></dd>
+            <dd><p>或</p></dd>
+            <dd><a href="{:U('public/Passport/reg')}">注册</a></dd>
+        </if>
+    </dl>
+    <ul>
+        <volist name="site_top_nav" id="vo" key="k" offset="0" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="3" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="6" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="9" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="12" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+        <volist name="site_top_nav" id="vo" key="k" offset="15" length="3">
+            <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
+                <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
+            </if>
+        </volist>
+    </ul>
+    <!--登录后显示-->
+    <if condition="$_SESSION['mid']">
+        <div class="sign-out">
+            <a href="javascript:;" onclick="logout()">退出登录</a>
+        </div>
+    </if>
+</div>
+<!--导航面板 end-->
+
+<!--header start-->
+<header>
+    <div class="modular icon icon-caidan"></div>
+    <!--<a href="http://el3.51eduline.com/changecity/init.html" class="media-posit">
+        <i>北京市</i><em class="icon icon-arrowDown"></em>
+    </a>-->
+    <a class="logos" href="/" title="{$site['site_keyword']}在线教育系统">
+        <img src="{$site.logo_head_w3g}">
+    </a>
+    <div class="users">
+        <if condition="$_SESSION['mid']">
+            <img src="{:getUserFace($user['uid'],'b')}" width="30" height="30">
+            <!--登录后显示-->
+                <span>
+                    <i class="icon icon-shang1"></i>
+                    <!--<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的主页</a>-->
+                    <a href="{:U('classroom/User/index')}">个人中心</a>
+                    <a href="javascript:;" onclick="logout()">退出</a>
+                </span>
+            <else/>
+            <img src="__THEME__/image/noavatar/big.jpg">
+            <!--登录后影藏-->
+                <span>
+                    <i class="icon icon-shang1"></i>
+                    <a href="{:U('public/Passport/login_g')}">登录</a>
+                    <if condition="$this_mhm_id neq ''">
+                        <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">注册</a>
+                        <else/>
+                        <a href="{:U('public/Passport/reg')}">注册</a>
+                    </if>
+                </span>
+        </if>
+    </div>
+    <a href="{:U('classroom/Index/search')}" class="fill-in"><i class="icon icon-sousuo"></i></a>
+</header>
+<!--header end-->

@@ -704,7 +704,7 @@
 .header_top_nav .login-after-position{ display:none;}
 .login-box:hover .position{position:absolute;top:31px;right:0; width:93px;text-align:center;height:auto; border:#eeeeee 1px solid; z-index:778;  background:#ffffff;  display: block; clear:both}
 .login-box .position{ display:none;}
-.login-after-position dd a{ padding-left:20px; height:40px; line-height:40px; width:122px; display:block}
+.login-after-position dd a{ height:40px; line-height:40px; width:122px; display:block}
 .login-after-bdbt{ border-bottom:1px solid #eeeeee}
 
 /*头部消息提示*/

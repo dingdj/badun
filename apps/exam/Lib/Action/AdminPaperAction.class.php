@@ -136,9 +136,12 @@ class AdminPaperAction extends AdministratorAction
     {
         $map['question_is_del'] = 0;
         $map['question_status'] = 1;
-	$_POST['question_category'] = rtrim($post['question_category'],',0');
-        if ($_POST['question_category']) {
-            $map['question_category'] = substr($_POST['question_category'], strripos($_POST['question_category'], ',') + 1);
+		$question_category = rtrim($_POST['question_category'],',0');
+		if (strpos($question_category, ',') !== false) {
+            $question_category = substr($question_category, strripos($question_category, ',') + 1);
+        }
+        if ($question_category) {
+            $map['fullcategorypath'] = array("like","%,".$question_category.",%");
         }
         if ($_POST['question_type']) {
             $map['question_type'] = intval($_POST['question_type']);
@@ -166,7 +169,7 @@ class AdminPaperAction extends AdministratorAction
 
         $list['data'] = M('ex_question')->where($map)->field('question_id,question_content,question_category,question_type,question_point')->order('question_update_date desc')->limit("{$startPage} , {$pageSize}")->findAll();
         foreach ($list['data'] as &$val) {
-            $val['question_category_name'] = M('ex_question_category')->where('question_category_id=' . $val['question_category'])->getField('question_category_name');
+            $val['question_category_name'] = M('ex_question_category')->where('ex_question_category_id=' . $val['question_category'])->getField('title');
             $val['question_type_title']    = M('ex_question_type')->where('question_type_id=' . $val['question_type'])->getField('question_type_title');
         }
         exit(json_encode($list));

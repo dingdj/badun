@@ -5,7 +5,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>{$site.site_name} - {$site.site_slogan}</title>
 <script type="text/javascript" src="__THEME__/js/jquery.js"></script>
-<link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
 <script type="text/javascript">
 var SITE_URL ='<php> echo SITE_URL;</php>';
 var APPNAME   = '<php> echo APP_NAME;</php>';
@@ -157,6 +156,22 @@ document.onkeydown=inactiveF5;
 </body>
 
 <script type="text/javascript">
+    /*设置icon图标*/
+    /*$(window).load(function(){
+        var len = $("a").size();
+        var arr = [];
+        for(var In=0;In<len-1;In++){
+            arr[In] = In;
+        }
+       $.each(arr,function(i){
+           var aKey = $(".MenuList a").eq(i).attr("id");
+           console.log(aKey)
+           if($(".MenuList a").eq(i).attr("id","root_4")){
+               $(".MenuList a").eq(i).attr("id","root_4").children("i").attr("class","icon icon-shouye")
+           }
+       })
+    })*/
+
 	var current_channel   = null;
 	var current_menu_root = null;
 	var current_menu_sub  = null;

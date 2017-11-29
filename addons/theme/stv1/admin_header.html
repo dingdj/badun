@@ -4,7 +4,6 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="{:APPS_URL}/admin/_static/admin.css" rel="stylesheet" type="text/css">
-<link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
 <script>
 /**
  * 全局变量
@@ -37,6 +36,8 @@ var LANG = new Array();
 if(APP_NAME != 'admin' && file_exists(APP_PUBLIC_PATH.'/admin.js')){
 </php>
 <script type="text/javascript" src="{:APP_PUBLIC_URL}/admin.js"></script>
+<php>} else if(APP_NAME != 'admin' && file_exists(APP_PUBLIC_PATH.'/js/admin.js')){</php>
+<script type="text/javascript" src="{:APP_PUBLIC_URL}/js/admin.js"></script>
 <php>}</php>
 <php>if(!empty($langJsList)) {</php>
 <volist name="langJsList" id="vo">

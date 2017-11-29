@@ -1,3 +1,4 @@
+
 <include file="__THEME__/public_header" />
 <!--content start-->
 <script>
@@ -39,7 +40,7 @@
                                 <li class="<eq name='vo.zy_currency_category_id' value='$cateId'>selected</eq>" >
                                     <a href="javascript:;" class="screen" data-type="cateId" data-value="{$vo.zy_currency_category_id}" >{:msubstr(t($vo['title']),0,10,'utf-8',true)}</a>
                                 </li>
-                            </volist>                                
+                            </volist>
                         </ul>
                         <div class="subs" <php>if(!$cate){</php>style="display: none"<php>}</php>>
                             <ul class="sub-course" id="pre">
@@ -65,13 +66,31 @@
                 </dl>
             </div>
 
+            <div class="search-box">
+                <dl class="card-body">
+                    <dd class="clearfix">
+                        <span>会员：</span>
+                        <ul class="select-list pb20">
+                            <li <if condition="$_GET['vip_id'] eq null">class="selected"</if>>
+                                <a href="{:U('classroom/Video/index')}" id="vip0">全部</a>
+                            </li>
+                            <volist name="vip_levels" id="vo">
+                                <li <if condition="$_GET['vip_id'] eq $key">class="selected"</if>>
+                                    <a href="javascript:;" class="screen" data-type="vip_id" data-value="{$key}">{$vo}</a>
+                                </li>
+                            </volist>
+                        </ul>
+                    </dd>
+                </dl>
+            </div>
+
             <div class="video-clearfix-nav">
                 <div class="nav-item">
                     <span>类型：</span>
                     <label><input type="checkbox" <eq name="vtype" value="2">checked="checked" data-type="vtype" <else/>data-type="vtype" data-value="2"</eq> class="screen" >直播</label>
                     <label><input type="checkbox" <eq name="vtype" value="1">checked="checked" data-type="vtype" <else/>data-type="vtype" data-value="1"</eq> class="screen" >点播</label>
                     <label><input type="checkbox" <eq name="videofile" value="1">checked="checked" data-type="videofile" <else/>data-type="videofile" data-value="1"</eq> class="screen" >资料</label>
-                    <label><input type="checkbox" <eq name="eaxm_id" value="1">checked="checked" data-type="eaxm_id" <else/>data-type="eaxm_id" data-value="1"</eq> class="screen" >习题</label>
+                    <!--<label><input type="checkbox" <eq name="eaxm_id" value="1">checked="checked" data-type="eaxm_id" <else/>data-type="eaxm_id" data-value="1"</eq> class="screen" >习题</label>-->
                 </div>
             </div>
 
@@ -131,9 +150,9 @@
                             <li>
                                 <div class="pic">
                                     <php>if($vo['type'] == 1){</php>
-                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],218,124)}" alt=""></a>
+                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],275,160)}" alt=""></a>
                                     <php>}else{</php>
-                                    <a href="{:U('live/Index/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],218,124)}" alt=""></a>
+                                    <a href="{:U('live/Index/view',array('id'=>$vo['id']))}"><img src="{:cutImg($vo['cover'],275,160)}" alt=""></a>
                                     <php>}</php>
                                     <php>if($vo['type'] == 2){</php>
                                     <div class="txt">
@@ -153,11 +172,11 @@
                                     <php>}else{</php>
                                     <a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
                                     <php>}</php>
-                                            {:msubstr(t($vo['video_title']),0,10,'utf-8',true)}
+                                            {:msubstr(t($vo['video_title']),0,20,'utf-8',true)}
                                         </a>
                                 </h3>
                                 <div class="info">
-                                    <div class="fr">{$vo['view_nums']}人围观</div>
+                                    <div class="fr">{$vo['view_nums']}人浏览</div>
                                     <div class="price"><php>if($vo['mzprice']['price'] == 0) {</php><span style="color: #56b02a;">免费</span> <php>} else {</php>￥{$vo['mzprice']['price']}<php>}</php> <!-- <span class="del">￥{$vo['mzprice']['oriPrice']}</span>--></div>
                                 </div>
                                 <div class="bot">
@@ -196,60 +215,18 @@
                 <php>}</php>
             </div>
         </div>
-        <div class="class_right bg">
-            <h3 class="class_right_tit">热门推荐</h3>
-            <ul class="classlist02">
-                <volist name="hotData" id="hot">
-                    <li>
-                        <div class="pic">
-                            <php>if($hot['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$hot['id']))}"><img src="{:cutImg($hot['cover'],220,124)}" alt=""></a>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$hot['id']))}"><img src="{:cutImg($hot['cover'],220,124)}" alt=""></a>
-                            <php>}</php>
-                            <php>if($hot['type'] == 2){</php>
-                            <div class="txt">
-                                <div class="fl orange class">直播中</div>
-                                <span class="fl">进度：{$hot['live']['now']}/{$hot['live']['count']}节</span>
-                            </div>
-                            <php>}</php>
-                        </div>
-                        <h3>
-                            <php>if($hot['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$hot['id']))}">{:limitNumber($hot['video_title'],54)}</a>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$hot['id']))}">{:limitNumber($hot['video_title'],54)}</a>
-                            <php>}</php>
-                        </h3>
-                        <div class="name">
-                            <!--<a href="{$hot['mhm_info']['domain']}">{$hot['mhm_info']['title']}</a>-->
-                            <if condition="$hot['type'] eq 1">
-                                <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">点播</span>
-                                <else/>
-                                <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">直播</span>
-                            </if>
-                        </div>
-                        <div class="info">
-                            <div class="fr">{$hot['teacherInfo']['name']}</div>
-                            <div class="price"><if condition="$hot['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$hot['t_price']}</if></div>
-                        </div>
 
-                    </li>
-                </volist>
-            </ul>
-        </div>
-        <div class="clear"></div>
         <php>if($datas){</php>
         <div class="guess_like">
             <h3 class="guess_like_tit">猜你喜欢</h3>
             <ul class="classlist02 clearfix">
-                <volist name="datas" id="val" offset="1" length='5'>
+                <volist name="datas" id="val" offset="0" length='5'>
                     <li>
                         <div class="pic">
                             <php>if($val['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
+                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],275,160)}" alt=""></a>
                             <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],220,124)}" alt=""></a>
+                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:cutImg($val['cover'],275,160)}" alt=""></a>
                             <php>}</php>
                             <php>if($val['type'] == 2){</php>
                             <div class="txt">
@@ -277,7 +254,7 @@
                             </a>
                             <php>}</php>
                         </h3>
-                        
+
                         <div class="info">
                             <div class="price"><if condition="$val['t_price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$val['t_price']}</if>
                                 <if condition="$val['free_status']"><span class="sx">{$val['free_status']}</span></if>
@@ -336,6 +313,6 @@ $(function(){
         }
        window.location.href = getRequestUrl(type,value,baseUrl,replace);
     });
- });  
+ });
 </script>
 <include file="__THEME__/public_footer" />

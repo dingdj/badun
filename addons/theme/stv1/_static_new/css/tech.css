@@ -1,0 +1,170 @@
+.tech-all{
+	background-color: #f3f3f3;
+}
+.tech-cen{
+	width: 62%;
+	margin-left: 19%;
+}
+.tech1{
+	height: 50px;
+}
+.tech2{
+	height: 73px;
+}
+.tech21{
+	float: left;
+	width: 50%;
+	height: 73px;
+	background-color: #fff;
+	text-align: center;
+}
+.tech21 a{
+	line-height:73px;
+	font-size: 20px;
+	color: #e83030;
+}
+.tech22{
+	float: left;
+	width: 50%;
+	height: 73px;
+	background-color: #e5e3e4;
+	text-align: center;
+}
+.tech22 a{
+	line-height: 73px;
+	font-size: 20px;
+	color: #333;
+}
+.tech3{
+	height: 230px;
+	text-align: center;
+}
+.tech3 h1{
+	line-height:230px;
+	font-size: 30px;
+}
+.tech4{
+	height: 546px;
+}
+.tech5{
+	float: left;
+	margin:0 auto;
+	background-color:#f3f3f3;
+    width: 100%;
+}
+
+.tech5 li{
+	width: 25%;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    margin: 0 4%;
+    background-color: #fff;
+    float: left;
+    overflow: hidden;
+    margin-bottom: 30px;
+    transition: box-shadow .2s;
+}
+
+.tech5 img{
+    float: left;
+    width: 100%;
+    min-height: 243px;
+}
+
+.tech51{
+	font-size: 20px;
+	float: left;
+	margin-left: 13%;
+	text-align:center;
+	height: 30px;
+	line-height: 30px;
+    margin-top: 5px;
+}
+.tech51 a{
+	color: #000000;
+}
+.tech52{
+	font-size: 20px;
+	margin-left: 18%;
+	text-align:center;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+    margin-top: 5px;
+}
+.tech52 a{
+	color: #000000;
+}
+.tech6{
+	height: 230px;
+	text-align: center;
+}
+.tech6 h1{
+	line-height:230px;
+	font-size: 30px;
+}
+.tech7{
+	height: 700px;
+}
+.tech8{
+	float: left;
+	margin:0 auto;
+	background-color:#f3f3f3;
+}
+
+.tech8 li{
+	width: 25%;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    margin: 0 4%;
+    background-color: #fff;
+    float: left;
+    overflow: hidden;
+    margin-bottom: 30px;
+    transition: box-shadow .2s;
+}
+.tech81{
+	font-size: 20px;
+	float: left;
+	margin-left: 13%;
+	text-align:center;
+	height: 30px;
+	line-height: 30px;
+}
+.tech81 a{
+	color: #000000;
+}
+.tech82{
+	font-size: 20px;
+	margin-left: 18%;
+	text-align:center;
+	height: 30px;
+	line-height: 30px;
+}
+.tech82 a{
+	color: #000000;
+}
+
+.tech4,.tech7{
+    text-align: center;
+    height: auto;
+}
+
+.indclassbox_more{
+    width: 250px;
+    height: 44px;
+    font-size: 16px;
+    color: #fff;
+    line-height: 44px;
+    background-color: red;
+    display: inline-block;
+    text-align: center;
+}
+
+.tech4 a.indclassbox_more{
+    margin-top: 20px;
+}
+
+.tech7 a.indclassbox_more{
+    margin: 20px 0 100px;
+}

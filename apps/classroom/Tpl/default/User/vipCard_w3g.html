@@ -1,15 +1,16 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
     <div class="header2">
-    	<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+    	<a href="{:U('classroom/User/index')}" class="icon-back"></a>
     	<div>我的优惠券</div>
     </div>
     <div class="body">
         <ul class="cardlistnav">
+            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
             <li><a href="{:U('classroom/User/discount')}">打折</a></li>
             <li class="on"><a href="{:U('classroom/User/vipCard')}">会员</a></li>
-            <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
-            <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+            <!--<li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>-->
+            <li><a href="{:U('classroom/User/courseCard')}">课程卡</a></li>
         </ul>
         <ul class="card3list">
             <if condition="$data">
@@ -20,7 +21,7 @@
                                 <h3 <php>if($vo['status'] != 0){</php>style="color: #dddddd;"<php>}</php>>{$vo.vip_date}天<span class="vip">{$vo.vip_grade}</span></h3>
                             </div>
                             <p>卡券编号&nbsp;:&nbsp;{$vo.code}</p>
-                            <p>发卡单位&nbsp;:&nbsp;{$vo.school_title}</p>
+                            <!--<p>发卡单位&nbsp;:&nbsp;{$vo.school_title}</p>-->
                             <p>有效期&nbsp;:&nbsp;{$vo.stime} - {$vo.etime}</p>
                         </div>
                         <div class="right">
@@ -65,4 +66,4 @@
     }
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

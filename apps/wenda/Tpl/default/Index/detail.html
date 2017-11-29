@@ -1,5 +1,7 @@
 <include file="__THEME__/public_header" />
-
+<style type="text/css">
+  .content{background: #fff;}
+</style>
 <div class="content">
 <div  class="wrap">
   <!--左边-->
@@ -116,34 +118,6 @@
     </div>
   </div>
 <!--右边-->
-  <div class="jg_right">
-        <div class="gr_rightitem">
-              <h3 class="gr_rightitem_tit">推荐问题</h3>
-              <ul class="dotlist">
-                  <volist  name ="topwenda"  id ="vo">
-                      <li><a href="{:U('wenda/Index/detail',array('id'=>$vo['id']))}"> {:mStr($vo['wd_description'],25)}</a></li>
-                  </volist>
-              </ul>
-              </ul>
-          </div>
-          <div class="gr_rightitem">
-              <h3 class="gr_rightitem_tit">大家关注</h3>
-              <ul class="focuslist">
-                  <volist  name ="recClass"  id ="vo">
-                  <li>
-                      <if condition="$vo['type'] eq 1">
-                          <a href = "{:U('classroom/Video/view',array('id'=>$vo['id']))}">
-                          <else/>
-                          <a href="{:U('live/Index/view',array('id'=>$vo['id']))}">
-                      </if>
-                          <img src="{:getCover($vo['cover'],130,130)}" class="lazyloading" width="220" height="110" alt="{$vo.video_title}">
-                      </a>
-                      <h3><a href="#">{$vo.video_title}</a></h3>
-                  </li>
-</volist>
-              </ul>
-          </div>
-  </div>
 </div>
 </div>
 <script>

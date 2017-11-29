@@ -29,7 +29,9 @@ class UserAction extends CommonAction{
         $learnInfo = model('User')->findUserLearnInfo();
         $tmp = getFollowCount(array($this->mid));
         $credit = model('Credit')->getUserCredit($this->mid);
+        $is_teacher = D('ZyTeacher','classroom')->where('uid='.$this->mid)->getField('verified_status');
 
+        $this->assign("is_teacher", $is_teacher);
         $this->assign("learn", $learnInfo);
         $this->assign("tmp", $tmp);
         $this->assign("credit", $credit);
@@ -49,7 +51,7 @@ class UserAction extends CommonAction{
         $fields = "{$order_course}.`learn_status`,{$order_course}.`uid`,{$order_course}.`id` as `oid`,";
         $fields .= "{$vtablename}.`teacher_id`,{$vtablename}.`mhm_id`,{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_binfo`,";
         $fields .= "{$vtablename}.`cover`,{$vtablename}.`video_order_count`,{$vtablename}.`ctime`,{$vtablename}.`t_price`";
-        //不是通过套餐购买的
+        //不是通过班级购买的
         //$where     = "{$order_course}.`is_del`=0 and {$order_course}.`order_album_id`=0 and {$order_course}.`uid`={$uid}";
         $where     = "{$order_course}.`is_del`=0 and {$order_course}.`pay_status`=3 and {$order_course}.`uid`={$uid}";
         $video_data = M('zy_order_course')->join("{$vtablename} on {$order_course}.`video_id`={$vtablename}.`id`")->where($where)->field($fields)->findPage($limit);
@@ -72,29 +74,35 @@ class UserAction extends CommonAction{
             $val['school_url'] = getDomain($school_info['doadmin'],$val['mhm_id']);
             $val['video_order_count'] =  M('zy_order_live') -> where(array('live_id'=> $val['id'], 'is_del' => 0 ,'pay_status'=>3)) -> count();;
         }
-
+        $videocont= D("zy_order_course")->where(array('uid'=>$this->mid,'is_del'=>0,'pay_status'=>3))->count() ? D("zy_order_course")->where(array('uid'=>$this->mid,'is_del'=>0,'pay_status'=>3))->count() : 0;//加载我的课程总数
         $this->assign('video_data',$video_data);
         $this->assign('live_data',$live_data);
+        $this->assign('videocont',$videocont);
         $this->display();
     }
 
     public function recharge(){
-        if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
-            model('WxPay')->getWxUserInfo($_GET['code'], SITE_URL.'/my/recharge.html');
-        }
-    	$user_vip = M('user_vip')->where('is_del=0')->order('sort asc')->select();
-        $data = M('credit_user')->where(array('uid'=>$this->mid))->find();
+        $data = M('zy_learncoin')->where(array('uid'=>$this->mid))->find();
         if($data['vip_type'] > 0 && $data['vip_expire'] >= time() ){
-        	$data['vip_type_txt'] = M('user_vip')->where('is_del=0 and id=' . $data['vip_type'])->getField('title');
+            $vip_info = M('user_vip')->where('is_del=0 and id=' . $data['vip_type'])->find();
+        	$data['vip_type_txt'] = $vip_info['title'];
+            $map['sort'] = array('egt' , $vip_info['sort']);
         } else {
         	$data['vip_type'] = 0;
         }
+
+        $map['is_del'] = 0;
+        $user_vip = M('user_vip')->where($map)->order('sort asc')->select();
+
         if($this->is_wap && strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')){
             $this->assign('is_wx',true);
         }
+
+        $payConfig = model('Xdata')->get("admin_Config:payConfig");
+
+        $this->assign('payConfig', $payConfig);
         $this->assign('learnc', $data);
         $this->assign('user_vip', $user_vip);
-        $this->assign('rechargeIntoConfig', model('Xdata')->get('admin_Config:rechargeIntoConfig'));
         $this->display();
     }
 
@@ -115,9 +123,11 @@ class UserAction extends CommonAction{
         $this->display();
     }
 
-    //用户账户管理
+    //用户账户余额管理
     public function account(){
-        $this->assign('userLearnc', M('credit_user')->where('uid = '.$this->mid)->find());
+        $account = M('zy_learncoin')->where('uid = '.$this->mid)->find();
+        $account['balance'] = $account['balance'] ? floatval($account['balance']) : 0.00;
+        $this->assign('userLearnc', $account);
 
         //选择模版
         $tab = intval($_GET['tab']);
@@ -127,10 +137,38 @@ class UserAction extends CommonAction{
         if(method_exists($this, $method)){
             $this->$method();
         }
+
+        if($tab == 0) {
+            //读取系统设置的支付方式&支付配置
+            $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $rechange_default = array_filter(explode("\n", $split_score['rechange_default']));
+            foreach ($rechange_default as &$val) {
+                $val = array_filter(explode('=>', $val));
+            }
+            $payConfig = model('Xdata')->get("admin_Config:payConfig");
+
+            $this->assign('rechange_default', $rechange_default);
+            $this->assign('payConfig', $payConfig);
+
+            if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+                model('WxPay')->getWxUserInfo($_GET['code'], SITE_URL . '/my/account.html');
+            }
+
+            if($this->is_wap && strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')){
+                $this->assign('is_wx',true);
+            }
+        }
+
         $this->assign('tab', $tab);
-        $this->display('account/'.$tpls[$tab]);
+        if($this->is_wap){
+            $templateFile = "account/{$tpls[$tab]}_w3g";
+            echo $this->fetch($templateFile,'utf-8','text/html',true);
+        }else{
+            $this->display("account/{$tpls[$tab]}");
+        }
     }
-    //流水记录
+
+    //余额流水记录
     protected function account_integral_list(){
         $map = array('uid'=>$this->mid);  //获取用户id
 
@@ -145,7 +183,7 @@ class UserAction extends CommonAction{
         if($_GET['et']){
             $map['ctime'][] = array('lt', $et);
         }
-        $data = D('credit_user_flow')->where($map)->order('ctime DESC,id DESC')->findPage(12);
+        $data = D('ZyLearnc')->flowModel->where($map)->order('ctime DESC,id DESC')->findPage(12);
         foreach($data['data'] as $key=>$value){
             switch ($value['type']){
                 case 0:$data['data'][$key]['type'] = "消费";break;
@@ -158,13 +196,625 @@ class UserAction extends CommonAction{
                 case 7:$data['data'][$key]['type'] = "扣除积分";break;
             }
         }
-        $total= D('credit_user_flow')->where($map)->sum('num') ? : 0;
+        $total= D('ZyLearnc')->flowModel->where($map)->sum('num') ? : 0;
         $this->assign('data', $data);
         $this->assign('total', $total);
     }
 
-    //充值记录
+    //余额充值记录
     protected function account_recharge(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $map['status'] = array('gt',0);
+        $data = D('ZyRecharge')->where($map)->order('stime DESC,id DESC')->findPage(12);
+        $total= D('ZyRecharge')->where($map)->sum('money');
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //余额营收记录
+    protected function account_income(){
+        $map = array('muid'=>$this->mid);
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = D('ZyOrder')->where($map)->order('ctime DESC,id DESC')->findPage(12);
+        $total= D('ZyOrder')->where(array('muid'=>$this->mid))->sum('user_num');
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //余额支付记录
+    protected function account_pay(){
+        $map = array('uid'=>$this->mid);
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = D('ZyOrder')->where($map)->order('ctime DESC,id DESC')->findPage(12);
+        $total= D('ZyOrder')->where(array('uid'=>$this->mid))->sum('price');
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //余额申请提现页面
+    protected function account_take(){
+        $card = D('ZyBcard')->getUserOnly($this->mid);
+        if(!$card){
+            $this->assign('isAdmin', 1);
+            $this->assign('jumpUrl', U('classroom/User/card'));
+            $this->error('请先绑定银行卡！'); exit;
+        }
+        //申请提现
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $num = intval($_POST['num']);
+            $result = D('ZyService')->applyWithdraw(
+                $this->mid, $num, $card['id']);
+            if(true === $result){
+                $this->ajaxReturn(null, '', true);
+            }else{
+                $this->ajaxReturn(null, $result, false);
+            }
+            exit;
+        }
+        $ZyWithdraw = D('ZyWithdraw');
+        $data = $ZyWithdraw->getUnfinished($this->mid,1);
+        //读取系统配置的客服电话
+        $tel = M('system_data')->where("`list`='admin_config' AND `key`='site'")->field('value')->find();
+        $system_config = unserialize($tel['value']);
+        $this->assign('sys_tel',$system_config['sys_tel']);
+        $this->assign('data', $data);
+    }
+
+    //余额申请提现列表页面
+    protected function account_take_list(){
+        if(!empty($_GET['id'])){
+            $id = intval($_GET['id']);
+            $result = D('ZyService')->setWithdrawStatus($id, $this->mid, 4);
+            if(true === $result){
+                $this->ajaxReturn(null, null, true);
+            }else{
+                $this->ajaxReturn(null, $result, false);
+            }
+            exit;
+        }
+
+        $map['uid']   = $this->mid;
+        $map['wtype'] = 2;
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+
+        $data = D('ZyWithdraw')->order('ctime DESC, id DESC')
+            ->where($map)->findPage(12);
+
+        $total= D('ZyWithdraw')->where(array('uid'=>$this->mid,'status'=>2,'wtype'=>1))->sum('wnum');
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //用户账户收入余额
+    public function spilt(){
+        $spilt_balance = D('ZySplit')->where(['uid'=>$this->mid])->getField('balance');
+        $spilt_balance = $spilt_balance ? floatval($spilt_balance) : 0.00;
+        $this->assign('balance',$spilt_balance);
+
+        //选择模版
+        $tab = intval($_GET['tab']);
+        $tpls = array('index','integral_list','take','take_list');
+        if(!isset($tpls[$tab])) $tab = 0;
+        $method = 'spilt_'.$tpls[$tab];
+        if(method_exists($this, $method)){
+            $this->$method();
+        }
+
+        if($tab == 0){
+            $card_list = D('ZyBcard')->getUserBcard($this->mid,'id,accounttype,account,accountmaster');
+            if($card_list){
+                foreach($card_list as $key => &$val){
+                    $val['card_info'] = $val['accounttype']." ".substr($val['account'],-4);//$val['accounttype']."(".hideStar($val['account']).")";
+                }
+                //$this->assign('card_id', $card_list[0]['id']);
+                $this->assign('card_list', $card_list);
+            }else{
+                $this->assign('card_info', "未绑定");
+            }
+            $alipay_info = D('ZyBcard')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->field('id,account,accountmaster')->find();
+
+            if($alipay_info){
+                $alipay_info['accountmaster'] = hideStar($alipay_info['accountmaster']);
+                $alipay_info['account'] = hideStar($alipay_info['account']);
+
+                $this->assign('alipay_info', $alipay_info);
+            }else{
+                $alipay_info['account'] = "未绑定";
+                $this->assign('alipay_info', $alipay_info);
+            }
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+            $account_balance = M('zy_learncoin')->where('uid = '.$this->mid)->getField('balance');
+
+            $this->assign('account_balance', $account_balance ? floatval($account_balance) : 0.00);
+            $this->assign('withdraw_basenum', $withdraw_basenum);
+        }
+
+        $this->assign('tab', $tab);
+        if($this->is_wap){
+            $templateFile = "spilt/{$tpls[$tab]}_w3g";
+            echo $this->fetch($templateFile,'utf-8','text/html',true);
+        }else{
+            $this->display("spilt/{$tpls[$tab]}");
+        }
+    }
+
+    //支付宝账户
+    public function alipay(){
+        $alipay_info = D('ZyBcard')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->field('id,account,accountmaster')->find();
+
+        if($alipay_info){
+            $alipay_info['account'] = hideStar($alipay_info['account']);
+            $alipay_info['accountmaster'] = hideStar($alipay_info['accountmaster']);
+        }
+
+        $this->assign('alipay_info',$alipay_info);
+        $this->display();
+    }
+
+    //绑定、修改支付宝账号
+    public function saveAlipay(){
+        $real_name      = t($_POST['real_name']);
+        $alipay_account = t($_POST['alipay_account']);
+        if(!$real_name){
+            $this->ajaxReturn([],'请输入真实姓名',0);
+        }
+        if(!$alipay_account){
+            $this->ajaxReturn([],'请输入支付宝账号',0);
+        }
+        $phone = "/^1[3|4|5|7|8][0-9]\d{8}$/";
+        $email = "/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/";
+        if (!preg_match( $phone, $alipay_account) &&  !preg_match( $email, $alipay_account)){
+            $this->ajaxReturn([],'请输入正确的支付宝账号',0);
+        }
+
+        $data['uid'] = $this->mid;
+        $data['account'] = $alipay_account;
+        $data['accountmaster'] = $real_name;
+        $data['accounttype'] = "alipay";
+
+        $is_bond = D('ZyBcard')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->getField('id');
+
+        if(!$is_bond){
+            $res = D('ZyBcard')->add($data);
+        } else {
+            $res = D('ZyBcard')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->save($data);
+        }
+        if($res){
+            $this->ajaxReturn([],'操作成功',1);
+        }else{
+            $this->ajaxReturn([],'操作失败',0);
+        }
+    }
+
+    //删除绑定支付宝账号
+    public function doBondAlipay(){
+        $bond = D('ZyBcard')->where(['uid'=>$this->mid,'accounttype'=>'alipay'])->delete();
+
+        if($bond){
+            $this->ajaxReturn([],'解绑成功',1);
+        }else{
+            $this->ajaxReturn([],'解绑失败',0);
+        }
+    }
+
+    //处理收入 转为余额/提现
+    public function applySpiltWithdraw(){
+        $tw_type = t($_POST['tw_type']);
+        $exchange_balance = intval($_POST['exchange_balance']);
+
+        if($tw_type == 'lcnpay'){//收入兑换余额
+            $balance = D('ZySplit')->where(['uid'=>$this->mid])->getField('balance');
+
+            if($exchange_balance < 1){
+                $this->mzError('兑换的数量最少为1');
+            }
+
+            if(!floatval($balance)){
+                $this->mzError('您暂无可兑换的收入');
+            }
+            unset($balance);
+
+            if(!D('ZySplit')->isSufficient($this->mid,$exchange_balance)){
+                $this->mzError('您的收入余额不够此次兑换的数量');
+            }
+
+            //扣除分成收入
+            $consume = D('ZySplit')->consume($this->mid,$exchange_balance);
+            if(!$consume){
+                $this->mzError('出错了，请稍后再试');
+            }
+            $split_flow = D('ZySplit')->addFlow($this->mid,0,$exchange_balance,'转账为余额：'.$exchange_balance,'','zy_learncoin_flow');
+
+            //添加余额并加相关流水
+            $learnc = D('ZyLearnc')->recharge($this->mid,$exchange_balance);
+            if($learnc){
+                $learnc_flow = D('ZyLearnc')->addFlow($this->mid,1,$exchange_balance,'收入转账为余额：'.$exchange_balance,$split_flow,'zy_split_balance');
+                D('ZySplit')->flowModel->where(['id'=>$split_flow])->save(['rel_id'=>$learnc_flow]);
+
+                $this->mzSuccess("转账成功");
+            } else {
+                $this->mzError("转账失败");
+            }
+        } else if($tw_type == 'unionpay') {//申请提现-银行卡
+            $card = D('ZyBcard')->getUserOnly($this->mid);
+            if (!$card[0]) {
+                $this->mzError("请先绑定银行卡");
+            }
+            $card_id = intval($_POST['card_id']);
+
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+            if($exchange_balance<0||$exchange_balance<$withdraw_basenum||$exchange_balance%$withdraw_basenum!=0){
+                $this->mzError("只允许提现为{$withdraw_basenum}的倍数");
+            }
+
+            $result = D('ZyService')->applySpiltWithdraw($this->mid, $exchange_balance, $card_id);
+
+            if (true === $result) {
+                $this->mzSuccess("提现申请成功，请等待审核");
+            } else {
+                switch ($result) {
+                    case 1:
+                        $info = "申请提现的收入余额不是系统指定的倍数，或小于0";
+                        break;
+                    case 2:
+                        $info = "没有找到用户对应的提现银行卡/账户";
+                        break;
+                    case 3:
+                        $info = "有未完成的提现记录，需要等待完成";
+                        break;
+                    case 4:
+                        $info = "余额转冻结失败：可能是余额不足";
+                        break;
+                    case 5:
+                        $info = "提现记录添加失败";
+                        break;
+                }
+                $this->mzError($info);
+            }
+        } else if($tw_type == 'alipay') {//申请提现-支付宝
+            $card = D('ZyBcard')->getUserOnlyAliAccount($this->mid);
+            if (!$card) {
+                $this->mzError("请先绑定支付宝");
+            }
+
+            $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+            if ($exchange_balance < 0 || $exchange_balance < $withdraw_basenum || $exchange_balance % $withdraw_basenum != 0) {
+                $this->mzError("只允许提现为{$withdraw_basenum}的倍数");
+            }
+
+            $result = D('ZyService')->applySpiltWithdraw($this->mid, $exchange_balance, $card['id']);
+
+            if (true === $result) {
+                $this->mzSuccess("提现申请成功，请等待审核");
+            } else {
+                switch ($result) {
+                    case 1:
+                        $info = "申请提现的收入余额不是系统指定的倍数，或小于0";
+                        break;
+                    case 2:
+                        $info = "没有找到用户对应的提现银行卡/账户";
+                        break;
+                    case 3:
+                        $info = "有未完成的提现记录，需要等待完成";
+                        break;
+                    case 4:
+                        $info = "余额转冻结失败：可能是余额不足";
+                        break;
+                    case 5:
+                        $info = "提现记录添加失败";
+                        break;
+                }
+                $this->mzError($info);
+            }
+        }
+    }
+
+    //分成收入流水记录
+    protected function spilt_integral_list(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = D('ZySplit')->flowModel->where($map)->order('ctime DESC,id DESC')->findPage(12);
+        foreach($data['data'] as $key=>$value){
+            switch ($value['type']){
+                case 0:$data['data'][$key]['type'] = "消费";break;
+                case 1:$data['data'][$key]['type'] = "充值";break;
+                case 2:$data['data'][$key]['type'] = "冻结";break;
+                case 3:$data['data'][$key]['type'] = "解冻";break;
+                case 4:$data['data'][$key]['type'] = "冻结扣除";break;
+                case 5:$data['data'][$key]['type'] = "分成收入";break;
+                case 6:$data['data'][$key]['type'] = "增加积分";break;
+                case 7:$data['data'][$key]['type'] = "扣除积分";break;
+            }
+        }
+        $total= D('ZySplit')->flowModel->where($map)->sum('num') ? : 0;
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //分成收入申请提现页面
+    protected function spilt_take(){
+        $card = D('ZyBcard')->getUserOnly($this->mid);
+        if(!$card){
+            $this->assign('isAdmin', 1);
+            $this->assign('jumpUrl', U('classroom/User/card'));
+            $this->error('请先绑定银行卡！'); exit;
+        }
+        //申请提现
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $num = intval($_POST['num']);
+            $result = D('ZyService')->applySpiltWithdraw(
+                $this->mid, $num, $card['id']);
+            if(true === $result){
+                $this->ajaxReturn(null, '', true);
+            }else{
+                $this->ajaxReturn(null, $result, false);
+            }
+            exit;
+        }
+        $ZyWithdraw = D('ZyWithdraw');
+        $data = $ZyWithdraw->getUnfinished($this->mid,2);
+        $recharge_intoConfig = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+        $withdraw_basenum = $recharge_intoConfig['withdraw_basenum'];
+
+        $this->assign('withdraw_basenum', $withdraw_basenum);
+        $this->assign('data', $data);
+    }
+
+    //分成收入申请提现列表页面
+    protected function spilt_take_list(){
+        if($_GET['id']){
+            $id = intval($_GET['id']);
+            $result = D('ZyService')->setWithdrawStatus($id, $this->mid, 4);
+            if($result === true){
+                $this->ajaxReturn(null, null, true);
+            }else{
+                $this->ajaxReturn(null, $result, false);
+            }
+            exit;
+        }
+
+        $map['uid']   = $this->mid;
+        $map['wtype'] = 2;
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+
+        $data = D('ZyWithdraw')->order('ctime DESC, id DESC')
+            ->where($map)->findPage(12);
+
+        $total= D('ZyWithdraw')->where(array('uid'=>$this->mid,'status'=>2,'wtype'=>2))->sum('wnum');
+        $this->assign('data', $data);
+        $this->assign('total', $total ? : 0);
+    }
+
+    //积分
+    public function credit(){
+        $credit = M('credit_user')->where('uid = '.$this->mid)->find();
+        $credit['score'] = $credit['score'] ? $credit['score'] : 0;
+        $this->assign('userLearnc', $credit);
+
+        //选择模版
+        $tab = intval($_GET['tab']);
+        $tpls = array('index','income','pay','take_list','take','recharge','integral_list','exchange_record');
+        if(!isset($tpls[$tab])) $tab = 0;
+        $method = 'credit_'.$tpls[$tab];
+        if(method_exists($this, $method)){
+            $this->$method();
+        }
+
+        if($tab == 0){
+            $account['learn'] = D('ZyLearnc')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+            $account['split'] = D('ZySplit')->where(['uid'=>$this->mid])->getField('balance') ? : 0;
+            $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+            $sple_score = array_filter(explode(':',$split_score['sple_score']))[1]/array_filter(explode(':',$split_score['sple_score']))[0];
+
+            $this->assign('sple_score',$sple_score);
+            $this->assign('split_score_pro',$split_score['sple_score']);
+            $this->assign('account',$account);
+        }
+
+        $this->assign('tab', $tab);
+        if($this->is_wap){
+            $templateFile = "credit/{$tpls[$tab]}_w3g";
+            echo $this->fetch($templateFile,'utf-8','text/html',true);
+        }else{
+            $this->display("credit/{$tpls[$tab]}");
+        }
+    }
+
+    //充值积分
+    public function rechargeScore(){
+        if(!$this->mid){
+            $this->mzError('请先登录');
+        }
+        $type = t($_POST['re_type']);
+        $exchange_score = intval(t($_POST['exchange_score']));
+
+        //系统设置的计算分成、余额与积分的比例值
+        $split_score = model('Xdata')->get("admin_Config:rechargeIntoConfig");
+        $sple_score = array_filter(explode(':',$split_score['sple_score']))[1]/array_filter(explode(':',$split_score['sple_score']))[0];
+
+        //需要扣除的余额/收入
+        $exchange_balance = $exchange_score / $sple_score;
+
+        if($type == 'lcnpay'){
+            $balance = D('ZyLearnc')->where(['uid'=>$this->mid])->getField('balance');
+
+            if($exchange_score < 1){
+                $this->mzError('充值的数量最少为1');
+            }
+
+            if(!floatval($balance)){
+                $this->mzError('您暂无可充值的余额');
+            }
+            unset($balance);
+
+            if(!D('ZyLearnc')->isSufficient($this->mid,$exchange_balance)){
+                $this->mzError('您的余额不够此次充值的数量');
+            }
+
+            //扣除账号余额
+            $consume = D('ZyLearnc')->consume($this->mid,$exchange_balance);
+            if(!$consume){
+                $this->mzError('出错了，请稍后再试');
+            }
+
+            $lnc_flow = D('ZyLearnc')->addFlow($this->mid,0,$exchange_balance,'充值为积分：'.$exchange_score,'','credit_user_flow');
+
+            //添加积分并加相关流水
+            $credit = model('Credit')->recharge($this->mid,$exchange_score);
+            if($credit){
+                $credit_flow = model('Credit')->addCreditFlow($this->mid,1,$exchange_score,$lnc_flow,'zy_split_balance','余额充值积分：'.$exchange_score);
+                D('ZyLearnc')->flowModel->where(['id'=>$lnc_flow])->save(['rel_id'=>$credit_flow]);
+
+                $this->mzSuccess("充值成功");
+            } else {
+                $this->mzError("充值失败");
+            }
+        } else if($type == 'spipay'){
+            $balance = D('ZySplit')->where(['uid' => $this->mid])->getField('balance');
+
+            if ($exchange_score < 1) {
+                $this->mzError('充值的数量最少为1');
+            }
+
+            if (!floatval($balance)) {
+                $this->mzError('您暂无可充值的收入');
+            }
+            unset($balance);
+
+            if (!D('ZySplit')->isSufficient($this->mid, $exchange_balance)) {
+                $this->mzError('您的收入余额不够此次充值的数量');
+            }
+
+            //扣除分成收入
+            $consume = D('ZySplit')->consume($this->mid, $exchange_balance);
+            if (!$consume) {
+                $this->mzError('出错了，请稍后再试');
+            }
+
+            //加相关分成扣除流水
+            $split_flow = D('ZySplit')->addFlow($this->mid, 0, $exchange_balance, '充值为积分：' . $exchange_score, '', 'credit_user_flow');
+
+            //添加积分并加相关流水
+            $credit = model('Credit')->recharge($this->mid, $exchange_score);
+            if ($credit) {
+                $credit_flow = model('Credit')->addCreditFlow($this->mid, 1, $exchange_score, $split_flow, 'zy_split_balance', '收入充值积分：' . $exchange_score);
+                D('ZySplit')->flowModel->where(['id' => $split_flow])->save(['rel_id' => $credit_flow]);
+
+                $this->mzSuccess("充值成功");
+            } else {
+                $this->mzError("充值失败");
+            }
+        }
+    }
+
+    //积分流水记录
+    protected function credit_integral_list(){
+        $map = array('uid'=>$this->mid);  //获取用户id
+
+        $st = strtotime($_GET['st'])+0;
+        $et = strtotime($_GET['et'])+0;
+        if(!$st) $_GET['st'] = '';
+        if(!$et) $_GET['et'] = '';
+
+        if($_GET['st']){
+            $map['ctime'][] = array('gt', $st);
+        }
+        if($_GET['et']){
+            $map['ctime'][] = array('lt', $et);
+        }
+        $data = M('credit_user_flow')->where($map)->order('ctime DESC,id DESC')->findPage(12);
+        foreach($data['data'] as $key=>$value){
+            switch ($value['type']){
+                case 0:$data['data'][$key]['type'] = "消费";break;
+                case 1:$data['data'][$key]['type'] = "充值";break;
+                case 2:$data['data'][$key]['type'] = "冻结";break;
+                case 3:$data['data'][$key]['type'] = "解冻";break;
+                case 4:$data['data'][$key]['type'] = "冻结扣除";break;
+                case 5:$data['data'][$key]['type'] = "分成收入";break;
+                case 6:$data['data'][$key]['type'] = "增加积分";break;
+                case 7:$data['data'][$key]['type'] = "扣除积分";break;
+            }
+        }
+        $total= M('credit_user_flow')->where($map)->sum('num') ? : 0;
+        $this->assign('data', $data);
+        $this->assign('total', $total);
+    }
+
+    //积分充值记录
+    protected function credit_recharge(){
         $map = array('uid'=>$this->mid);  //获取用户id
 
         $st = strtotime($_GET['st'])+0;
@@ -187,9 +837,9 @@ class UserAction extends CommonAction{
         $this->assign('data', $data);
         $this->assign('total', $total);
     }
-    //营收记录
-    protected function account_income(){
 
+    //积分营收记录
+    protected function credit_income(){
         $map = array('muid'=>$this->mid);
 
         $st = strtotime($_GET['st'])+0;
@@ -209,9 +859,8 @@ class UserAction extends CommonAction{
         $this->assign('total', $total);
     }
 
-    //支付记录
-    protected function account_pay(){
-
+    //积分支付记录
+    protected function credit_pay(){
         $map = array('uid'=>$this->mid);
 
         $st = strtotime($_GET['st'])+0;
@@ -238,76 +887,28 @@ class UserAction extends CommonAction{
         $this->assign('data', $data);
         $this->assign('total', $total);
     }
-    //申请提现页面
-    protected function account_take(){
-        $card = D('ZyBcard')->getUserOnly($this->mid);
-        if(!$card){
-            $this->assign('isAdmin', 1);
-            $this->assign('jumpUrl', U('classroom/User/card'));
-            $this->error('请先绑定银行卡！'); exit;
-        }
-        //申请提现
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $num = intval($_POST['num']);
-            $result = D('ZyService')->applyWithdraw(
-                      $this->mid, $num, $card['id']);
-            if(true === $result){
-                $this->ajaxReturn(null, '', true);
-            }else{
-                $this->ajaxReturn(null, $result, false);
-            }
-            exit;
-        }
-        $ZyWithdraw = D('ZyWithdraw');
-        $data = $ZyWithdraw->getUnfinished($this->mid);
-        //读取系统配置的客服电话
-        $tel = M('system_data')->where("`list`='admin_config' AND `key`='site'")->field('value')->find();
-        $system_config = unserialize($tel['value']);
-        $this->assign('sys_tel',$system_config['sys_tel']);
-        $this->assign('data', $data);
-    }
 
-    //申请提现列表页面
-    protected function account_take_list(){
-        if(!empty($_GET['id'])){
-            $id = intval($_GET['id']);
-            $result = D('ZyService')->setWithdrawStatus($id, $this->mid, 4);
-            if(true === $result){
-                $this->ajaxReturn(null, null, true);
-            }else{
-                $this->ajaxReturn(null, $result, false);
-            }
-            exit;
-        }
+    //积分兑换记录
+    protected function credit_exchange_record(){
+        $uid = intval($this->mid);
+        $order = "ctime DESC";
+        $goods = model('GoodsOrder')->getUserGoodsList($uid,$order);
 
-        $map = array('uid'=>$this->mid);
-
-        $st = strtotime($_GET['st'])+0;
-        $et = strtotime($_GET['et'])+0;
-        if(!$st) $_GET['st'] = '';
-        if(!$et) $_GET['et'] = '';
-
-
-        if($_GET['st']){
-            $map['ctime'][] = array('gt', $st);
-        }
-        if($_GET['et']){
-            $map['ctime'][] = array('lt', $et);
-        }
-
-        $data = D('ZyWithdraw')->order('ctime DESC, id DESC')
-                ->where($map)->findPage(12);
-
-        $total= D('ZyWithdraw')->where(array('uid'=>$this->mid,'status'=>2))->sum('wnum');
-        $this->assign('data', $data);
-        $this->assign('total', $total);
+        $this->assign("data", $goods);
+        $this->assign("goods", $goods['data']);
     }
 
     //银行卡管理方法
     public function card(){
         $data = D('ZyBcard')->getUserOnly($this->mid,0);
+
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $set['uid'] = $this->mid;
+
+            $card_count = D('ZyBcard')->where(array('uid'=>$this->mid,'is_school'=>0,'accounttype'=>['neq','alipay']))->field('id')->count();
+            if($card_count >= 10){
+                $this->ajaxReturn(null, '最多绑定10张银行卡', false);
+            }
             $set['account'] = t($_POST['account']);
             $set['accountmaster'] = t($_POST['accountmaster']);
             $set['accounttype'] = t($_POST['accounttype']);
@@ -318,23 +919,21 @@ class UserAction extends CommonAction{
             $set['area'] = intval($_POST['area']);
             $set['city'] = intval($_POST['city']);
             $set['is_school'] = 0;
-            if($data && $data['is_school'] == 0){
-                $set['id'] = $data['id'];
-                if(false !== D('ZyBcard')->save($set)){
-                    $this->ajaxReturn(null, '', true);
-                }else{
-                    $this->ajaxReturn(null, '', false);
-                }
+
+            $res = M("zy_bcard")->where(['account'=>$set['account'],'uid'=>$this->mid])->find();
+
+            if ($res) {
+                $this->ajaxReturn(null, '该账号已存在,请重新输入！', false);
+            }
+            if(D('ZyBcard')->add($set)){
+                $this->ajaxReturn(null, '添加成功', true);
             }else{
-                if(D('ZyBcard')->add($set) > 0){
-                    $this->ajaxReturn(null, '', true);
-                }else{
-                    $this->ajaxReturn(null, '', false);
-                }
+                $this->ajaxReturn(null, '添加失败', false);
             }
             exit;
         }
-        $this->assign('isEditCard', !$data || $_GET['edit']=='yes');
+
+        $this->assign('isEditCard', $data);
         if(!$data){
             $array = array(
                 'account'  => '',
@@ -348,16 +947,32 @@ class UserAction extends CommonAction{
                 'bankofdeposit' => '',
             );
         }
-        $this->assign('data', $data);
+        $this->assign('card_data', $data);
         $this->assign('banks', D('ZyBcard')->getBanks());
         $this->display();
     }
 
+    public function doBondUncard(){
+        $id = intval($_POST['id']);
+
+        $bond = D('ZyBcard')->where(['id'=>$id,'uid'=>$this->mid,'accounttype'=>['neq','alipay']])->delete();
+
+        if($bond){
+            $this->ajaxReturn([],'解绑成功',1);
+        }else{
+            $this->ajaxReturn([],'解绑失败',0);
+        }
+    }
+
     //优惠券管理方法
     public function videoCoupon(){
-        $map = array('uid'=>$this->mid,'type'=>1);
+        $map = array('uid'=>$this->mid,'type'=>1,'coupon_type'=>0);
         $data = model('Coupon')->getUserCouponList($map);
         $time = time();
+        $count['all'] = $data['count'];
+        $count['use'] = 0;
+        $count['used'] = 0;
+        $count['past'] = 0;
         foreach ($data['data'] as $key => $val) {
             $data['data'][$key]['school_title'] = model('School')->where(array('id'=>$val['sid']))->getField('title');
             $data['data'][$key]['price'] = floor($val['price']);
@@ -365,20 +980,29 @@ class UserAction extends CommonAction{
             if($val['status'] == 0){
                 if($val['etime'] < $time){
                     $data['data'][$key]['past'] = 1;
+                    $count['past'] += 1;
+                }else{
+                    $count['use'] +=1;
                 }
             }
             $data['data'][$key]['stime'] = date("Y.m.d",$val['stime']);
             $data['data'][$key]['etime'] = date("Y.m.d",$val['etime']);
 
         }
+        $count['used'] = $count['all']-$count['use']-$count['past'];
         $this->assign('data', $data['data']);
+        $this->assign('count', $count);
         $this->display();
     }
     //打折卡管理方法
     public function discount(){
-        $map = array('uid'=>$this->mid,'type'=>2);
+        $map = array('uid'=>$this->mid,'type'=>2,'coupon_type'=>0);
         $data = model('Coupon')->getUserCouponList($map);
         $time = time();
+        $count['all'] = $data['count'];
+        $count['use'] = 0;
+        $count['used'] = 0;
+        $count['past'] = 0;
         foreach ($data['data'] as $key => $val) {
             if($val["status"] == 0 && $val["etime"] - time() <= 86400*2){
                 $data['data'][$key]['is_out_time'] = true;
@@ -387,34 +1011,48 @@ class UserAction extends CommonAction{
             if($val['status'] == 0){
                 if($val['etime'] < $time){
                     $data['data'][$key]['status'] = -1;
+                    $count['past'] += 1;
+                }else{
+                    $count['use'] +=1;
                 }
             }
         }
+        $count['used'] = $count['all']-$count['use']-$count['past'];
         $this->assign('data', $data['data']);
+        $this->assign('count', $count);
         $this->display();
     }
     //会员卡管理方法
     public function vipCard(){
-        $map = array('uid'=>$this->mid,'type'=>3);
+        $map = array('uid'=>$this->mid,'type'=>3,'coupon_type'=>0);
         $data = model('Coupon')->getUserCouponList($map);
         $time = time();
+        $count['all'] = $data['count'];
+        $count['use'] = 0;
+        $count['used'] = 0;
+        $count['past'] = 0;
         foreach ($data['data'] as $key => $val) {
             $data['data'][$key]['school_title'] = model('School')->where(array('id'=>$val['sid']))->getField('title');
             $data['data'][$key]['vip_grade'] = M('user_vip')->where(array('id'=>$val['vip_grade']))->getField('title');
             if($val['status'] == 0){
                 if($val['etime'] < $time){
                     $data['data'][$key]['status'] = -1;
+                    $count['past'] += 1;
+                }else{
+                    $count['use'] +=1;
                 }
             }
             $data['data'][$key]['stime'] = date("Y.m.d",$val['stime']);
             $data['data'][$key]['etime'] = date("Y.m.d",$val['etime']);
         }
+        $count['used'] = $count['all']-$count['use']-$count['past'];
         $this->assign('data', $data['data']);
+        $this->assign('count', $count);
         $this->display();
     }
     //充值卡管理方法
     public function rechargeCard(){
-        $map = array('uid'=>$this->mid,'type'=>4);
+        $map = array('uid'=>$this->mid,'type'=>4,'coupon_type'=>0);
         $data = model('Coupon')->getUserCouponList($map);
         $time = time();
         foreach ($data['data'] as $key => $val) {
@@ -434,12 +1072,54 @@ class UserAction extends CommonAction{
         $this->assign('data', $data['data']);
         $this->display();
     }
+    //课程卡管理方法
+    public function courseCard(){
+        $map = array('uid'=>$this->mid,'type'=>5,'coupon_type'=>0);
+        $data = model('Coupon')->getUserCouponList($map);
+        $time = time();
+        $count['all'] = $data['count'];
+        $count['use'] = 0;
+        $count['used'] = 0;
+        $count['past'] = 0;
+        foreach ($data['data'] as $key => $val) {
+            if($val["status"] == 0 && $val["etime"] - time() <= 86400*2){
+                $data['data'][$key]['is_out_time'] = true;
+            }
+            $data['data'][$key]['school_title'] = model('School')->where(array('id'=>$val['sid']))->getField('title');
+            if($val['status'] == 0){
+                if($val['etime'] < $time){
+                    $data['data'][$key]['status'] = -1;
+                    $count['past'] += 1;
+                }else{
+                    $count['use'] +=1;
+                }
+            }
+            if($val['video_type'] == 3){
+                $data['data'][$key]['video_name'] = D('Album')->getAlbumTitleById($val['video_id']);
+                $data['data'][$key]['vtype'] = '班级';
+            }else{
+                $data['data'][$key]['video_name'] = D('ZyVideo')->getVideoTitleById($val['video_id']);
+                if($val['video_type'] == 1){
+                    $data['data'][$key]['vtype'] = '点播';
+                }else{
+                    $data['data'][$key]['vtype'] = '直播';
+                }
+            }
+            $data['data'][$key]['stime'] = date("Y.m.d",$val['stime']);
+            $data['data'][$key]['etime'] = date("Y.m.d",$val['etime']);
+        }
+        $count['used'] = $count['all']-$count['use']-$count['past'];
+        $this->assign('data', $data['data']);
+        $this->assign('count', $count);
+        $this->display();
+    }
     //卡券状态筛选
     public function choiceCard(){
         $type = intval($_POST['type']);
         $status = intval($_POST['orderby'])-1;
 
         $map['uid'] = $this->mid;
+        $map['coupon_type'] = 0;
         $time = time();
         if($status == 2){
             $map['etime'] = array('lt',$time);
@@ -458,6 +1138,9 @@ class UserAction extends CommonAction{
                     $map['type'] = $type;
                     break;
                 case 4:
+                    $map['type'] = $type;
+                    break;
+                case 5:
                     $map['type'] = $type;
                     break;
                 default;
@@ -479,13 +1162,24 @@ class UserAction extends CommonAction{
                     $data['data'][$key]['status'] = -1;
                 }
             }
+            if($val['video_type'] == 3){
+                $data['data'][$key]['video_name'] = D('Album')->getAlbumTitleById($val['video_id']);
+                $data['data'][$key]['vtype'] = '班级';
+            }else{
+                $data['data'][$key]['video_name'] = D('ZyVideo')->getVideoTitleById($val['video_id']);
+                if($val['video_type'] == 1){
+                    $data['data'][$key]['vtype'] = '点播';
+                }else{
+                    $data['data'][$key]['vtype'] = '直播';
+                }
+            }
             $data['data'][$key]['stime'] = date("Y.m.d",$val['stime']);
             $data['data'][$key]['etime'] = date("Y.m.d",$val['etime']);
         }
         $this->assign('listData', $data['data']);
         $this->assign('data', $data);
 
-        $html = $this->fetch(coupon_list);
+        $html = $this->fetch('coupon_list');
         $data['data']=$html;
         exit( json_encode($data) );
     }
@@ -536,11 +1230,14 @@ class UserAction extends CommonAction{
         }
         $coupon = model('Coupon')->getCouponInfoById($id);
         if($coupon['type'] == 3){
-            $map['uid'] = $uid;
+            /*$map['uid'] = $uid;
             $data['vip_type'] = $coupon['vip_grade'];
             $time = time();
             $data['vip_expire'] = $coupon['vip_date']*3600*24 + $time;
-            $res = model('Credit')->saveCreditUser($map,$data);
+            $res = model('Credit')->saveCreditUser($map,$data);*/
+
+            $time = '+'.$coupon["vip_date"].' days';
+            $res = D('ZyLearnc')->setVip($uid,$time,$coupon['vip_grade']);
             $url = U('classroom/User/vipCard');
         }else if($coupon['type'] == 4){
             $result = model('Credit')->recharge($uid,$coupon['recharge_price']);
@@ -579,11 +1276,7 @@ class UserAction extends CommonAction{
         }
 
     }
-    //兑换商品记录
-    public function goodsOrder(){
-        $this->assign('mid', $this->mid);
-        $this->display();
-    }
+
     //删除兑换商品记录
     public function delGoodsOrder(){
         $id=intval($_POST['id']);
@@ -630,10 +1323,25 @@ class UserAction extends CommonAction{
         $data['bindType']  = $bindType;
         $data['bindData']  = $bindData;
         $this->assign($data);
+        $area = model('Area')->getAreaList(0);
+        $this->assign('area',$area);
         $this->display();
     }
-
-
+    //获取地区选择数据
+    public function getAreaList(){
+        $area = model('Area')->getAreaList($_POST['id']);
+        echo json_encode(array('status'=>1,'data'=>$area));
+        exit;
+    }
+    //获取地区信息
+    public function getAreaInfo(){
+        $province = model('Area')->getAreaById($_POST['province']);
+        $city     = model('Area')->getAreaById($_POST['city']);
+        $area     = model('Area')->getAreaById($_POST['area']);
+        $data     = $province['title']." ".$city['title']." ".$area['title'];
+        echo json_encode(array('status'=>1,'data'=>$data));
+        exit;
+    }
     //用户设置
     public function appcertific(){
         //用户信息
@@ -733,8 +1441,8 @@ class UserAction extends CommonAction{
     protected function rz(){
         $auType = model('UserGroup')->where('is_authenticate=1')->findall();
         $this->assign('auType', $auType);
-        $verifyInfo = D('user_verified')->where('uid='.$this->mid)->find();
-        if($verifyInfo['identity_id']){
+        $verifyInfo = D('ZyTeacher','classroom')->where('uid='.$this->mid)->find();
+        /*if($verifyInfo['identity_id']){
             $a = explode('|', $verifyInfo['identity_id']);
             foreach($a as $key=>$val){
                 if($val !== "") {
@@ -742,7 +1450,7 @@ class UserAction extends CommonAction{
                     $verifyInfo['certification'] .= $attachInfo['save_name'].'&nbsp;<a href="'.getImageUrl($attachInfo['save_path'].$attachInfo['save_name']).'" target="_blank">下载</a><br />';
                 }
             }
-        }
+        }*/
         if($verifyInfo['attach_id']){
             $a = explode('|', $verifyInfo['attach_id']);
             foreach($a as $key=>$val){
@@ -766,14 +1474,14 @@ class UserAction extends CommonAction{
             $verifyInfo['category']['title'] = D('user_verified_category')->where('user_verified_category_id='.$verifyInfo['user_verified_category_id'])->getField('title');
         }
 
-        switch ($verifyInfo['verified']) {
+        switch ($verifyInfo['verified_status']) {
             case '1':
                 $status = '<i class="ico-ok"></i>已认证 <!--<a href="javascript:void(0);" onclick="delverify()" style="color:#65addd">注销认证</a>-->';
                 break;
-            case '0':
+            case '2':
                 $status = '<i class="ico-wait"></i>已提交认证，等待审核';
                 break;
-            case '-1':
+            case '0':
                 // 安全过滤
                 $type = t($_GET['type']);
                 if($type == 'edit'){
@@ -785,9 +1493,6 @@ class UserAction extends CommonAction{
                 }else{
                     $status = '<i class="ico-no"></i>未通过认证，请修改资料后重新提交 <a style="color:#65addd" href="'.U('classroom/User/setInfo',array('type'=>'edit', 'tab'=>4)).'">修改认证资料</a>';
                 }
-                break;
-            case '2':
-                $status = '<i class="ico-wait"></i>已提交认证，等待审核';
                 break;
             default:
                 //$verifyInfo['usergroup_id'] = 5;
@@ -818,6 +1523,12 @@ class UserAction extends CommonAction{
         if($verifyInfo){
             $verifyInfo['school'] = model('School')->getSchooldStrByMap(array('id'=>$verifyInfo['mhm_id']),'title');
         }
+        //获取认证讲师分类
+        $cate = M('zy_teacher_category')->where(['zy_teacher_category_id'=>['in',trim($verifyInfo['fullcategorypath'],',')]])->field('title')->findAll();
+        $cate = getSubByKey($cate,'title');
+        $verifyInfo['category']  = implode('---',$cate);
+        $verifyInfo['fullcategorypath'] = trim($verifyInfo['fullcategorypath'],',');
+
         $this->assign('option', json_encode($option));
         $this->assign('options', $option);
         $this->assign('category', $category);
@@ -825,6 +1536,11 @@ class UserAction extends CommonAction{
         $this->assign('verifyInfo' , $verifyInfo);
 
         $user = model('User')->getUserInfo($this->mid);
+        $province = model('Area')->getAreaById($user['province']);
+        $city     = model('Area')->getAreaById($user['city']);
+        $area     = model('Area')->getAreaById($user['area']);
+        $user['position']  = $province['title']." ".$city['title']." ".$area['title'];
+        $this->assign('user' , $user);
 
         // 获取用户职业信息
         $userCategory = model('UserCategory')->getRelatedUserInfo($this->mid);
@@ -840,7 +1556,7 @@ class UserAction extends CommonAction{
 
 
     /**
-     * 修改套餐内容
+     * 修改班级内容
      */
     public function album_edit(){
    		if(!intval($_GET['id'])){
@@ -862,7 +1578,7 @@ class UserAction extends CommonAction{
     }
 
     /**
-     * 保存套餐修改
+     * 保存班级修改
      */
     public function doAlbum_edit(){
 		//必须要登录之后才能修改
@@ -880,29 +1596,29 @@ class UserAction extends CommonAction{
 		$album_tag 			      = explode(',',t($_POST['album_tag']));
 
 		if(!$data['id']){
-			$this->mzError("套餐信息错误!");
+			$this->mzError("班级信息错误!");
 		}
 		//要检查是不是自己的
 		$count = M('Album')->where(array('uid'=>intval($this->mid),'id'=>$data['id']))->count();
 		if(!$count){
-			$this->mzError("没有权限修改此套餐,可能不是你创建的!");
+			$this->mzError("没有权限修改此班级,可能不是你创建的!");
 		}
 		//数据校验
 		if(!trim($data['album_title'])){
-			$this->mzError("套餐标题不能为空!");
+			$this->mzError("班级标题不能为空!");
 		}
 		if(!trim($data['album_intro'])){
-			$this->mzError("套餐简介不能为空!");
+			$this->mzError("班级简介不能为空!");
 		}
 		if(!trim($data['fullcategorypath'])){
-			$this->mzError("套餐分类不能为空!");
+			$this->mzError("班级分类不能为空!");
 		}
 		if(!trim($data['cover'])){
 			$this->mzError("请上传封面!");
 		}
 
 		if(empty($album_tag)){
-			$this->mzError("套餐标签不能为空!");
+			$this->mzError("班级标签不能为空!");
 		}
 		if(!$data['uctime']){
 			$this->mzError("请选择下架时间!");
@@ -1217,6 +1933,10 @@ class UserAction extends CommonAction{
         $map['type'] = 1;
         $data = M('zy_video')->where($map)->order('utime desc')->findPage($limit);
 
+        //判断课程课时是否存在
+        foreach($data['data'] as $key=>$val){
+            $data['data'][$key]['section_count'] = M('zy_video_section')->where(['vid'=>$val['id'],'pid'=>['gt',0],'is_activity'=>['in','2,3']])->count();
+        }
         //把数据传入模板
         $this->assign('data',$data['data']);
 
@@ -1236,72 +1956,30 @@ class UserAction extends CommonAction{
      */
     public function getTeacherLive(){
         $limit      = 9;
-        if($this->base_config['live_opt'] == 1){
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,live_id';
-            $live_data = M('zy_live_zshd')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('ctime desc')->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->findPage($limit);
-        }else if($this->base_config['live_opt'] == 2){
 
-        }else if($this->base_config['live_opt'] == 3){
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'live_id';
-            $live_data = M('zy_live_gh')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('ctime desc')->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->findPage($limit);
+        $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
 
-//            $val['url'] = $this->gh_config['video_url'].'/teacher/index.html?liveClassroomId='.$val['room_id'].'&customer='.$this->gh_config['customer'].'&customerType=taobao&sp=0';
-        }else if($this->base_config['live_opt'] == 4){
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,studentToken,live_id';
-            $live_data = M('zy_live_cc')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('ctime desc')->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->findPage($limit);
-        }else if($this->base_config['live_opt'] == 5){
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $map['type']        = 5;
-            $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,studentToken,live_id';
-            $live_data = M('zy_live_thirdparty')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('ctime desc')->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->findPage($limit);
-        }
+        $vmap['is_del']         = 0;
+        $vmap['is_activity']    = 1;
+        $vmap['type']           = 2;
+        $vmap['teacher_id']      = $tid;
+        $vmap['listingtime']    = array('lt', time());
+        $vmap['uctime']         = array('gt', time());
+
+        $live_data = model('Live')->where($vmap)->order('ctime desc')->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->select();
+
+        $map['is_del']      = 0;
+        $map['is_active']   = 1;
+        $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'id'))),',');
+        $map['live_id'] = ['in',$live_id];
+        //$map['type']        = $this->base_config['live_opt'];
+        $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,live_id';
+        $live_data = model('Live')->liveRoom->where($map)->order('invalidDate asc')->field($field)->select();
+
+        $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
+        $vmap['id'] = ['in',$live_id];
+        $data = M('zy_video')->where($vmap)->field('id,video_title,cover,live_type,video_order_count,video_collect_count')->findPage($limit);
+
         //把数据传入模板
         $this->assign('data',$data['data']);
         $this->assign('live_opt',$this->base_config['live_opt']);
@@ -1424,7 +2102,7 @@ class UserAction extends CommonAction{
 
                 $data["subject"] = $live['subject'];
                 $data["speaker"] = $speaker['id'];
-                $data["price"] = intval($_POST['price']);
+                $data["price"] = floatval($_POST['price']);
                 $data["startDate"] = $live['startDate']/1000;
                 $data["invalidDate"] = $live['invalidDate']/1000;
                 $data["teacherToken"] = $live['teacherToken'];
@@ -1480,7 +2158,7 @@ class UserAction extends CommonAction{
                 $data["number"] = $addLive["number"];
                 $data["subject"] = $live['subject'];
                 $data["speaker"] = $speaker['id'];
-                $data["price"] = intval($_POST['price']);
+                $data["price"] = floatval($_POST['price']);
                 $data["startDate"] = $addLive["startDate"]/1000;
                 $data["invalidDate"] = $addLive["invalidDate"]/1000;
                 $data["teacherJoinUrl"] = $addLive["teacherJoinUrl"];
@@ -1641,7 +2319,7 @@ class UserAction extends CommonAction{
         if($_GET['id']){
             $data = M('zy_teacher_course')->where('course_id='.$id)->find();
             $data['cover_path'] = getAttachUrlByAttachId($data['cover']);
-            $data['course_price'] = intval($data['course_price']);
+            $data['course_price'] = floatval($data['course_price']);
             $this->assign('data',$data);
         }
 
@@ -1688,8 +2366,12 @@ class UserAction extends CommonAction{
         if(empty($post['video_levelhidden'])) exit(json_encode(array('status'=>'0','info'=>"请选择课程分类")));
         if(empty($post['video_binfo'])) exit(json_encode(array('status'=>'0','info'=>"请输入课程简介")));
         if(empty($post['video_intro'])) exit(json_encode(array('status'=>'0','info'=>"请输入课程详情")));
-        if(empty($post['v_price'])) exit(json_encode(array('status'=>'0','info'=>"课程价格不能为空")));
-        if(ereg("^[0-9]*[1-9][0-9]*$",$_POST['v_price'])!=1) exit(json_encode(array('status'=>'0','info'=>"课程价格必须为正整数")));
+        if($post['v_price'] == '') exit(json_encode(array('status'=>'0','info'=>"课程价格不能为空")));
+        if(!is_numeric($post['v_price']) || preg_match("/^-[0-9]+(\.[0-9]+)?$/",$post['v_price']))exit(json_encode(array('status'=>'0','info'=>"课程价格格式错误")));
+        //if(ereg("^[0-9]*[1-9][0-9]*$",$_POST['v_price'])!=1) exit(json_encode(array('status'=>'0','info'=>"课程价格必须为正整数")));
+        if($post['t_price'] == '') exit(json_encode(array('status'=>'0','info'=>"销售价格不能为空")));
+        if(!is_numeric($post['t_price']) || preg_match("/^-[0-9]+(\.[0-9]+)?$/",$post['t_price']))exit(json_encode(array('status'=>'0','info'=>"销售价格格式错误")));
+
         //if(empty($post['videokey'])) exit(json_encode(array('status'=>'0','info'=>"请上传视频")));
         if(empty($post['listingtime'])) exit(json_encode(array('status'=>'0','info'=>"上架时间不能为空")));
         if(empty($post['uctime'])) exit(json_encode(array('status'=>'0','info'=>"下架时间不能为空")));
@@ -1733,8 +2415,9 @@ class UserAction extends CommonAction{
         $data['video_title']         = t($post['video_title']); //课程名称
         $data['video_binfo']         = t($post['video_binfo']); //课程介绍
         $data['video_intro']         = $post['video_intro']; //课程介绍
-        $data['v_price']             = $post['v_price']; //市场价格
-        $data['t_price']             = $post['v_price']; //销售价格
+        $data['v_price']             = round($post['v_price'],2); //市场价格
+        $data['t_price']         = round($post['t_price'],2); //销售价格
+
         $data['video_address']       = $video_address;//正确的视频地址
         $data['cover']               = intval($post['cover_ids']); //封面
         $data['videofile_ids']       = isset($post['videofile_ids']) ? intval($post['videofile_ids']) : 0; //课件id
@@ -1747,7 +2430,15 @@ class UserAction extends CommonAction{
 
         $data['duration']       = number_format($avinfo['format']['duration']/60, 2, ':', '');
 
-        $data['is_activity'] = 2;
+        $video_count = M('zy_video')->where('id = '.$post['id'])->count();
+        /*if($post['id'] && $activity == 5){
+            $data['is_activity'] = 1;
+        }else{
+            $data['is_activity'] = 4;
+        }*/
+        if($video_count == 0){
+            $data['is_activity'] = 4;
+        }
         if($post['id']){
             $data['utime'] = time();
             $result = M('zy_video')->where('id = '.$post['id'])->data($data)->save();
@@ -1776,9 +2467,9 @@ class UserAction extends CommonAction{
             M('zy_video')->where($map)->data($data)->save();
 
             if($post['id']){
-                exit(json_encode(array('status'=>'1','info'=>'编辑成功')));
+                exit(json_encode(array('status'=>'1','info'=>'编辑成功','data'=>$map['id'])));
             } else {
-                exit(json_encode(array('status'=>'1','info'=>'添加成功')));
+                exit(json_encode(array('status'=>'1','info'=>'添加成功','data'=>$map['id'])));
             }
         } else {
             exit(json_encode(array('status'=>'0','info'=>'系统繁忙，请稍后再试')));
@@ -2258,7 +2949,7 @@ class UserAction extends CommonAction{
             'type'=>t($_POST['type']),
             'ctime'=>time(),
             );
-        $url=U('classroom/User/teacherDeatil',array('tab'=>3));
+        $url=U('classroom/User/teacherDeatil',array('tab'=>2));
         if(!$id){
             $res = M('zy_teacher_details')->add($data);
             if(!$res)exit(json_encode(array('status'=>'0','info'=>'对不起，添加讲师经历失败！')));
@@ -2398,8 +3089,7 @@ class UserAction extends CommonAction{
     public function addcourse()
 
     {
-
-        if($_POST['chaptertitle']  || $_POST['couretitle']   ) {
+        if($_POST['chaptertitle']  || $_POST['couretitle']  || empty($_POST)==false ) {
 
             if( t($_POST['chaptertitle'])) {
                 $title = t($_POST['chaptertitle']);
@@ -2412,58 +3102,65 @@ class UserAction extends CommonAction{
                 } else {
                     exit(json_encode(array('status' => '0', 'info' => '添加失败')));
                 }
+            }else if($_POST['video_title'] && !$_POST['couretitle']){
+                exit(json_encode(array('status' => '0', 'info' => '添加失败')));
             }
 
             //格式化七牛数据
             $videokey = t($_POST['videokey']);
-            //获取上传空间 0本地 1七牛 2阿里云 3又拍云
+            //获取上传空间 0本地 1七牛 2阿里云 4CC
             if (getAppConfig('upload_room', 'basic') == 0) {
-                if ($_POST['attach'][0]) {
-                    $video_address = getAttachUrlByAttachId($_POST['attach'][0]);
+                if ($_POST['attach_ids']) {
+                    $video_address = getAttachUrlByAttachId($_POST['attach_ids']);
                 } else {
                     $video_address = $_POST['video_address'];
                 }
                 $avinfo = json_decode(file_get_contents($video_address . '?avinfo'), true);
-                $duration = number_format($avinfo['format']['duration'] / 60, 2, ':', '');
+                //$duration = number_format($avinfo['format']['duration'] / 60, 2, ':', '');
+                $duration = t($_POST['duration']) ?: number_format($avinfo['format']['duration'] / 60, 2, ':', '');
                 $file_size = $avinfo['format']['size'];
                 $data['video_type'] = 0;
                 $data['is_syn'] = 1;
-            }else if(getAppConfig('upload_room','basic') == 4 ) {
-                $find_url  = $this->cc_video_config['cc_apiurl'].'video/v2?';
-                $play_url  = $this->cc_video_config['cc_apiurl'].'video/playcode?';
+                $attach = model('Attach')->getAttachById($_POST['attach_ids']);
+                $videokey = $attach['hash'];
+            } else if (getAppConfig('upload_room', 'basic') == 4) {
+                $find_url = $this->cc_video_config['cc_apiurl'] . 'video/v2?';
+                $play_url = $this->cc_video_config['cc_apiurl'] . 'video/playcode?';
 
-                $query['videoid']   = urlencode(t($videokey));
-                $query['userid']    = urlencode($this->cc_video_config['cc_userid']);
-                $query['format']    = urlencode('json');
+                $query['videoid'] = urlencode(t($videokey));
+                $query['userid'] = urlencode($this->cc_video_config['cc_userid']);
+                $query['format'] = urlencode('json');
 
-                $find_url    = $find_url.createVideoHashedQueryString($query)[1].'&time='.time().'&hash='.createVideoHashedQueryString($query)[0];
-                $play_url    = $play_url.createVideoHashedQueryString($query)[1].'&time='.time().'&hash='.createVideoHashedQueryString($query)[0];
+                $find_url = $find_url . createVideoHashedQueryString($query)[1] . '&time=' . time() . '&hash=' . createVideoHashedQueryString($query)[0];
+                $play_url = $play_url . createVideoHashedQueryString($query)[1] . '&time=' . time() . '&hash=' . createVideoHashedQueryString($query)[0];
 
-                $info_res     = getDataByUrl($find_url);
-                $play_res   = getDataByUrl($play_url);
+                $info_res = getDataByUrl($find_url);
+                $play_res = getDataByUrl($play_url);
 
-                $duration   = secondsToHour($info_res['video']['duration']);
+                //$duration = secondsToHour($info_res['video']['duration']);
+                $duration   = t($_POST['duration']) ?: secondsToHour($info_res['video']['duration']);
 
-                $video_address  = $play_res['video']['playcode'];
-                $file_size      = $info_res['video']['definition'][3]['filesize'] ? : 0;
+                $video_address = $play_res['video']['playcode'];
+                $file_size = $info_res['video']['definition'][3]['filesize'] ?: 0;
 
                 $data['video_type'] = 4;
-                $data['is_syn']     = 0;
+                $data['is_syn'] = 0;
             } else {
                 $video_address = "http://" . getAppConfig('qiniu_Domain', 'qiniuyun') . "/" . $videokey;
-                $avinfo             = json_decode(file_get_contents($video_address.'?avinfo') , true);
+                $avinfo = json_decode(file_get_contents($video_address . '?avinfo'), true);
 
-                $duration       = secondsToHour($avinfo['format']['duration']);
-                $file_size          = $avinfo['format']['size'];
+                //$duration = secondsToHour($avinfo['format']['duration']);
+                $duration   = t($_POST['duration']) ?: secondsToHour($avinfo['format']['duration']) ;
+                $file_size = $avinfo['format']['size'];
 
                 $data['video_type'] = 1;
-                $data['is_syn']     = 1;
+                $data['is_syn'] = 1;
             }
 
             $school_id = model('User')->where('uid='.$this->mid)->getField('mhm_id');
 
             $data['uid'] = $this->mid;
-            $data['type'] = 1;
+            $data['type'] = t($_POST['type']);
             $data['video_address'] = $video_address;
             $data['videokey'] = $videokey;
             $data['ctime'] = time();
@@ -2500,8 +3197,49 @@ class UserAction extends CommonAction{
                 $result['title'] = t($_POST['couretitle']);
                 $result['cid'] = $res;
 
+                //判断是否为平台讲师
+                $mhm_id = D('ZyTeacher')->getTeacherStrByMap(['uid'=>$this->mid],'mhm_id');
+                if($mhm_id == 1){
+                    $result['is_activity'] = 3;
+                }else{
+                    $result['is_activity'] = 2;
+                }
+
+                $video_section = M('zy_video_section')->where(array('vid'=>$result['vid'],'pid'=>['neq',0]))->count();
                 $resadd = M('zy_video_section')->add($result);
                 if ($res && $resadd) {
+                    /*if($video_section == 0){
+                        if($school_id == 1){
+                            $videoData['is_activity'] = 3;
+                        }else{
+                            $videoData['is_activity'] = 2;
+                        }
+                    }else{
+                        $videoData['is_activity'] = 5;
+                    }*/
+                    if($video_section){
+                        $videoData['is_activity'] = 4;
+                    }
+                    $section = M('zy_video_section')->where(array('vid'=>$result['vid'],'pid'=>['neq',0],'is_activity'=>1))->count();
+                    if($section){
+                        $videoData['is_activity'] = 7;
+                    }
+                    //查询课程是否已经有课时审核通过
+                    /*$semap['is_activity'] = 1;
+                    $semap['vid'] = $result['vid'];
+                    $semap['pid'] = ['gt',0];
+                    $count = M('zy_video_section')->where($semap)->count();
+                    if($count > 0){
+                        if($mhm_id == 1){
+                            $data['is_activity'] = 6;
+                        }else{
+                            $data['is_activity'] = 5;
+                        }
+                    }else{
+                        $data['is_activity'] = 4;
+                    }*/
+                    $videoData['utime'] = time();
+                    M('zy_video')->where('id = '.$_POST['id'])->data($videoData)->save();
                     exit(json_encode(array('status' => '1', 'info' => '添加成功')));
                 } else {
                     exit(json_encode(array('status' => '0', 'info' => '添加失败')));
@@ -2509,20 +3247,27 @@ class UserAction extends CommonAction{
             }
         }
          else {
+         //获取配置上传空间   0本地 1七牛 2阿里云 4CC
+         $upload_room = getAppConfig('upload_room','basic');
+         if($upload_room == 1 ) {
+             //生成上传凭证
+             $bucket = getAppConfig('qiniu_Bucket','qiniuyun');
+             Qiniu_SetKeys(getAppConfig('qiniu_AccessKey','qiniuyun'), getAppConfig('qiniu_SecretKey','qiniuyun'));
+             $putPolicy = new Qiniu_RS_PutPolicy($bucket);
+             $filename="{$this->site['site_keyword']}".rand(5,8).time();
+             $str = "{$bucket}:{$filename}";
+             $entryCode = Qiniu_Encode($str);
+             $putPolicy->PersistentOps= "avthumb/mp4/ab/160k/ar/44100/acodec/libfaac/r/30/vb/5400k/vcodec/libx264/s/1920x1080/autoscale/1/strpmeta/0|saveas/".$entryCode;
+             $upToken = $putPolicy->Token(null);
+             $this->assign("uptoken" , $upToken);
+         }else if($upload_room == 4 ) {
+             $filename="{$this->site['site_keyword']}".rand(5,8).time();
+             $this->assign("ccvideo_config" , $this->cc_video_config);
+         }
+
         //格式化七牛数据
         $videokey=t($_POST['videokey']);
-        //生成上传凭证
-        $bucket = getAppConfig('qiniu_Bucket','qiniuyun');
-        Qiniu_SetKeys(getAppConfig('qiniu_AccessKey','qiniuyun'), getAppConfig('qiniu_SecretKey','qiniuyun'));
-        $putPolicy = new Qiniu_RS_PutPolicy($bucket);
-        $filename="chuyou".rand(5,8).time();
-        $str="{$bucket}:{$filename}";
-        $entryCode=Qiniu_Encode($str);
-        $putPolicy->PersistentOps= "avthumb/mp4/ab/160k/ar/44100/acodec/libfaac/r/30/vb/5400k/vcodec/libx264/s/1920x1080/autoscale/1/strpmeta/0|saveas/".$entryCode;
-        $upToken=$putPolicy->Token(null);
         $video_category=M("zy_video_category")->where("type=1")->findAll();
-        //获取配置上传空间   0本地 1七牛 2阿里云 3又拍云
-        $upload_room = getAppConfig('upload_room','basic');
         $data['qiniu_key']=$videokey;
 
         $id = intval($_GET['id']);
@@ -2550,7 +3295,6 @@ class UserAction extends CommonAction{
 
         }
 
-
         $this->assign('data',$res);
 
 
@@ -2558,6 +3302,9 @@ class UserAction extends CommonAction{
         if($_GET['id']){
             $data = D('ZyVideo','classroom')->getVideoById(intval($_GET['id']));
             $data['cover_path'] = getAttachUrlByAttachId($data['cover']);
+            //判断课程课时是否存在
+            $data['section_count'] = D('ZyVideo','classroom')->getVideoSectionCount($id);
+
             $this->assign($data);
         }
 
@@ -2565,7 +3312,6 @@ class UserAction extends CommonAction{
         $this->assign('issection' , $issection);
 
         $this->assign("category",$video_category);
-        $this->assign("uptoken",$upToken);
         $this->assign("filename",$filename);
         $this->display();
     }
@@ -2701,236 +3447,74 @@ class UserAction extends CommonAction{
         $extra_common_param = json_decode($_POST['extra_common_param'],true);
     }
 
-    /****
-     * 订单驳回
-     */
-    public function rejectorder()
-    {
-
-        $id = $_GET['id'];
-        $type = $_GET['type'];
-        $this -> assign('id',$id);
-        $this -> assign('type',$type);
-        $this -> display();
-        }
-
-
-
-    /****
-     * 订单驳回
-     */
-    public function dorejectorder()
-    {
-
-        $id = $_POST['id'];
-        $data['reject_info'] = $_POST['reason'];
-        $data['pay_status'] = 6;
-        $type = $_POST['type'];
-
-        if($type == 'course')
-        {
-            $res =  M('zy_order_course') ->where('id ='.$id) ->save($data);
-        }
-        if($type == 'album')
-        {
-            $res =  M('zy_order_album') ->where('id ='.$id) ->save($data);
-        }
-        if($type == 'live')
-        {
-            $res =  M('zy_order_live') ->where('id ='.$id) ->save($data);
-        }
-
-        if($res)
-        {
-            $this -> success('驳回成功');
-        }else
-        {
-            $this -> error('驳回成功');
-        }
-        $this -> display();
-    }
-
-    public function adoptororder()
-    {
-        $refundConfig = model('Xdata')->get('admin_Config:refundConfig');
-
-        $id = $_GET['id'];
-        $order_type = $_GET['type'];
-        if ($order_type == 'course') {
-            $data['refund_type'] = "0";
-            $table = "zy_order_course";
-        } elseif ($order_type == 'album') {
-            $data['refund_type'] = "1";
-            $table = "zy_order_album";
-        } elseif ($order_type == 'live') {
-            $data['refund_type'] = "2";
-            $table = "zy_order_live";
-        }
-        $order_info = M($table)->where(['id'=>$id])->field('price,rel_id')->find();
-        $pay_type = M('zy_recharge')->where(['pay_pass_num'=>$order_info['rel_id']])->getField('pay_type');
-
-        if($pay_type == 'alipay'){
-            $pay_type = '阿里支付';
-        }else if($pay_type == 'wxpay'){
-            $pay_type = '微信支付';
-        }else if($pay_type == 'wap_wxpay'){
-            $pay_type = '微信wap支付';
-        }else if($pay_type == 'unionpay'){
-            $pay_type = '银联支付';
-        }
-
-        $data = M('zy_order_refund')->where(['order_id'=>$id]) -> find() ;
-        $data['price'] = $order_info['price'];
-        $data['voucher'] = array_filter(explode('|',$data['voucher']));
-
-        $this -> assign($data);
-        $this->assign('pay_type', $pay_type);
-        $this -> assign('orderid',$id);
-        $this -> assign('refundConfig',$refundConfig);
-        $this -> assign('type',$order_type);
-        $this ->display();
-    }
-
-    /****
-     * 申请退款通过-订单
-     */
-    public function doadoptororder()
-    {
-        $id = $_POST['orderid'];
-        $order_type = $_POST['type'];
-
-        //根据类型判断订单相关信息
-        if ($order_type == 'course') {
-            $data['refund_type'] = "0";
-            $table = "zy_order_course";
-            $field = 'video_id';
-        } elseif ($order_type == 'album') {
-            $data['refund_type'] = "1";
-            $table = "zy_order_album";
-            $field = 'album_id';
-        } elseif ($order_type == 'live') {
-            $data['refund_type'] = "2";
-            $table = "zy_order_live";
-            $field = 'live_id';
-        }
-        $order_info =  M($table) ->where('id ='.$id) ->field('uid,rel_id,pay_status,'.$field)->find();
-        $recharge_info = M('zy_recharge')->where(['id'=>$order_info['rel_id']])->find();
-        if(!$recharge_info['pay_order']){
-            $this -> mzError("查询退款订单记录失败");
-        }
-        if($order_info['pay_status'] == 5){
-            $this -> mzError("订单已经退款");
-        }
-
-        if($recharge_info['pay_type'] == 'alipay'){
-            //设置支付的Data信息
-            $bizcontent  = array(
-                "refund_amount" => "{$recharge_info['money']}",
-                "trade_no"      => "{$recharge_info['pay_order']}",
-                "out_trade_no"  => "{$recharge_info['pay_pass_num']}",
-            );
-            if(!$bizcontent['trade_no']){
-                unset($bizcontent['trade_no']);
-            }
-            if(!$bizcontent['out_trade_no']){
-                unset($bizcontent['out_trade_no']);
-            }
-            $result = model('AliPay')->aliPayArouse($bizcontent,'refund');
-
-            $responseNode = str_replace(".", "_", $result[0]->getApiMethodName()) . "_response";
-            $resultCode = $result[1]->$responseNode->code;
-            $htime = strtotime($result[1]->$responseNode->gmt_refund_pay);
-            if(!empty($resultCode)&&$resultCode == 10000){
-                $refund_status = true;
-            }else{
-                $refund_status = false;
-            }
-        }elseif($recharge_info['pay_type'] == 'wxpay' || $recharge_info['pay_type'] == 'mp_wxpay'){
-            $this->mzError("暂不支持微信在线退款");
-            $htime = time();
-            //设置支付的Data信息
-            $refund = [
-                'refund_amount' => $recharge_info['money'],
-                "transaction_id"=> "{$recharge_info['pay_order']}",
-                "out_trade_no"  => "{$recharge_info['pay_pass_num']}",
-                "out_refund_no" => $htime,
-            ];
-            if(!$refund['transaction_id']){
-                unset($refund['out_trade_no']);
-            }
-            if(!$refund['out_trade_no']){
-                unset($refund['transaction_id']);
-            }
-            if($recharge_info['pay_type'] == 'mp_wxpay'){
-                $from = 'jsapi';
-            }
-            $response = model('WxPay')->wxRefund($refund,$from);
-            dump($response);exit;
-        }
-
-        if($refund_status){
-            M($table) ->where('id ='.$id) ->save(['pay_status'=>5]);
-            M('zy_order_refund')->where(['order_id'=>$id]) -> save(['refund_status'=>1,'htime'=>$htime]) ;
-
-            $map['uid'] = intval($order_info['uid']);//购买用户ID
-            $map['vid']  = intval($order_info[$field]);
-            $map['status'] = 1;
-
-            //添加多条流水记录 并给扣除用户分成 通知购买用户
-            D('ZySplit')->addVideoFlows($map, 0, $table);
-
-            if ($order_type == 'course') {
-                $info = "课程";
-                $video_info = M('zy_video')->where(array('id' => $order_info[$field]))->getField('video_title');
-            } elseif ($order_type == 'album') {
-                $info = "套餐";
-            } elseif ($order_type == 'live') {
-                $info = "直播课程";
-            }
-            $s['uid']= $order_info['uid'];
-            $s['title'] = "{$info}：{$video_info} 退款成功";
-            $s['body'] = "您购买的{$info}：{$video_info} 退款成功。届时，您将无法继续学习该{$info}，欢迎您再次购买";
-            $s['ctime'] = time();
-            model('Notify')->sendMessage($s);
-
-            //积分操作
-            if($order_type == 'course')
-            {
-                $credit = M('credit_setting')->where(array('id'=>41,'is_open'=>1))->field('id,name,score,count')->find();
-                if($credit['score'] < 0){
-                    $otype = 7;
-                    $note = '课程退款扣除的积分';
-                    $uid = M('zy_order_course') ->where('id ='.$id) ->getField('uid');
-                }
-            }
-            if($order_type == 'album')
-            {
-                $credit = M('credit_setting')->where(array('id'=>43,'is_open'=>1))->field('id,name,score,count')->find();
-                if($credit['score'] < 0){
-                    $otype = 7;
-                    $note = '套餐退款扣除的积分';
-                    $uid = M('zy_order_album') ->where('id ='.$id) ->getField('uid');
-                }
-            }
-            if($order_type == 'live')
-            {
-                $credit = M('credit_setting')->where(array('id'=>42,'is_open'=>1))->field('id,name,score,count')->find();
-                if($credit['score'] < 0){
-                    $otype = 7;
-                    $note = '直播退款扣除的积分';
-                    $uid = M('zy_order_live') ->where('id ='.$id) ->getField('uid');
-                }
-            }
-
-            model('Credit')->addUserCreditRule($uid,$otype,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
-
-            $this -> mzError("退款成功");
-        } else {
-            $this -> mzError("退款失败");
-        }
-    }
-
     public function changepsw(){
         $this->display();
+    }
+
+    //课程提交审核
+    public function SubmitAudit(){
+        $id = $_POST['id'];
+        $mhm_id = D('ZyTeacher')->getTeacherStrByMap(['uid'=>$this->mid],'mhm_id');
+        //$mhm_id = model('User')->getUserInfoForSearch($this->mid,'mhm_id');
+        //判断是否是机构下的讲师
+        /*if($mhm_id == 1){
+            $secdata['is_activity'] = 3;
+        }else{
+            $secdata['is_activity'] = 2;
+        }
+        $map['vid'] = $_POST['vid'];
+        $map['pid'] = ['gt',0];
+        M('zy_video_section')->where($map)->data($secdata)->save();*/
+        //查询课程是否已经有课时审核通过
+        $map['vid'] = $id;
+        $map['pid'] = ['gt',0];
+        $map['is_activity'] = 1;
+        $count = M('zy_video_section')->where($map)->count();
+        if($count > 0){
+            if($mhm_id == 1){
+                $data['is_activity'] = 6;
+            }else{
+                $data['is_activity'] = 5;
+            }
+        }else{
+            if($mhm_id == 1){
+                $data['is_activity'] = 3;
+            }else{
+                $data['is_activity'] = 2;
+            }
+            //$data['is_activity'] = $secdata['is_activity'];
+        }
+        $data['utime'] = time();
+        $result = M('zy_video')->where('id = '.$id)->data($data)->save();
+        if($result){
+            exit(json_encode(array('status'=>'1','info'=>'提交审核成功')));
+        } else {
+            exit(json_encode(array('status'=>'0','info'=>'提交审核失败')));
+        }
+    }
+
+    /**
+     * 保存登录用户的头像设置操作
+     * @return json 返回操作后的JSON信息数据
+     */
+    public function doSaveAvatar() {
+        $attach_id = $_POST['attach_id'];
+        $attach_info = model('Attach')->getAttachById($attach_id);
+        $dAvatar = model('Avatar');
+        $dAvatar->init($this->mid); 			// 初始化Model用户id
+        // 安全过滤
+        $step = t($_GET['step']);
+        if('upload' == $step) {
+            $result = $dAvatar->upload();
+        } else if('save' == $step) {
+            $result = $dAvatar->dosave();
+        }
+        model('User')->cleanCache($this->mid);
+        $user_feeds = model('Feed')->where('uid='.$this->mid)->field('feed_id')->findAll();
+        if($user_feeds){
+            $feed_ids = getSubByKey($user_feeds, 'feed_id');
+            model('Feed')->cleanCache($feed_ids,$this->mid);
+        }
+        $this->ajaxReturn($result['data'], $result['info'], $result['status']);
     }
 }

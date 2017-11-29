@@ -14,6 +14,23 @@
         color:#888;
         font-size:12px;;
     }
+
+.modal_box{position: fixed;left: 0;top: 0;background: rgba(0,0,0,.4);height: 100%;width: 100%;}
+.modal_box ul{background: #fff;width: 70%;border-radius: 10px;margin: 0 auto;margin-top: 100px;}
+.modal_box ul .weixuan{display: block;width: 20px;height: 20px;float: right;background-image: url(__THEME__./../_static_w3g/icon/icon.png);background-position: -644px -259px;margin-top: 22px;margin-right: 20px;}
+.modal_box ul li{height: 60px;line-height: 60px;}
+.choice_card{text-align: center;color: #333;font-size: 18px;border-bottom: 1px solid #e5e5e5;}
+.card_list{font-size: 12px;color: #888;text-indent: 20px;border-bottom: 1px solid #e5e5e5;}
+.creat_card{color: #888;font-size: 17px;text-align: center;height: 60px;}
+.creat_card span{font-size: 21px;margin-right: 7px;color: #6a6a6a;}
+.creat_card p{float: left;}
+.new_p{margin-top: -2px;}
+.box_p{width: 97px;height: 60px;margin: 0 auto;padding-top: 9px;}
+.choice_card .icon-weibiaoti101{float: right;margin-right: 10px;font-size: 18px;}
+
+.pub_card{background: #f5f5f5;font-size: 16px;color: #888;height: 40px;margin-bottom: 10px;line-height: 40px;text-indent: 20px;}
+.pub_card .icon-rightarrow{float: right;margin-right: 20px;color: #e5e5e5;}
+.centerbox label a{display: block;}
 </style>
 
 <div class="body">
@@ -47,10 +64,31 @@
             <p><span id="lan_txt_ols">需花费¥0</span><a id="all_with">全部提现</a></p>
         </div>
         <div class="marsty_docse inpounfryt">
-            <label data-value="1">余额<em>（当前账户余额为{$balance}元）</em><i></i></label>
-            <label data-value="2">{$card_info}<i></i></label>
+            <label data-value="lcnpay">余额<em>（当前账户余额¥{$account_balance}元）</em><i></i></label>
+            <label data-value="alipay">支付宝（{$alipay_info['account']}）<i></i></label>
+            <label data-value="unionpay" onclick="cardBox(this)">银行卡
+                <if condition="$card_list">
+                    <div class="modal_box" id="cardBox" style="display: none">
+                        <ul id="choice_card">
+                            <li class="choice_card">选择银行卡<span class="icon icon-weibiaoti101"></span></li>
+                            <volist name="card_list" id="calt">
+                                <li class="card_list" data-cardid="{$calt.id}" data-text="{$calt.card_info}">{$calt.card_info}<span class="weixuan"></span></li>
+                            </volist>
+                            <a class="creat_card">
+                              <div class="box_p">
+                                <p><span class="icon icon-tianjia1"></span></p>
+                                <p class="new_p">添加新卡</p>
+                                   </div>
+                              </a>
+
+                        </ul>
+                    </div>
+                </if>{$card_info}<i></i></label>
+            <ul>
+                <li class="pub_card">中国银行1024<span class="icon icon-rightarrow"></span></li>
+            </ul>
         </div>
-        <div class="pay_dl">注：提现到余额后不能再转至银行卡,转账比例为1：1</div>
+        <div class="pay_dl">注：提现到余额后不能再转至银行卡或支付宝,转账比例为1：1</div>
         <div class="foot_menu_fix">
             <dl class="pay_dl" style="padding: 0 5%">
                 <dt>收入：<em id="lan_txt_cost">¥0</em></dt>
@@ -61,6 +99,7 @@
 
 </div>
 <input name="tw_type" type="hidden" />
+<input name="card_id" id="card_id" type="hidden" />
 
 <script>
     $('#all_with').click(function(){
@@ -91,6 +130,16 @@
         }
     }
 
+    //选择银行卡
+    function cardBox(obj){
+        $('#cardBox').show();
+    }
+    $('#choice_card li.card_list').click(function(){
+        $('#card_id').val($(this).data('cardid'));
+        $('.pub_card').html($(this).data('text')+'<span class="icon icon-rightarrow"></span>');
+        $('#cardBox').hide(100);
+    });
+
     var conTransfer = function () {
         var exchange_balance = $.trim($('#exchange_balance').val());
         if (exchange_balance == '') {
@@ -98,17 +147,26 @@
             return false;
         }
 
-        if (exchange_balance < 1) {
-            alert('转账的数量最少为1');
+        var tw_type = $('input:hidden[name="tw_type"]').val();
+        var basenum = parseInt('{$withdraw_basenum}');
+
+        if((tw_type == 'unionpay' || tw_type == 'alipay') && (exchange_balance<0||exchange_balance<basenum||exchange_balance%basenum!=0)){
+            alert('只允许提现为'+basenum+'的倍数');
             return false;
+        } else {
+            if (exchange_balance < 1) {
+                alert('转账的数量最少为1');
+                return false;
+            }
         }
 
-        var tw_type = $('input:hidden[name="tw_type"]').val();
-
+        if(tw_type == 'unionpay'){
+            var card_id = $('#card_id').val();
+        }
         $.ajax({
             type: "POST",
             url:"{:U('classroom/User/applySpiltWithdraw')}",
-            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance,
+            data:"tw_type="+tw_type+"&exchange_balance="+exchange_balance+"&card_id="+card_id,
             dataType:"json",
             success:function(res){
                 if(typeof (res) != 'object'){
@@ -137,6 +195,14 @@
     });
 
     $(".marsty_docse label:first-child").click();
+
+  $(".card_list").click(function(){
+        $(this).children("span").css("background-position", "-614px -259px");
+        $(this).siblings("li").children("span").css("background-position", "-644px -259px");
+  })
+  $(".icon-weibiaoti101").click(function(){
+       $('#cardBox').hide(100);
+  })
 </script>
 
 <include file="__THEME__/public_footer_w3g"/>

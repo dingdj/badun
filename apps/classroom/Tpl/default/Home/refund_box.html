@@ -1,13 +1,16 @@
+<script type="text/javascript" src="__THEME__/js/core.js?v={$site.sys_version}"></script>
+<script type="text/javascript" src="__THEME__/js/common.js?v={$site.sys_version}"></script>
+
 <style>
     #ts_box_h5{
         color: #535353;position: fixed;background: #fff;-webkit-box-shadow: 0 2px 5px #dddddd;-moz-box-shadow: 0 2px 5px #dddddd;-khtml-box-shadow: 0 2px 5px #dddddd;-ms-box-shadow: 0 0 15px #888888;box-shadow: 0 0 15px #888888;z-index: 997;left: 5%;top: 5%;"position: relative;margin: 0 auto;background: #fff;
     }
     .hide_box_h5{z-index:996;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;}
     #ts_box_h5 .box_hd{
-        background: #f1f1f1;
+        background: #00BED4;
         font-weight: 700;
         font-size: 14px;
-        color: #535353;
+        color: #fff;
         padding: 9px 15px;
         cursor: move;
         text-align: left;
@@ -16,6 +19,17 @@
 
         text-align: left;
         padding: 9px;
+    }
+    .jgformitem label{
+        font-size: 14px;
+        padding: 0 5px;
+        border-left: 3px solid #00bed4;
+        color: #333;
+        line-height: 14px;
+    }
+    .jgformitem label span{
+        margin: 0 3px;
+        color:#ff4000;
     }
     .ico-close{
         position: absolute;
@@ -31,10 +45,10 @@
 <div id="ts_box_h5">
     <div class="box_hd" >申请退款理由<a class="ico-close" href="javascript:;" onclick="closeBoxH()"></a></div>
     <div class="layer-content" id="layer-content">
-        <div style="width:270px;padding:10px;">
+        <div style="width:270px;height:360px;padding:10px;overflow-y: auto;">
             <div class="jgformitem" style="line-height: 30px;">
                 <label><span style="color: red;">*</span>退款原因:</label>
-                <select name="refund_reason" id="refund_reason" style="border: solid 1px #b6c7d6;vertical-align: 0px;width: 229px;margin-left: 10px;border-radius: 1px;">
+                <select name="refund_reason" id="refund_reason" style="background: #f0f0f2;vertical-align: 0px;width: 100%;padding: 5px 5px;margin: 10px 0;border-radius: 1px;">
                     <option value="0">请选择</option>
                     <option value="1">讲师不专业</option>
                     <option value="2">课程不是想学习的</option>
@@ -46,18 +60,17 @@
                 <label><span style="color: red;"></span>退款金额:</label><span style="color:red;">　￥{$price}</span>
             </div><br/>
             <div class="jgformitem">
-                <label><span style="color: red;"></span>退款渠道:</label><span style="color:red;">　原支付渠道退回（{$pay_type}）</span>
+                <label><span style="color: red;"></span>退款渠道:</label><p style="color: red">　原支付渠道退回（{$pay_type}）</p>
             </div><br/>
 
             <div class="jgformitem">
                 <label><span style="color: red;">*</span>退款说明:</label>
-                <textarea class="jg_input" name=refund_note" placeholder="选填" id ="refund_note" style ="width: 235px;height: 64px;margin-left: 4px;padding: 0 4px; line-height: 38px; border: solid 1px #b6c7d6; border-radius: 3px;" />
+                <textarea class="jg_input" name=refund_note" placeholder="选填" id ="refund_note" style ="width: 100%;height: 64px;margin:10px 4px 0 0;padding: 0 4px; line-height: 38px;background: #f0f0f2; border-radius: 3px;" />
             </div><br/>
-
             <div class="jgformitem banner_div">
                 <label class="label" style="float: left;"><span style="color: red;"> </span>上传凭证：</label>
                 <style>
-                    #width_150{width: 235px;float: left;}
+                    #width_150{width: 100%;float: left;margin: 10px 0;}
                     .btn_b,.btn_w{
                         display: block;
                         cursor:pointer;
@@ -72,15 +85,22 @@
                         line-height: 30px;
                     }
                     .btn_b{float: left; margin: 0 10px 0 75px;}
+                    .cancel{
+                        background: #ccc;
+                        border: 1px solid #ccc;
+                        color: #888;
+                    }
                 </style>
                 {:W('Upload',array('inputname'=>'voucher','inForm'=>3, 'attachIds'=>$voucher, 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
             </div><br/>
             <p style="padding-top: 10px;">请上传相关凭证/截图以及退款理由等详细信息</p>
+       </div>
+        <div style="width:270px;padding:10px;">
 
-            <a id="buy-s-1r" class="topics_up color_wen9 fl pos_r" style="margin: 10px 30px;"> <b class="Test_True"></b> 同意<em class="green_txt">《{$site['site_keyword']}在线退款服务协议》</em> </a>
+            <a id="buy-s-1r" class="topics_up color_wen9 fl pos_r" style="margin: 10px 0;"><input type="checkbox" checked="true" style="display: inline;"> <b class="Test_True"></b> 同意<em class="green_txt">《{$site['site_keyword']}在线退款服务协议》</em> </a>
 
             <input class="btn_b" type="button" value="确认" onclick="saveReason();" />
-            <input class="btn_w ml10" type="button" value="取消" onclick="closeBoxH()"/>
+            <input class="btn_w ml10 cancel" type="button" value="取消" onclick="closeBoxH()"/>
         </div>
         <script type="text/javascript">
             function closeBoxH(){

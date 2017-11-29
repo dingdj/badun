@@ -5,7 +5,7 @@ em{font-style:normal}
 img {max-width: 100%}
 .new_tags{margin: 5px 0;font-size: 14px;color: #666;}
 /*列表页面加载底部*/
-.loadding{-webkit-box-sizing: border-box;box-sizing: border-box;outline: 0;-webkit-tap-highlight-color: transparent;border-bottom: 1px solid #cbcdd0;}
+.loadding{display:inline-block;width:100%;height: 36px;-webkit-box-sizing: border-box;box-sizing: border-box;outline: 0;-webkit-tap-highlight-color: transparent;border-bottom: 1px solid #cbcdd0;}
 .loadding div{width: 100%;float:left;-webkit-box-sizing: border-box;box-sizing: border-box;outline: 0;-webkit-tap-highlight-color: transparent;text-align: center;margin: 0 auto;margin-bottom: -18px;font-size: 14px;color: #999;}
 .footer{margin-top: 10px;}
 /*��ʦ����-���*/
@@ -50,7 +50,6 @@ img {max-width: 100%}
 
 /*个人中心---充值(3g)*/
 .centerbox .teacher_bd {
-    padding: 15px 10px;
     background-color: #fff;
     font-size: 14px;
     line-height: 24px;
@@ -69,53 +68,81 @@ img {max-width: 100%}
     font-size:14px;
     line-height:24px;
 }
-
+.teacher_bd .mt15{
+    padding: 0 5%;
+    font-size:14px;
+    line-height: 40px;
+    padding-bottom: 20px;
+}
+.teacher_bd .mt15 input{
+    width: 150px;
+    border-radius: 4px;
+    line-height: 36px;
+    padding: 0 8px;
+}
 .pay_dl{
     overflow:hidden;
 }
+.pay_dl .btn_je_box{
+    padding: 0 3%;
+}
+.pay_dl .wiblk label:last-child{
+    margin-top:1px;
+}
+.pay_dl .wiblk label{
+    width:100%;
+    background-color: #fff;
+}
 .pay_dl dt{
     margin-bottom:5px;
-    font-size:16px;
-    color:#333;
-    line-height:40px;
+    font-size:14px;
+    color:#888;
 }
 .pay_dl dd{
     margin-bottom:5px;
     overflow:hidden;
-    padding-left:10%;
     line-height:40px;
+    position: relative;
+}
+.pay_dl dd span{
+    position: absolute;
+    left: 4%;
+    top: 0;
+    width: 20px;
+    font-size: 18px;
+    line-height: 62px;
+    color: #656565;
+    text-align: center;
+    border-right: 1px solid #e5e5e5;
 }
 .pay_dl dd label{
     float:left;
     width:44%;
-    margin:0 6% 15px 0;
-    font-size:24px;
+    margin:0 3% 15px;
+    font-size:16px;
     line-height:60px;
     text-align:center;
-    color:#fff;
-    background-color:#b5b5b5;
+    color:#888;
+    border: 1px solid #dcdcdc;
+    background-color:#fff;
 }
 [name^="group-lis"],[name*="group-lis"] {
     margin-bottom:-15px;
-}
-.pay_dl dd label img{
-    width:100%;
-    height:100%;
-    border:solid 2px #ccc;
-}
-.pay_dl dd label.selected{
-    background-color:#2b92f9;
 }
 .pay_dl dd label.selected img{
     border-color:#2b92f9;
 }
 .pay_dl dd input{
-    float:left;
-    width:80%;
-    height:40px;
-    padding:0 4px;
-    margin-right:5px;
-    border:solid 1px #e5e5e5;
+    display: inline;
+    text-indent: 5px;
+    width: 44%;
+    margin: 0 6% 15px 0;
+    font-size: 16px;
+    line-height: 60px;
+    text-align: center;
+    color: #888;
+    border: solid 1px #e5e5e5;
+    padding: 0 0 0 24px;
 }
 .pay_dl dd p{
     padding:10px 0 10px;
@@ -131,6 +158,29 @@ img {max-width: 100%}
 }
 .pay_dl .pay_dt,.pay_dl .pay_dt a{
     color:#2b92f9;
+    font-size: 12px;
+    margin-top: 10px;
+}
+.foot_menu_fix{
+    width:100%;
+}
+.foot_menu_fix dl{
+    float: left;
+}
+.foot_menu_fix dl em{
+    font-size: 16px;
+    color:#fb7d30;
+}
+.foot_menu_fix a{
+    float: left;
+    width:90%;
+    text-align: center;
+    margin:5%;
+    background: #00BED4;
+    color:#fff;
+    line-height: 36px;
+    font-size: 14px;
+    border-radius: 4px;
 }
 .teacher_bd .pay_btn {
     width: 80%;
@@ -191,10 +241,15 @@ img {max-width: 100%}
 
 /*财富充值*/
 .centerbox .pay_dl .btn_je_box label a {
-    color: #fff;
+    color: #888;
+}
+.pay_dl .btn_je_box .selected{
+    border:1px solid #ff4000;
 }
 .centerbox .pay_dl label img {
     background: #fff;
+    margin-top:8px;
+    float: left;
 }
 
 /* 找回密码*/
@@ -205,12 +260,66 @@ img {max-width: 100%}
     width: 100%;
     height: 100%;
 }
-.Mailbox{width:740px; padding:50px; }
-.Mailbox h1{ width:100%; height:32px; line-height:32px; color:#000; font-size:20px; font-family: inherit; color:#66AEDE;padding:0 0 0 50px; }
-.Mailbox .again-box{padding:0 0 0 50px; width:70%; height:auto; line-height:33px;}
+.Mailbox{width:100%; padding:50px; }
+.Mailbox h1{ width:100%; line-height:32px; color:#000; font-size:20px; font-family: inherit; color:#66AEDE;}
+.Mailbox .again-box{ width:70%; height:auto; line-height:33px;}
 .Mailbox .again{width:96px; height:33px; display:block; line-height:33px; color:#999999; font-size:12px; text-align: center; color:#FFF;background:#C7C7C7; margin:0; padding:0;}
-.Mailbox p{ line-height:60px; padding:0 0 0 50px;color:#333;text-align: inherit;font-size: 14px;}
+.Mailbox p{ line-height:60px;color:#333;text-align: inherit;font-size: 14px;}
+.pay_dl dd label.selected a{
+    color:#ff4000!important;
+}
+.parent_custom{
+    position: relative;
+}
+.parent_custom span{
+    position: absolute;
+    width:20px;
+    border-right: 1px solid #e5e5e5;
+}
+.marsty_docse{
+    margin-top:5px;
+    background: #fff;
+}
+.marsty_docse label:first-child{
+    border:0!important;
+}
+.marsty_docse label{
+    border-top: 1px solid #dcdcdc;
+    display: inline-block;
+    width:100%!important;
+    margin:0!important;
+    height: 42px;
+    text-align:left!important;
+    padding:0 5%;
+    line-height:42px!important;
+    border-left:0!important;
+    border-right:0!important;
+    border-bottom:0!important;
+    color:#656565!important;
+    font-size:14px!important;
+}
+.marsty_docse label input{
+    display: inline;
+    margin-right: 6px;
+}
+.marsty_docse label i{
+    display: block;
+    width:20px;
+    height:20px;
+    float: right;
+    background-image: url(../icon/icon.png);
+    background-position: -644px -259px;
+    margin-top: 9px;
+}
 
+
+
+.pay_dl dd label.selected i{
+    background-position: -614px -259px;
+}
+.marsty_docse .selected i{
+    background-position: -614px -259px;
+}
 /*邮箱注册*/
 .loginbox .login-bd .yzm-3g {
     height: 100%;

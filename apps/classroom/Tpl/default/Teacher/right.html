@@ -60,39 +60,6 @@
 </div>
 
 
-<div class="teacher-success">
-    <div class="new-title"><i class="icon-star"></i>相关案例</div>
-    <php>if(!$case){</php>
-        <span>暂无讲师相关案例</span>
-    <php>}else{</php>
-    <ul>
-        <volist name="case" id="vo" offset="0" length='2'>
-        <li>
-            <div class="title">{$vo.Time}&nbsp;&nbsp;{$vo.title}</div>
-            <p>{:msubstr($vo['content'],0,50,'utf-8',true)}<php>if(mb_strlen($vo['content'],'utf-8') > 50 ){</php><a href="javascript:void(0);" class="showContent">&nbsp;&nbsp;展开全部</a><php>}</php></p>
-            <p class="close" style="display: none;">{$vo.content}<a href="javascript:void(0);" class="hideContent">&nbsp;&nbsp;收起全部</a></p>
-        </li>
-        </volist>
-    </ul>
-    <php>}</php>
-</div>
-<div class="teacher-experience">
-    <div class="new-title"><i class="icon-flag"></i>过往经历</div>
-    <php>if(!$experience){</php>
-        <span>暂无讲师过往经历</span>
-    <php>}else{</php>
-    <ul>
-        <volist name="experience" id="vo" offset="0" length='2'>
-        <li>
-            <div class="title">{$vo.Time}&nbsp;&nbsp;{$vo.title}</div>
-            <p>{:msubstr($vo['content'],0,50,'utf-8',true)}<php>if(mb_strlen($vo['content'],'utf-8') > 50 ){</php><a href="javascript:void(0);" class="showContent">&nbsp;&nbsp;展开全部</a><php>}</php></p>
-            <p class="close" style="display: none;">{$vo.content}<a href="javascript:void(0);" class="hideContent">&nbsp;&nbsp;收起全部</a></p>
-        </li>
-        </volist>
-        <a class="more-success" href="{:U('classroom/Teacher/details',array('id'=>$data['id']))}">更多成果&gt;</a>
-    </ul>
-    <php>}</php>
-</div>
 </div>
 <script type="text/javascript">
 $(".showLabel").click(function(){     

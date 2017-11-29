@@ -30,7 +30,8 @@
                     <li><a href="{:U('classroom/User/videoCoupon')}">优惠券</a></li>
                     <li><a href="{:U('classroom/User/discount')}">打折卡</a></li>
                     <li><a href="{:U('classroom/User/vipCard')}">会员卡</a></li>
-                    <li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>
+                    <!--<li><a href="{:U('classroom/User/rechargeCard')}">充值卡</a></li>-->
+                    <li><a href="{:U('classroom/User/courseCard')}">课程卡</a></li>
                     <!--<php>if($coupon){</php>-->
                         <!--<li class="on"><a href="{:U('classroom/User/exchangeCard')}">使用卡券</a></li>-->
                     <!--<php>}else{</php>-->
@@ -65,7 +66,7 @@
                                 </div>
                                 <div class="txt">
                                     <div class="item">卡券编号&nbsp;:&nbsp;{$coupon.code}</div>
-                                    <div class="item">发卡单位&nbsp;:&nbsp;{$coupon.school_title}</div>
+                                    <!--<div class="item">发卡单位&nbsp;:&nbsp;{$coupon.school_title}</div>-->
                                     <a href="javascript:;" onclick="doExchange({$coupon.coupon_id})">确认兑换</a>
                                 </div>
                             </li>

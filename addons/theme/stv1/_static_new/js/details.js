@@ -10,7 +10,7 @@ $(function(){
 
 	/*我写评论*/
 	$(".title a").on("click",function(){
-		$(".video-review .clearfix").toggle()
+		$(this).parent().siblings().find("#review-comments").toggle();
 	})
 
 	/*评论星级*/
@@ -29,17 +29,20 @@ $(function(){
 	});
 
 	/*查看别人对别人的评论*/
-	$('.qa-total-reply .js-qa-tr-num').on('click',function(){
-		$(this).parent().parent().parent().parent().parent().parent().parent().parent().siblings(".qa-replies").show();
+	$(".qa-total-reply .js-qa-tr-num").on("click",function(){
+		alert("sss");
+		var s = $(this).parent().parent().parent().parent().parent().parent().parent().parent().next(".qa-replies")
+		console.log(s)
+		$(this).parent().parent().parent().parent().parent().parent().parent().parent().next(".qa-replies").show();
 		$(this).hide();
-		$('.qa-total-reply .qa-tr-up ').show();
+		$(".qa-total-reply .qa-tr-up ").show();
 	});
 
 	/*影藏别人对别人的评论*/
-	$('.qa-total-reply .qa-tr-up ').on('click',function(){
+	$(".qa-total-reply .qa-tr-up").on("click",function(){
 		$(this).parent().parent().parent().parent().parent().parent().parent().parent().siblings(".qa-replies").hide();
 		$(this).hide();
-		$('.qa-total-reply .js-qa-tr-num').show();
+		$(".qa-total-reply .js-qa-tr-num").show();
 	})
 
 	/*显示回复评论框*/

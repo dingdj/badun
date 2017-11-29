@@ -55,7 +55,7 @@ class ZyReviewModel extends Model
 	}
 	
 	/**
-	 * 更具课程或者套餐ID来取点评
+	 * 更具课程或者班级ID来取点评
 	 * @param array $map 分页条件
 	 * @param int $limit 分页数据
 	 * @param string $field 分页数据
@@ -99,9 +99,9 @@ class ZyReviewModel extends Model
 	
 	
 	/**
-	 * 返回课程或者套餐的  点评个数
-	 * @param int $type 1:课程;2:套餐;
-	 * @param int $oid  套餐ID/课程ID
+	 * 返回课程或者班级的  点评个数
+	 * @param int $type 1:课程;2:班级;
+	 * @param int $oid  班级ID/课程ID
 	 * @return int 个数
 	 */
 	public function getReviewCount($type,$oid){

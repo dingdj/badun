@@ -691,14 +691,14 @@ admin.Mountacivity = function(id,action,type) {
  * @param  string info 认证资料
  * @return void
  */
-admin.adoptorderverify = function(id,type){
+admin.doThroughAudit = function(id,type){
 	if("undefined" == typeof(id) || id=='')
 		id = admin.getChecked();
 	if(id == ''){
 				ui.error('订单ID不正确');
 				return false;
 			}
-		ui.box.load(U('classroom/User/adoptororder')+'&id='+id+'&type='+type,'审核中');
+		ui.box.load(U('classroom/AdminApplirefund/doThroughAudit')+'&id='+id+'&type='+type,'审核中');
 		return false;
 };
 
@@ -708,11 +708,11 @@ admin.adoptorderverify = function(id,type){
  * @param integer id 驳回ID
  * @return void
  */
-admin.rejectorderBox = function (id,type) {
+admin.doOverruleAudit = function (id,type) {
 	if (typeof id === 'undefined') {
 		return false;
 	}
-	ui.box.load(U('classroom/User/rejectorder') + '&id=' + id+'&type='+type, '驳回理由');
+	ui.box.load(U('classroom/AdminApplirefund/doOverruleAudit') + '&id=' + id+'&type='+type, '驳回理由');
 	return false;
 };
 
@@ -758,4 +758,34 @@ admin.exportResult = function(id,type){
 	}
 
 	location.href = U('classroom/AdminSplit/splitExport')+'&id='+id+'&type='+type;
+};
+
+//导出卡券列表
+admin.exportCoupon = function(explod){
+	if(explod ==''){
+		ui.error( "还没数据喏。。" );return false;
+	}
+	location.href = U('classroom/AdminEntityCard/exportCoupon')+"&explod="+explod;
+};
+
+//课时审核
+admin.crossVideoSection = function(id,vid,type,ctype){
+
+	if(type == 1){
+		var ids=admin.getChecked();
+		ids = ("undefined"== typeof(ids)|| ids=='') ? admin.getChecked() : ids;
+	}else{
+		ids = id;
+	}
+
+	if(ids==''){
+		ui.error("请选择要操作的课时");
+		return false;
+	}
+	if(!confirm("是否确认？")){
+		return false;
+	}
+	$.post(U('classroom/AdminVideo/crossVideoSection'),{ids:ids,vid:vid,type:type,ctype:ctype},function(msg){
+		admin.ajaxReload(msg);
+	},'json');
 };

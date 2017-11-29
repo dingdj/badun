@@ -21,12 +21,11 @@ class AdminQuestionAction extends AdministratorAction
         $this->_listpk             = 'exams_question_id';
         $this->mod                 = D('ExamsQuestion', 'exams');
         $this->pageTitle['index']  = '试题列表';
-        $this->pageTitle['add']    = '添加试题';
-        $this->pageTitle['edit']   = '编辑试题';
-        $this->pageTitle['import'] = '试题导入';
-        $this->pageTab[]           = array('title' => '试题列表', 'tabHash' => 'index', 'url' => U('exams/AdminQuestion/index'));
-        $this->pageTab[]           = array('title' => '添加试题', 'tabHash' => 'add', 'url' => U('exams/AdminQuestion/add'));
-        $this->pageTab[]           = array('title' => '试题导入', 'tabHash' => 'import', 'url' => U('exams/AdminQuestion/import'));
+        $this->pageTitle['add']    = '添加';
+        $this->pageTitle['edit']   = '编辑';
+        $this->pageTitle['import'] = '导入';
+        $this->pageTab[] = array('title' => '试题列表', 'tabHash' => 'index', 'url' => U('exams/AdminQuestion/index', array('tabHash' => 'index')));
+        $this->pageTab[] = array('title' => '试题类型列表', 'tabHash' => 'question', 'url' => U('exams/AdminCategory/question', array('tabHash' => 'question')));
     }
 
     /**
@@ -38,9 +37,11 @@ class AdminQuestionAction extends AdministratorAction
     public function index()
     {
         // 列表批量操作按钮
-        $this->pageButton[] = array('title' => '搜索试题', 'onclick' => "admin.fold('search_form')");
+        $this->pageButton[] = array('title' => '搜索', 'onclick' => "admin.fold('search_form')");
+        $this->pageButton[] = array('title' => '添加', 'onclick' => "javascript:window.location.href='".U('exams/AdminQuestion/add', array('tabHash' => 'add'))."'");
+        $this->pageButton[] = array('title' => '导入', 'onclick' => "javascript:window.location.href='".U('exams/AdminQuestion/import', array('tabHash' => 'import'))."'");
         // 列表批量操作按钮
-        $this->pageButton[] = array('title' => '批量删除', 'onclick' => "exams.batchDelete('deleteQuestion')");
+        $this->pageButton[] = array('title' => '删除', 'onclick' => "exams.batchDelete('deleteQuestion')");
         // 搜索选项的key值
         $this->searchKey                                                   = array('exams_question_id', 'content', 'exams_question_type_id', 'exams_module_title');
         $map                                                               = [];
@@ -117,6 +118,7 @@ class AdminQuestionAction extends AdministratorAction
                     $options[str_replace('answer_options_', '', $k)] = $v;
                 }
             });
+            ksort($options);
             $data['answer_options'] = serialize($options);
             // 试题正确选项
             $data['answer_true_option'] = (is_string($_POST['answer_true_option'])) ? serialize([$_POST['answer_true_option']]) : serialize($_POST['answer_true_option']);
@@ -134,6 +136,7 @@ class AdminQuestionAction extends AdministratorAction
             }
             exit;
         }
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'add', 'url' => U('exams/AdminQuestion/add', array('tabHash' => 'add')));
         // 获取版块
         $exams_module = model('CategoryTree')->setTable('exams_module')->getCategoryList(0);
         $this->assign('exams_module', $exams_module);
@@ -151,6 +154,7 @@ class AdminQuestionAction extends AdministratorAction
      */
     public function edit()
     {
+        $this->pageTab[] = array('title' => '编辑', 'tabHash' => 'edit', 'url' => U('exams/AdminQuestion/edit', array('tabHash' => 'edit')));
         // 获取试题
         $data = $this->mod->getQuestionById($_GET['question_id']);
         // 获取版块
@@ -223,6 +227,7 @@ class AdminQuestionAction extends AdministratorAction
      */
     public function import()
     {
+        $this->pageTab[] = array('title' => '导入试题', 'tabHash' => 'import', 'url' => U('exams/AdminQuestion/import', array('tabHash' => 'import')));
         $this->pageKeyList = array('file');
         // 表单URL设置
         $this->savePostUrl = U('exams/AdminQuestion/doImport');

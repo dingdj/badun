@@ -42,7 +42,7 @@
                     <a  target="_blank"  event-node="face_card" uid="{$vo['uid']}"  alt="头像" width="60" height="60"   href="{:U('classroom/UserShow/index',array('uid'=>$vo['uid']))}">
                         <img width="40" height="40" src="{:getUserFace($vo['uid'],'m')}">
                     </a>
-                <div class="user-name">{:getUserName($vo['uid'])}</div>
+                <div class="user-name">{:msubstr(getUserName($vo['uid']),0,3,'utf-8',true)}</div>
                 </dt>
             </dl>
             <div class="comment">
@@ -58,8 +58,8 @@
                 </div>
                 <div class="con">{$vo.review_description}</div>
                 <div class="order-info">
-                    <span>{$vo.oid}</span>
-                    <span>视频课程</span>
+                    <!--<span>{$vo.oid}</span>-->
+                    <span>{$vo.type_name}</span>
                     <span></span>
                     <span>{$vo.tname}</span>
                     <!--<span class="date">{:getDateDiffer($cl['ctime'])}</span>-->

@@ -34,7 +34,7 @@
         <a href="{$vo.href}" target="_blank">
             <span class="img_zz"></span>
             <if condition=" $vo.type == 2 ">
-            <p class="sj_r">套餐</p>
+            <p class="sj_r">班级</p>
             </if>
             <img src="{$vo.middle_ids|getAttachUrlByAttachId=###}" width="276" height="137">
         </a>
@@ -57,7 +57,7 @@
                         <a href="javascript:;" class="<if condition=" $vo['isGetResource']['question'] ">discuss1<else />discuss</if>"><span class="talk">含开放提问</span></a>
                     </div>
                 </div>
-                <a class="fr look mt10" href="{$vo.href}" target="_blank"><if condition=" $vo.type == 2 ">查看套餐<else />查看课程</if></a>
+                <a class="fr look mt10" href="{$vo.href}" target="_blank"><if condition=" $vo.type == 2 ">查看班级<else />查看课程</if></a>
             </div>
         </div>
     </div>

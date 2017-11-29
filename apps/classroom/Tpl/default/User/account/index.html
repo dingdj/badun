@@ -15,6 +15,10 @@
         width:auto;
         float: left;
     }
+    form{
+        margin-top:20px;
+        display: inline-block
+    }
 </style>
 <!--centerbox end-->
 <div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
@@ -28,15 +32,225 @@
                 </div>
             </div>
 
-            <div class="center_right_con Manage_all" style="display:block;min-height: 205px;padding: 180px 0;text-align: center">
-                <p class="txt_r ft24 pb20"> 可用余额
-                    <em class="green_txt ft30 mlr22">{:unLast0($userLearnc['score'])}</em>积分
-                    <a class="green_txt ft14 ml20" href="{:U('classroom/User/recharge')}" style="margin-right: 20px;">去充值</a>或者
-                    <a class="green_txt ft14 ml20" href="{:U('mall/Index/index')}">去兑换</a>
+            <div class="center_right_con Manage_all" style="padding: 0 25px;">
+                <p class="txt_r ft24 pb20"> 账户余额：
+                    <em class="green_txt ft30 mlr22">¥{:unLast0($userLearnc['balance'])}</em>
+                    <!--<a class="green_txt ft14 ml20" href="{:U('classroom/User/recharge')}" style="margin-right: 20px;">去充值</a>or-->
+                    <!--<a class="green_txt ft14 ml20" href="javascript:;" onclick="changeSplit(this,3)">兑换积分</a>-->
+                    <!--或者<a class="green_txt ft14 ml20" href="{:U('classroom/User/account', array('tab'=>4))}">提现￥</a>-->
                 </p>
+
+                <form action="{:U('classroom/Pay/recharge')}" method="post" style="width:100%">
+                    <input type="hidden" value="alipay" name="pay" />
+                    <input type="hidden" value="0" name="money" />
+
+                    <div id="oline_pay_div">
+                        <span class="selected_title selected_title_a fl"> 充值</span>
+                        <div class="btn_je_box clearfix">
+                            <volist name="rechange_default" id="redt">
+                                <a class="btn_hui_h" href="javascript:;" val="{$redt[0]}" give="<if condition='$redt[1]'>=>{$redt[1]}</if>" ><if condition="$redt[1]">充{$redt[0]}元 <em>送{$redt[1]}元</em><else/>{$redt[0]}元</if></a>
+                            </volist>
+                            <div class="myInput1 border fl w175">
+                                <input type="text" class="head_search upload_input_a" id="custom_money" rel="请输入充值金额">
+                                <span class="w175">自定义</span>
+                            </div>
+                        </div>
+                        <p class="red_txt ml100">备注：1元人民币=1余额</p>
+                        <!--<div class="clearfix h55 mt15"> <span class="selected_title selected_title_a color_hui fl"> 自定义金额：</span>
+
+                            <span class="lh30 ml15"></span>
+                        </div>-->
+                        <hr class="das_l">
+                        </hr>
+                    </div>
+                    <div class="clearfix mt15 h55"> <span class="selected_title selected_title_a fl">支付方式：</span>
+                        <div class="clearfix zfb_zxzf h55">
+                            <if condition="in_array('alipay',$payConfig['pay'])">
+                                <a class="zfb mr15" href="javascript:;" val="alipay"><em class="ch_z"></em></a>
+                            </if>
+                            <if condition="in_array('wxpay',$payConfig['pay'])">
+                                <a class="wxzf mr15" href="javascript:;" val="wxpay"><em></em></a>
+                            </if>
+                            <if condition="in_array('unionpay',$payConfig['pay'])">
+                                <!--<a class="zxzf mr15" href="javascript:;" val="unionpay">银联支付<em></em></a>-->
+                            </if>
+                            <if condition="in_array('cardpay',$payConfig['pay'])">
+                                <a class="czkzf mr15" href="javascript:;" val="cardpay">充值卡支付<em></em></a>
+                            </if>
+                        </div>
+                    </div>
+                    <div class="clearfix h55 mt15" id="cardpay_div" style="display: none"> <span class="selected_title selected_title_a fl"> 充值卡编号：</span>
+                        <input class="payment_card" style="width: 255px" type="text" name="card_number" placeholder="请输入充值卡编号">
+                        <span class="lh30 ml15"></span>
+                    </div>
+                    <div class="sjo_ing_plmb">
+                        <a id="buy-s-1r" class="topics_up color_wen9 fl pos_r"> <b class="Test_True"></b> 同意<em class="green_txt">《{$site['site_keyword']}虚拟货币服务协议》</em> </a>
+                        <a id="btn_ljcz" class="btn_big mt30" onclick="rechange(this);">立即充值</a>
+                        <p>应付：<em id="lan_txt_cost" class="lan_txt ft18 ml15">{$array[1]}</em></p>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
 </div>
+<script>
+//    function changeSplit(obj,opt) {
+//        ui.box.load(U('classroom/User/inpAotBneBox') + '&opt=' + opt, '兑换积分');
+//    }
+    $(function(){
+        //输入框
+        $("html,body").click(function(){
+            if($('input#custom_money').val()==''){
+                $('span.w175').show();
+            }
+        });
+        //充值金额
+        $('div.w175').click(function(){
+            $('input#custom_money').focus();
+            $(this).find('span.w175').hide();
+            return false;
+        });
+        //协议
+        $("a.topics_up").click(function(){
+            $(this).find('b').attr('class') == 'Test_True' ? $(this).find('b').attr('class','Text_error') : $(this).find('b').attr('class','Test_True');
+        });
+
+        //默认采用第一个支付方式
+        $('.zfb_zxzf a:first').click();
+    });
+
+    //选择支付方式
+    $('.zfb_zxzf a').click(function(){
+        $(this).siblings().find('em').removeClass('ch_z');
+        $(this).find('em').addClass('ch_z');
+        $(this).parents('form').find('input:hidden[name="pay"]').val($(this).attr('val'));
+
+        var pay   = $(this).parents('form').find('input:hidden[name="pay"]').val();
+
+        if(pay == 'cardpay'){
+            $('#oline_pay_div').hide(100);
+            $('#cardpay_div').show(100);
+        }else{
+            $('#oline_pay_div').show(100);
+            $('#cardpay_div').hide(100);
+        }
+    });
+
+    $('.btn_je_box a.btn_hui_h').click(function(){
+        $(this).siblings().removeAttr('style');
+        $(this).css({'border':'1px solid #ff4000','color':'#ff4000'});
+        $(this).parents('form').find('input:hidden[name="money"]').val($(this).attr('val')+$(this).attr('give'));
+        $('#lan_txt_cost').text("¥"+$(this).attr('val'));
+        $('input#custom_money').val('').blur();
+    });
+
+    //默认点击事件
+    $('.btn_je_box a.btn_hui_h:eq(1)').click();
+
+    $('input#custom_money').val('');
+
+    $('input#custom_money').change(function(e) {
+        $('.btn_je_box a.btn_hui_h').removeAttr('style');
+        $(this).parents('form').find('input:hidden[name="money"]').val($(this).val());
+        $('#lan_txt_cost').text("¥"+$(this).val());
+    });
+
+    //充值余额
+    function rechange(sbt){
+        var rechange_base = parseFloat('{:getAppConfig("rechange_basenum")}');
+        var form  = $(sbt).parents('form');
+        var pay   = form.find('input:hidden[name="pay"]').val();
+        var money = form.find('input:hidden[name="money"]').val();
+        if(pay!='alipay'&&pay!='unionpay'&&pay!='wxpay'&&pay!='cardpay'){
+            notes('支付方式错误', 'failure');
+            return false;
+        }
+        if(money <= 0){
+            notes('请选择或填写充值金额', 'failure');
+            return false;
+        }
+        //if(rechange_base>0 && money%rechange_base != 0){
+        //    if(rechange_base == 1){
+        //        notes('充值金额必须为整数', 'failure');
+        //    }else{
+        //        notes('充值金额必须为'+rechange_base+'的倍数', 'failure');
+        //    }
+        //    return false;
+        //}
+        if(form.find('#buy-s-1r b').hasClass('Text_error')){
+            notes("请同意《{$site['site_keyword']}虚拟货币服务协议》", 'failure');
+            return false;
+        }
+        var s = 0
+        if(pay == 'wxpay'){
+            $.ajax({
+                url: "{:U('classroom/Pay/recharge')}",
+                data:form.serialize(),
+                async:false,
+                type:'post',
+                success: function(data){
+                    if(typeof data != 'object'){
+                        var data = eval('('+data+')');
+                    }
+
+                    clearInterval(s);
+                    if(data.status == 1){
+                        s = setInterval(function(){
+                            $.ajax({
+                                url: "{:U('classroom/Pay/getPayStatus')}",
+                                data:{pay_pass_num:data.data.pay_pass_num},
+                                type:'post',
+                                success: function(res){
+                                    try{
+                                        res = JSON.parse(res);
+                                        if(res.status == 1){
+                                            clearInterval(s);
+                                            $(".hide_box").fadeToggle();
+                                            $(".shang_box").fadeToggle();
+                                            ui.success('使用微信充值成功');
+                                            setTimeout(function(){
+                                                window.location.href = '{:U("classroom/User/account")}';
+                                            },2000);
+                                        }
+                                    }catch(e){
+                                        return;
+                                    }
+                                }
+                            });
+                        },1800);
+                        $("body").append(data.data.html);
+                        return true;
+                    }else{
+                        ui.error(data.data);
+                        setTimeout(function(){
+                            window.location.href = res.data;
+                        },2000);
+                    }
+                },
+                error: function(){
+                    return false
+                }
+
+            });
+        } else if(pay == 'cardpay'){
+            $.post("{:U('classroom/Pay/recharge')}",form.serialize(),function(res){
+                res = JSON.parse(res);
+
+                if(res.status == 1){
+                    ui.success(res.info);
+                    setTimeout(function(){
+                        window.location.href = res.data;
+                    },2000);
+                }else{
+                    ui.error(res.info);
+                    return false
+                }
+            });
+        } else {
+            form.submit();
+        }
+    }
+</script>
 
 <include file="__THEME__/public_footer" />

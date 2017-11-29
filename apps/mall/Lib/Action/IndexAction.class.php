@@ -30,10 +30,13 @@ class IndexAction extends Action
         $vip = D('ZyLearnc')->getUserVip($this->mid);
 
         //获取顶部分类下的所有数据
-        $good_category = model('Goods')->getListForCate(-1,6,0);
+        $good_category = model('Goods')->getListForCate( array('is_best'=>1) , -1,6,0);
 
         //获取兑换排行榜数据
-        $ranking_list =  model('Goods')->getRankGoods(6);
+        $ranking_list =  model('Goods')->getRankGoods(12);
+
+        //获取最新商品
+        $new_goods = model('Goods')->where(array('status'=>1,'is_del'=>0))->order('ctime desc')->limit(8)->select();
 
         $this->assign('ad_list',$ad_list);
         $this->assign('new_suggest',$new_suggest);
@@ -42,6 +45,7 @@ class IndexAction extends Action
         $this->assign('good_category',$good_category);
         $this->assign('ranking_list',$ranking_list['data']);
         $this->assign('ranking',$ranking_list);
+        $this->assign('new_goods',$new_goods);
         $this->display();
     }
     //首页查看更多兑换排行榜
@@ -58,7 +62,7 @@ class IndexAction extends Action
     */
     public function getGoodsList() {
 
-        $data = model('Goods')->getListForCate(-1,8);
+        $data = model('Goods')->getListForCate(array() ,-1,8);
         if ($data['data']) {
             $html = $this->fetch('index_list');
         }else{

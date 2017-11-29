@@ -43,6 +43,9 @@ return array (
         'event/Index/*'           => true,//活动
         'live/Index/*'            => true,//直播
         'classroom/User/aliAddScoreAnsy' => true,
+		'classroom/LineClass/*'   => true,//线下课
+		'exams/Index/index'       => true,//考试
+		'classroom/Vip/index'     => true,//会员课程
 
 	)
 );

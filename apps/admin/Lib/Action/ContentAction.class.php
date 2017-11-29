@@ -259,7 +259,7 @@ class ContentAction extends AdministratorAction
 		// 搜索字段配置
 		$this->searchKey = array('from_uid','mix_man','content');
 		// Tab标签配置
-		$this->pageTab[] = array('title'=>L('PUBLIC_PRIVATE_MESSAGE_MANAGEMENT'),'tabHash'=>'list','url'=>U('admin/Content/message'));
+		$this->pageTab[] = array('title'=>'列表','tabHash'=>'list','url'=>U('admin/Content/message'));
 		$this->pageTab[] = array('title'=>L('PUBLIC_RECYCLE_BIN'),'tabHash'=>'rec','url'=>U('admin/Content/messageRec'));
 		// 批量操作按钮配置
 		$this->pageButton[] = array('title'=>L('搜索'),'onclick'=>"admin.fold('search_form')");
@@ -269,7 +269,8 @@ class ContentAction extends AdministratorAction
 			$this->pageButton[] = array('title'=>L('PUBLIC_REMOVE_COMPLETELY'),'onclick'=>"admin.ContentEdit('','deleteMessage','".L('PUBLIC_REMOVE_COMPLETELY')."','".L('PUBLIC_PRIVATE_MESSAGE')."')");
 		}
 		$isRec == 1 &&  $_REQUEST['tabHash'] = 'rec';
-		$this->assign('pageTitle', $isRec ? L('PUBLIC_RECYCLE_BIN') : L('PUBLIC_PRIVATE_MESSAGE_MANAGEMENT'));
+		//$this->assign('pageTitle', $isRec ? L('PUBLIC_RECYCLE_BIN') : L('PUBLIC_PRIVATE_MESSAGE_MANAGEMENT'));
+		$this->assign('pageTitle', $isRec ? L('PUBLIC_RECYCLE_BIN') : '列表');
 		// 未删除的 
 		$map['a.is_del'] = ($isRec == 1) ? 1 : 0;	
 		!empty($_POST['from_uid']) && $map['a.from_uid'] = intval(t($_POST['from_uid']));

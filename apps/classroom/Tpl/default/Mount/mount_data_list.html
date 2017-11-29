@@ -53,7 +53,7 @@
                 <div style="height: 84px;padding-top: 33px;">
                     <p class="price-count clearfix">
                     <p style="">售价：</p>
-                    <span style="color: #5bf;font-weight: 700;margin-bottom: 7px;white-space: nowrap;overflow: hidden;">￥{$mda.t_price}</span>
+                    <span style="color: #fb7d30;font-weight: 700;margin-bottom: 7px;white-space: nowrap;overflow: hidden;">￥{$mda.t_price}</span>
                     <!--<span style="margin:0 2px;">至</span>-->
                     <!--<span class="price right" title="0">￥0</span>-->
                     </p>
@@ -93,7 +93,8 @@
     var uid = '{$uid}';
     $('.add-course').click(function () {
         $('.shou_mount').attr('onclick',"shou_mount("+$(this).attr('data-id')+")");
-        $('span.tips_info').html("确定申请该课程到您的机构销售，销售成功您将获得<span style='color:red;'>￥"+$(this).attr('data_price')+"/笔订单</span>的盈利！");
+//        $('span.tips_info').html("确定申请该课程到您的机构销售，销售成功您将获得<span style='color:red;'>￥"+$(this).attr('data_price')+"/笔订单</span>的盈利！");
+        $('span.tips_info').html("确定申请该课程到您的机构销售");
         $('.message_prompt_box').show();
         $('.mask').show();
     });
@@ -121,7 +122,7 @@
             ui.error("参数错误");
             return false;
         }
-        $.post("{:U('school/Mount/doMount')}", {mount_id:mount_id}, function (e) {
+        $.post("{:U('classroom/Mount/doMount')}", {mount_id:mount_id}, function (e) {
             if(e.status == 1){
                 ui.success(e.info);
                 $('.message_prompt_box,.mask').hide();

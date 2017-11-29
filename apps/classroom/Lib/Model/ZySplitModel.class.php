@@ -7,7 +7,7 @@
 class ZySplitModel extends Model {
 
     protected $tableName = 'zy_split_balance'; //映射到分成表
-    protected $flowModel = null;//分成流水模型对象
+    public $flowModel = null;//分成流水模型对象
 
     /**
      * 模型初始化
@@ -20,7 +20,7 @@ class ZySplitModel extends Model {
     //关联ID的类型描述
     protected static $relTypes = array(
         'zy_order'       => '课程订单',
-        'zy_order_album' => '套餐订单',
+        'zy_order_album' => '班级订单',
         'zy_withdraw'    => '提现记录',
         'zy_recharge'    => '充值记录'
     );
@@ -209,10 +209,10 @@ class ZySplitModel extends Model {
         if($relType == 'zy_video_order' || $relType == 'zy_order_course'){
             $split_model = M('zy_split_course');
             $field = 'id,pid,platform_sum,oschool_uid,ouats_ouschool_sum,sid,school_sum,mount_school_id,mount_school_sum,share_id,share_sum,note';
-        }else if($relType == 'zy_album_order'){
+        }else if($relType == 'zy_album_order' || $relType == 'zy_order_album'){
             $field = 'id,pid,platform_sum,oschool_uid,ouats_ouschool_sum,sid,school_sum,share_id,share_sum,note';
             $split_model = M('zy_split_album');
-        }else if($relType == 'zy_live_order'){
+        }else if($relType == 'zy_live_order' || $relType == 'zy_order_live'){
             $field = 'id,pid,platform_sum,oschool_uid,ouats_ouschool_sum,sid,school_sum,mount_school_id,mount_school_sum,share_id,share_sum,note';
             $split_model = M('zy_split_live');
         }else if($relType == 'zy_teacher_order'){
@@ -292,9 +292,9 @@ class ZySplitModel extends Model {
             $flow_uid[3] = $data['mount_school_id'];
         }
         //分享者自己操作使用
-//        if($data['share_id']){
-//            $flow_uid[4] = $data['share_id'];
-//        }
+        if($data['share_id']){
+            $flow_uid[4] = $data['share_id'];
+        }
 
         if($data['platform_sum'] && $data['platform_sum'] != '0.00'){
             $flow_num[0] = $data['platform_sum'];
@@ -309,9 +309,9 @@ class ZySplitModel extends Model {
             $flow_num[3] = $data['mount_school_sum'];
         }
         //分享者自己操作使用
-//        if($data['share_sum'] && $data['share_sum'] != '0.00'){
-//            $flow_num[4] = $data['share_sum'];
-//        }
+        if($data['share_sum'] && $data['share_sum'] != '0.00'){
+            $flow_num[4] = $data['share_sum'];
+        }
 
 //        if($data['st_id']){
 //            $flow_st_id = trim($data['st_id'],',');

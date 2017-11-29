@@ -125,7 +125,7 @@
                         <!-- <div><a href="javascript:sendtogrpalbum();">复制到群相册</a></div> -->
                         <div id="divdelphoto"><a href="javascript:delphoto();">删除该照片</a></div>
                         <!-- <div><a href="javascript:setface();">设为我的头像</a></div> -->
-                        <div><a href="javascript:setcover();">设为套餐封面</a></div>
+                        <div><a href="javascript:setcover();">设为班级封面</a></div>
                     <else />
                     
                     	<div>{:W('Report',array( 'type'=>'照片举报','appid'=>$APPINFO['APP_ID'],'url'=>'/Index/photo/id/'.$p['id'].'/uid/'.$uid.'/eid/'.$id,'title'=>$photo['savename'],'recordId'=>$photo['id']))}</div>

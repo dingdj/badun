@@ -673,7 +673,7 @@ admin.mzTeacherVerify= function(id,status){
 		}
 	}
 	if(id){
-		$.post(U('school/AdminSchool/saveVerify'),{id:id,status:status},function(msg){
+		$.post(U('school/AdminTeacher/doTeacherVerify'),{id:id,status:status},function(msg){
 			admin.ajaxReload(msg);
 		},'json');
 	}
@@ -687,7 +687,7 @@ admin.mzTeacherVerifyBox = function (id) {
 	if (typeof id === 'undefined') {
 		return false;
 	}
-	ui.box.load(U('school/AdminSchool/getTeacherVerifyBox') + '&id=' + id, '驳回理由');
+	ui.box.load(U('school/AdminTeacher/getTeacherVerifyBox') + '&id=' + id, '驳回理由');
 	return false;
 };
 
@@ -891,14 +891,14 @@ admin.mzCouponCardEdit = function(_id,action,title,type){
 
 
 //审核
-admin.activeVideo = function(id,action,cross){
+admin.activeVideo = function(id,action,cross,activity){
 	if(!id){
 		ui.error("id不能为null");
 		return false;
 	}
 
 	if( confirm('是否确认？') ) {
-		$.post(U('school/'+action+'/crossVideo'), {id: id, cross: cross}, function (txt) {
+		$.post(U('school/'+action+'/crossVideo'), {id: id, cross: cross, activity:activity}, function (txt) {
 			if (txt.status == 0) {
 				ui.error(txt.info);
 			} else {
@@ -985,4 +985,26 @@ admin.exportOResult = function(id,type){
 	}
 
 	location.href = U('school/AdminOSplit/splitExport')+'&id='+id+'&type='+type;
+};
+
+//课时审核
+admin.crossVideoSection = function(id,vid,type,ctype){
+
+    if(type == 1){
+        var ids=admin.getChecked();
+        ids = ("undefined"== typeof(ids)|| ids=='') ? admin.getChecked() : ids;
+    }else{
+        ids = id;
+    }
+
+	if(ids==''){
+		ui.error("请选择要操作的课时");
+		return false;
+	}
+	if(!confirm("是否确认？")){
+		return false;
+	}
+	$.post(U('school/AdminVideo/crossVideoSection'),{ids:ids,vid:vid,type:type,ctype:ctype},function(msg){
+		admin.ajaxReload(msg);
+	},'json');
 };

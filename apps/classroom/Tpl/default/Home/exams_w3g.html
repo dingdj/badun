@@ -1,0 +1,230 @@
+<include file="__THEME__/public_header_w3g"/>
+<link rel="stylesheet" type="text/css" href="{$Think.APPS_URL}/exams/_static/css/public.css">
+<link rel="stylesheet" type="text/css" href="{$Think.APPS_URL}/exams/_static/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="{$Think.APPS_URL}/exams/_static/css/public_header_footer_media.css">
+<link rel="stylesheet" type="text/css" href="{$Think.APPS_URL}/exams/_static/css/exam_2.0.css">
+
+<div class="cover"></div>
+
+<div class="min-height-wrap">
+    <div class="suren-box">
+        <ul class="suren-coas">
+            <li <php>if(!$_GET['tab'] || $_GET['tab'] == 1){</php>class="on"<php>}</php>> <a href="{:U('classroom/Home/exams',['tab'=>1])}">练习记录</a></li>
+            <li <eq name="Think.get.tab" value="2">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>2])}">考试记录</a></li>
+            <li <eq name="Think.get.tab" value="3">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>3])}">错题记录</a></li>
+            <li <eq name="Think.get.tab" value="4">class="on"</eq>><a href="{:U('classroom/Home/exams',['tab'=>4])}">题目收藏</a></li>
+        </ul>
+        <div class="asmarfr-pr">
+            <switch name="Think.get.tab">
+            <case value="3">
+                <!--错题记录-->
+                <php>if($list['data']){</php>
+                <ul class="suren-content">
+                    <volist name="list.data" id="vo">
+                    <li>
+                        <a href="#">
+                            <span>
+                                <h4>{$vo.paper_info.exams_paper_title}</h4>
+                                <p>{:date('Y-m-d H:i:s',$vo['update_time'])}</p>
+                            </span>
+                            <strong>{$vo.wrong_count}道错题</strong>
+                            <a href="{:U('exams/Index/wrongExamsroom',['joinType'=>1,'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn exams'>错题再练</a>
+                            <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+                        </a>
+                    </li>
+                    </volist>
+                </ul>
+                <php>}else{</php>
+                    <span>暂时没有记录</span>
+                <php>}</php>
+            </case>
+            <case value="4">
+                <!--题目收藏-->
+                <php>if($list['data']){</php>
+                <ul class="suren-content collection">
+                    <volist name="list.data" id="vo">
+                    <li>
+                        <a href="#">
+                            <span>
+                                <php>if($vo['question_info']['content']){</php>
+                                <h4>{:t($vo['question_info']['content'])}</h4>
+                                <php>}else{</php>
+                                <h4 style="color: #F00;">该试题已被删除</h4>
+                                <php>}</php>
+                                <p>{:date('Y-m-d H:i:s',$vo['ctime'])}</p>
+                            </span>
+                            <php>if($vo['question_info']['content']){</php>
+                                <a href="{:U('exams/Index/showQuestioninfo',['question_id'=>$vo['source_id']])}" class="btn exams">查看题目</a>
+                                <a class='btn del deleteCollection' data-question_id="{$vo.source_id}">删除</a>
+                            <php>}else{</php>
+                                <a class='btn del deleteCollection' style="right: -95px;"  data-question_id="{$vo.source_id}">删除</a>
+                            <php>}</php>
+                            
+                        </a>
+                    </li>
+                    </volist>
+                </ul>
+                <php>}else{</php>
+                    <span>暂时没有收藏的试题</span>
+                <php>}</php>
+            </case>
+            <default />
+            <!--练习记录 考试记录-->
+                <php>if($list['data']){</php>
+                <ul class="suren-content">
+                    <volist name="list.data" id="vo">
+                    <li>
+                        <span>
+                            <h4>2015年四川省公考《申论》真题</h4>
+                            <p>{:date('Y-m-d H:i:s',$vo['update_time'])}</p>
+                        </span>
+                        <php>if($vo['progress'] == 100){</php>
+                            <strong>{$vo.score|default="0"}分</strong>
+                            <a href="{:U('exams/Index/examsresult',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn show'>查看结果</a>
+                            <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+                        <php>}else{</php>
+                            <i class="icon icon-weiwancheng"></i>
+                            <a href="{:U('exams/Index/examsroom',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class='btn exams'>继续答题</a>
+                            <a class='btn del deleteExeams' data-temp_id="{$vo.exams_users_id}">删除</a>
+                        <php>}</php>
+                    </li>
+                    </volist>
+                </ul>
+                <php>}else{</php>
+                    <span>暂时没有记录</span>
+                <php>}</php>
+            </switch>
+        </div>
+    </div>
+</div>
+
+<!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+    <div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+    </div>
+    <eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+    </eq>
+
+    <script src="__THEMEW3G__/js/script.js"></script>
+</div>
+</body>
+</html>
+<script src="{$Think.APPS_URL}/exams/_static/js/public_header_footer_media.js"></script>
+<script src="{$Think.APPS_URL}/exams/_static/js/swipe.js" charset="utf-8"></script>
+<script type="text/javascript">
+    $(function(){
+        $('.suren-content li').rhuiSwipe('swipeLeft', function(event){
+            var left = 0;
+            $(this). find(".btn").each(function(){
+                left += $(this).width();
+                $(this).css({lineHeight:$(this).height()+'px'});
+            });
+            $(this).animate({left:"-"+left+"px"},500);
+            $(this).siblings().css("left","0px");
+        }, {
+            // 可选参数
+            isStopPropagation: false,
+            isPreventDefault: false,
+            triggerOnMove: true
+        });
+        $('.suren-content li').rhuiSwipe('swipeRight', function(event){
+            $(this).animate({left:"0px"},500);
+            $(this).siblings().animate({left:0},500);
+        }, {
+            // 可选参数
+            isStopPropagation: false,
+            isPreventDefault: false,
+            triggerOnMove: true
+        });
+
+
+        // 删除考试记录
+        $(".deleteExeams").live('click',function(){
+            if(confirm('确认删除该记录吗?')){
+                $.post('{:U("exams/Index/deleteExeams")}',{temp_id:$(this).data('temp_id')},function(res){
+                if(typeof(res) != "object"){
+                    try{
+                        var res = JSON.parse(res);
+                    }catch(e){
+                        alert("请求出错,请稍后再试");
+                        return false;
+                    }
+                }
+                if(res.status == 1){
+                    alert(res.data.info);
+                    window.location.reload();
+                }else{
+                    alert(res.message);
+                    return false;
+                }
+            });
+            }
+        });
+        // 取消收藏
+        $(".deleteCollection").live('click',function(){
+            var question_id = $(this).data('question_id');
+            if(confirm('确认删除该试题吗?')){
+                // 后台
+                $.post(U('exams/Index/collect'),{action:0,source_id:question_id},function(res){
+                    if(typeof(res) != 'object'){
+                        try{
+                            var res = JSON.parse(res);
+                        }catch(e){
+                            alert("处理异常,请重新尝试");
+                            return false;
+                        }
+                    }
+
+                    if(res.status == 1){
+                        alert(res.data.info);
+                        window.location.reload();
+                        return true;
+                    }else{
+                        alert(res.message);
+                        return false;
+                    }
+                });
+            }
+        });
+
+        var p = 1;
+        $(window).scroll(function(){
+            var scrollTop = $(this).scrollTop();
+            var scrollHeight = $(document).height();
+            var windowHeight = $(this).height();
+            if(scrollTop + windowHeight == scrollHeight){
+                if(!p || p >= parseInt("{$list['totalPages']}")){
+                    return false;
+                }else{
+                    p = p+1;
+                    $.ajax({
+                        type: "GET",
+                        url:"{:U('classroom/Home/exams')}",
+                        data:{
+                            tab:'{$Think.get.tab}',
+                            p:p
+                        },
+                        dataType:"json",
+                        success:function(res){
+                            if(typeof(res) != 'object'){
+                                try{
+                                    var res = JSON.parse(res);
+                                }catch(e){
+                                    alert("处理异常,请重新尝试");
+                                    return false;
+                                }
+                            }
+
+                            if(res.status == 1){
+                                $(".asmarfr-pr ul").append(res.data.html);
+                                return true;
+                            }
+                            
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>

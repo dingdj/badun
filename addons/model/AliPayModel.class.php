@@ -9,7 +9,7 @@ class AliPayModel extends Model {
     /**
      * @param $bizcontent 阿里支付业务参数
      * @param $notifyUrl 异步通知回调地址
-     * @param $from 来源 api为移动端，pc为服务端 wap为h5 refund为在线退款 _refund为在线退款查询
+     * @param $from 来源 api为移动端，pc为服务端 wap为h5 refund为在线退款 _refund为在线退款查询 transfer_accounts为在线转账
      * @param $returnUrl 同步通知回调地址//用于非api的来源发起
      * @return string|提交表单HTML文本
      */
@@ -28,6 +28,8 @@ class AliPayModel extends Model {
             tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'api','pay','alipay_v3','request','AlipayTradeRefundRequest.php')));
         }elseif($from == '_refund'){
             tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'api','pay','alipay_v3','request','AlipayTradeFastpayRefundQueryRequest.php')));
+        }elseif($from == 'transfer_accounts'){
+            tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'api','pay','alipay_v3','request','AlipayFundTransToaccountTransferRequest.php')));
         }
         $aop = new \AopClient();
 
@@ -50,11 +52,19 @@ class AliPayModel extends Model {
             $request = new \AlipayTradeRefundRequest ();
         }elseif($from == '_refund'){
             $request = new \AlipayTradeFastpayRefundQueryRequest ();
+        }elseif($from == 'transfer_accounts'){
+            $request = new \AlipayFundTransToaccountTransferRequest ();
         }
+
+        $tpay_switch = model('Xdata')->get("admin_Config:payConfig");
 
         if($from == 'refund' || $from == '_refund'){
             if($from == 'refund'){
-                $bizcontent['refund_amount']  = '0.01';//(string)测试付款金额 新版
+                //$bizcontent['refund_amount']  = '0.01';//(string)测试付款金额 新版
+            }
+        }if($from == 'transfer_accounts'){
+            if($tpay_switch['swn_switch']){
+                $bizcontent['amount']  = '0.1';//(string)测试转账金额
             }
         }else{
             //支付宝回调
@@ -62,8 +72,10 @@ class AliPayModel extends Model {
             if($from != 'api'){
                 $request->setReturnUrl($returnUrl);
             }
-            //设置支付的Data信息
-            $bizcontent['total_amount']  = '0.01';//(string)测试付款金额 新版
+            //设置支付的Data信息 //(string)测试付款金额 新版
+            if($tpay_switch['tpay_switch']){
+                $bizcontent['total_amount']  = '0.01';
+            }
         }
 
         $request->setBizContent(json_encode($bizcontent));
@@ -73,7 +85,7 @@ class AliPayModel extends Model {
         }elseif($from == 'api'){
             //这里和普通的接口调用不同，使用的是sdkExecute
             $response = $aop->sdkExecute($request);
-        }elseif($from == 'refund' || $from == '_refund'){
+        }elseif($from == 'refund' || $from == '_refund' || $from == 'transfer_accounts'){
             $result = $aop->execute ( $request);
 
             $response[0] = $request;
@@ -97,9 +109,9 @@ class AliPayModel extends Model {
         file_put_contents('logs/alipayre.txt',json_encode($_POST));
         tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'api','pay','alipay_v3','AopClient.php')));
         $aop = new AopClient;
-
         $aop->alipayrsaPublicKey = model('Xdata')->get('admin_Config:alipay')['public_key'];
         //此处验签方式必须与下单时的签名方式一致
+//        $_POST = json_decode(file_get_contents('logs/alipayre.txt'),true);
         $verify_result = $aop->rsaCheckV1($_POST, NULL, "RSA");
         if(!$verify_result) exit('fail');
         file_put_contents('logs/alipayre_success.txt',json_encode($_POST));

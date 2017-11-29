@@ -45,10 +45,15 @@ class ExamsUserModel extends Model
             foreach ($data as $key => $e) {
                 $data[$key]['paper_info'] = D('ExamsPaper', 'exams')->getPaperById($e['exams_paper_id']);
                 // 分析答题内容
-                $data[$key]['content'] = unserialize($e['content']);
+                $data[$key]['content'] = unserialize($e['content']) ?: [];
                 // 计算正确率
                 $data[$key]['right_rate']    = (round($e['right_count'] / ($e['right_count'] + $e['wrong_count']), 2) * 100) . '%';
-                $data[$key]['examiner_data'] = unserialize($e['examiner_data']);
+                $data[$key]['examiner_data'] = unserialize($e['examiner_data']) ?: [];
+                $data[$key]['right_count']   = intval($e['right_count']);
+                $data[$key]['wrong_count']   = intval($e['wrong_count']);
+                $data[$key]['progress']      = intval($e['progress']);
+                $data[$key]['anser_time']    = intval($e['anser_time']);
+                $data[$key]['score']         = intval($e['score']);
             }
         }
         return $data;
@@ -81,7 +86,9 @@ class ExamsUserModel extends Model
         $is_wrongexams = isset($data['is_wrongexams']);
         foreach ($questions as $question_id => &$answer) {
             // 统一转换为数组处理
-            if (is_string($answer)) {
+            if (is_string($answer) && stripos($answer, ',') !== false) {
+                $answer = explode(',', $answer);
+            } elseif (is_string($answer)) {
                 $answer = [$answer];
             }
             array_push($question_answer, $question_id);
@@ -155,11 +162,11 @@ class ExamsUserModel extends Model
             'progress'        => 100,
             'exams_mode'      => intval($data['exams_mode']) ?: 2,
             'completion_rate' => $completion_rate . '%',
-            'pid'             => isset($data['wrongexams_temp']) ? intval($data['wrongexams_temp']) : 0,
         ];
         // 如果是继续答题,执行修改
         if (!$exams_users_id) {
-            $res = $this->add($data);
+            $data['pid'] = isset($data['wrongexams_temp']) ? intval($data['wrongexams_temp']) : 0;
+            $res         = $this->add($data);
             // 记录试题
             D('ExamsLogs', 'exams')->addLog(['data' => $logs, 'exams_users_id' => $res]);
             if ($res && $data['exams_mode'] == 2) {
@@ -189,8 +196,19 @@ class ExamsUserModel extends Model
         $exams_users_id = isset($data['exams_users_id']) ? $data['exams_users_id'] : 0;
         foreach ($questions as $question_id => &$answer) {
             // 统一转换为数组处理
-            if (is_string($answer)) {
+            if (stripos($answer, ',') !== false) {
+                $answer = explode(',', $answer);
+            } elseif (is_string($answer)) {
                 $answer = [$answer];
+            }
+        }
+        // 判断是否超时
+        if (!isset($data['is_timeout'])) {
+            $reply_time = (int) D('ExamsPaper', 'exams')->where('exams_paper_id=' . $paper_id)->getField('reply_time') * 60;
+            if ($reply_time == 0) {
+                $data['is_timeout'] = 0;
+            } else {
+                $data['is_timeout'] = ($reply_time > intval($data['anser_time'])) ? 0 : 1;
             }
         }
         if ($data['is_timeout'] == 0) {
@@ -216,6 +234,7 @@ class ExamsUserModel extends Model
                 'progress'        => $progress,
                 'exams_mode'      => intval($data['exams_mode']) ?: 2,
                 'completion_rate' => $progress . '%',
+                'pid'             => isset($data['wrongexams_temp']) ? intval($data['wrongexams_temp']) : 0,
             ];
             $res = $this->add($data);
             // 记录试题
@@ -304,7 +323,7 @@ class ExamsUserModel extends Model
         // 获取当前排名前$count的名次
         $top    = 'top' . $count;
         $prefix = C('DB_PREFIX');
-        $sql    = 'SELECT *, CASE WHEN @prevRank = score THEN @curRank WHEN @prevRank := score THEN @curRank := @curRank + 1 END AS rank from ' . $prefix . 'exams_users,(SELECT @curRank := 0,@prevRank := NULL) r ORDER BY score DESC LIMIT 0,' . $count;
+        $sql    = 'SELECT *, CASE WHEN @prevRank = score THEN @curRank WHEN @prevRank := score THEN @curRank := @curRank + 1 END AS rank from ' . $prefix . 'exams_users,(SELECT @curRank := 0,@prevRank := NULL) r ORDER BY score DESC,anser_time ASC LIMIT 0,' . $count;
         $list   = $this->query($sql);
 
         // 获取当前排名
@@ -330,6 +349,6 @@ class ExamsUserModel extends Model
             return false;
         }
 
-        return (int) $this->where(['exams_mode'=>2,'exams_paper_id' => $paper_id, 'pid' => 0])->count() >= $exams_limit ? true : false;
+        return (int) $this->where(['uid' => $this->mid, 'exams_mode' => 2, 'exams_paper_id' => $paper_id, 'pid' => 0])->count() >= $exams_limit ? true : false;
     }
 }

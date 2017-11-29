@@ -1,13 +1,16 @@
 <!DOCTYPE HTML><head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$seo['_title']}</title>
+    <meta content="{$seo['_meta']}" name="keywords">
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0 minimal-ui"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
+	<link href="__THEMENEW__/css/public2.0.css" rel="stylesheet">
+	<link href="__THEMENEW__/css/public_header_footer_media.css" rel="stylesheet">
 	<link href="__THEMEW3G__/css/style.css" rel="stylesheet">
 	<link href="__THEMEW3G__/css/style_add.css" rel="stylesheet">
-	<link href="__THEMENEW__/css/_header_footer_media.css" rel="stylesheet">
 	<script src="__THEMEW3G__/js/jquery.js"></script>
+	<script src="__THEME__/js/index_new/public_header_footer_media.js"></script>
 	<script src="__THEMEW3G__/js/TouchSlide.1.0.js"></script>
 	<script src="__THEMEW3G__/js/jquery.SuperSlide.2.1.js"></script>
 	<script src="__THEME__/js/cyjs/title_common.js"></script>
@@ -19,7 +22,7 @@
 		var UPLOAD_URL= '<php> echo UPLOAD_URL;</php>';
 		var THEME_URL = '__THEME__';
 		var APPNAME   = '<php> echo APP_NAME;</php>';
-		var MID		  = '<php> echo $mid;</php>';
+		var MID		  = parseInt('<php> echo $mid;</php>');
 		var UID		  = '<php> echo $uid;</php>';
 		var initNums  =  '<php> echo $initNums;</php>';
 		var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
@@ -39,13 +42,14 @@
 	</script>
 </head>
 <body>
-<!--preloader-->
-<div id="preloader">
-	<div id="status">
-		<p class="center-text">
-			加载内容...
-			<em>加载取决于您的连接速度!</em>
-		</p>
+
+	<!--preloader-->
+	<div id="preloader">
+		<div id="status">
+			<p class="center-text">
+				加载内容...
+				<em>加载取决于您的连接速度!</em>
+			</p>
+		</div>
 	</div>
-</div>
-<!--header-->
+	<!--header-->

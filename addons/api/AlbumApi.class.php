@@ -1,6 +1,6 @@
 <?php
 /**
- * 套餐api
+ * 班级api
  * utime : 2016-03-06
  */
 
@@ -18,7 +18,7 @@ class AlbumApi extends Api{
         $this->category = model('VideoCategory');
     }
     /**
-    * 加载我收藏的套餐
+    * 加载我收藏的班级
     * @return void
     */
     public function getCollectAlbumsList(){
@@ -50,10 +50,10 @@ class AlbumApi extends Api{
         if($data){
             $this->exitJson($data);
         }else{
-            $this->exitJson(array(),10016,'你还没有收藏的套餐!');
+            $this->exitJson(array(),10016,'你还没有收藏的班级!');
         }
     }
-    //获取套餐列表api
+    //获取班级列表api
     public function getAlbumList(){
         //排序
         $order = 'id DESC';
@@ -86,17 +86,17 @@ class AlbumApi extends Api{
             $val['video_cont'] = count($video_ids);
         }
         
-        //格式化套餐评分
+        //格式化班级评分
         foreach ($data as &$val){
             $val['album_score'] = round($val['album_score']/20);
 			$val['cover']       = getCover($val['cover'] , 280 , 160);
         }
-        //计算一个套餐集合的价格
+        //计算一个班级集合的价格
         $data = $this->album->getAlbumMoneyList($data , $this->mid);
         $this->exitJson($data);
     }
     
-    //查看一个套餐的详情
+    //查看一个班级的详情
     public function albumView(){
         $id = $this->data['id'];
         $map['id'] = array('eq', $id);
@@ -110,19 +110,19 @@ class AlbumApi extends Api{
         $data['reviewCount'] = D('ZyReview','classroom')->getReviewCount(2, intval($data['id']));
         $data['album_title'] = $data['album_title'];
         $data['album_intro'] = $data['album_intro'];
-        //套餐分类
+        //班级分类
         $data['album_category_name'] = getCategoryName($data['album_category'], true);
-        //获取套餐图片
+        //获取班级图片
         $data['cover'] = getCover($data['cover'] , 280 , 160);
         //是否收藏
         $data['iscollect'] = D('ZyCollection','classroom')->isCollect($id, 'album', intval($this->mid));
-        //获取套餐价格
+        //获取班级价格
         //$data['mzprice'] = $this->album->getAlbumMoeny( $this->album->getVideoId($data['id']) , $this->mid );
-        if( intval($data['price'] ) ) {
+        if( floatval($data['price'] ) ) {
             $price = is_admin($this->mid) ? 0 : $data['price'];
             $data['mzprice'] = array('overplus'=>$price);
         } else {
-            //获取套餐价格
+            //获取班级价格
             $data['mzprice'] = $this->album->getAlbumMoeny( $this->album->getVideoId($data['id']) ,$this->mid);
         }
         //检查一个用户的余额/冻结的数量是否够支配
@@ -132,11 +132,11 @@ class AlbumApi extends Api{
         //是否购买
         $data['is_buy'] = D ( 'ZyOrder','classroom' )->isBuyAlbum($this->mid , $id);
         //是否全部播放视频
-        $data['is_play_all'] = ($data['is_buy'] || $this->mid==1 || intval( $data ['mzprice']['overplus'] )  <= 0 ) ? 1 : 0;
+        $data['is_play_all'] = ($data['is_buy'] || $this->mid==1 || floatval( $data ['mzprice']['overplus'] )  <= 0 ) ? 1 : 0;
         $this->exitJson($data);
     }
 
-    //获取套餐目录
+    //获取班级目录
     public function getCatalog(){
         $id = intval($this->data['id']);
         $videos = $this->album->getVideoId($id);
@@ -146,7 +146,7 @@ class AlbumApi extends Api{
         $this->exitJson($result);
     }
     
-    //获取套餐标签集合
+    //获取班级标签集合
     public function getAlbumTag(){
         $tagSize = intval(getAppConfig('album_list_tag_num', 'page', 30));
         $tags = model('Tag')->setAppName('classroom')
@@ -160,7 +160,7 @@ class AlbumApi extends Api{
     }
 	
 	/**
-    * 加载我购买的套餐
+    * 加载我购买的班级
     * @return void
     */
 	public function getBuyAlbumsList(){
@@ -173,7 +173,7 @@ class AlbumApi extends Api{
 		$fields .= "{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
 		$fields .= "{$atablename}.`id`,{$atablename}.`album_title`,{$atablename}.`album_category`,{$atablename}.`album_intro`,";
 		$fields .= "{$atablename}.`cover`,{$atablename}.`album_order_count`,{$atablename}.`album_score`";
-		//不是通过套餐购买的
+		//不是通过班级购买的
 		$where     = "{$otablename}.`is_del`=0 and {$otablename}.`uid`={$uid}";
 		$data = M('ZyOrderAlbum')->join("{$atablename} on {$otablename}.`album_id`={$atablename}.`id`")->where($where)->field($fields)->limit($this->_limit())->select();
 		if( !$data ) {
@@ -187,7 +187,7 @@ class AlbumApi extends Api{
             $video_ids = explode(',' , $video_ids);
             $val['video_cont'] = count($video_ids);
         }
-        //计算一个套餐集合的价格
+        //计算一个班级集合的价格
         $data = $this->album->getAlbumMoneyList($data , $this->mid);
         foreach($data as &$val){
         	$val['album_score'] = round($val['album_score']/20);
@@ -197,7 +197,7 @@ class AlbumApi extends Api{
         $this->exitJson($data);
 	}
     /**
-     * 购买套餐操作
+     * 购买班级操作
      */
     public function buyOperating() {
         $albumId = intval($this->data['id']);
@@ -205,10 +205,10 @@ class AlbumApi extends Api{
             $this->exitJson(array() , 10017,'请先登录!');
         }
         if (!$albumId) {
-            $this->exitJson(array() , 10017,'没有选择套餐!');
+            $this->exitJson(array() , 10017,'没有选择班级!');
         }
         if ($this->zyorder->isBuyAlbum($this->mid,$albumId)) {
-            $this->exitJson(array() , 10017,'您已经买了本套餐!');
+            $this->exitJson(array() , 10017,'您已经买了本班级!');
         }
         $album = $this->album->getAlbumById($albumId);
         $video_ids = trim($this->album->getVideoId($albumId), ',');
@@ -232,7 +232,7 @@ class AlbumApi extends Api{
             }
         }
         if ($illegal_count > 0) {
-            $this->exitJson( array() ,10017,'套餐中包含有过期的课程，无法整辑购买!');
+            $this->exitJson( array() ,10017,'班级中包含有过期的课程，无法整辑购买!');
         }
 
         if (!$this->zylearnc->isSufficient($this->mid, $total_price, 'balance')) {
@@ -246,11 +246,11 @@ class AlbumApi extends Api{
         //订单数量加1
         M()->query("UPDATE `".C('DB_PREFIX')."album` SET `album_order_count`=`album_order_count`+1 WHERE `id`=$albumId");
         //添加消费记录
-        M('ZyLearnc')->addFlow($this->mid, 0, $total_price, $note = '购买套餐<' . $album['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
+        M('ZyLearnc')->addFlow($this->mid, 0, $total_price, $note = '购买班级<' . $album['album_title'] . '>', $pay_result['rid'], 'zy_order_album');
        //添加订单记录到课程
         $sql="update `".C('DB_PREFIX')."zy_video`  set video_order_count=video_order_count+1 where `id` in('$video_ids')";
         M()->query($sql);
-        //添加套餐中的课程购买记录
+        //添加班级中的课程购买记录
         $insert_value = "";
         foreach ($album_info as $key => $video) {
             if (!$video['is_buy']) {
@@ -277,8 +277,8 @@ class AlbumApi extends Api{
             $albumname= $this->album->getAlbumTitleById($albumId);
             $s['uid']=$this->mid;
             $s['is_read'] = 0;
-            $s['title'] = "恭喜您购买套餐成功";
-            $s['body'] = "恭喜您成功购买套餐：".$albumname;
+            $s['title'] = "恭喜您购买班级成功";
+            $s['body'] = "恭喜您成功购买班级：".$albumname;
             $s['ctime'] = time();
             model('Notify')->sendMessage($s);
             $this->exitJson( array() ,0,'购买成功!');

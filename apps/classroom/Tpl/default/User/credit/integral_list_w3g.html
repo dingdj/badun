@@ -40,7 +40,7 @@
                 <tr>
                     <td><?php echo ceil($data['totalRows']/$data['totalPages'])*($data['nowPage']-1)+$i+1?></td>
                     <td>{:friendlyDate($rs['ctime'])}</td>
-                    <td>￥{:unLast0($rs['num'])}</td>
+                    <td>{:unLast0($rs['num'])}</td>
                     <td>{$rs['type']}</td>
                     <td>成功</td>
                     <td><?php echo str_replace('Eduline-','',$rs['note'])?></td>

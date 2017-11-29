@@ -1,0 +1,210 @@
+<include file="__THEME__/public_header_w3g"/>
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer_media.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/exam_2.0.css">
+<div class="cover"></div>
+<div class="min-height-wrap">
+    <div class="exam-header">
+        <div class="back-date">
+            <i class="icon icon-fanhui1" style="display: none;"></i>
+            <small><span id="time_hh">-</span>:<span id="time_mm">-</span>:<span id="time_ss">-</span></small>
+        </div>
+        <div class="view-stop">
+            <i class="icon icon-zanting"></i>
+            <a href="javascript:;" id="show-answer-card"><i class="icon icon-datiqia"></i></a>
+        </div>
+        <ul class="the-stop">
+            <li>继续</li>
+            <li id="progressExams">下次再做</li>
+        </ul>
+    </div>
+    <div class="answer-card">
+    	<php>$question_num = 1;</php>
+    	<volist name="paper_options.options_type" id="options_type">
+    	<php>
+    		if(!$paper_options['options_questions_data'][$options_type['question_type']]){
+    			break;
+    		}
+    	</php>
+        <dl>
+            <dt><h6>{$options_type.type_info.question_type_title}</h6></dt>
+            <dd>
+            	<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+                	<a id="card{$question_num}" <php>if(isset($tempData['content'][$question['exams_question_id']])){ echo "class='on'";}</php> href="javascript:;" data-question_num="{$question_num}" class="go_question">{$question_num}</a>
+                	<php>$question_num++;</php>
+                </volist>
+            </dd>
+        </dl>
+        </volist>
+
+        <div class="btns-complete">
+            <a href="javascript:void(0)" style="color:#fff;" class="assignment">交卷</a>
+        </div>
+    </div>
+    <input type="hidden" name="reply_time" value="{$paper.reply_time|default='0'}" />
+    <form name="answers" method="POST" action="{:U('exams/Index/doHaddleExams')}">
+    <input type="hidden" name="anser_time" id="anser_time" value="{$tempData.anser_time|default='0'}">
+    <input type="hidden" name="exams_mode" value="{$Think.get.joinType|default=1}">
+    <input type="hidden" name="paper_id" value="{$paper.exams_paper_id}">
+    <input type="hidden" name="is_timeout" value="0">
+    <php>if($tempData){</php>
+    <input type="hidden" name="exams_users_id" value="{$tempData.exams_users_id}">
+    <php>}</php>
+    <div class="static-exam">
+    	<php>$question_num = 1;</php>
+    	<volist name="paper_options.options_type" id="options_type">
+        	<switch name="options_type.question_type_key">
+	            <case value="radio|judge|multiselect">
+	            	<!-- 单选题 -->
+	            	<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		            	<dl id="ex{$question_num}" data-type="{$options_type.question_type_key}" data-question_num="{$question_num}">
+			            	<dt>
+				                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$options_type.type_info.question_type_title}</strong></h5>
+				                <h3>{$question.content}</h3>
+				            </dt>
+				            <dd>
+				            	<php>
+                                    if($tempData){
+                                        $content = isset($tempData['content'][$question['exams_question_id']]) ? $tempData['content'][$question['exams_question_id']] : [];
+                                    }else{
+                                        $content = [];
+                                    }
+                                </php>
+				                <volist name="question.answer_options" id="answer">
+                                    <p data-answer="{$key}" <php>if(in_array($key,$content)){</php>class="on"<php>}</php>><em>{$key}</em>{$answer}</p>
+                                </volist>
+                                <div class="user_answer_hidden">
+                                	<input type="hidden" name="user_answer[{$question.exams_question_id}]" value="{:implode(',',$content)}">
+                                </div>
+				            </dd>
+				            <a href="javascript:;" data-question_num="{$question_num}" class="next next_question">下一题</a>
+				            <div class="operation">
+				                <div class="operation-tit">
+				                    <eq name="isPractice" value="1"><strong><small>查看解析</small><i class="icon icon-arrowDown"></i></strong></eq>
+				                    <php>if($question['is_collect'] == 1){</php>
+	                                    <b data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon icon-shoucang2" style="color:#F7B659;"></i><small>已收藏</small></b>
+	                                <php>}else{</php>
+	                                    <b data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon icon-shoucang2"></i><small>收藏习题</small></b>
+	                                <php>}</php>
+				                </div>
+				                <eq name="isPractice" value="1">
+					                <!--答案解析-->
+					                <div class="analysis">
+					                    <div class="analysis-pic">
+					                        <h6>正确答案</h6><abbr><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></abbr>
+					                    </div>
+					                    <div class="analysis-txt">
+					                        <h6>解析</h6>
+					                        <p>{$question.analyze}</p>
+					                    </div>
+					                </div>
+				                </eq>
+				            </div>
+				        </dl>
+				        <php>$question_num++;</php>
+			        </volist>
+	            </case>
+	            <case value="completion">
+	            	<!-- 填空题 -->
+		            <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		            <dl id="ex{$question_num}" data-type="{$options_type.question_type_key}" data-question_num="{$question_num}">
+		            	<dt>
+			                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$options_type.type_info.question_type_title}</strong></h5>
+			                <h3>{$question.content}</h3>
+			            </dt>
+			            <dd>
+			            	<php>
+	                            if($tempData){
+	                                $content = isset($tempData['content'][$question['exams_question_id']]) ? $tempData['content'][$question['exams_question_id']] : [];
+	                            }else{
+	                                $content = [];
+	                            }
+	                        </php>
+	                        <volist name="question.answer_true_option" id="answer">
+	                            <label>{$i}、<input type="text" class="anserItem" <php>if($content){</php>value="{$content[$i-1]}"<php>}</php> name="user_answer[{$question.exams_question_id}][]"></label>
+	                        </volist>
+			            </dd>
+			            <a href="javascript:;" data-question_num="{$question_num}" class="next next_question">下一题</a>
+			            <div class="operation">
+			                <div class="operation-tit">
+			                    <eq name="isPractice" value="1"><strong><small>查看解析</small><i class="icon icon-arrowDown"></i></strong></eq>
+			                    <php>if($question['is_collect'] == 1){</php>
+                                    <b data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon icon-shoucang2" style="color:#F7B659;"></i><small>已收藏</small></b>
+                                <php>}else{</php>
+                                    <b data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon icon-shoucang2"></i><small>收藏习题</small></b>
+                                <php>}</php>
+			                </div>
+			                <eq name="isPractice" value="1">
+				                <!--答案解析-->
+				                <div class="analysis">
+				                    <div class="analysis-pic">
+				                        <h5>正确答案</h5>
+				                        <ul>
+				                            <volist name="question.answer_true_option" id="answer_true">
+			                                    <li>{$i}、{$answer_true}</li>
+			                                </volist>
+				                        </ul>
+
+				                    </div>
+				                    <div class="analysis-txt">
+				                        <h6>解析</h6>
+				                        <p>{$question.analyze}</p>
+				                    </div>
+				                </div>
+			                </eq>
+			            </div>
+			        </dl>
+			        <php>$question_num++;</php>
+			        </volist>
+	            </case>
+	            <case value="essays">
+	            	<!-- 简述题-->
+	            	<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
+		            <dl id="ex{$question_num}" data-type="{$options_type.question_type_key}" data-question_num="{$question_num}">
+	            		<dt>
+			                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$options_type.type_info.question_type_title}</strong></h5>
+			                <h3>{$question.content}</h3>
+			            </dt>
+			            <dd>
+			            	<php>
+	                            if($tempData){
+	                                $content = isset($tempData['content'][$question['exams_question_id']]) ? $tempData['content'][$question['exams_question_id']] : [];
+	                            }else{
+	                                $content = [];
+	                            }
+	                        </php>
+			                <textarea class="anserItem" name="user_answer[{$question.exams_question_id}]">{$content[0]|default=''}</textarea>
+			            </dd>
+			            <a href="javascript:;" data-question_num="{$question_num}" class="next next_question">下一题</a>
+			            <div class="operation">
+			                <div class="operation-tit">
+			                    <eq name="isPractice" value="1"><strong><small>查看解析</small><i class="icon icon-arrowDown"></i></strong></eq>
+			                    <php>if($question['is_collect'] == 1){</php>
+                                    <b data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon icon-shoucang2" style="color:#F7B659;"></i><small>已收藏</small></b>
+                                <php>}else{</php>
+                                    <b data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon icon-shoucang2"></i><small>收藏习题</small></b>
+                                <php>}</php>
+			                </div>
+			                <eq name="isPractice" value="1">
+			                <!--答案解析-->
+			                <div class="analysis">
+			                    <div class="analysis-txt">
+			                        <h6>解析</h6>
+			                        <p>{$question.analyze}</p>
+			                    </div>
+			                </div>
+			                </eq>
+			            </div>
+			        </dl>
+			        <php>$question_num++;</php>
+			        </volist>
+	            </case>
+            </switch>
+        </volist>
+    </div>
+    </form>
+</div>
+<include file="__THEME__/public_footer_w3g"/>
+<script src="__APP__/js/public_header_footer_media.js"></script>
+<script src="__APP__/js/public_exam_3g.js"></script>

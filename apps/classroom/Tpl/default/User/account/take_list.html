@@ -1,10 +1,22 @@
 <include file="__THEME__/public_header" />
-
-
-
-<include file="../../User/public/_top" />
-<!--centerbox end-->
-<div class="content cbg">
+<style type="text/css">
+    .center_left{
+        border-radius: 4px;
+        overflow:hidden;
+        float: left;
+    }
+    .center_right{
+        float: right;
+    }
+    .center_right_tit div .on{
+        color:#00BED4;
+    }
+    .user-con-title a{
+        width:auto;
+        float: left;
+    }
+</style>
+<div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
     <div class="wrap">
         <include file="../../User/public/_left" />
 
@@ -48,12 +60,12 @@
                     <tr>
                         <td><?php echo ($i+1)*$data['nowPage']?></td>
                         <td>{:friendlyDate($rs['ctime'])}</td>
-                        <td>{:unLast0($rs['wnum'])}积分</td>
+                        <td>{:unLast0($rs['wnum'])}余额</td>
                         <td{$rs['status']<2?' class="lan_txt"':''}><?php echo $statusTxts[$rs['status']];echo $rs['status']==0?'　<a href="javascript:;" onclick="cancelWithdraw('.$rs['id'].');" style="color:#06A7E1">取消</a>':'';?></td>
                     </tr>
                     <?php endforeach;?>
                     </tbody></table>
-                <div class="mt10 account_page">累计成功提现：<em class="red_txt">{:unLast0($total)}</em>积分<p>共{$data.totalRows}条　{$data.html}</p></div>
+                <div class="mt10 account_page">累计成功提现：<em class="red_txt">{:unLast0($total)}</em>余额<p>共{$data.totalRows}条　{$data.html}</p></div>
             </div>
 
         </div>
@@ -88,7 +100,7 @@ function cancelWithdraw(id){
 				window.location.reload();
 			}, 2000);
 		}else{
-			var errMsgs = ['取消失败',null,'没有找到提现记录',null,'积分解冻失败',null,'提现已完成或已经关闭'];
+			var errMsgs = ['取消失败',null,'没有找到提现记录',null,'余额解冻失败',null,'提现已完成或已经关闭'];
 			data.info = parseInt(data.info);
 			var msg  = errMsgs[data.info] ? errMsgs[data.info] : '未知错误';
 			notes('错误：'+msg, 'failure');

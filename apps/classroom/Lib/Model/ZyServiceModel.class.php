@@ -21,7 +21,7 @@ class ZyServiceModel {
      * 4:余额转冻结失败：可能是余额不足
      * 5:提现记录添加失败
      */
-    public function applyWithdraw($uid, $wnum, $bcard_id) {
+    public function applyWithdraw($uid, $wnum, $bcard_id,$wtype = 1) {
 
         //检查提现金额是否按照系统规定的倍数
         $wb = intval(getAppConfig('withdraw_basenum'));
@@ -48,12 +48,62 @@ class ZyServiceModel {
         }
 
         //申请提现
-        $id = D('ZyWithdraw','classroom')->apply($uid, $wnum, $bcard_id);
+        $id = D('ZyWithdraw','classroom')->apply($uid, $wnum, $bcard_id,$wtype);
         if (!$id)
             return 5;
 
         //添加流水记录
         $zyLearnc->addFlow($uid, 2, $wnum, '申请提现', $id, 'zy_withdraw');
+
+        return true;
+    }
+
+    /**
+     * 申请提现
+     * @param integer $uid 提现用户UID
+     * @param integer $wnum 提现数量/金额
+     * @param integer $bcard_id 提现银行卡ID
+     * @return mixed 成功后返回true，失败返回错误状态码
+     * 错误状态一览：
+     * 1:申请提现的收入余额不是系统指定的倍数，或小于0
+     * 2:没有找到用户对应的提现银行卡/账户
+     * 3:有未完成的提现记录，需要等待完成
+     * 4:余额转冻结失败：可能是余额不足
+     * 5:提现记录添加失败
+     */
+    public function applySpiltWithdraw($uid, $wnum, $bcard_id,$wtype = 2) {
+
+        //检查提现金额是否按照系统规定的倍数
+        $wb = intval(getAppConfig('withdraw_basenum'));
+        if ($wnum < 0 || $wnum < $wb || $wnum % $wb != 0) {
+            return 1;
+        }
+
+        //检查用户是否拥有银行卡
+        if (!D('ZyBcard')->hasBcard($bcard_id, $uid)) {
+            return 2;
+        }
+
+        //检查是否已经有未完成的提现记录
+        if (D('ZyWithdraw','classroom')->hasUnfinished($uid)) {
+            return 3;
+        }
+
+        //model
+        $ZySplit = D('ZySplit','classroom');
+
+        //余额转冻结
+        if (!$ZySplit->freeze($uid, $wnum)) {
+            return 4;
+        }
+
+        //申请提现
+        $id = D('ZyWithdraw','classroom')->apply($uid, $wnum, $bcard_id,$wtype);
+        if (!$id)
+            return 5;
+
+        //添加流水记录
+        $ZySplit->addFlow($uid, 2, $wnum, "申请提现：$wnum", $id, 'zy_withdraw');
 
         return true;
     }
@@ -68,7 +118,7 @@ class ZyServiceModel {
      * 错误状态一览：
      * 1:设置的状态不存在
      * 2:没有找到对应的提现记录
-     * 3:学币冻结扣除失败
+     * 3:收入余额冻结扣除失败
      * 4:学币解冻失败
      * 5:提现记录状态改变失败
      * 6:提现已完成或已经关闭
@@ -90,45 +140,87 @@ class ZyServiceModel {
 
         //当状态小于2时才能进行操作
         if ($rs['status'] < 2) {
-            //学币及流水操作流程
-            $zyLearnc = D('ZyLearnc');
-            //提现成功则扣除冻结
-            if ($status == 2) {
-                $func = 'rmfreeze';
-            } elseif ($status == 3 || $status == 4) {
-                //如果是失败或用户自动取消，则将冻结转为余额
-                $func = 'unfreeze';
+            if($rs['wtype'] == 1){
+                //学币及流水操作流程
+                $zyLearnc = D('ZyLearnc');
+                //提现成功则扣除冻结
+                if ($status == 2) {
+                    $func = 'rmfreeze';
+                } elseif ($status == 3 || $status == 4) {
+                    //如果是失败或用户自动取消，则将冻结转为余额
+                    $func = 'unfreeze';
+                }
+                //执行对应的操作
+                if (isset($func) && !$zyLearnc->$func($rs['uid'], $rs['wnum'])) {
+                    return $status == 2 ? 3 : 4;
+                }
+                //保存记录状态
+                $result = $ZyWithdraw->save(array(
+                    'id' => $id,
+                    'status' => $status,
+                    'reason' => ( $status == 2 ? '' : $reason ),
+                    'rtime' => ( $status < 2 ? 0 : time() ),
+                ));
+                if (false === $result)
+                    return 5;
+                //添加流水记录
+                if ($status == 2) {
+                    $type = 4;
+                    $note = '提现成功';
+                } elseif ($status == 3) {
+                    $type = 3;
+                    $note = '提现失败';
+                } elseif ($status == 4) {
+                    $type = 3;
+                    $note = '用户取消提现';
+                }
+                if (isset($type)) {
+                    $zyLearnc->addFlow(
+                        $rs['uid'], $type, $rs['wnum'], $note, $rs['id'], 'zy_withdraw'
+                    );
+                }
+                return true;
+            }else if($rs['wtype'] == 2){
+                //学币及流水操作流程
+                $zySplit = D('ZySplit');
+                //提现成功则扣除冻结
+                if ($status == 2) {
+                    $func = 'rmfreeze';
+                } elseif ($status == 3 || $status == 4) {
+                    //如果是失败或用户自动取消，则将冻结转为余额
+                    $func = 'unfreeze';
+                }
+                //执行对应的操作
+                if (isset($func) && !$zySplit->$func($rs['uid'], $rs['wnum'])) {
+                    return $status == 2 ? 3 : 4;
+                }
+                //保存记录状态
+                $result = $ZyWithdraw->save(array(
+                    'id' => $id,
+                    'status' => $status,
+                    'reason' => ( $status == 2 ? '' : $reason ),
+                    'rtime' => ( $status < 2 ? 0 : time() ),
+                ));
+                if (false === $result)
+                    return 5;
+                //添加流水记录
+                if ($status == 2) {
+                    $type = 4;
+                    $note = '提现成功';
+                } elseif ($status == 3) {
+                    $type = 3;
+                    $note = '提现失败';
+                } elseif ($status == 4) {
+                    $type = 3;
+                    $note = '用户取消提现';
+                }
+                if (isset($type)) {
+                    $zySplit->addFlow(
+                        $rs['uid'], $type, $rs['wnum'], $note, $rs['id'], 'zy_withdraw'
+                    );
+                }
+                return true;
             }
-            //执行对应的操作
-            if (isset($func) && !$zyLearnc->$func($rs['uid'], $rs['wnum'])) {
-                return $status == 2 ? 3 : 4;
-            }
-            //保存记录状态
-            $result = $ZyWithdraw->save(array(
-                'id' => $id,
-                'status' => $status,
-                'reason' => ( $status == 2 ? '' : $reason ),
-                'rtime' => ( $status < 2 ? 0 : time() ),
-            ));
-            if (false === $result)
-                return 5;
-            //添加流水记录
-            if ($status == 2) {
-                $type = 4;
-                $note = '提现成功';
-            } elseif ($status == 3) {
-                $type = 3;
-                $note = '提现失败';
-            } elseif ($status == 4) {
-                $type = 3;
-                $note = '用户取消提现';
-            }
-            if (isset($type)) {
-                $zyLearnc->addFlow(
-                    $rs['uid'], $type, $rs['wnum'], $note, $rs['id'], 'zy_withdraw'
-                );
-            }
-            return true;
         } else {
             return 6;
         }
@@ -196,7 +288,7 @@ class ZyServiceModel {
     }
 
     /**
-     * 购买一个套餐
+     * 购买一个班级
      */
     public function buyAlbum($uid, $album_id, $total_price) {
         //获取$uid的学币数量
@@ -217,7 +309,7 @@ class ZyServiceModel {
         $data['is_del'] = 0;
         $result = M("zy_order_album")->data($data)->add();
         if ($result) {
-            return array('status' => '1', 'info' => '添加购买套餐记录成功！', 'rid' => $result);
+            return array('status' => '1', 'info' => '添加购买班级记录成功！', 'rid' => $result);
         }else{
             return array('status' => '0', 'info' => '付款失败，请稍后再试');
         }
@@ -242,7 +334,7 @@ class ZyServiceModel {
         $video = M('zy_video')->where(array(
             'id' => $video_id,
             'is_del' => 0,
-            'is_activity' => 1,
+            'is_activity' => ['in','1,5,6,7'],
             'type'        => 1,
             'listingtime' => array('lt', $time),
         ))->field("id,uid,video_title,mhm_id,teacher_id,v_price,t_price,vip_level,
@@ -349,19 +441,19 @@ class ZyServiceModel {
     }
 
     /**
-     * 在线直接购买单个套餐
+     * 在线直接购买单个班级
      * @param $uid
      * @param $album_id
      * @return mixed 成功后返回true，失败返回错误状态码
      * 错误状态一览：
      * 1:可以直接观看，可能的原因是用户自己发布的，用户为管理员，价格为0，已经购买过了
-     * 2:找不到套餐
-     * 3:套餐下没有课程
+     * 2:找不到班级
+     * 3:班级下没有课程
      * 4:购买记录/订单，添加失败
      */
     public function buyOnlineAlbum($uid, $album_id,$ext_data = array()) {
         $album = D("Album")->getAlbumOneInfoById($album_id,'id,price,mhm_id,album_title');
-        //找不到套餐
+        //找不到班级
         if (!$album){
             return 2;
         }
@@ -373,33 +465,43 @@ class ZyServiceModel {
             return 5;
         }
 
-        //套餐不属于机构
+        //班级不属于机构
         if(!$album['mhm_id']) {
             return 6;
         }
 
-        //套餐属于机构 先平台和机构分成 再机构与教师分成
+        //班级属于机构 先平台和机构分成 再机构与教师分成
         $school_info = model('School')->where(array('id'=>$album['mhm_id']))->field('uid,school_and_teacher')->find();
         $school_uid = M('user')->where(array('uid'=>$school_info['uid']))->getField('uid');
-        //套餐所绑定的机构管理员不存在
+        //班级所绑定的机构管理员不存在
         if(!$school_uid){
             return 7;
         }
 
         $albumId        = intval($album['id']);
 
-        //获取套餐下所有的课程ID
-        $video_ids        = trim(D("Album")->getVideoId($albumId), ',');
+        //获取班级下所有的课程ID
+        $video_ids        = trim(D("Album",'classroom')->getVideoId($albumId), ',');
         $v_map['id']      = array('in', array($video_ids));
         $v_map["is_del"]  = 0;
         $album_info       = M("zy_video")->where($v_map)->field("id,video_title,mhm_id,teacher_id,
                               v_price,t_price,vip_level,endtime,starttime,limit_discount")
             ->select();
-        //套餐下所有的课程数量 套餐下没有课程
+        //班级下所有的课程数量 班级下没有课程
         $album['video_count'] = count($album_info);
 //        if($album['video_count'] <= 0){
 //            return 3;
 //        }
+
+        //判断班级中有没有正在退款的课程
+        $is_refund = M('zy_order_course')->where(array('uid' =>$uid,'video_id'=>['in',[$video_ids]],'pay_status'=>4,'is_del'=>0))->getField('id');
+        if($is_refund){
+            return 8;
+        }
+        $is_refund = M('zy_order_live')->where(array('uid'=>$uid,'live_id' =>['in',[$video_ids]],'pay_status'=>4,'is_del'=>0))->getField('id');
+        if($is_refund){
+            return 8;
+        }
 
         $illegal_count  = 0;
         $total_price    = 0;
@@ -408,41 +510,41 @@ class ZyServiceModel {
         $video_id   = '';
         $tuid       = '';
         $oPrice = 0.00;
-        foreach ($album_info as $key => $video) {
-            $oPrice += $video['t_price'];
-            if($video['mhm_id'] != $album['mhm_id']){
-                $video_id       .= $video['id'].',';//课程和套餐的机构id不一致
-            }
-            $album_info[$key]['price'] = getPrice($video, $this->mid, true, true);
-            //价格为0的 限时免费的  不加入购物记录
-            if($album_info[$key]['price']['oriPrice'] == 0){
-                unset($album_info[$key]);
-                continue;
-            }
-            $album_info[$key]['is_buy'] = D("ZyOrder")->isBuyVideo($this->mid, $video['id']);
-            $total_price                += ($album_info[$key]['is_buy'] || $video['uid'] == $this->mid) ? 0 : round($album_info[$key]['price']['price'], 2);
-            //判断是否有课程过期
-            if ($video['uctime'] < time()) {
-                $illegal_count  += 1;
-                $video_gid       = $video['id'];//过期id
-            }
-            //判断套餐下没有相关讲师用户不存在的课程id
-            $teacher_info = M('zy_teacher')->where(array('id'=>$video['teacher_id']))->field('uid,name')->find();
-            $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
-            if(!$teacher_uinfo['uid']){
-                $tuid       .= $video['id'].',';//套餐下没有相关讲师用户不存在的课程id
-            }
-            $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-            //拼接套餐下所有讲师信息以便线下分成
-            $album_info['tuid_str'] .= $teacher_uinfo['uid'].",";
-        }
+//        foreach ($album_info as $key => $video) {
+//            $oPrice += $video['t_price'];
+//            if($video['mhm_id'] != $album['mhm_id']){
+//                $video_id       .= $video['id'].',';//课程和班级的机构id不一致
+//            }
+//            $album_info[$key]['price'] = getPrice($video, $this->mid, true, true);
+//            //价格为0的 限时免费的  不加入购物记录
+//            if($album_info[$key]['price']['oriPrice'] == 0){
+//                unset($album_info[$key]);
+//                continue;
+//            }
+//            $album_info[$key]['is_buy'] = D("ZyOrder",'classroom')->isBuyVideo($this->mid, $video['id']);
+//            $total_price                += ($album_info[$key]['is_buy'] || $video['uid'] == $this->mid) ? 0 : round($album_info[$key]['price']['price'], 2);
+//            //判断是否有课程过期
+//            if ($video['uctime'] < time()) {
+//                $illegal_count  += 1;
+//                $video_gid       = $video['id'];//过期id
+//            }
+//            //判断班级下没有相关讲师用户不存在的课程id
+//            $teacher_info = M('zy_teacher')->where(array('id'=>$video['teacher_id']))->field('uid,name')->find();
+//            $teacher_uinfo = M('user')->where(array('uid'=>$teacher_info['uid']))->field('uid,uname')->find();
+//            if(!$teacher_uinfo['uid']){
+//                $tuid       .= $video['id'].',';//班级下没有相关讲师用户不存在的课程id
+//            }
+//            $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
+//            //拼接班级下所有讲师信息以便线下分成
+//            $album_info['tuid_str'] .= $teacher_uinfo['uid'].",";
+//        }
 
-//        //套餐中包含有 没有相关讲师用户不存在的课程id
+//        //班级中包含有 没有相关讲师用户不存在的课程id
 //        if ($tuid) {
 //            return 8;
 //        }
 
-        //套餐中包含有与套餐的机构不一致的课程 $video_id为返回的课程id
+        //班级中包含有与班级的机构不一致的课程 $video_id为返回的课程id
         if ($video_id) {
             return 9;
         }
@@ -520,7 +622,7 @@ class ZyServiceModel {
      */
     public function buyOnlineLive($uid, $live_id,$ext_data) {
         //取得直播课程
-        $live_info = D('ZyVideo')->where(array(
+        $live_info = D('ZyVideo','classroom')->where(array(
             'id'          => $live_id,
             'is_del'      => 0,
             'is_activity' => 1,
@@ -529,6 +631,10 @@ class ZyServiceModel {
             'uctime' => array('gt', time()),
         ))->field("id,video_title,mhm_id,t_price,v_price,
             listingtime,uctime,live_type")->find();
+
+        if ($this->checkVideoAccess($uid, $live_id)) {
+            return 1;
+        }
 
         //找不到直播课程
         if (!$live_info){
@@ -645,7 +751,7 @@ class ZyServiceModel {
         //取得价格
         $prices = floatval($live_info['t_price']);
         //无过期非法信息则生成状态为未支付的订单数据
-        $order = D('ZyOrderLive');
+        $order = D('ZyOrderLive','classroom');
         $data = array(
             'uid'           => $uid,
             'live_id'      => $live_id,
@@ -790,7 +896,7 @@ class ZyServiceModel {
 
         $data['ctime']              = time();
         $map['uid'] = intval($uid);//购买用户ID
-        $map['lid'] = intval($live_info['id']);//所购买课程的id(包括点播、直播、套餐)
+        $map['lid'] = intval($live_info['id']);//所购买课程的id(包括点播、直播、班级)
         $split_video = M('zy_split_live')->where($map)->getField('id');
 
         if ($split_video) {
@@ -925,7 +1031,7 @@ class ZyServiceModel {
         $data['ctime'] = time();
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = $vm_map['vid'] = intval($video['id']);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = $vm_map['vid'] = intval($video['id']);//所购买课程的id(包括点播、直播、班级)
 
         $split_video = M('zy_split_course')->where($map)->getField('id');
 
@@ -945,23 +1051,23 @@ class ZyServiceModel {
     }
 
     /**
-     * 套餐分成明细生成
+     * 班级分成明细生成
      * @param $order_id 订单id
      * @param $uid 购买用户id
-     * @param $album 购买套餐详细
+     * @param $album 购买班级详细
      * @return mixed 成功后返回true，失败返回错误状态码
      * 错误状态一览：
      * 5:平台与机构分成比例不存在
-     * 6:套餐不属于机构
-     * 7:套餐所绑定的机构管理员不存在
-     * 8：套餐中包含有 没有相关讲师用户不存在的课程id
-     * 9：套餐中包含有与套餐的机构不一致的课程 $video_id为返回的课程id
+     * 6:班级不属于机构
+     * 7:班级所绑定的机构管理员不存在
+     * 8：班级中包含有 没有相关讲师用户不存在的课程id
+     * 9：班级中包含有与班级的机构不一致的课程 $video_id为返回的课程id
      * 10:机构数据里的 机构与教师分成不存在
      * 11:创建订单明细流水失败 并删除此订单
      */
     public function addAlbumSplit($order_id,$uid,$album = array())
     {
-        //找不到套餐
+        //找不到班级
         if (!$album) {
             return 2;
         }
@@ -973,29 +1079,29 @@ class ZyServiceModel {
             return 5;
         }
 
-        //套餐不属于机构
+        //班级不属于机构
         if (!$album['mhm_id']) {
             return 6;
         }
 
-        //套餐属于机构 先平台和机构分成 再机构与教师分成
+        //班级属于机构 先平台和机构分成 再机构与教师分成
         $school_info = model('School')->where(array('id' => $album['mhm_id']))->field('uid,school_and_teacher')->find();
         $school_uid = M('user')->where(array('uid' => $school_info['uid']))->getField('uid');
-        //套餐所绑定的机构管理员不存在
+        //班级所绑定的机构管理员不存在
         if (!$school_uid) {
             return 7;
         }
 
         $albumId = intval($album['id']);
 
-        //获取套餐下所有的课程ID
+        //获取班级下所有的课程ID
         $video_ids = trim(D("Album")->getVideoId($albumId), ',');
         $v_map['id'] = array('in', array($video_ids));
         $v_map["is_del"] = 0;
         $album_info = M("zy_video")->where($v_map)->field("id,video_title,mhm_id,teacher_id,
                               v_price,t_price,vip_level,endtime,starttime,limit_discount,type,live_type")
             ->select();
-        //套餐下所有的课程数量 套餐下没有课程
+        //班级下所有的课程数量 班级下没有课程
         $album['video_count'] = count($album_info);
 //        if ($album['video_count'] <= 0) {
 //            return 3;
@@ -1014,11 +1120,11 @@ class ZyServiceModel {
         $video_id = '';
         $tuid = '';
         $share_str = '';
-        $teacher_user_info = "此套餐下课程所有讲师信息分别为  ";
+        $teacher_user_info = "此班级下课程所有讲师信息分别为  ";
         foreach ($album_info as $key => $video) {
 
             if ($video['mhm_id'] != $album['mhm_id']) {
-                $video_id .= $video['id'] . ',';//课程和套餐的机构id不一致
+                $video_id .= $video['id'] . ',';//课程和班级的机构id不一致
             }
 
             //判断是否有课程过期
@@ -1026,17 +1132,17 @@ class ZyServiceModel {
                 $illegal_count += 1;
                 $video_gid = $video['id'];//过期id
             }
-            //判断套餐下没有相关讲师用户不存在的课程id
+            //判断班级下没有相关讲师用户不存在的课程id
             $teacher_info = M('zy_teacher')->where(array('id' => $video['teacher_id']))->field('id,uid,name')->find();
             $teacher_uinfo = M('user')->where(array('uid' => $teacher_info['uid']))->field('uid,uname')->find();
             if ($video['type'] != 2) {
                 if (!$teacher_uinfo['uid']) {
-                    $tuid .= $video['id'] . ',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid .= $video['id'] . ',';//班级下没有相关讲师用户不存在的课程id
                 }
             }
 
             $album_info[$key]['teacher_uid'] = $teacher_uinfo['uid'];
-            //拼接套餐下所有讲师信息以便线下分成
+            //拼接班级下所有讲师信息以便线下分成
             $key = $key + 1;
             if ($video['type'] != 2) {
                 $teacher_user_info .= "【{$key}】 讲师id为: " . $teacher_info['id'] . " ,讲师名字为：" . $teacher_info['name'] .
@@ -1044,7 +1150,7 @@ class ZyServiceModel {
                     ";
             }
             if ($share_uid == $teacher_uinfo['uid']) {
-                $share_str .= $video['id'] . ',';//分享者为当前套餐下讲师
+                $share_str .= $video['id'] . ',';//分享者为当前班级下讲师
             }
 
             if ($video['type'] == 2) {
@@ -1070,7 +1176,7 @@ class ZyServiceModel {
                             " ;其用户id为： " . $teacher_live_uinfo['uid'] . " ,用户名为： " . $teacher_live_uinfo['uname'] . " 。
                             ";
                         if ($share_uid == $teacher_live_uinfo['uid']) {
-                            $share_str .= $v['id'] . ',';//分享者为当前套餐下讲师
+                            $share_str .= $v['id'] . ',';//分享者为当前班级下讲师
                         }
                     }
                 } elseif ($video['live_type'] == 3) {
@@ -1088,19 +1194,19 @@ class ZyServiceModel {
                                         ";
                     }
                     if ($share_uid == $teacher_live_uinfo['uid']) {
-                        $share_str .= $v['id'] . ',';//分享者为当前套餐下讲师
+                        $share_str .= $v['id'] . ',';//分享者为当前班级下讲师
                     }
                 }
             }
             $album_info['tuid_str'] .= $teacher_uinfo['uid'] . ",";
         }
 
-//        //套餐中包含有 没有相关讲师用户不存在的课程id
+//        //班级中包含有 没有相关讲师用户不存在的课程id
 //        if ($tuid) {
 //            return 8;
 //        }
 
-        //套餐中包含有与套餐的机构不一致的课程 $video_id为返回的课程id
+        //班级中包含有与班级的机构不一致的课程 $video_id为返回的课程id
         if ($video_id) {
             return 9;
         }
@@ -1118,7 +1224,7 @@ class ZyServiceModel {
         $data['mhm_id']       = intval($album['mhm_id']);//课程所属机构id
         $data['order_mhm_id'] = intval($oschool_id);//购买的用户机构id
         $data['aid'] = $albumId;//所购买课程的id
-        $data['note'] .= t("购买套餐：{$album['album_title']}。");
+        $data['note'] .= t("购买班级：{$album['album_title']}。");
         $data['sum'] = $prices;//购买金额
 
         //平台手续费
@@ -1155,7 +1261,7 @@ class ZyServiceModel {
         $data['ctime'] = time();
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['aid'] = $albumId;//所购买套餐的id
+        $map['aid'] = $albumId;//所购买班级的id
 
         $split_video = M('zy_split_album')->where($map)->getField('id');
 
@@ -1175,10 +1281,10 @@ class ZyServiceModel {
     }
 
     /**
-     * 套餐、点播 普通分成明细生成
+     * 班级、点播 普通分成明细生成
      * @param $order_id 订单id
      * @param $uid 购买用户id
-     * @param $album 购买套餐详细
+     * @param $album 购买班级详细
      * @return mixed 成功后返回true，失败返回错误状态码
      * 错误状态一览：
      * 5:课程不属于机构
@@ -1188,7 +1294,7 @@ class ZyServiceModel {
      * 9:创建订单明细流水失败
      */
     public function addAlbumBakSplit($order_id,$uid,$album = array()){
-        //找不到套餐
+        //找不到班级
         if (!$album){
             return 2;
         }
@@ -1204,8 +1310,8 @@ class ZyServiceModel {
         $data['order_id']     = $order_id;
         $data['uid']          = intval($uid);//购买用户ID
         $data['mhm_id']       = intval($album['mhm_id']);//机构ID
-        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、套餐)
-        $data['note']         = t("购买套餐：{$album['album_title']}。");
+        $data['vid']          = intval($album['id']);//所购买课程的id(包括点播、直播、班级)
+        $data['note']         = t("购买班级：{$album['album_title']}。");
         $data['sum']          = $prices;//购买金额
         $data['pid']          = 1;//获得平台分成的管理员用户id
         $data['platform_sum'] = round($prices * $proportion['pac_platform']);//平台分成的金额
@@ -1235,20 +1341,20 @@ class ZyServiceModel {
 
             $albumId        = intval($album['id']);
 
-            //获取套餐下所有的课程ID
+            //获取班级下所有的课程ID
             $video_ids      = trim(D("Album")->getVideoId($albumId), ',');
             $v_map['id']      = array('in', array($video_ids));
             $v_map["is_del"]  = 0;
             $album_info     = M("zy_video")->where($v_map)->field("id,video_title,mhm_id,teacher_id,
                               v_price,t_price,vip_level,endtime,starttime,limit_discount")
                 ->select();
-            //套餐下所有的课程数量 套餐下没有课程
+            //班级下所有的课程数量 班级下没有课程
             $album['video_count'] = count($album_info);
 //            if($album['video_count'] <= 0){
 //                return 3;
 //            }
 
-            //套餐不属于机构
+            //班级不属于机构
             if(!$album['mhm_id']){
                 return 5;
             }
@@ -1264,7 +1370,7 @@ class ZyServiceModel {
             $tuid_scount = 0;
             foreach ($album_info as $key => $video) {
                 if($video['mhm_id'] != $album['mhm_id']){
-                    $video_id       .= $video['id'].',';//课程和套餐的机构id不一致
+                    $video_id       .= $video['id'].',';//课程和班级的机构id不一致
                 }
                 $album_info[$key]['price'] = getPrice($video, $this->mid, true, true);
                 //价格为0的 限时免费的  不加入购物记录
@@ -1272,7 +1378,7 @@ class ZyServiceModel {
                     unset($album_info[$key]);
                     continue;
                 }
-                $album_info[$key]['is_buy'] = D("ZyOrder")->isBuyVideo($this->mid, $video['id']);
+                $album_info[$key]['is_buy'] = D("ZyOrder",'classroom')->isBuyVideo($this->mid, $video['id']);
                 $total_price                += ($album_info[$key]['is_buy'] || $video['uid'] == $this->mid) ? 0 : round($album_info[$key]['price']['price'], 2);
                 //判断是否有课程过期
                 if ($video['uctime'] < time()) {
@@ -1280,20 +1386,20 @@ class ZyServiceModel {
                     $video_gid       = $video['id'];//过期id
                 }
 
-                //判断套餐下课程是否有是平台管理员或者机构管理员的 有就把相应的那一份分到其账户下
+                //判断班级下课程是否有是平台管理员或者机构管理员的 有就把相应的那一份分到其账户下
                 $t_uid = M('zy_teacher')->where(array('id'=>$video['teacher_id']))->getField('uid');
                 $teacher_uid = M('user')->where(array('uid'=>$t_uid))->getField('uid');
                 $album_info[$key]['teacher_uid'] = $teacher_uid;
 
-                //判断套餐下没有相关讲师用户不存在的课程id
+                //判断班级下没有相关讲师用户不存在的课程id
                 if(!$teacher_uid){
-                    $tuid       .= $video['id'].',';//套餐下没有相关讲师用户不存在的课程id
+                    $tuid       .= $video['id'].',';//班级下没有相关讲师用户不存在的课程id
                 }
                 //判断讲师用户id是否与平台管理员(为1)一样 返回tuid_pcount+1
                 if($teacher_uid == 1){
                     $tuid_pcount += 1;
                     unset($album_info[$key]['teacher_uid']);
-                    //判断讲师用户id是否与套餐机构管理员(为1)一样 有scount+1
+                    //判断讲师用户id是否与班级机构管理员(为1)一样 有scount+1
                 }
                 if($teacher_uid == $school_uid){
                     $tuid_scount += 1;
@@ -1307,7 +1413,7 @@ class ZyServiceModel {
             }
             $album_info['tuid_str'] = $tuid_str;
 
-            //套餐中包含有 没有相关讲师用户不存在的课程
+            //班级中包含有 没有相关讲师用户不存在的课程
             if ($tuid) {
                 return 0;
             }
@@ -1315,7 +1421,7 @@ class ZyServiceModel {
             if ($tuid_pcount > 0) {
                 $album['tuid_pcount'] = $tuid_pcount;
             }
-            //判断讲师用户id是否有与套餐机构管理员 有直接把讲师的那一份加到套餐机构管理员上 $tuid_scount为几份
+            //判断讲师用户id是否有与班级机构管理员 有直接把讲师的那一份加到班级机构管理员上 $tuid_scount为几份
             if ($tuid_scount > 0) {
                 $album['tuid_scount'] = $tuid_scount;
             }
@@ -1355,7 +1461,7 @@ class ZyServiceModel {
                 //剩余讲师分成人均金额
                 $school_teacher_each_surplus_sum = $school_teacher_surplus_sum / $teacher_num;
 
-                $data['note']     .= "此套餐下平台管理员有{$tuid_pcount}堂课程，平台管理员分成的金额为{$data['platform_sum']}元
+                $data['note']     .= "此班级下平台管理员有{$tuid_pcount}堂课程，平台管理员分成的金额为{$data['platform_sum']}元
                                      加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元；,讲师分成总金额为{$data['school_teacher_sum']}，
                                      剩余讲师分成金额为{$school_teacher_surplus_sum}元，剩余讲师分成人数为{$teacher_num}人，
                                      人均{$school_teacher_each_surplus_sum}；";
@@ -1374,7 +1480,7 @@ class ZyServiceModel {
                 //剩余讲师分成人均金额
                 $school_teacher_each_surplus_sum = $school_teacher_surplus_sum / $teacher_num;
 
-                $data['note']     .= "此套餐下平台管理员有{$tuid_pcount}堂课程，机构管理员分成的金额为{$data['platform_sum']}元
+                $data['note']     .= "此班级下平台管理员有{$tuid_pcount}堂课程，机构管理员分成的金额为{$data['platform_sum']}元
                                      加上课程所得金额{$platform_sum_add}元,共计{$platform_sum_new}元；,讲师分成总金额为{$data['school_teacher_sum']}，
                                      剩余讲师分成金额为{$school_teacher_surplus_sum}元，剩余讲师分成人数为{$teacher_num}人，
                                      人均{$school_teacher_each_surplus_sum}；";
@@ -1386,18 +1492,18 @@ class ZyServiceModel {
 
             //如果平台管理员和机构管理员相同 并且所有课程都属于平台管理员
             if($tuid_pcount == $album['video_count'] && $data['pid'] == $school_uid){
-                $data['note'] .= "平台管理员和机构管理员为同一人，并且此套餐下所有课程都是平台管理员
-                                  获得此套餐全部分成金额收人，为{$prices}元；";
+                $data['note'] .= "平台管理员和机构管理员为同一人，并且此班级下所有课程都是平台管理员
+                                  获得此班级全部分成金额收人，为{$prices}元；";
                 $data['platform_sum'] = $prices;//获得所有分成金额
             }
         } else {
-            //套餐不属于机构
+            //班级不属于机构
             return 5;
         }
         $data['ctime'] = time();//机构教师分成的金额
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = intval($albumId);//所购买课程的id(包括点播、直播、班级)
         $split_video = M('zy_split_video')->where($map)->getField('id');
         if ($split_video) {
             $res = M('zy_split_video')->where($map)->save($data);
@@ -1422,14 +1528,14 @@ class ZyServiceModel {
     public function checkVideoAccess($uid, $video_id) {
         $time = time();
         //取得课程
-        $video = D('ZyVideo')->where(array(
+        $video = D('ZyVideo','classroom')->where(array(
             'id' => $video_id,
             'is_del' => 0,
             'is_activity' => 1,
             //'uctime' => array('gt', $time),
             //'listingtime' => array('lt', $time),
         ))->field("id,uid,video_title,mhm_id,teacher_id,v_price,t_price,
-                    vip_level,listingtime,uctime,limit_discount,uid,teacher_id")->find();
+                    vip_level,listingtime,uctime,limit_discount,uid,teacher_id,type")->find();
 
         //找不到课程
         if (!$video){
@@ -1458,18 +1564,16 @@ class ZyServiceModel {
         $order = D('ZyOrderCourse','classroom');
         //检查是否已经购买过了
         if ($order->isBuyVideo($uid, $video_id)){
-
             return true;
         }
 
         $order = D('ZyOrderLive','classroom');
-        if ($order->isBuyVideo($uid, $video_id)){
-
+        if ($order->isBuyLive($uid, $video_id)){
             return true;
         }
 
         //取得价格
-        $prices = getPrice($video, $uid, true, true);
+        $prices = getPrice($video, $uid, true, true,$video['type']);
         //限时免费和价格为0的  不需购买
         if ($prices['price'] <= 0 || $video['is_charge'] == 1){
             return true;
@@ -1691,7 +1795,7 @@ class ZyServiceModel {
         $data['ctime'] = time();
 
         $map['uid'] = intval($uid);//购买用户ID
-        $map['vid'] = $vm_map['vid'] = intval($video['course_id']);//所购买课程的id(包括点播、直播、套餐)
+        $map['vid'] = $vm_map['vid'] = intval($video['course_id']);//所购买课程的id(包括点播、直播、班级)
 
         $split_video = M('zy_split_teacher')->where($map)->getField('id');
 

@@ -24,12 +24,12 @@ class AdminCourseCardAction extends AdministratorAction{
     private function _initTabSpecial() {
         // Tab选项
         $this->pageTab [] = array (
-                'title' => '课程卡列表',
+                'title' => '列表',
                 'tabHash' => 'index',
                 'url' => U ( 'school/AdminCourseCard/index' )
         );
         $this->pageTab [] = array (
-                'title' => '添加课程卡',
+                'title' => '添加',
                 'tabHash' => 'addCoupon',
                 'url' => U ( 'school/AdminCourseCard/addCoupon' )
         );
@@ -37,7 +37,7 @@ class AdminCourseCardAction extends AdministratorAction{
 
     public function index(){
         $this->_initTabSpecial();
-        $this->assign('pageTitle','课程卡管理');
+        $this->assign('pageTitle','列表');
         //页面配置
         $id     =  intval($_POST['id']);
         $code   =  intval($_POST['code']);
@@ -46,7 +46,7 @@ class AdminCourseCardAction extends AdministratorAction{
         $this->searchKey = array('id','code','video_type');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delCoupon')");
-        $this->opt['video_type'] = array('1'=>'点播','2'=>'直播','3'=>'套餐');
+        $this->opt['video_type'] = array('1'=>'点播','2'=>'直播','3'=>'班级');
         $map = array('type'=>5,'coupon_type'=>0,'sid'=>$this->school_id);
         if(!empty($id))$map['id']=$id;
         if(!empty($code))$map['code']=$code;
@@ -87,7 +87,7 @@ class AdminCourseCardAction extends AdministratorAction{
             }else if($val['video_type'] == 2){
                 $val['video_type'] = "直播";
             }else{
-                $val['video_type'] = "套餐";
+                $val['video_type'] = "班级";
             }
 
             if($val['status'] == 3){
@@ -135,17 +135,17 @@ class AdminCourseCardAction extends AdministratorAction{
             }
             $coupon['end_time'] = date("Y-m-d H:i:s",$coupon['end_time']);
             $this->assign('id',$id);
-            $this->assign('pageTitle','编辑课程卡');
+            $this->assign('pageTitle','编辑');
             $this->assign('coupon',$coupon);
             $this->assign('video',$video);
         }else{
-			$this->assign('pageTitle','添加课程卡');
+			$this->assign('pageTitle','添加');
         }
         $this->display();
     }
 
     /**
-     * 加载点播/直播/套餐数据
+     * 加载点播/直播/班级数据
      */
     public function getVideoInfoList(){
         $video_type = intval($_POST['video_type']);

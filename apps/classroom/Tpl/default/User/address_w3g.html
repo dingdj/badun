@@ -1,7 +1,9 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 
-
+    <style>
+        .header2 .save{top: 0;height: 40px;line-height: 40px;}
+    </style>
     <!--<div class="header2">
         <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
         <div>管理收货地址</div>
@@ -9,17 +11,16 @@
 
     <div class="body">
 
+        <form class="addressbox" id="addressbox" method="POST" action="" onsubmit="return false;">
         <div class="content">
             <div class="header2">
-                <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+                <a href="{:U('classroom/User/index')}" class="icon-back"></a>
                 <div>新增收货地址</div>
                 <if condition="($data['usedCounts'] lt 10) OR ($_GET['id'] gt 0)">
-                    <form class="addressbox" id="addressbox" method="POST" action="" onsubmit="return false;">
-
-                <a href="javascript:;" class="save"   onclick="saveAddress()" >保存</button></a>
-
+                    <a href="javascript:;" class="save"   onclick="saveAddress()" >保存</a>
+                </if>
             </div>
-            <div class="body">
+            <!--<div class="body">-->
                 <div class="jgzlbox">
                     <dl>
                         <dt>收货人</dt>
@@ -56,9 +57,9 @@
                         <dd><input class="checkbox" type="checkbox" <eq name="address.is_default" value="1">checked</eq> ></dd>
                     </dl>
                 </div>
-            </div>
-            </form>
+            <!--</div>-->
         </div>
+        </form>
 
         <div class="adressbox">
 
@@ -147,4 +148,4 @@
 
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

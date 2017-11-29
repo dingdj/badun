@@ -102,8 +102,9 @@ class AdminLineClassAction extends AdministratorAction
         if(empty($post['trid'])) exit(json_encode(array('status'=>'0','info'=>"请选择讲师")));
         if(empty($post['listingtime'])) exit(json_encode(array('status'=>'0','info'=>"请选择上架时间")));
         if(empty($post['uctime'])) exit(json_encode(array('status'=>'0','info'=>"请选择下架时间")));
-        if(empty($post['course_price'])) exit(json_encode(array('status'=>'0','info'=>"课程价格不能为空")));
-        if(ereg("^[0-9]*[1-9][0-9]*$",$_POST['course_price'])!=1) exit(json_encode(array('status'=>'0','info'=>"课程价格必须为正整数")));
+        if(empty($post['course_price'])) exit(json_encode(array('status'=>'0','info'=>"价格不能为空")));
+        if(!is_numeric($post['course_price']) || preg_match("/^-[0-9]+(\.[0-9]+)?$/",$post['course_price']))exit(json_encode(array('status'=>'0','info'=>"价格格式错误")));
+        //if(ereg("^[0-9]*[1-9][0-9]*$",$_POST['course_price'])!=1) exit(json_encode(array('status'=>'0','info'=>"课程价格必须为正整数")));
         $t_mhm_id = M('zy_teacher')->where(['id'=>$post['trid']])->getField('mhm_id');
         $mhm_id =  M('zy_teacher_course')->where('course_id = '.$post['id'])->getField('mhm_id');
         $v_mhm_id = $mhm_id ? $mhm_id : is_school($this->mid);
@@ -130,6 +131,7 @@ class AdminLineClassAction extends AdministratorAction
         $data['teacher_id']         = intval($_POST['trid']);//获取讲师
         $data['cover'] 			 	= intval($post['cover_ids']); //封面
         $data['is_charge'] 			= intval($post['is_charge']); //免费
+        $data['is_activity']        = 1;
         $data['ctime']              = time();
 
         if($post['id']){
@@ -244,7 +246,8 @@ class AdminLineClassAction extends AdministratorAction
             }else{
                 $value['activity'] = '<span style="color:green;">等待审核</span>';
                 $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.activeVideo('.$value['course_id'].',\'AdminLineClass\',true)">通过审核</a> | ';
-                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.activeVideo('.$value['course_id'].',\'AdminLineClass\',false)">驳回</a>';
+                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.activeVideo('.$value['course_id'].',\'AdminLineClass\',false)">驳回</a>  | ';
+                $value['DOACTION'] .=  ' | <a href="'.U('classroom/LineClass/view',array('id'=>$value['id'],'is_look'=>1)).'" target="_blank">查看课程</a> ';
             }
         }
         return $list;
@@ -336,12 +339,12 @@ class AdminLineClassAction extends AdministratorAction
         $this->pageKeyList = array('id','review_description','uid','oid','star','review_comment_count','DOACTION');
         $map['oid'] = intval($_GET['id']);
         $map['parent_id'] = 0; //父类id为0
-        $map['type'] = 1;
+        $map['type'] = 3;
         $data = D('ZyReview','classroom')->getListForId($map,20,$field);
         foreach ($data['data'] as $key => $vo){
-            $data['data'][$key]['oid'] = D('ZyVideo','classroom')->getVideoTitleById($vo['oid']);
-            $url = U('classroom/Video/view', array('id' => $vo['oid']));
-            $data['data'][$key]['oid'] = getQuickLink($url,$data['data'][$key]['oid'],"未知课程");
+            $data['data'][$key]['oid'] = D('ZyLineClass','classroom')->getLineclassTitleById($vo['oid']);
+            $url = U('classroom/LineClass/view', array('id' => $vo['oid']));
+            $data['data'][$key]['oid'] = getQuickLink($url,$data['data'][$key]['oid'],"未知线下课程");
             $data['data'][$key]['uid'] = getUserSpace($vo['uid'], null, '_blank');
             $data['data'][$key]['DOACTION'] = '<a href="'.U('school/AdminLineClass/reviewCommentVideo',array('oid'=>$vo['oid'],'id'=>$vo['id'],'tabHash'=>'reviewCommentVideo')).'">查看评论</a> | <a href="javascript:void();" onclick="admin.delContent('.$vo['id'].',\'Video\',\'review\')">删除(连带删除回复)</a>';
             $data['data'][$key]['start'] = $vo['start']/ 20;
@@ -356,7 +359,7 @@ class AdminLineClassAction extends AdministratorAction
         if(!$_GET['id']) $this->error('请选择要查看的评论');
         $this->_initSchoolListAdminTitle();
         $this->_initSchoolListAdminMenu();
-        $this->pageTab[] = array('title'=>'评论列表','tabHash'=>'reviewCommentVideo','url'=>U('school/AdminLineClass/reviewCommentVideo'));;
+        $this->pageTab[] = array('title'=>'评论列表','tabHash'=>'reviewCommentVideo','url'=>U('school/AdminLineClass/reviewCommentVideo',array('oid'=>$_GET['oid'],'id'=>$_GET['id'])));;
         $this->pageButton[] = array('title' => '删除回复', 'onclick' => "admin.delReviewAll('delReview')");
         $this->pageTitle['reviewCommentVideo'] = '评论列表';
         $field = 'id,uid,oid,review_description';
@@ -426,7 +429,7 @@ class AdminLineClassAction extends AdministratorAction
         $map['course_id'] = intval($_POST['id']);
         $data['is_activity'] = $_POST['cross'] == 'true' ? 1 : -1; //-1为未通过状态
         if(M('zy_teacher_course')->where($map)->data($data)->save()){
-            if($data['is_activity'] == 0){
+            if($data['is_activity'] == -1){
                 $uid = M('zy_teacher_course')->where($map)->getField('course_uid');
                 $message['title']   = "课程审核被驳回";
                 $message['content'] = "你好，你上传的线下课已被机构驳回，请修改信息后重新提交审核。";
@@ -445,11 +448,11 @@ class AdminLineClassAction extends AdministratorAction
      * @return void
      */
     private function _initSchoolListAdminMenu(){
-        $this->pageTab[] = array('title'=>'通过审核课程列表','tabHash'=>'index','url'=>U('school/AdminLineClass/index'));
-        $this->pageTab[] = array('title'=>'待审核课程列表','tabHash'=>'unauditList','url'=>U('school/AdminLineClass/unauditList'));
-        $this->pageTab[] = array('title'=>'课程回收站','tabHash'=>'recycle','url'=>U('school/AdminLineClass/recycle'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('school/AdminLineClass/index'));
+        $this->pageTab[] = array('title'=>'待审','tabHash'=>'unauditList','url'=>U('school/AdminLineClass/unauditList'));
+        $this->pageTab[] = array('title'=>'回收站','tabHash'=>'recycle','url'=>U('school/AdminLineClass/recycle'));
         if(!is_admin($this->mid)){
-            $this->pageTab[] = array('title'=>'添加课程','tabHash'=>'addVideo','url'=>U('school/AdminLineClass/addVideo'));
+            $this->pageTab[] = array('title'=>'添加','tabHash'=>'addVideo','url'=>U('school/AdminLineClass/addVideo'));
         }
     }
 
@@ -457,10 +460,10 @@ class AdminLineClassAction extends AdministratorAction
      * 课程后台的标题
      */
     private function _initSchoolListAdminTitle(){
-        $this->pageTitle['index'] = '通过审核课程';
-        $this->pageTitle['unauditList'] = '待审核课程';
-        $this->pageTitle['recycle'] 	= '课程回收站';
-        $this->pageTitle['addVideo']    = '添加课程';
+        $this->pageTitle['index'] = '已审';
+        $this->pageTitle['unauditList'] = '待审';
+        $this->pageTitle['recycle'] 	= '回收站';
+        $this->pageTitle['addVideo']    = '添加';
     }
 
 }

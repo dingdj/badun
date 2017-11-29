@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <link href="__THEMENEW__/css/group.css" rel="stylesheet" type="text/css">
 <link href="__THEMENEW__/css/group_media.css" rel="stylesheet" type="text/css">
@@ -23,7 +23,7 @@
 				<div class="com-btns"><span>综合排序</span><div class="btns-icon"></div>
 					<div class="group-name">
 						<button <if condition="$_GET['or'] eq ''"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id']])}">综合排序<i></i></a></button>
-						<button <if condition="$_GET['or'] eq 2"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id'],'or'=>2])}">最近合约<i></i></a></button>
+						<button <if condition="$_GET['or'] eq 2"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id'],'or'=>2])}">最新小组<i></i></a></button>
 						<button <if condition="$_GET['or'] eq 3"> class="group-btn"</if> ><a href="{:U('group/Index/index',['cate_id'=>$_GET['id'],'or'=>3])}">热门小组<i></i></a></button>
 					</div>
 				</div>
@@ -250,4 +250,4 @@
 		});
 	}
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

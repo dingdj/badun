@@ -56,7 +56,7 @@
                     <a class="yzmbtn" href="javascript:;"><img id="verifyimgs" onclick="changeverifys()" title="点击刷新" src="__ROOT__/public/captcha.php"></a>
                 </dd>
             </dl>
-            <dl>
+            <dl class="nocente">
                 <dt></dt>
                 <dd>
                     <a class="mm_btn" href="javascript:;" onclick="repEmailNext(this)">下一步</a>
@@ -82,11 +82,11 @@
                       <dt>验证码:</dt>
                       <dd>
                           <input class="yzm" id="repverval" maxlength="6" type="text" placeholder="请输入手机验证码">
-                          <a class="yzmbtn" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
-                          <p class="width97"  style="display:none;"><a id="dctime"></a>秒后重新发送</p>
+                          <a class="yzmbtn width80" href="javascript:;" onclick="getRepPhoneVerify()">获取验证码</a>
+                          <span class="width97"  style="display:none;float: right"><a id="dctime" style="display: inline-block"></a>秒后重新发送</span>
                       </dd>
                   </dl>
-                  <dl>
+                  <dl class="nocente">
                       <dt></dt>
                       <dd>
                           <a class="mm_btn" href="javascript:;" onclick="okPhonecode(this)">下一步</a>

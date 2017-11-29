@@ -1,6 +1,6 @@
 <?php
 /**
- * 套餐订单模型
+ * 班级订单模型
  * @author xiewei <master@xiew.net>
  * @version 1.0
  */
@@ -9,9 +9,9 @@ class ZySchoolOrderAlbumModel extends Model{
     static protected $albumIds = array();
 
     /**
-     * 通过套餐订单ID取得套餐ID
+     * 通过班级订单ID取得班级ID
      * @param integer $id 要查询的订单编号ID
-     * return mixed 成功时返回套餐ID，失败时返回false
+     * return mixed 成功时返回班级ID，失败时返回false
      */
     public function getAlbumIdById($id){
         if(!isset(self::$albumIds[$id])){
@@ -23,10 +23,10 @@ class ZySchoolOrderAlbumModel extends Model{
 
 
     /**
-     * 取得套餐订单ID，根据用户ID和套餐ID
+     * 取得班级订单ID，根据用户ID和班级ID
      * @param integer $uid 用户UID
-     * @param integer $albumId 套餐ID
-     * @return integer|false 返回对应的套餐订单ID，如果失败则返回false
+     * @param integer $albumId 班级ID
+     * @return integer|false 返回对应的班级订单ID，如果失败则返回false
      */
     public function getAlbumOrderId($uid, $albumId){
         $id = $this->where(array('uid'=>$uid, 'album_id'=>$albumId))->getField('id');

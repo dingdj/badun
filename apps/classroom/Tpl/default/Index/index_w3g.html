@@ -1,4 +1,4 @@
-<if condition="$config_index['tpl'] eq 'index_new'">
+<if condition="$config_index['tpl']">
 
     <!DOCTYPE html>
     <html lang="zh-cn">
@@ -27,8 +27,8 @@
             var UPLOAD_URL= '<php> echo UPLOAD_URL;</php>';
             var THEME_URL = '__THEME__';
             var APPNAME   = '<php> echo APP_NAME;</php>';
-            var MID		  = '<php> echo $mid;</php>';
-            var UID		  = '<php> echo $uid;</php>';
+            var MID       = '<php> echo $mid;</php>';
+            var UID       = '<php> echo $uid;</php>';
             var initNums  =  '<php> echo $initNums;</php>';
             var SYS_VERSION = '<php> echo $site["sys_version"];</php>';
             var _ROOT_    = '__ROOT__';
@@ -85,7 +85,6 @@
     </head>
     <body>
     <!--导航面板 strt-->
-    <div class="shadow-panle"></div>
     <div class="window-panle" id="window-panle">
         <dl>
             <if condition="$_SESSION['mid']">
@@ -99,37 +98,38 @@
             </if>
         </dl>
         <ul>
-            <volist name="site_top_nav" id="vo" key="k" offset="0" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="3" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="6" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="9" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="12" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
-            <volist name="site_top_nav" id="vo" key="k" offset="15" length="3">
-                <if condition="($vo.app_name neq 'more') and ($vo['app_name'] neq 'Album')">
-                    <li><a href="{$vo['url']}" target="{$vo['target']}" <if condition="$k eq 1">id="winmar"</if> >{$vo['navi_name']}</a></li>
-                </if>
-            </volist>
+          <volist name="site_top_nav" id="vo" key="k">
+              <li <php>if(APP_NAME == lcfirst( $vo['app_name'] ) || ( APP_NAME == 'classroom' && MODULE_NAME == ucfirst( $vo['app_name'] ) ) ){echo "class='active'";}</php>>
+              <if condition="$vo['app_name'] neq 'Vip'">
+                  <a href="{$vo['url']}" target="{$vo['target']}"<if condition="($vo.app_name eq 'Video') or ($vo.app_name eq 'more')"> onclick="show_list(this)"</if>>{$vo['navi_name']}
+                    <if condition="($vo.app_name eq 'Video') or ($vo.app_name eq 'more')"> <span class="bgc icon icon-xiala2"></span></if>
+                  </a>
+              </if>
+              <if condition="$vo.child neq ''">
+                  <span class="course-class"   <if condition="($vo.app_name eq 'Video') or ($vo.app_name eq 'more')">id="hide_list"</if>>
+                  <volist name="vo.child" id="child" key="k">
+                      <if condition="($child.app_name neq 'more') and ($child['app_name'] neq 'Album') and ($child['app_name'] neq 'Vip')">
+                        <a href="{$child['url']}" target="{$child['target']}">{$child['navi_name']}</a>
+                      </if>
+                  </volist>
+                  </span>
+              </if>
+              </li>
+          </volist>
         </ul>
+        <script>
+        //左侧二级菜单
+        function show_list(obj){
+          if ($(obj).siblings('.course-class').css("display")=="none") {
+                $(obj).siblings('.course-class').show();
+                // $(obj).parent('li').siblings().children('.course-class').hide();
+          }
+          else {
+              $(obj).siblings('.course-class').hide();
+              // $(obj).parent('li').siblings().children('.course-class').show();
+          }
+        };
+        </script>
         <!--登录后显示-->
         <if condition="$_SESSION['mid']">
             <div class="sign-out">
@@ -138,6 +138,8 @@
         </if>
     </div>
     <!--导航面板 end-->
+<div class="overall_situation_box_alls">
+    <div class="shadow-panle"></div>
 
     <!--header start-->
     <header>
@@ -154,8 +156,8 @@
                 <!--登录后显示-->
                 <span>
                     <i class="icon icon-shang1"></i>
-                    <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的主页</a>
-                    <a href="{:U('classroom/User/setInfo')}">个人中心</a>
+                    <!--<a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">我的主页</a>-->
+                    <a href="{:U('classroom/User/index')}">个人中心</a>
                     <a href="javascript:;" onclick="logout()">退出</a>
                 </span>
                 <else/>
@@ -197,7 +199,7 @@
         <div class="list">
             <ul class="regilar">
                 <li><a href="{$site['download_url']}"><i class="icon icon-app"></i>APP下载</a></li>
-                <li><a href="{:U('group/Index/addgroup')}"><i class="icon icon-xiaozu"></i>创建小组</a></li>
+                <li><a href="{:U('classroom/Teacher/index')}"><i class="icon icon-laoshi"></i>认证讲师</a></li>
                 <li>
                     <a <if condition="$_SESSION['mid'] eq ''">
                     href="javascript:;" onClick="login_box();"
@@ -332,7 +334,7 @@
 
 <else/>
 
-    <include file="__THEME__/public_header_onelevel" />
+    <include file="__THEME__/public_header" />
     <link href="__THEMENEW__/css/index.css" rel="stylesheet" type="text/css">
     <link href="__THEMENEW__/css/media.css" rel="stylesheet" type="text/css">
     <link href="__THEMENEW__/css/index_add.css" rel="stylesheet" type="text/css">
@@ -732,6 +734,7 @@
 
     <script>
         $(function(){
+
             $(window).scroll(function(){
                 // 获得窗口滚动上去的距离
                 var ling = $(document).scrollTop();
@@ -835,10 +838,12 @@
                 $(".lookup").width(450);
                 $(".lookup input").width(338);
             })
-        }
+        };
+
+
     </script>
 
-    <include file="__THEME__/public_footer_twolevel" />
+    <include file="__THEME__/public_footer_w3g" />
 
 
 </if>

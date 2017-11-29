@@ -22,6 +22,7 @@
         <div class="jgpage_right">
             <div class="jgpage_right_con">
                 <ul class="message_list">
+                    <if condition="$data">
                     <foreach name="data" item="vo">
                         <li class="message">
                             <a target="_blank" title="{$vo['last_message']['user_info']['uname']}"  href="{$vo['last_message']['user_info']['space_url']}">
@@ -38,6 +39,9 @@
                                 {$vo.list_ctime|friendlyDate}</p>
                         </li>
                     </foreach>
+                        <else/>
+                        <li>您还没有相关消息。。</li>
+                    </if>
                 </ul>
                 <div class="sabrosus">{$html}</div>
             </div>

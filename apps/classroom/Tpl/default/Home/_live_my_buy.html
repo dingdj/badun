@@ -12,12 +12,17 @@
             <span class="Price fr">￥{$l.money}</span>
         </div> -->
         <a href="{:U('live/index/view',array('id'=>$l['id']))}" class="img"><img src="{:getCover($l['cover'] , 266,138)}" class="lazyloading" ></a>
-        <div class="user-title">
+        <!--<div class="user-title">
             <h3><a href="{:U('live/index/view',array('id'=>$l['id']))}">{$l.video_title}</a></h3>
-            <!--<div class="fx fl"><a  href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank"><i class="icon-01"></i>分享</a></div>
-            <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.oid})"><i class="icon-02"></i>删除</a></div>-->
-            <p><a href="#">江湖学院</a><a href="#">韩叫兽</a></p>
+            &lt;!&ndash;<div class="fx fl"><a  href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank"><i class="icon-01"></i>分享</a></div>
+            <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.oid})"><i class="icon-02"></i>删除</a></div>&ndash;&gt;
+            <p><a href="#">江湖学院</a><a href="javascripy:;">韩叫兽</a></p>
             <span><strong>¥{$l.money}</strong><small>557989577人在学</small></span>
+        </div>-->
+        <h3><span class="fr">¥{$l.money}</span><a href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{:msubstr(t($l['video_title']),0,10,'utf-8',true)}</a></h3>
+        <div class="act">
+            <div class="fx fl"><a href="http://www.jiathis.com/share" class="jiathis jiathis_txt" target="_blank">分享</a></div>
+            <div class="sc fr"><a href="javascript:;" onclick="dellive(this,{$l.oid})">删除</a></div>
         </div>
     </li>
 </foreach>

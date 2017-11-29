@@ -12,15 +12,15 @@ class AdminGoodsAction extends AdministratorAction
      * 初始化，
      */
     public function _initialize(){
-        $this->pageTitle['index']       = '商品列表';
-        $this->pageTitle['disable']     = '禁用商品列表';
-        $this->pageTitle['close']       = '禁用商品列表';
-        $this->pageTitle['addGoods']    = '添加商品';
+        $this->pageTitle['index']       = '列表';
+        //$this->pageTitle['disable']     = '禁用商品列表';
+        $this->pageTitle['close']       = '回收站';
+        $this->pageTitle['addGoods']    = '添加';
 
-        $this->pageTab[] = array('title'=>'商品列表','tabHash'=>'index','url'=>U('mall/AdminGoods/index'));
-        $this->pageTab[] = array('title'=>'禁用商品列表','tabHash'=>'disable','url'=>U('mall/AdminGoods/disable'));
-        $this->pageTab[] = array('title'=>'商品回收列表','tabHash'=>'close','url'=>U('mall/AdminGoods/close'));
-        $this->pageTab[] = array('title'=>'添加商品','tabHash'=>'addGoods','url'=>U('mall/AdminGoods/addGoods'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'index','url'=>U('mall/AdminGoods/index'));
+        //$this->pageTab[] = array('title'=>'禁用商品列表','tabHash'=>'disable','url'=>U('mall/AdminGoods/disable'));
+        $this->pageTab[] = array('title'=>'回收站','tabHash'=>'close','url'=>U('mall/AdminGoods/close'));
+        $this->pageTab[] = array('title'=>'添加','tabHash'=>'addGoods','url'=>U('mall/AdminGoods/addGoods'));
 
         parent::_initialize();
     }

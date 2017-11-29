@@ -11,8 +11,8 @@ class NoticeAction extends AdministratorAction {
      * @return void
      */
     public function _initialize(){
-        $this->pageTitle['index']       = '公告管理';
-        $this->pageTitle['addNotice']   = '添加公告';
+        $this->pageTitle['index']       = '列表';
+        $this->pageTitle['addNotice']   = '添加';
 
         $this->pageTab[] = array('title'=>$this->pageTitle['index'],'tabHash'=>'index','url'=>U('admin/Notice/index'));
         $this->pageTab[] = array('title'=>$this->pageTitle['addNotice'],'tabHash'=>'addNotice','url'=>U('admin/Notice/addNotice'));
@@ -25,7 +25,7 @@ class NoticeAction extends AdministratorAction {
      * @return void
      */
     public function index(){
-
+        $this->pageTitle['index']       = '列表';
         //页面配置
         $this->pageKeyList = array('id','uid','content','ctime','DOACTION');
 
@@ -62,6 +62,7 @@ class NoticeAction extends AdministratorAction {
      * 添加公告
      */
     public function addNotice(){
+        $this->pageTitle['addNotice']       = '添加';
         if(isset($_POST)){
             if(empty($_POST['content'])) {
                 $this->error("发布内容不能为空");
@@ -97,7 +98,7 @@ class NoticeAction extends AdministratorAction {
     public function editNotice(){
         $_REQUEST ['tabHash'] = 'editNotice';
 
-        $this->pageTitle ['editNotice'] = '编辑公告';
+        $this->pageTitle ['editNotice'] = '编辑';
         $id = intval($_REQUEST ['id']);
         $data = M('suggest')->find($id);
         if (! $id || !$data) {
@@ -119,8 +120,7 @@ class NoticeAction extends AdministratorAction {
             }
         }
 
-        $this->pageTitle ['editNotice'] = '编辑公告';
-        $this->pageTab [] = array ('title' => '编辑公告', 'tabHash' => 'editNotice','url' => U ( 'admin/Notice/editNotice' ));
+        $this->pageTab [] = array ('title' => '编辑', 'tabHash' => 'editNotice','url' => U ( 'admin/Notice/editNotice' ));
 
         $this->pageKeyList = array ('content');
 

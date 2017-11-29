@@ -176,6 +176,28 @@
 
     }
 
+    //课程提交审核
+    function SubmitAudit(cate,id){
+        var id=id;
+        url="{:U('classroom/User/SubmitAudit')}";
+        fdata="id="+id;
+        $.ajax({
+            type: "POST",
+            url:url,
+            data:fdata,
+            dataType:"json",
+            success:function(data){
+                if(data.status==1){
+                    ui.success(data.info);
+                    location.reload();
+                }else{
+                    ui.error(data.info);
+                    return;
+                }
+            }
+        });
+    }
+
     function delvideo(cate,id){
       var id=id;
       url="{:U('classroom/User/delvideo')}";

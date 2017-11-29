@@ -224,7 +224,6 @@ class AdminGlobalConfigAction extends AdministratorAction {
         if($_POST['score'] == 0 ) $this->error('积分增量不能为0!');
         if(preg_match("^[1-9]\d*|0$",$_POST['count'])) $this->error('用户单日执行最大次数必须为整数!');
 
-        dump($_POST);exit;
         $_LOG['uid'] = $this->mid;
         $_LOG['type'] = '1';
         $data[] = '全局 - 积分配置 - 积分规则 ';

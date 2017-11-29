@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title><neq name='_title' value=''>{$_title} - {$site.site_name}<else />{$site.site_name} - {$site.site_slogan}</neq></title>
-    <meta content="<neq name= '_keywords' value=''>{$_keywords}<else />{$site.site_header_keywords}</neq>" name="keywords">
+    <title>{$seo['_title']}</title>
+    <meta content="{$seo['_meta']}" name="keywords">
     <meta content="<neq name= '_description' value=''>{$_description}<else />{$site.site_header_description}</neq>" name="description">
     <meta name="viewport" charset="UTF-8" content="user-scalable=no"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
@@ -12,20 +12,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
 
-    <link href="__THEME__/image/favicon.ico?v={$site.sys_version}" type="image/x-icon" rel="shortcut icon">
     <!-- 站点css -->
-    <!--<link href="__THEME__/css/css.php?t=css&f=common_new.css,basic_new.css,common.css,index.css,logincss.css,media.css,style.css,style_add.css,style_new.css,wenda.css&v={$site.sys_version}.css" rel="stylesheet" type="text/css" />-->
-    <link href="__THEME__/css/common_new.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/basic_new.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/common.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/index.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/logincss.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/media.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/style.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/style_add.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/style_new.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/wenda.css" rel="stylesheet" type="text/css" />
-    <link href="__THEME__/css/_header_footer.css" rel="stylesheet" type="text/css" />
+    <!--<link href="__THEME__/css/css.php?t=css&f=common_new.css,basic_new.css,common.css,index.css,logincss.css,media.css,style.css,style_add.css,style_new.css,wenda.css,_header_footer.css&v={$site.sys_version}.css" rel="stylesheet" type="text/css" />-->
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/common_new.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/basic_new.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/common.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/index.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/logincss.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/media.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/style.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/style_add.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/style_new.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/wenda.css?v={$site.sys_version}">
+	<link rel="stylesheet" type="text/css" href="__THEME__/css/_header_footer.css?v={$site.sys_version}">
+	
+	
+    <link rel="stylesheet" type="text/css" href="__THEME__/../_static_new/icon/iconfont.css">
+
+    <script type="text/javascript" src="__THEME__/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="__THEME__/js/lazyload/jquery.lazyload.min.js"></script>
+    <!--<script src="__THEME__/js/js.php?t=js&f=jquery.form.js,common.js,core.js,module.js,module.common.js,jwidget_1.0.0.js,jquery.atwho.js,jquery.caret.js,ui.core.js,ui.draggable.js,plugins/core.comment.js,plugins/core.digg.js&v={$site.sys_version}.js"></script>-->
+	
+	<script type="text/javascript" src="__THEME__/js/jquery.form.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/common.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/core.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/module.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/module.common.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/jwidget_1.0.0.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/jquery.atwho.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/jquery.caret.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/ui.core.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/ui.draggable.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/plugins/core.comment.js?v={$site.sys_version}"></script>
+	<script type="text/javascript" src="__THEME__/js/plugins/core.digg.js?v={$site.sys_version}"></script>
+	
+    <script type="text/javascript" src="__THEME__/js/user/user.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/title_common.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/cyjs_common.js"></script>
+    <script type="text/javascript" src="__THEME__/js/cyjs/offlights.js"></script>
+    <script type="text/javascript" src="__THEME__/js/jquery.qrcode.min.js"></script>
 
     <script>
         //全局变量
@@ -74,6 +99,72 @@
                 }
             });
         }
+
+        $(function(){
+            $('.backtop').click(function(){
+                $('body,html').animate({scrollTop:0},300);
+                return false;
+            });
+            $('.full-course').hover(function(){
+                $(this).addClass('hover');
+            },function(){
+                $(this).removeClass('hover');
+            });
+
+            $(".search_index_val span a").click(function(){
+                var span_Val = $(this).text();
+                var a_Attr = $(this).attr("attr");
+                $(".search_index_val p").html(span_Val);
+                $("#search_cate").val(a_Attr);
+                $(".search_index #search_combo_input").attr("placeholder","搜索"+span_Val);
+                $(this).hide().siblings().show();
+            })
+
+            $(".search_index input").focus(function(){
+                $(".search_index").css("width","250px");
+                $(".search_index input").css("width","140px");
+            })
+
+            /*$("body:not(.search_index)").click(function(){
+                $(".search_index").css("width","140px");
+                $(".search_index input").css("width","40px")
+            })*/
+
+            /*header选择要搜索的类型*/
+            /*$(".direction a").on("click",function(){
+                var inputKey = $(this).index();
+                if(inputKey==0){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的课程');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }else if(inputKey==1){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的机构');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }else if(inputKey==2){
+                    $(".lookup input").attr('placeholder','请输入您要搜索的老师');
+                    $(".direction a").css({"background-color":"transparent","color":"#555"});
+                    $(this).css({"background-color":"#00bed4","color":"#fff"});
+                }
+            });*/
+
+        });
+        
+        $(window).scroll(function(){
+            if($(window).scrollTop()>300){
+                $('.backtop').fadeIn(300);
+            }else{
+                $('.backtop').fadeOut(200);
+            }
+        });
+
+        if(navigator.userAgent.match(/(iPhone|Android|ios)/i)) {
+            $(window).load(function () {
+                $('.modular,.logos,.window-box').show();
+                $('.users').attr('style','display:block');
+            });
+        }
+
     </script>
 
     <php>if(!empty($langJsList)) {</php>
@@ -81,20 +172,13 @@
         <script src="{$vo}?v={$site.sys_version}"></script>
     </volist>
     <php>}</php>
+
     <!-- 站点js -->
     <!--[if lt IE 9]>
     <script src="__THEME__/js/lazyload/html5shiv.js"></script>
     <![endif]-->
     <!--[if lt IE 9]><script src="js/html5.js" type="text/javascript"></script><![endif]-->
-    <script type="text/javascript" src="__THEME__/js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="__THEME__/js/lazyload/jquery.lazyload.min.js"></script>
-    <script src="__THEME__/js/js.php?t=js&f=jquery.form.js,common.js,core.js,module.js,module.common.js,jwidget_1.0.0.js,jquery.atwho.js,jquery.caret.js,ui.core.js,ui.draggable.js,plugins/core.comment.js,plugins/core.digg.js&v={$site.sys_version}.js"></script>
-
-    <script type="text/javascript" src="__THEME__/js/user/user.js"></script>
-    <script type="text/javascript" src="__THEME__/js/cyjs/title_common.js"></script>
-    <script type="text/javascript" src="__THEME__/js/cyjs/cyjs_common.js"></script>
-    <script type="text/javascript" src="__THEME__/js/cyjs/offlights.js"></script>
-    <script type="text/javascript" src="__THEME__/js/jquery.qrcode.min.js"></script>
+    
 
 </head>
 <body>

@@ -8,7 +8,7 @@
             <ul>
                 <li>
                     <a href="/">首页</a><span>&gt;</span>
-                    <a href="{:U('mall/Index/index')}">积分商城</a>
+                    <a href="{:U('mall/Index/index')}">商城</a>
                     <if condition="$cateId">
                         <span>&gt;</span>
                         <a href="{:U('mall/Goods/index',['cateId'=>$cate_id_str])}" data-cate_id="0" class="select_cate">{$title}</a>
@@ -78,7 +78,7 @@
                         <a href="javascript:;" class="screen" data-type="sort_type" data-value="hot">最热</a>
                     </div>
                     <div class="nav-item <php>if($sort_type == 'price_up' || $sort_type == 'price_down'){</php>active<php>}</php>">
-                        <a href="javascript:;" class="screen" data-type="sort_type" data-value="<eq name="sort_type" value="price_up">price_down<else/>price_up</eq>">所需积分</a>
+                        <a href="javascript:;" class="screen" data-type="sort_type" data-value="<eq name="sort_type" value="price_up">price_down<else/>price_up</eq>">积分高低</a>
                     </div>
                 </dl>
                 <php>}</php>
@@ -122,92 +122,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="teacher_right">
-            <div class="teacher_side">
-                <h3 class="teacher_side_tit">精选课程</h3>
-                <div class="teacher_side_wrappers">
-                    <ul class="classlist03 clearfix">
-                        <volist name="bestVideo" id="vo">
-                            <li>
-                                <div class="pic">
-                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],180,180)}" class="lazyloading" alt=""></a>
-                                </div>
-                                <h3><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{$vo.video_title}</a></h3>
-                                <div class="info">
-                                    <php>if($vo['school_title']){</php>
-                                    <div class="name">{:limitNumber($vo['school_title'],5)} <span >认证</span></div>
-                                    <php>}</php>
-                                    <php>if($vo['t_price'] == 0){</php><div class="price" style="color:green ;">免费</div>
-                                    <php>}else{</php><div class="price">￥{$vo.t_price}元</div><php>}</php>
-                                </div>
-                            </li>
-                        </volist>
-                    </ul>
-                </div>
-            </div>
-            <div class="teacher_side bg">
-                <h3 class="class_right_tit ">热门课程推荐</h3>
-                <div class="teacher_side_wrappers">
-                    <ul class="classlist03 clearfix">
-                        <volist name="video" id="vo" offset="4" length='3'>
-                            <li>
-                                <div class="pic">
-                                    <a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],180,180)}" class="lazyloading" alt=""></a>
-                                </div>
-                                <h3><a href="{:U('classroom/Video/view',array('id'=>$vo['id']))}">{$vo.video_title}</a></h3>
-                                <div class="info">
-                                    <php>if($vo['school_title']){</php>
-                                    <div class="name">{:limitNumber($vo['school_title'],5)} <span >认证</span></div>
-                                    <php>}</php>
-                                    <php>if($vo['t_price'] == 0){</php><div class="price" style="color:green ;">免费</div>
-                                    <php>}else{</php><div class="price">￥{$vo.t_price}元</div><php>}</php>
-                                </div>
-                            </li>
-                        </volist>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="clear"></div>
-        <php>if($guess_you_like){</php>
-        <div class="guess_like">
-            <h3 class="guess_like_tit">猜你喜欢</h3>
-            <ul class="classlist02 clearfix">
-                <volist name="guess_you_like" id="val" offset="2" length='5'>
-                    <li>
-                        <div class="pic">
-                            <php>if($val['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],266,170)}" class="lazyloading" alt=""></a>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}"><img src="{:getCover($val['cover'],266,170)}" class="lazyloading" alt=""></a>
-                            <php>}</php>
-                            <php>if($val['type'] == 2){</php>
-                            <div class="txt">
-                                <div class="fl orange class">直播中</div>
-                                <span class="fl">进度：{$val['live']['now']}/{$val['live']['count']}节</span>
-                            </div>
-                            <php>}</php>
-                        </div>
-                        <h3>
-                            <php>if($val['type'] == 1){</php>
-                            <a href="{:U('classroom/Video/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],20)}</a>
-                            <php>}else{</php>
-                            <a href="{:U('live/Index/view',array('id'=>$val['id']))}">{:limitNumber($val['video_title'],20)}</a>
-                            <php>}</php>
-                        </h3>
-                        <!--<div  class="name">{$val['mhmName']}</div>-->
-                        <div class="info">
-                            <div class="fr">{$val['teacherInfo']['name']}</div>
-                            <div class="price">￥{$val['t_price']}
-                                <if condition="$val['free_status']"><span class="sx">{$val['free_status']}</span></if>
-                            </div>
-                        </div>
-                    </li>
-                </volist>
-            </ul>
-        </div>
-        <php>}</php>
     </div>
 </div>
 <script>

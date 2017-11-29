@@ -517,26 +517,49 @@ class ZyVideoModel extends Model
     /**
      * @name 获取指定课程指定用户可以使用的优惠券
      */
-    public function getCanuseCouponList($video_id = 0){
+    public function getCanuseCouponList($video_id = 0,$canot = 0){
         if($video_id){
             $fields = $this->where(['id'=>$video_id])->field(['t_price','mhm_id'])->find();
             $price = $fields['t_price'];
-            $coupons = model('Coupon')->getCanuseCouponList($this->mid,[1,2],'AND c.sid = '.$fields['mhm_id']);
+            if($canot == 1){
+                $coupons = model('Coupon')->getCanuseCouponList($this->mid,[1,2]);
+            }else{
+                $coupons = model('Coupon')->getCanuseCouponList($this->mid,[1,2],'AND c.sid = '.$fields['mhm_id']);
+            }
             if($coupons){
-                //过滤全额抵消的优惠券
-                foreach($coupons as $k=>$v){
-                    switch($v['type']){
-                        case "1":
-                            //价格低于门槛价 || 至少支付0.01
-                            if($v['maxprice'] != '0.00' && $price <= $v['maxprice'] || $price - $v['price'] <= 0){
-                                unset($coupons[$k]);
-                            }
-                            break;
-                        case "2":
-                        default:
-                            break;
+                if(!$canot){
+                    //过滤全额抵消的优惠券
+                    foreach($coupons as $k=>$v){
+                        switch($v['type']){
+                            case "1":
+                                //价格低于门槛价 || 至少支付0.01
+                                if($v['maxprice'] != '0.00' && $price <= $v['maxprice'] || $price - $v['price'] <= 0){
+                                    unset($coupons[$k]);
+                                }
+                                break;
+                            case "2":
+                            default:
+                                break;
+                        }
                     }
-                    
+                }else{
+                    foreach($coupons as $k=>$v){
+                        if($v['mhm_id'] == $fields['mhm_id']){
+                            switch($v['type']){
+                                case "1":
+                                    //价格低于门槛价 || 至少支付0.01
+                                    if($v['maxprice'] != '0.00' && $price >= $v['maxprice']){
+                                        unset($coupons[$k]);
+                                    }
+                                    break;
+                                case "2":
+                                    unset($coupons[$k]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -578,5 +601,88 @@ class ZyVideoModel extends Model
             $new_vid[] = implode(',',$v);
         }
         return $new_vid;
+    }
+
+    /**
+     * @name 课程加入看单功能
+     * @$video_id  机构ID
+     * @$vtype  课程类型
+     * @$coupon_id  卡券ID
+     * @return  array  课程ID集合
+     */
+    public function addOrder($video_id, $vtype, $coupon_id)
+    {
+        $mid = $this -> mid;
+        //取得课程
+        $filed = "id,uid,video_title,mhm_id,teacher_id,v_price,t_price,term,live_type";
+        $video = $this->getVideoById($video_id,$filed);
+
+        $is_buy = D('ZyOrderCourse','classroom')->isBuyVideo($this->mid ,$video_id );
+        if($is_buy){
+            return false;
+        }
+
+        //查询教师用户uid
+        $teacher_uid = M('zy_teacher')->where(array('id' => $video['teacher_id']))->getField('uid');
+        $teacher_uid = M('user')->where(array('uid' => $teacher_uid))->getField('uid');
+
+        //购买用户机构id
+        $mhuid = M('user')->where('uid = '.$this->mid)->getField('mhm_id');
+        $oschool_id = model('School')->where(array('id'=>$mhuid))->getField('id');
+
+        //取得价格
+        if($vtype == 'zy_video') {
+            $prices = getPrice($video, $this->mid, false, true);
+        }else{
+            $prices = getPrice($video, $this->mid, false, true, 2);
+        }
+
+        $data = array(
+            'uid' => $mid,
+            'old_price' => $prices['oriPrice'],//10
+            'discount' => round($prices['oriPrice'] - $prices['price'], 2),
+            'discount_type' => 3,
+            'price' => 0,
+            'coupon_id' => $coupon_id,
+            'order_album_id' => 0,
+            'learn_status' => 0,
+            'ctime' => time(),
+            'order_type' => 0,
+            'is_del' => 0,
+            'pay_status' => 3,
+            'term' => $video['term'],
+            'time_limit' => time() + 129600 * floatval($video['term']),
+            'mhm_id' => $video['mhm_id'],
+            'order_mhm_id'  => intval($oschool_id),//购买的用户机构id
+            'rel_id'        => 0,
+        );
+        if($vtype == 'zy_video') {
+            $data['video_id'] = $video_id;
+            $data['muid'] = $teacher_uid;
+            $order_id = M('zy_order_course')->where(array('uid'=>$this->mid,'video_id'=>$video['id']))->getField('id');
+            if($order_id){
+                $id = M('zy_order_course')->where(array('uid'=>$this->mid,'video_id'=>$video['id']))->save($data);
+            }else{
+                $id = M('zy_order_course')->add($data);
+            }
+        }else{
+            $data['live_id'] = $video_id;
+            $order_id = D('ZyOrderLive')->where(array('uid'=>$this->mid,'live_id'=>$video_id))->getField('id');
+            if($order_id){
+                $id = D('ZyOrderLive')->where(array('uid'=>$this->mid,'live_id'=>$video_id))->save($data);
+            }else{
+                $id = D('ZyOrderLive')->add($data);
+            }
+        }
+
+        if ($id) {
+            if($coupon_id){
+                $data['status'] = 1;
+                M('coupon_user')->where(array('uid'=>$this->mid,'cid'=>$coupon_id))->save($data);
+            }
+            M('zy_video')->where(array('id' => $video['id']))->setInc('video_order_count');
+            return true;
+        }
+        return false;
     }
 }

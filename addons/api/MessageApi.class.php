@@ -174,12 +174,12 @@ class MessageApi extends Api{
                 }
 
             }else{
-                //判断评论的是套餐还是课程
+                //判断评论的是班级还是课程
                 if($val['app_uid']==1){
                     $app="video";
                     $val['app_name']="课程";
                 }else{
-                    $val['app_name']="套餐";
+                    $val['app_name']="班级";
                     $app="album";
                 }
             }

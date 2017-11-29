@@ -1,16 +1,18 @@
 <include file="__THEME__/_header" />
-<meta http-equiv="X-UA-Compatible" content="IE=7, IE=9">
 <style>
-.loginhead{height:115px;}
-.loginhead .logo{height:100px;}
+    .content{background: #fff;}
+    .loginright .item dl{ margin-left:63px; }
+    .loginright .item dd{ float: left; }
+    .icon-weixin:before{  content:""; }
 </style>
+<meta http-equiv="X-UA-Compatible" content="IE=7, IE=9">
 <div class="header">
     <div class="loginhead">
         <div class="wrap">
             <php>if($register_type == 'open'):</php>
             <php>endif;</php>
-            <div class="fr" style="margin-top: 10px;font-size: 14px;">没有账号？<a href="{:U('public/Passport/reg')}" style="margin-left: 15px;padding-left: 15px;border-left: solid 1px #a0a0a0;">注册</a></div>
-            <div class="logo"><a href="/" title="{$site['site_keyword']}在线教育系统"><img style="margin: 4px 0px;" src="{$site.logo_head}" width="150" height="65"/></a></div>
+            <div class="fr" style="margin-top: 10px;font-size: 14px;color:#fff;">没有账号？<a href="{:U('public/Passport/reg')}" style="color: #fff;margin-left: 15px;padding-left: 15px;border-left: solid 1px #a0a0a0;">注册</a></div>
+            <div class="logo"><a href="/" title="{$site['site_keyword']}在线教育系统"><img style="margin: 4px 0px;" src="{$site.logo_head}" width="150" /></a></div>
         </div>
     </div>
 </div>
@@ -54,19 +56,7 @@
 </div>
 <!--itembox end-->
 
-<div class="login-footer" style="margin-bottom:0;">
-    <ul>
-        <li><a href="/">{$site['site_keyword']}首页</a></li>
-        <volist name="pageCategory" id="vo" offset="0" length="5">
-            <li>|</li>
-            <li>
-                <a target="_blank" href="{$vo['url']}">{$key}</a>
-            </li>
-        </volist>
-        <li>|</li>
-        <li><span>{:t($site['site_footer']);}.</span></li>
-    </ul>
-</div>
+<include file="__THEME__/public_footer" />
 
 <eq name='site.site_online_count' value='1'>
     <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>

@@ -11,7 +11,7 @@ class TopicAction extends AdministratorAction {
 	//资讯分类
 	public function cate() {
 		$this->_top ();
-		$this->pageTitle ['cate'] = '资讯分类配置';
+		$this->pageTitle ['cate'] = '分类';
 		$treeData = model ( 'CategoryTree' )->setTable ( 'zy_topic_category' )->getNetworkList ();
 		$this->displayAree ( $treeData, 'zy_topic_category', 1 );
 	}
@@ -19,7 +19,7 @@ class TopicAction extends AdministratorAction {
 	//资讯列表
 	public function index() {
 		$this->_top ();
-		$this->pageTitle ['index'] = '资讯管理';
+		$this->pageTitle ['index'] = '列表';
 		$this->pageKeyList = array ('id','title','cate','desc','dateline','from','action','re' );
 		$this->searchKey = array('id','title','cate','re','from',array('ctime','ctime1'));
 		$this->pageButton[] = array('title' => "搜索", 'onclick' => "admin.fold('search_form')");
@@ -98,7 +98,7 @@ class TopicAction extends AdministratorAction {
     }
 
 	public function editor() {
-		$this->pageTitle ['editor'] = '编辑资讯';
+		$this->pageTitle ['editor'] = '编辑';
 		$id = $_GET ['id'];
 		if (! $id) {
 			$this->assign ( 'jumpUrl', U ( 'admin/Topic/index' ) );
@@ -106,9 +106,9 @@ class TopicAction extends AdministratorAction {
 		} else {
 			$_REQUEST ['tabHash'] = 'editor';
 			$this->_top ();
-			$this->pageTitle ['newZixun'] = '编辑资讯';
+			$this->pageTitle ['newZixun'] = '编辑';
 			$this->pageTab [] = array (
-					'title' => '编辑资讯',
+					'title' => '编辑',
 					'tabHash' => 'editor',
 					'url' => U ( 'admin/Topic/editor' ) 
 			);
@@ -210,12 +210,12 @@ class TopicAction extends AdministratorAction {
 	}
 	private function _top() {
 		$this->pageTab [] = array (
-				'title' => '资讯管理',
+				'title' => '列表',
 				'tabHash' => 'index',
 				'url' => U ( 'admin/Topic/index' ) 
 		);
 		$this->pageTab [] = array (
-				'title' => '资讯分类',
+				'title' => '分类',
 				'tabHash' => 'cate',
 				'url' => U ( 'admin/Topic/cate' ) 
 		);

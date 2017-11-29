@@ -181,32 +181,29 @@ class MessageAction extends Action
 		$dotitle = $_POST['dotitle'];
 		$school = $_POST['school'];
 
-
-
 		if($nowboject && $dotype) {
-			$_POST['content'] = "您好,你在" . $dtime . "时刻发表的" . $nowboject . " " . $_POST['content'] . "　已被管理员" . $dotype;
-		}
-
-		if($videotype && $dotype) {
-			$_POST['content'] = "您好,你的" . $videotype . " " . $nowboject . " " . $_POST['content'] . "　已被管理员" . $dotype;
+			$_POST['content'] = "您好,您在" . $dtime . "时刻发表的" . $nowboject . " " . $_POST['content'] . "　已被管理员" . $dotype;
 		}
 
 		if($dodel) {
-			$_POST['content'] = "您好,你的账号已被管理员".$dodel;
+			$_POST['content'] = "您好,您的账号已被管理员".$dodel;
 		}
 
 		if($dotitle) {
-			$_POST['content'] = "您好,你的".$dotitle.$dotype;
+			$_POST['content'] = "您好,您的".$dotitle.$dotype;
 		}
 
 		if($school) {
-			$_POST['content'] = "您好,你绑定的机构已经被管理员".$dotype;
+			$_POST['content'] = "您好,您绑定的机构已经被管理员".$dotype;
 		}
 		
 		$_POST['body'] = $_POST['content'];
 		$_POST['uid'] = $_POST['to'];
-//        $res = model('Notify')->sendMessage($_POST, $this->mid);
-        $res = model('Message')->postMessage($_POST, $this->mid);
+
+        if($videotype != "课程") {
+            $res = model('Notify')->sendMessage($_POST, $this->mid);
+            //        $res = model('Message')->postMessage($_POST, $this->mid);
+        }
         if ($res) {
             echo json_encode($return);exit();
         }else {
@@ -297,12 +294,12 @@ class MessageAction extends Action
                 $val['url']=U('classroom/topic/view',array('id'=>$val['app_id']));
             }
             else{
-                //判断评论的是套餐还是课程
+                //判断评论的是班级还是课程
                 if($val['app_uid']==1){
                     $app="video";
                     $val['app_name']="回复我的课程：";
                 }else{
-                    $val['app_name']="回复我的套餐：";
+                    $val['app_name']="回复我的班级：";
                     $app="album";
                 }
                 $val['url']=U("classroom/".$app."/view",array('id'=>$val['app_id']));

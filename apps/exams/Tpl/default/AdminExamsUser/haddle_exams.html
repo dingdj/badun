@@ -1,18 +1,126 @@
+<style media="screen">
+  .topic_selection{
+    font-weight: bold;
+    color: #333;
+  }
+   .form_paper{
+     margin-left: 30px!important;
+     margin-right: 50px;
+   }
+   .score{
+     color: #49a34d;
+
+   }
+   .form2{
+     border-top: 6px solid #9cb8cc!important;
+   }
+   .question_num,.key_answer{
+     color: #888;
+   }
+   .user{
+     margin-right: 40px;
+   }
+    em{
+      color: #333!important;
+    }
+    .paper_color{
+      color: #888;
+    }
+    .user_answer li{
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .page_btm{
+      border-top: 0!important;
+    }
+    .page_btm .btn_b{
+      width: 150px;
+      height: 36px;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .page_btm .btn_b:link, .page_btm .btn_b:hover{
+       width: 150px;
+       height: 36px;
+       border-radius: 4px;
+       font-size: 16px;
+     }
+     p{
+       display: inline;
+     }
+     hr{
+       border: 1px solid #ccc;
+     }
+     .grade p{
+       float: left;
+     }
+     .grade p::after{
+       content: "";
+       width: 0;
+       height: 0;
+      overflow: hidden;
+     }
+     .grade{
+       width: 110px;
+       height: 32px;
+       border: 1px solid #ccc;
+       border-radius: 4px;
+       float: left;
+     }
+     .reduce{
+       width: 30px;
+       height: 24px;
+       border-right: 1px solid #ccc;
+       text-align: center;
+       padding-top: 8px!important;
+       font-size: 20px;
+       cursor: pointer;
+     }
+     .plus{
+       width: 30px;
+       height: 25px;
+       border-left: 1px solid #ccc;
+       text-align: center;
+       padding-top: 7px!important;
+       font-size: 20px;
+       cursor: pointer;
+     }
+     i:hover{
+       color: #666!important;
+     }
+     .button_num{
+       width: 48px;
+       height: 32px;
+      text-align: center;
+       padding-top: 5px!important;
+     }
+     .float_left{
+       float: left;
+       margin-right: 20px;
+     }
+     .clear_both{
+       height: 42px;
+       width:200px;
+     }
+</style>
 <include file="__THEME__/admin_header" />
 <php>
  set_time_limit(0);
 </php>
 	<link rel="stylesheet" href="__THEME__/js/swfupload/css/default.css">
+  <link rel="stylesheet" href="__THEME__/../_static_new/icon/iconfont.css">
 	</div>
 	<div id="container" class="so_main">
     <div class="page_tit">
         <div class="right">
-            <neq name="back_id" value="-1"><a href="{:U('exam/AdminUserExam/index')}" class="btn_a"><span>返回</span></a></neq>
+            <php>if($_GET['back_url']){</php>
+              <a href="{:urldecode($_GET['back_url'])}" class="btn_a"><span>返回</span></a>
+            <php>}</php>
         </div>
         {$pageTitle}
     </div>
     <php>if(!empty($pageTab)):</php>
-    
+
     <div class="tit_tab">
         <ul>
         <php> !$_REQUEST['tabHash'] and $_REQUEST['tabHash'] =  $pageTab[0]['tabHash'];</php>
@@ -22,11 +130,11 @@
         </ul>
     </div>
     <php>endif;</php>
-    	<form name="examiner_paper">
+    	<form name="examiner_paper" class="form_paper">
     		<input type="hidden" name="paper_id" value="{$Think.get.paper_id}">
     		<input type="hidden" name="exams_users_id" value="{$Think.get.exams_users_id}">
     	<div class="form2">
-		    <div style='width:80%;height:auto; margin-left:50px;'>
+		    <div style='height:auto;'>
 		    	<php>$question_num = 1;</php>
 			  	<volist name="paper_options.options_type" id="options_type">
 			  		<div style="line-height:30px;padding-left:5px;">
@@ -34,12 +142,16 @@
 							<case value="radio|multiselect|judge">
 								<!-- 单多选 -->
 	                            <volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
-		                            <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
-		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                            <div style="">
+		                            	<div><span class="topic_selection">{$options_type.type_info.question_type_title}</span><span class="score"> (  得分：{$options_type.score} 分)</span>
+                                    <div>
+                                  <div class="question_num">
+                                    {$question_num}、{$question.content}
+                                 </div>
 		                            </div>
-		                            <div style="line-height:30px;padding-left:5px;">
-		                            	<ul>
-			                            	<volist name="question.answer_options" id="answer">
+		                            <div style="line-height:30px;padding-left:5px;" >
+		                            	<ul class="paper_color">
+			                            	<volist class="key_answer" name="question.answer_options" id="answer">
 			                                    <li><b>{$key}、</b>{$answer}</li>
 			                                </volist>
 		                                </ul>
@@ -48,50 +160,74 @@
 			                            <php>
 			                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
 			                            </php>
-			                            <em class="bgco">用户答案<strong><php>if(!$content){</php>未作答<php>}</php><volist name="content" id="ans">{$ans|default='未作答'}</volist></strong></em>
-			                            <em>正确答案<strong><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></strong></strong></em>
+			                            <em class="bgco user">用户答案:  <strong><php>if(!$content){</php>未作答<php>}</php><volist name="content" id="ans">{$ans|default='未作答'}</volist></strong></em>
+			                            <em>正确答案:  <strong><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></strong></strong></em>
 		                            </div>
-		                            <div style="line-height:30px;padding-left:5px;">
-		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            <div class="paper_color" style="line-height:30px;padding-left:5px;">
+		                            	<font>解析</font>：{$question.analyze}
 		                            </div>
 		                            <php>$question_num++;</php>
-		                            <hr />
+		                            <hr/>
 	                            </volist>
 							</case>
 							<case value="completion">
 								<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
-		                           <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
-		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                           <div style="line-height:30px;padding-left:5px;">
+                                 <div>
+                                   <span class="topic_selection">
+		                            	{$options_type.type_info.question_type_title}
+                                    </span>
+                                    <span class="score">
+                                  ( 得分: {$options_type.score}分)
+                                    </span>
+                                </div>
+                                <span class="question_num">
+                                  {$question_num}、{$question.content}
+                                  <span>
 		                            </div>
 		                            <div style="line-height:30px;padding-left:5px;">
-		                            	<em class="bgco">用户答案:
-			                            <ul>
+		                            	<div class="bgco">
+			                            <ul class="user_answer">
+                                    <li>用户答案:</li>
 	                                        <php>
 	                                            $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
 	                                        </php>
 	                                        <volist name="question.answer_true_option" id="answer">
-	                                            <li <php>if($content[$i-1] != $answer){</php>class="co"<php>}</php>><span><b>{$i}</b>、{$content[$i-1]|default='未作答'}</span></li>
+	                                            <li <php>if($content[$i-1] != $answer){</php>class="co "<php>}</php>><span><span>({$i})</span>{$content[$i-1]|default='未作答'}</span></li>
 	                                        </volist>
 	                                    </ul>
-			                            <em>正确答案
-			                            	<ul>
+                                    </div>
+			                            <div>
+			                            	<ul class="user_answer">
+                                            <li>正确答案:</li>
 		                                        <volist name="question.answer_true_option" id="answer_true">
-		                                        <li><span><b>{$i}</b>、{$answer_true}</span></li>
+		                                        <li><span><span>({$i})</span>{$answer_true}</span></li>
 		                                        </volist>
 		                                    </ul>
-		                                </em>
+		                                </div>
 		                            </div>
-		                            <div style="line-height:30px;padding-left:5px;">
-		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            <div style="line-height:30px;padding-left:5px;" class="paper_color">
+		                            	<font>解析</font>：{$question.analyze}
 		                            </div>
+                                <div class="clear"></div>
 		                            <php>$question_num++;</php>
 		                            <hr />
 	                            </volist>
 							</case>
 							<case value="essays">
 								<volist name="paper_options['options_questions_data'][$options_type['question_type']]" id="question">
-		                            <div style="color: #4a6fad;;line-height:30px;padding-left:5px;">
-		                            	({$options_type.type_info.question_type_title}/{$options_type.score} 分){$question_num}、{$question.content}
+		                            <div style="line-height:30px;padding-left:5px;">
+                                  <div>
+                                <span class="topic_selection">
+		                            	{$options_type.type_info.question_type_title}
+                                </span>
+                                <span class="score">
+                                  (得分:{$options_type.score} 分)
+                                  </span><br>
+                                  <span class="answer_questions question_num">
+                                  {$question_num}、{$question.content}
+                                </span>
+                                </div>
 		                            </div>
 		                            <div style="line-height:30px;padding-left:5px;">
 		                            	<ul>
@@ -105,17 +241,33 @@
 			                                $content = isset($answerData['content'][$question['exams_question_id']]) ? $answerData['content'][$question['exams_question_id']] : [];
 			                                $examiner_data = isset($answerData['examiner_data'][$question['exams_question_id']]) ? $answerData['examiner_data'][$question['exams_question_id']] : [];
 			                            </php>
-			                            <em class="bgco">用户答案
-			                            <p>{$content[0]|default='未作答'}</p>
+			                            <em class="bgco">
+			                            <p style="color:#333">用户答案:&emsp;{$content[0]|default='未作答'}</p>
 			                            </em>
-			                            <em>得分:<input type="number" name="examiner_data[{$options_type.question_type}][{$question.exams_question_id}]" value="{$examiner_data|default=''}"></em>
-			                            <input type="hidden" name="question_num[{$question.exams_question_id}]" value="{$question_num}">
+			                            <em>
 		                            </div>
-		                            <div style="line-height:30px;padding-left:5px;">
-		                            	<font style='color:#4a6fad;'>解析</font>：{$question.analyze}
+		                            <div style="line-height:30px;padding-left:5px;"class="paper_color">
+		                            	<font>解析</font>： {$question.analyze}
 		                            </div>
+                                <!--评分  -->
+                                <div class="clear_both">
+                									<span class="score float_left">评分:</span>
+                									<div class="grade" data-question_id="{$question.exams_question_id}">
+                										<p class="reduce score_change" data-action="score_decline">
+                											<!-- <img style="margin-bottom:7px" src="__APP__/images/reduce_press.png" alt=""> -->
+                                      <i class="icon icon-jian" style="color:#ccc;"></i>
+                										</p>
+                										<p class="button_num">{$examiner_data|default='0'}</p>
+                										<input type="hidden" id="examiner_data_{$question.exams_question_id}" name="examiner_data[{$options_type.question_type}][{$question.exams_question_id}]" value="{$examiner_data|default='0'}">
+                			              <input type="hidden" name="question_num[{$question.exams_question_id}]" value="{$question_num}">
+                										<p class="plus score_change" data-action="score_increasing" data-max_score="{$options_type.score}">
+                											<!-- <img src="__APP__/images/add_press.png" alt=""> -->
+                                      <i class="icon icon-jia-copy jia" style="color:#ccc;"></i>
+                										</p>
+                									</div>
+                								</div>
 		                            <php>$question_num++;</php>
-		                            <hr />
+		                        <hr />
 	                            </volist>
 							</case>
 				  		</switch>
@@ -123,9 +275,11 @@
 			  	</volist>
     		</div>
     	</div>
+		<php>if($is_info != 1 && empty($answerData['examiner_data'])){</php>
     	<div class="page_btm">
 		      <input type="button" class="btn_b" value="提交阅卷" id="form_submit">
 		</div>
+		<php>}</php>
 		</form>
 <include file="__THEME__/admin_footer" />
 
@@ -156,5 +310,52 @@ $(function(){
 		    }
         });
 	});
+
+	// 评分
+	$(".score_change").click(function(){
+		var _this = $(this);
+		var action = _this.data("action"),
+			question_id = _this.parent().data("question_id");
+		var score = parseInt($('#examiner_data_'+question_id).val());
+		if(isNaN(score)){
+			score = 0;
+		}
+		if(action == 'score_increasing'){
+			// 添加评分
+			var max_score = parseInt(_this.data("max_score"));
+			var new_score = score+1;
+			if(new_score > max_score){
+				return false;
+			}
+			_this.parent().find(".button_num").text(new_score);
+			$('#examiner_data_'+question_id).val(new_score);
+		}else{
+			var new_score = score-1;
+			// 减少评分
+			if(new_score < 0){
+				return false;
+			}
+			_this.parent().find(".button_num").text(new_score);
+			$('#examiner_data_'+question_id).val(new_score);
+		}
+	});
 });
+  /**
+  $("#redue_num").click(function(){
+    var num=$(".button_num").text();
+    if (num==0) {
+      num=0;
+      $(".button_num").text(num);
+    }else {
+        num =num - 1;
+        $(".button_num").text(num);
+    }
+
+})
+
+    $("#plus_num").click(function(){
+      var num=$(".button_num").text();
+    num++;
+      $(".button_num").text(num);
+  })**/
 </script>

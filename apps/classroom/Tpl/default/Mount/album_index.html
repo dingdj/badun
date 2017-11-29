@@ -5,7 +5,7 @@
 <div class="message_prompt_box" style="display: none;">
     <div class="w-close"><a class="mr15 mt5">×</a></div>
     <div class="w-notice">
-        <h4>申请挂载该套餐</h4>
+        <h4>申请挂载该班级</h4>
     </div>
     <div class="agreement blue">
         <span class="tips_info"></span>
@@ -21,7 +21,7 @@
             <ul>
                 <li>
                     <a href="/">首页</a><span>&gt;</span>
-                    <a href="{:U('classroom/Mount/albumIndex')}">套餐销课</a>
+                    <a href="{:U('classroom/Mount/albumIndex')}">班级销课</a>
                 </li>
             </ul>
         </div>
@@ -29,7 +29,7 @@
             <div class="content-head clearfix">
                 <div class="_header">
                     <div class="head-left clearfix">
-                        <h1>{$site['site_keyword']}挂载套餐课程</h1>
+                        <h1>{$site['site_keyword']}挂载班级课程</h1>
                         <div>
                             <!--<a href="http://www.ablesky.com/org/post/detail_60210" target="_blank">什么是挂载课程？</a>-->
                             <!--<a href="http://www.ablesky.com/org/post/detail_60651" target="_blank">挂载课程准入规则</a>-->
@@ -66,7 +66,7 @@
                 <div class="right_dcw">
                     <div class="sort-wrap clearfix">
                         <div class="category-nav">
-                            <a href="{:U('classroom/Mount')}" class="all_course">全部套餐</a><span class="all_course_span"> &gt;</span>
+                            <a href="{:U('classroom/Mount')}" class="all_course">全部班级</a><span class="all_course_span"> &gt;</span>
                             <a href="javascript:;" class="second_item"></a><span class="second_item_span">&gt;</span>
                             <a href="javascript:;" class="third_item"></a>
                         </div>
@@ -111,7 +111,7 @@
                                                         <li class="course-info">
                                                             <div class="title-wrap clearfix">
                                                                 <a href="{:U('classroom/Album/view',array('id'=>$mda['id']))}" target="_blank" class="title">{$mda.album_title}</a>
-                                                                <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">套餐</span>
+                                                                <span style="float: right;border: 1px solid #2b92f9;color: #2b92f9;border-radius: 3px;padding: 0 3px;">班级</span>
                                                             </div>
                                                             <div class="introduce">{$mda.album_intro|msubstr=0,92,'utf-8',true}</div>
                                                             <div class="bottom-wrap clearfix">
@@ -257,7 +257,7 @@
     $('.add-course').click(function () {
         $('.shou_mount').attr('onclick',"shou_mount("+$(this).attr('data-id')+")");
 //        $('span.tips_info').html("确定申请该课程到您的机构销售，销售成功您将约获得<span style='color:red;'>￥"+$(this).attr('data_price')+"/笔订单</span>的盈利！");
-        $('span.tips_info').html("确定申请该套餐到您的机构销售");
+        $('span.tips_info').html("确定申请该班级到您的机构销售");
         $('.message_prompt_box').show();
         $('.mask').show();
     });

@@ -398,7 +398,7 @@ class CreditModel extends Model {
         $data['note']     = $note;
         $data['ctime']    = time();
 		$data['balance']  = $user['score'];
-		return M('credit_user_flow')->add($data)? true : false;
+		return M('credit_user_flow')->add($data);
 	}
 
     /**
@@ -539,45 +539,6 @@ class CreditModel extends Model {
 			}
 		}
 		return $result !== true;
-	}
-
-	/**
-	 * 设置用户的vip状态，自动累加和设置类型
-	 * @param integer $uid
-	 * @param integer|string $time vip时间，+秒 或 str time 如+12 month,+1 year
-	 * @param integer $type 时间类型 (1:按月,2:按年)
-	 * @return boolean 成功返回true或失败返回false
-	 */
-	public function setVip($uid, $time, $type = 1){
-		if( !$type ) return false;
-		$user = $this->getUserCreditInfo($uid);
-		if(!$user) return false;
-		//如果当前是VIP，并且过期时间大于0，那么继续累加时间
-		if($user['vip_type']>0 && $user['vip_expire']>0){
-			$now = $user['vip_expire'];
-		}else{ /*从当前时间开始计算*/
-			$now = time();
-		}
-		//时间累加
-		if(is_string($time)){
-			$time = strtotime($time, $now)+0;
-		}else{
-			$time += $now;
-		}
-		//如果之前以前的vip级别高于现在
-		$user_vip     = M('user_vip')->where('id='.$type)->getField('sort');
-		$user_vip_now = M('user_vip')->where('id='.$user['vip_level'])->getField('sort');
-		if($user_vip_now >= $user_vip){
-			$type = $user_vip_now;
-		}
-
-		//set
-		$set = array(
-			'vip_type'    => $type,
-			'vip_expire'  => $time
-		);
-        $result = M ( 'credit_user' )->where(array('uid'=>$uid))->save($set);
-        if($result) return true; else return false;
 	}
 
 }

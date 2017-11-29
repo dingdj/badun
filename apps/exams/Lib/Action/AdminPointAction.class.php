@@ -20,11 +20,11 @@ class AdminPointAction extends AdministratorAction
         parent::_initialize();
         $this->allSelected = false;
         $this->mod                = D('ExamsPoint', 'exams');
-        $this->pageTitle['index'] = '考点列表';
-        $this->pageTitle['add']   = '添加考点';
-        $this->pageTitle['edit']  = '编辑考点';
-        $this->pageTab[]          = array('title' => '考点列表', 'tabHash' => 'index', 'url' => U('exams/AdminPoint/index'));
-        $this->pageTab[]          = array('title' => '添加考点', 'tabHash' => 'add', 'url' => U('exams/AdminPoint/add'));
+        $this->pageTitle['index'] = '列表';
+        $this->pageTitle['add']   = '添加';
+        $this->pageTitle['edit']  = '编辑';
+        $this->pageTab[]          = array('title' => '列表', 'tabHash' => 'index', 'url' => U('exams/AdminPoint/index'));
+        $this->pageTab[]          = array('title' => '添加', 'tabHash' => 'add', 'url' => U('exams/AdminPoint/add'));
     }
     /**
      * 考点列表
@@ -108,7 +108,7 @@ class AdminPointAction extends AdministratorAction
             }
             exit;
         }
-        $this->pageTab[]   = array('title' => '编辑考点', 'tabHash' => 'edit', 'url' => U('exams/AdminPoint/edit', array('tabHash' => 'edit', 'point_id' => $_GET['point_id'])));
+        $this->pageTab[]   = array('title' => '编辑', 'tabHash' => 'edit', 'url' => U('exams/AdminPoint/edit', array('tabHash' => 'edit', 'point_id' => $_GET['point_id'])));
         $this->pageKeyList = ['exams_point_id', 'exams_subject_id', 'title'];
 
         $this->savePostUrl = U('exams/AdminPoint/edit');

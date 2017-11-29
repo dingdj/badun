@@ -16,6 +16,16 @@ class SchoolApi extends Api{
         $this->mod 	 = model('School');
         $this->mod->mid = $this->mid;
     }
+
+    /**
+     * Eduline获取机构分类接口
+     * 参数：
+     * return   分类数据或者错误提示
+     */
+    public function getSchoolCategory(){
+        $selCate = model('CategoryTree')->setTable('school_category')->getNetworkList(0,1);
+        $selCate ? $this->exitJson($selCate) : $this->exitJson([],0,'未能获取到分类信息');
+    }
     /**
      * @name 获取机构列表
      */
@@ -25,6 +35,14 @@ class SchoolApi extends Api{
         }
         $map['status'] = 1;
         $this->keyword && $map['title'] = array('like','%'.h($this->keyword).'%');
+
+        $cateId = intval($this->data['cateId']);
+        if ($cateId > 0) {
+            $cateIds = model('CategoryTree')->setTable('school_category')->getSubCateIdByPid($cateId);
+            $idlist = implode(',',$cateIds);
+            $category = $cateId.','.$idlist;
+            $map['school_category'] = ['in',trim($category,',')];
+        }
         $data = $this->mod->getList($map,$this->count);
         if($data['gtLastPage'] === true){
             $this->exitJson([],1,'暂时没有更多机构');
@@ -320,7 +338,7 @@ class SchoolApi extends Api{
             ) );
             $info['isBuy']= D ( 'ZyOrder','classroom' )->isBuyVideo($this->mid , $source_id);
 			$info['is_buy'] = $info['isBuy'] ? 1 : 0;
-            $info['is_play_all'] = ($info['isBuy'] || intval( $info ['mzprice']['price'] )  <= 0 ) ? 1 : 0;
+            $info['is_play_all'] = ($info['isBuy'] || floatval( $info ['mzprice']['price'] )  <= 0 ) ? 1 : 0;
             $info['school_info'] = model('School')->getSchoolInfoById($info['mhm_id']);
 			
         }

@@ -191,22 +191,70 @@ class AdminWithdrawAction extends AdministratorAction{
     public function dispose(){
         $id = intval($_POST['id']);
         $status = !empty($_POST['statusCode'])?intval($_POST['statusCode']):intval($_POST['status']);
-        $result = D('ZyService')->setWithdrawStatus($id, false, $status, t($_POST['reason']));
+
+        $withdraw_info = M('zy_withdraw')->where("id=$id AND wtype=2 AND (status=0 OR status=1)")->field('uid,wnum,bcard_id')->find();
+        $b_card = D('ZyBcard')->where(['id'=>$withdraw_info['bcard_id'],'accounttype'=>'alipay'])->field('id,account,accountmaster,accounttype')->find();
+
+        if($b_card['accounttype'] == 'alipay' && $status == 2){
+            $re = D('ZyRecharge');
+            $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
+
+            $rechange_id = $re->addRechange(array(
+                'uid'      => $this->mid,
+                'type'     => 4,
+                'money'    => $withdraw_info['wnum'],
+                'note'     => "{$this->site['site_keyword']}在线教育-用户：".getUserName($withdraw_info['uid'])." ,收入提现{$withdraw_info['wnum']}元",
+                'pay_type' => 'alipay',
+                'pay_pass_num'=>$pay_pass_num,
+            ));
+
+            $bizcontent  = array(
+                "out_biz_no" => "{$pay_pass_num}",
+                "payee_type"      => "ALIPAY_LOGONID",
+                "payee_account"  => "{$b_card['account']}",
+                "amount"  => "{$withdraw_info['wnum']}",
+                "payer_show_name"  => "{$this->site['site_keyword']}在线教育",
+                "payee_real_name"  => "{$b_card['accountmaster']}",
+                "remark"  => "{$this->site['site_keyword']}在线教育-收入提现：{$withdraw_info['wnum']}元",
+            );
+
+            $result = model('AliPay')->aliPayArouse($bizcontent,'transfer_accounts');
+
+            $responseNode = str_replace(".", "_", $result[0]->getApiMethodName()) . "_response";
+            $resultCode = $result[1]->$responseNode->code;
+
+            if(!empty($resultCode)&&$resultCode == 10000){
+                $re->where(['id'=>$rechange_id])->save(['status'=>1,'pay_order'=>$result[1]->$responseNode->order_id,'stime'=>time()]);
+                $pay_res = true;
+            } else {
+                $re->where(['id'=>$rechange_id])->save(['status'=>0]);
+                $this->error($result[1]->$responseNode->sub_msg);
+                $pay_res = false;
+            }
+
+        } else {
+            $pay_res = true;
+        }
+
+        if($pay_res){
+            $result = D('ZyService')->setWithdrawStatus($id, false, $status, t($_POST['reason']));
+        }
+
         if($result === true){
             $url = $status > 1 ? U(APP_NAME.'/'.MODULE_NAME.'/view', array('id'=>$id, 'tabHash'=>'view')) : false;
             $this->assign('jumpUrl', $url);
             $this->assign('isAdmin',1);
             $this->success('操作成功');
         }else{
-            $errs = array('???','状态码错误','找不到对应的提现记录','学币冻结扣除失败',
-                '学币解冻失败','提现记录状态改变失败','completed',
+            $errs = array('???','状态码错误','找不到对应的提现记录','余额冻结扣除失败',
+                '余额解冻失败','提现记录状态改变失败','completed',
             );
             //查看页面提交直接跳转对应页面
             if($result == 6){
                 $actions= array('','','successful','failure','cancel');
                 $this->redirect('classroom/AdminWithdraw/'.$actions[$status], array('tabHash'=>$actions[$status]));exit;
             }
-				$this->assign('isAdmin',1);
+            $this->assign('isAdmin',1);
             $this->error($errs[$result]);
         }
     }
@@ -238,12 +286,20 @@ class AdminWithdrawAction extends AdministratorAction{
             $this->opt['status'] = $this->statusHtml;
         }
         $bcard = D('ZyBcard')->find($data['bcard_id']);
-        $text  = "账户类型：{$bcard['accounttype']}<br/>";
-        $text .= "　账户号：{$bcard['account']}<br/>";
-        $text .= "　账户名：{$bcard['accountmaster']}<br/>";
-        $text .= "　　地区：{$bcard['location']}<br/>";
-        $text .= "　开户行：{$bcard['bankofdeposit']}<br/>";
-        $text .= "　　电话：{$bcard['tel_num']}";
+        if($bcard['accounttype'] == 'alipay'){
+            $bcard['accounttype'] == 'alipay' ? $bcard['accounttype'] = '支付宝' : true;
+            $text  = "账户类型：{$bcard['accounttype']}<br/>";
+            $text .= "真实姓名：{$bcard['accountmaster']}<br/>";
+            $text .= "　　账户：{$bcard['account']}<br/>";
+        } else {
+            $text  = "账户类型：{$bcard['accounttype']}<br/>";
+            $text .= "　账户号：{$bcard['account']}<br/>";
+            $text .= "　账户名：{$bcard['accountmaster']}<br/>";
+            $text .= "　　地区：{$bcard['location']}<br/>";
+            $text .= "　开户行：{$bcard['bankofdeposit']}<br/>";
+            $text .= "　　电话：{$bcard['tel_num']}";
+        }
+
         $data['uid'] = getUserName($data['uid']).'(id:'.$data['uid'].')';
         $data['ctime'] = date('Y-m-d H:i:s', $data['ctime']);
         if($type == 'view'){

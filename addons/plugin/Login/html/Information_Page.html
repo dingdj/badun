@@ -1,55 +1,90 @@
-  <include file="__THEME__/_header" />
-<div class="worap-login back min-height">
-	<div class="login-qqheader">
-    <img src="{$user.userface}">
-    <p>
-您好，{$user.uname}！您的{$typeName}已经授权成功，完善信息设置后便可用{$typeName}互联账号直接登录。
-</p>
-    </div>
-    <div  class="login-Cipher">
-    <ul class="login-Cipher-ul ">
-     <input type="hidden" id="type" name="other_type" value="{$type}" >
-	            <input id="oauth_token" type="hidden" name="oauth_token" value="{$oauth_token}" >
-	            <input id="oauth_token_secret" type="hidden" name="oauth_token_secret" value="{$oauth_token_secret}" >
-	            <input id="other_uid" type="hidden" name="other_uid" value="{$user.id}" >
-	            <input id="other_face" type="hidden" name="other_face" value="{$user.userface}" >
-	 <input type="hidden" id="other_signature" name="other_signature" value="{$user.signature}" >
-          <li>
-        <label class="f9">昵&nbsp;&nbsp;称: </label>
-        <input class="regsiter-width" id="uname1" type="text" placeholder="2-6个中文字符内" maxlength="6">
-      </li>
-
-      <li>
-        <label class="label f9">手机号码:</label>
-         <input class="width130" id="Mobile" type="text" placeholder="请输入常用的手机号码">
-         <a class="width80" href="javascript:;" onclick="getpartyVerify()">获取验证码</a>
-         <span class="width97"  style="display:none" ><a id="dtime"></a>重新发送</span> 
-      </li>
-<li>
-        <label class="label f9">验&nbsp;证&nbsp;码: </label>
-        <input class="regsiter-width" id="reg_captcha"  type="text" placeholder="请输入收到的验证码">
-      </li>
-      <li>
-        <label class="label f9">常用邮箱: </label>
-        <input class="regsiter-width" id="email" type="text" placeholder="请输入您经常使用的邮箱">
-      </li>
-      <li>
-        <label class="label f9">密码设置: </label>
-        <input class="regsiter-width" id="password" type="password" maxlength="20" placeholder="请设置密码，6-20个字符">
-      </li>
-       <li>
-        <label class="label f9">确认密码: </label>
-        <input class="regsiter-width" id="repassword" type="password" maxlength="20" placeholder="与上相同">
-      </li>
-      <li>
-          <label class="label">性别</label>
-          <label class="label"><input id="sex" name="sex" type="radio" value="1" checked="checked" class="">&nbsp;&nbsp;男</label>
-          <label class="label"><input id="sex" name="sex" type="radio" value="2">&nbsp;&nbsp;女</label>
-        </li>
-    </ul>
-    <input name="" class="regsiter-xy-submit" onclick="party(this)" type="button" value="确 定"/></div>
-</div>
-    <include file="__THEME__/public_footer" />
+<include file="__THEME__/_header" />
+<style type="text/css">
+	.min-height{min-height: 830px;}
+	.tab-menu ul{height:46px;line-height:46px;border-left:none 0;}
+	.tab-menu ul li{padding:0 20px ;font-size:14px; }
+	.tab-menu ul li{float:left;margin:0;}
+	.tab-menu ul li a:link{display:block;float:left;text-align:center;}
+	.tab-menu ul li a:hover{text-decoration:none;}
+	.tab-menu .ico-more{border-color: #535353 transparent transparent;}
+	.tab-menu .line-b{background:#00BED4;position:absolute;width:58px;height:2px;left:0;bottom:0;padding:0 20px;}
+	.tab-menu ul .current{border-bottom: 2px solid #00BED4}
+	.tab-menu ul .current a{ background:#fff;color:#00BED4;}
+</style>
+	<div class="worap-login back min-height">
+		<div class="login-qqheader">
+	    	<img src="{$user.userface}">
+	   		<p>您好，{$user.uname}！您的{$typeName}已经授权成功，完善信息设置后便可用{$typeName}互联账号直接登录。</p>
+	    </div>
+	    <div class="tab-menu line-b-animate clearfix" style=" margin-bottom:30px;">
+            <ul>
+              <li class="current" data-tab="0"><span><a href="javascript:;" >注册新帐号</a></span></li>
+              <li class="" data-tab="1"><span><a href="javascript:;" >绑定已有帐号</a></span></li>
+            </ul>
+        </div>
+		<div  class="login-Cipher">
+		    <ul class="login-Cipher-ul">
+		    	<input type="hidden" id="type" name="other_type" value="{$type}" >
+		        <input id="oauth_token" type="hidden" name="oauth_token" value="{$oauth_token}" >
+		        <input id="oauth_token_secret" type="hidden" name="oauth_token_secret" value="{$oauth_token_secret}" >
+		        <input id="other_uid" type="hidden" name="other_uid" value="{$user.id}" >
+		        <input id="other_face" type="hidden" name="other_face" value="{$user.userface}" >
+		 		<input type="hidden" id="other_signature" name="other_signature" value="{$user.signature}" >
+			    <li>
+			        <label class="f9">昵&nbsp;&nbsp;称: </label>
+			        <input class="regsiter-width" id="uname1" type="text" placeholder="2-6个中文字符内" value="{$user.uname}" maxlength="6">
+			    </li>
+			    <li>
+			        <label class="label f9">手机号码:</label>
+			        <input class="width130" id="Mobile" type="text" placeholder="请输入常用的手机号码">
+			        <a class="width80" href="javascript:;" onclick="getpartyVerify()">获取验证码</a>
+			        <span class="width97"  style="display:none" ><a id="dtime"></a>重新发送</span> 
+			    </li>
+				<li>
+			        <label class="label f9">验&nbsp;证&nbsp;码: </label>
+			        <input class="regsiter-width" id="reg_captcha"  type="text" placeholder="请输入收到的验证码">
+			    </li>
+			    <li>
+			        <label class="label f9">常用邮箱: </label>
+			        <input class="regsiter-width" id="email" type="text" placeholder="请输入您经常使用的邮箱">
+			    </li>
+			    <li>
+			        <label class="label f9">密码设置: </label>
+			        <input class="regsiter-width" id="password" type="password" maxlength="20" placeholder="请设置密码，6-20个字符">
+			    </li>
+			    <li>
+			        <label class="label f9">确认密码: </label>
+			        <input class="regsiter-width" id="repassword" type="password" maxlength="20" placeholder="与上相同">
+			    </li>
+			    <li>
+			        <label class="label">性别</label>
+			        <label class="label"><input id="sex" name="sex" type="radio" value="1" checked="checked" class="">&nbsp;&nbsp;男</label>
+			        <label class="label"><input id="sex" name="sex" type="radio" value="2">&nbsp;&nbsp;女</label>
+			    </li>
+		    </ul>
+		    <input name="" class="regsiter-xy-submit" onclick="party(this)" type="button" value="确 定"/>
+		</div>
+		<div  class="login-Cipher" style="display: none;">
+		    <ul class="login-Cipher-ul">
+		    	<input type="hidden" id="type" name="other_type" value="{$type}" >
+		        <input id="oauth_token" type="hidden" name="oauth_token" value="{$oauth_token}" >
+		        <input id="oauth_token_secret" type="hidden" name="oauth_token_secret" value="{$oauth_token_secret}" >
+		        <input id="other_uid" type="hidden" name="other_uid" value="{$user.id}" >
+		        <input id="other_face" type="hidden" name="other_face" value="{$user.userface}" >
+		 		<input type="hidden" id="other_signature" name="other_signature" value="{$user.signature}" >
+			    <li>
+			        <label class="label f9">用户名: </label>
+			        <input class="regsiter-width" name="bind_uname" type="text" placeholder="请输入在本站的用户名">
+			    </li>
+			    <li>
+			        <label class="label f9">密　码: </label>
+			        <input class="regsiter-width" name="bind_password" type="password" maxlength="20" placeholder="请输入登陆密码">
+			    </li>
+		    </ul>
+		    <input name="" class="regsiter-xy-submit" id="bindAccount" type="button" value="绑 定"/>
+		</div>
+	</div>
+<include file="__THEME__/public_footer" />
 <script>
 //第三方集成注册
 function party(cate){
@@ -105,7 +140,7 @@ function party(cate){
 		        window.location.href='<php> echo $GLOBALS['ts']['site']['home_url']; </php>';
 		  }
 		  }
-		}); 
+	}); 
 }
 
 function getpartyVerify(){
@@ -156,4 +191,51 @@ function getpartyVerify(){
 	    }); 
 }
 }
+$(function(){
+	$(".tab-menu ul li").click(function(){
+		var data_tab = $(this).data("tab");
+		$(this).addClass("current").siblings("li").removeClass("current");
+		$(".login-Cipher").eq(data_tab).show().siblings(".login-Cipher").hide();
+	});
+
+	// 监听点击绑定
+	$("#bindAccount").click(function(){
+		var _this = $(this);
+		_this.attr("disabled","disabled");
+		_this.val("提交中....");
+		var type=$.trim($("#type").val());//获取第三方类型
+		var oauth_token=$.trim($("#oauth_token").val());
+		var oauth_token_secret=$.trim($("#oauth_token_secret").val());
+		var other_uid=$.trim($("#other_uid").val());
+		var other_face=$.trim($("#other_face").val());
+		//设置用户
+		 $.ajax({
+			 type: "POST",
+			 url:"{:U('public/Register/doOtherStep1')}",
+			 data:{
+			 	other_type:type,
+			 	oauth_token:oauth_token,
+			 	oauth_token_secret:oauth_token_secret,
+			 	other_uid:other_uid,
+			 	other_face:other_face,
+			 	bind_uname:$("input[name='bind_uname']").val(),
+			 	bind_password:$("input[name='bind_password']").val(),
+			 	is_bind:1,
+			 	avatar:1
+			 },
+			 dataType:"json",
+			 success:function(data){
+				 if(data.status=='0'){
+					 	_this.removeAttr('disabled');
+					    _this.val("确定");
+				        notes(data.info,'failure');
+				       	return;
+				 }else{
+				        notes(data.info,'success');
+				        window.location.href='<php> echo $GLOBALS['ts']['site']['home_url']; </php>';
+				 }
+			}
+		}); 
+	});
+});
 </script>

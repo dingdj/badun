@@ -105,12 +105,17 @@ class LiveApi extends Api
         }
         $this->exitJson((object) [], 0, '未能查询到直播课程信息');
     }
+
+    public function getWhUserId(){
+        $this->exitJson(['user_id'=>model('Live')->operWhUser($this->mid)],1);
+    }
+
     /**
      * @name 获取指定用户可使用的优惠券
      */
     public function getCanUseCouponList()
     {
-        $list = $this->mod->getCanuseCouponList($this->live_id);
+        $list = $this->mod->getCanuseCouponList($this->live_id,$this->canot);
         $list ? $this->exitJson($list, 1) : $this->exitJson([], 0, '没有可用优惠券');
     }
     /**
@@ -126,10 +131,10 @@ class LiveApi extends Api
 
         $total_price = 0;
         $pay_status  = M('zy_order_live')->where(array('uid' => $uid, 'video_id' => $vid))->getField('pay_status');
-        if ($pay_status == 1) {
-            $this->exitJson((object) [], 0, '已有相同直播课程订单存在');
-        } else if ($pay_status == 3) {
+        if ($pay_status == 3) {
             $this->exitJson((object) [], 0, '该直播课程你已经购买,无需重复购买');
+        } else if ($pay_status == 4){
+            $this->exitJson((object) [], 0, '该直播课程正在申请退款');
         }
         $avideos = $this->mod->findLiveAInfo(['id' => $vid]);
 
@@ -156,7 +161,17 @@ class LiveApi extends Api
                 if ($total_price === false) {
                     $this->exitJson((object) [], 0, $this->error);
                 }
-
+                if($total_price === 0){
+                    $coupon_id = M('coupon_user')->where(['id'=>$this->coupon_id])->getField('cid');
+                    $vtype = 'zy_live';
+                    $res = D('ZyVideo','classroom')->addOrder($vid,$vtype,$coupon_id);
+                    if($res){
+                        $order_info = $this->mod->getLiveInfoById($vid);
+                        $this->exitJson(['is_free' => 1, 'order_info' => $order_info], 1, '购买成功');
+                    } else {
+                        $this->exitJson((object) [], 0, '购买失败');
+                    }
+                }
             }
             $ext_data = [
                 'coupon_id' => $this->coupon_id,
@@ -164,6 +179,7 @@ class LiveApi extends Api
                 'price'     => $total_price,
             ];
             $order = D('ZyService', 'classroom')->buyOnlineLive(intval($this->mid), $vid, $ext_data);
+
             if ($order === true) {
                 $pay_pass_num = date('YmdHis', time()) . mt_rand(1000, 9999) . mt_rand(1000, 9999);
 
@@ -172,8 +188,8 @@ class LiveApi extends Api
                     'uid'          => $this->mid,
                     'type'         => 1,
                     'money'        => $total_price,
-                    'note'         => "购买直播课程:{$videodata}",
-                    'pay_type'     => 'alipay',
+                    'note'         => "{$this->site['site_keyword']}在线教育-购买直播课程：{$videodata}",
+                    'pay_type'     => $this->pay_for == 'wxpay' ? 'app_wxpay' : $this->pay_for,
                     'pay_pass_num' => $pay_pass_num,
                 ));
                 if (!$pay_id) {
@@ -181,28 +197,43 @@ class LiveApi extends Api
                 }
 
                 $pay_data['is_free'] = 0;
-                $pay_for             = in_array($this->pay_for, array('alipay', 'wxpay')) ? [$this->pay_for] : ['alipay', 'wxpay'];
+                $pay_for             = in_array($this->pay_for, array('alipay', 'wxpay','lcnpay')) ? [$this->pay_for] : ['alipay', 'wxpay','lcnpay'];
                 foreach ($pay_for as $p) {
                     switch ($p) {
                         case "alipay":
                             $pay_data['alipay'] = $this->alipay(array(
                                 'vid'          => $vid,
-                                'vtype'        => 'zy_live',
-                                'out_trade_no' => $pay_pass_num,
                                 'total_fee'    => $total_price,
-                                'subject'      => "购买课程:{$videodata}",
+                                'out_trade_no' => $pay_pass_num,
+                                'vtype'        => 'zy_live',
+                                'subject'      => "{$this->site['site_keyword']}在线教育-购买直播课程：{$videodata}",
                                 'coupon_id'    => $this->coupon_id,
                             ), 'video');
                             break;
                         case "wxpay":
                             $pay_data['wxpay'] = $this->wxpay([
-                                'subject'         => "购买课程:{$videodata}",
-                                'total_fee'        => $total_price * 100,
-                                'out_trade_no' => $pay_pass_num,
                                 'vid'          => $vid,
+                                'total_fee'    => $total_price * 100,
+                                'out_trade_no' => $pay_pass_num,
                                 'vtype'        => 'zy_live',
+                                'subject'      => "{$this->site['site_keyword']}在线教育-购买直播课程：{$videodata}",
                                 'coupon_id'    => $this->coupon_id,
                             ], 'video');
+                            break;
+                        case "lcnpay":
+                            $res = $this->lcnpay([
+                                'vid'          => $vid,
+                                'total_fee'        => $total_price,
+                                'out_trade_no' => $pay_pass_num,
+                                'vtype'        => 'zy_live',
+                                'subject'      => "购买直播课程：{$videodata}",
+                                'coupon_id'    => $this->coupon_id,
+                            ], 'live');
+                            if($res === true){
+                                $this->exitJson([], 1,"购买成功");
+                            }else{
+                                $this->exitJson([], 0,$res);
+                            }
                             break;
                     }
                 }
@@ -277,7 +308,7 @@ class LiveApi extends Api
             }
             $this->coupon = $coupon;
             //优惠券类型是否符合
-            if (!in_array($coupon['type'], [1, 2])) {
+            if (!in_array($coupon['type'], [1, 2, 5])) {
                 $this->error = '该优惠券不能用于购买课程';
                 return false;
             }
@@ -296,6 +327,10 @@ class LiveApi extends Api
                     break;
                 case "2":
                     $price = $price * $coupon['discount'] / 10;
+                    break;
+                case "5":
+                    $price = 0;
+                    break;
                 default:
                     break;
             }

@@ -7,7 +7,7 @@
         <div class="center_right_tit">
             <div class="center_right_tit">
                 <div class="user-con-title">
-                    <h5>课程</h5>
+                    <h5>点播</h5>
                     <!--<a href="{:U('classroom/Video/index')}">更多></a>-->
                     <!--<a href="javascript:void(0);">个人资料</a>-->
                 </div>
@@ -17,7 +17,7 @@
             <ul class="user-imglist">
                 <!--显示9条li-->
                 <if condition="$data['data'] eq null">
-                    <li style="border: none;box-shadow: none;">TA还没有相关课程。。</li>
+                    <li style="border: none;box-shadow: none;">TA还没有相关点播课程。。</li>
                     <else/>
                     <foreach name="data['data']" item="l">
                         <li>

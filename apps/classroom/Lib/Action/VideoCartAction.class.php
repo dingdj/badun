@@ -1,6 +1,6 @@
 <?php
 /**
- * 云课堂点播(套餐)控制器
+ * 云课堂点播(班级)控制器
  * @version CY1.0
  */
 tsload(APPS_PATH . '/classroom/Lib/Action/CommonAction.class.php');

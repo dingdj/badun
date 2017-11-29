@@ -148,25 +148,36 @@
                             <option value="{$key}" <php>if($vip_level == $key){</php>selected="selected"<php>}</php> >{$vo}</option>
                         </volist>
                     </select>
+                    <br>
+                    <p>此vip模式免费</p>
                 </dd>
             </dl>
 
-            <dl class="lineD" id="dl_vip_pattern" style="display: none;">
-                <dt><font color="red"> * </font>会员使用模式：</dt>
-                <dd>
-                    <label><input type="radio" name="vip_pattern" value="0" <php>if($vip_pattern == 0){</php>checked="checked"<php>}</php> >独立模式 </label><span> </span>
-                    <label><input type="radio" name="vip_pattern" value="1" <php>if($vip_pattern == 1){</php>checked="checked"<php>}</php> >阶梯模式 </label><span></span>
-                    <br>
-                    <p>独立模式为此vip模式免费&nbsp;&nbsp;&nbsp;阶梯模式为此vip模式以上级别（含）免费</p>
-                </dd>
-            </dl>
+            <!--<dl class="lineD" id="dl_vip_pattern" style="display: none;">-->
+                <!--<dt><font color="red"> * </font>会员使用模式：</dt>-->
+                <!--<dd>-->
+                    <!--<label><input type="radio" name="vip_pattern" value="0" <php>if($vip_pattern == 0){</php>checked="checked"<php>}</php> >独立模式 </label><span> </span>-->
+                    <!--<label><input type="radio" name="vip_pattern" value="1" <php>if($vip_pattern == 1){</php>checked="checked"<php>}</php> >阶梯模式 </label><span></span>-->
+                    <!--<br>-->
+                    <!--<p>独立模式为此vip模式免费&nbsp;&nbsp;&nbsp;阶梯模式为此vip模式以上级别（含）免费</p>-->
+                <!--</dd>-->
+            <!--</dl>-->
 
             <dl class="lineD">
                 <dt>课件上传：</dt>
                 <dd>
-                    {:W('Upload',array('callback'=>'filecallback','uploadType'=>'file','limit'=>1,'inputname'=>'videofile'))}多个文件请打包上传
+                    {:W('UploadAttach',array('limit'=>'10','allow_exts'=>'flv,f4v,mp4,mp3,pdf,wp,sword,excel,ppt,png,jpg,gif,bmp,xls,xlsx,doc,docx,pptx,txt,rar,zip'))}
+                    <!--{:W('UploadAttach',array('callback'=>'filecallback','uploadType'=>'file','limit'=>1,'inputname'=>'videofile'))}-->多个文件请打包上传
                     <php>if($videofile_ids){</php>
-                    <input type="hidden" name="videofile_ids" id="old_coursefile_ids" value="{$videofile_ids}" />
+                    <div uploadcontent="file" class="input-content attach-file">
+                        <!--<ul class="weibo-file-list">
+                            <li><i class="ico-docx-small"></i>
+                                <a class="ico-close right" href="javascript:void(0)" onclick="core.uploadFile.removeAttachId(this,'file',3260)"></a>
+                                <a class="xxx" href="javascript:void(0)" title="1.23 3G.docx">{$videofile}</a><span>(1.93 MB)</span>
+                            </li>
+                        </ul>-->
+                        <input type="hidden" name="videofile_ids" id="old_coursefile_ids" value="{$videofile_ids}" />
+                    </div>
                     <php>}</php>
                 </dd>
             </dl>

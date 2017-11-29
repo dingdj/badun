@@ -210,7 +210,7 @@ class PublicAction extends AdministratorAction {
     	$title = t($_POST['title']);
 		$next_name = t($_POST['next_name']);
     	$stable = t($_POST['stable']);
-        $data['attach_id'] = intval($_POST['attach_id']);
+        isset($_POST['attach_id']) && $data['attach_id'] = intval($_POST['attach_id']);
         if(intval($_POST['type']) > 0){
         	$data['type'] = intval($_POST['type']);
         }
@@ -430,7 +430,7 @@ class PublicAction extends AdministratorAction {
         }
         $zy_currency_category_pid = M('zy_currency_category')->where(array('zy_currency_category_id'=>$cid))->getField('pid');
         if($zy_currency_category_pid != 0 && $stable == 'zy_currency_category'){
-            unset($data['is_choice_pc']);
+            //unset($data['is_choice_pc']);
             unset($data['is_choice_app']);
         }
 

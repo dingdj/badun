@@ -15,15 +15,15 @@ class AdminLibraryAction extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index'] = '文库列表';
-        $this->pageTitle['disable'] = '禁用文库列表';
-        $this->pageTitle['close'] = '禁用文库列表';
-        $this->pageTitle['addLibrary'] = '禁用文库列表';
+        $this->pageTitle['index'] = '列表';
+        //$this->pageTitle['disable'] = '禁用文库列表';
+        //$this->pageTitle['close'] = '文库回收列表';
+        $this->pageTitle['addLibrary'] = '添加';
 
-        $this->pageTab[] = array('title' => '文库列表', 'tabHash' => 'index', 'url' => U('classroom/AdminLibrary/index'));
-        $this->pageTab[] = array('title' => '禁用文库列表', 'tabHash' => 'disable', 'url' => U('classroom/AdminLibrary/disable'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('classroom/AdminLibrary/index'));
+        //$this->pageTab[] = array('title' => '禁用文库列表', 'tabHash' => 'disable', 'url' => U('classroom/AdminLibrary/disable'));
 //        $this->pageTab[] = array('title' => '文库回收列表', 'tabHash' => 'close', 'url' => U('classroom/AdminLibrary/close'));
-        $this->pageTab[] = array('title' => '添加文库', 'tabHash' => 'addLibrary', 'url' => U('classroom/AdminLibrary/addLibrary'));
+        $this->pageTab[] = array('title' => '添加', 'tabHash' => 'addLibrary', 'url' => U('classroom/AdminLibrary/addLibrary'));
 
         parent::_initialize();
     }

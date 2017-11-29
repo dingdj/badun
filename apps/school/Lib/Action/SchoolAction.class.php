@@ -113,9 +113,9 @@ class SchoolAction extends CommonAction {
         $mhmWhere['listingtime'] = array('lt', time());
         $mhmWhere['uctime'] = array('gt', time());
         $mhmWhere['is_activity'] = 1;
+        $mhmWhere['is_mount'] = 1;
         $mhmWhere['is_del'] = 0;
         $mhmWhere['type'] = 2;
-        $mhmWhere['is_mount'] = 1;
 
         //直播课程处理
         $liveData = D ( 'ZyVideo' ,'classroom')->where($mhmWhere)->field('fullcategorypath,id')->order(
@@ -128,134 +128,17 @@ class SchoolAction extends CommonAction {
             'video_order_count desc,video_score desc,video_collect_count desc')->limit(1000)->select();
         $count['cate'] = D ( 'ZyVideo' ,'classroom')->where($mhmWhere)->count();
 
-        //组装点播ID数组
-        /*foreach ($pids as $keys=>$vals){
-            foreach ($data as $value){
-                $data_pids = array_filter(explode(',',$value['fullcategorypath']));
-                if(in_array($vals,$data_pids)){
-                    $id[$vals][] = $value['id'];
-                }
-            }
-        }
-        foreach ($id as $item=>$values){
-            $cate[$item]['catename'] = model ( 'VideoCategory')->getCategoryName($item);
-            $cate[$item]['cate_id'] =$item;
-            $maps = array();
-            $maps['id'] = array('in',$values);
-            $cate[$item]['data'] = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(10)->select();
-            $cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(10)->select();
-            foreach ($cate as $items=>$va){
-                $mount_1and2 = M( 'zy_video_mount')->where ( 'vid='.$va['id'] )->getField('vid');
-                if($mount_1and2){
-                    $cate[$items]['mount_iand'] = 1;
-                }
-                if($va['type'] == 2){
-
-
-                    $cate[$items]['mzprice']['t_price'] = $va['t_price'];
-                    //如果为管理员/机构管理员自己机构的课程 则免费
-                    if(is_admin($this->mid) || $va['is_charge'] == 1) {
-                        $cate[$items]['mzprice']['t_price'] = 0;
-                    }
-                    if(is_school($this->mid) ==  $va['mhm_id']){
-                        $cate[$items]['mzprice']['t_price'] = 0;
-                    }
-
-                    //如果是讲师自己的课程 则免费
-                    $mid = $this -> mid;
-                    $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-                    if($mid == intval($va['uid']) || $tid == $va['teacher_id'])
-                    {
-                        $cate[$items]['mzprice']['t_price'] = 0;
-                    }
-
-
-//                    if( $cate[$items]['live_type']  ==1)
-//                    {
-//                        $livetall =M('zy_live_zshd') -> where(array('live_id'=> $cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-//                    }
-//                    if( $cate[$items]['live_type']  ==3)
-//                    {
-//                        $livetall =M('zy_live_gh') -> where(array('live_id'=> $cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-//                    }
-//                    if( $cate[$items]['live_type']  ==4)
-//                    {
-//                        $livetall =M('zy_live_cc') -> where(array('live_id'=> $cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-//                    }
-                    if($tid) {
-                        $tids = trim(implode(',', array_unique(getSubByKey($livetall, 'speaker_id'))), ',');
-                        $tids = "," . $tids . ',';
-
-                        $chtid = ',' . $tid . ',';
-
-                        if (strstr($tids, $chtid)) {
-                            $cate[$items]['mzprice']['t_price'] = 0;
-                        }
-                    }
-
-                }
-
-                else{
-                    $cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true );
-                    $cate[$items]['mzprice']['t_price'] =  $cate[$items]['mzprice']['price'];
-                }
-
-
-                $teacher = M('zy_teacher')->where(array('id' => $va['teacher_id']))->find();
-                $cate[$items]['tea_name'] = $teacher['name'];
-
-                $mhmData = model('School')->where('id='.$mhm_id)->field('doadmin,title')->find();
-                //机构域名
-
-                $cate[$items]['domain'] = getDomain($mhmData['doadmin']);
-                $cate[$items]['mhm_title'] = $mhmData['title'];
-            }
-        }*/
-
         //点播课程列表
         $id = getSubByKey($data,'id');
         $maps['id'] = array('in',$id);
-        $cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(4)->select();
+        $cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(8)->select();
         foreach ($cate as $items=>$va){
-            $mount_1and2 = M( 'zy_video_mount')->where ( 'vid='.$va['id'] )->getField('vid');
+            $mount_1and2 = M( 'zy_video_mount')->where ( ['vid'=>$va['id'],'mhm_id'=>$mhm_id] )->getField('vid');
             if($mount_1and2){
                 $cate[$items]['mount_iand'] = 1;
             }
-            if($va['type'] == 2){
-
-                $cate[$items]['mzprice']['t_price'] = $va['t_price'];
-                //如果为管理员/机构管理员自己机构的课程 则免费
-                if(is_admin($this->mid) || $va['is_charge'] == 1) {
-                    $cate[$items]['mzprice']['t_price'] = 0;
-                }
-                if(is_school($this->mid) ==  $va['mhm_id']){
-                    $cate[$items]['mzprice']['t_price'] = 0;
-                }
-
-                //如果是讲师自己的课程 则免费
-                $mid = $this -> mid;
-                $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-                if($mid == intval($va['uid']) || $tid == $va['teacher_id'])
-                {
-                    $cate[$items]['mzprice']['t_price'] = 0;
-                }
-                if($tid) {
-                    $tids = trim(implode(',', array_unique(getSubByKey($livetall, 'speaker_id'))), ',');
-                    $tids = "," . $tids . ',';
-
-                    $chtid = ',' . $tid . ',';
-
-                    if (strstr($tids, $chtid)) {
-                        $cate[$items]['mzprice']['t_price'] = 0;
-                    }
-                }
-
-            }
-
-            else{
-                $cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true );
-                $cate[$items]['mzprice']['t_price'] =  $cate[$items]['mzprice']['price'];
-            }
+            $cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true ,$va['type']);
+            $cate[$items]['mzprice']['t_price'] =  $cate[$items]['mzprice']['price'];
 
             $teacher = M('zy_teacher')->where(array('id' => $va['teacher_id']))->find();
             $cate[$items]['tea_name'] = $teacher['name'];
@@ -266,157 +149,18 @@ class SchoolAction extends CommonAction {
             $cate[$items]['mhm_title'] = $mhmData['title'];
         }
 
-        //组装直播ID数组
-        /*$live_id = array();
-        foreach ($pids as $keys=>$vals){
-            foreach ($liveData as $value){
-                $data_pids = array_filter(explode(',',$value['fullcategorypath']));
-                if(in_array($vals,$data_pids)){
-                    $live_id[$vals][] = $value['id'];
-                }
-            }
-        }
-        foreach ($live_id as $item=>$values){
-            $live_cate[$item]['catename'] = model ( 'VideoCategory')->getCategoryName($item);
-            $live_cate[$item]['cate_id'] =$item;
-            $maps = array();
-            $maps['id'] = array('in',$values);
-//            $live_cate[$item]['data'] = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(10)->select();
-            $live_cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(10)->select();
-            foreach ($live_cate as $items=>$va){
-                $mount_1and2 = M( 'zy_video_mount')->where ( 'vid='.$va['id'] )->getField('vid');
-                if($mount_1and2){
-                    $live_cate[$items]['mount_iand'] = 1;
-                }
-
-
-
-                if($va['type'] == 2){
-
-                    $live_cate[$items]['mzprice']['t_price'] = $va['t_price'];
-
-
-                    //如果为管理员/机构管理员自己机构的课程 则免费
-                    if(is_admin($this->mid) || $va['is_charge'] == 1) {
-                        $live_cate[$items]['mzprice']['t_price'] = 0;
-                    }
-                    if(is_school($this->mid) ==  $va['mhm_id']){
-                        $live_cate[$items]['mzprice']['t_price'] = 0;
-                    }
-
-                    //如果是讲师自己的课程 则免费
-                    $mid = $this -> mid;
-                    $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-                    if($mid == intval($va['uid']) || $tid == $va['teacher_id'])
-                    {
-                        $live_cate[$items]['mzprice']['t_price'] = 0;
-                    }
-
-
-                    if( $live_cate[$items]['live_type']  ==1)
-                    {
-                        $livetall =M('zy_live_zshd') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                    }
-                    if( $live_cate[$items]['live_type']  ==3)
-                    {
-                        $livetall =M('zy_live_gh') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                    }
-                    if( $live_cate[$items]['live_type']  ==4)
-                    {
-                        $livetall =M('zy_live_cc') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                    }
-                    if($tid) {
-                        $tids = trim(implode(',', array_unique(getSubByKey($livetall, 'speaker_id'))), ',');
-                        $tids = "," . $tids . ',';
-
-                        $chtid = ',' . $tid . ',';
-
-                        if (strstr($tids, $chtid)) {
-                            $live_cate[$items]['mzprice']['t_price'] = 0;
-                        }
-                    }
-                    ;
-                }
-
-                else{
-                    $live_cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true );
-                    $live_cate[$items]['mzprice']['t_price'] =  $live_cate[$items]['price'] ;
-                }
-
-
-                $teacher_id = $this->teacher($va['live_type'],$va['id']);
-                $teacher = M('zy_teacher')->where(array('id' => $teacher_id))->getField('name');
-                $live_cate[$items]['tea_name'] = $teacher;
-            }
-
-        }*/
-
         //直播课程列表
         $id = getSubByKey($liveData,'id');
         $maps['id'] = array('in',$id);
-        $live_cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(4)->select();
+        $live_cate = D ( 'ZyVideo' ,'classroom')->where($maps)->limit(8)->select();
         foreach ($live_cate as $items=>$va){
-            $mount_1and2 = M( 'zy_video_mount')->where ( 'vid='.$va['id'] )->getField('vid');
+            $mount_1and2 = M( 'zy_video_mount')->where ( ['vid'=>$va['id'],'mhm_id'=>$mhm_id] )->getField('vid');
             if($mount_1and2){
                 $live_cate[$items]['mount_iand'] = 1;
             }
+            $live_cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true ,$va['type']);
+            $live_cate[$items]['mzprice']['t_price'] =  $live_cate[$items]['mzprice']['price'] ;
 
-
-
-            if($va['type'] == 2){
-
-                $live_cate[$items]['mzprice']['t_price'] = $va['t_price'];
-
-
-                //如果为管理员/机构管理员自己机构的课程 则免费
-                if(is_admin($this->mid) || $va['is_charge'] == 1) {
-                    $live_cate[$items]['mzprice']['t_price'] = 0;
-                }
-                if( $va['mhm_id'] && (is_school($this->mid) ==  $va['mhm_id'] )){
-                    $live_cate[$items]['mzprice']['t_price'] = 0;
-                }
-
-                //如果是讲师自己的课程 则免费
-                $mid = $this -> mid;
-                $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-                if($mid == intval($va['uid']) || ( $tid && $tid == $va['teacher_id']) )
-                {
-                    $live_cate[$items]['mzprice']['t_price'] = 0;
-                }
-
-
-                if( $live_cate[$items]['live_type']  ==1)
-                {
-                    $livetall =M('zy_live_zshd') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                }
-                if( $live_cate[$items]['live_type']  ==3)
-                {
-                    $livetall =M('zy_live_gh') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                }
-                if( $live_cate[$items]['live_type']  ==4)
-                {
-                    $livetall =M('zy_live_cc') -> where(array('live_id'=> $live_cate[$items]['id'],'is_del'=> 0,'is_active'=>1))-> field('speaker_id') ->select();
-                }
-                if($tid) {
-                    $tids = trim(implode(',', array_unique(getSubByKey($livetall, 'speaker_id'))), ',');
-                    $tids = "," . $tids . ',';
-
-                    $chtid = ',' . $tid . ',';
-
-                    if (strstr($tids, $chtid)) {
-                        $live_cate[$items]['mzprice']['t_price'] = 0;
-                    }
-                }
-                ;
-            }
-
-            else{
-                $live_cate[$items]['mzprice'] = getPrice ( $va, $this->mid, true, true );
-                $live_cate[$items]['mzprice']['t_price'] =  $live_cate[$items]['price'] ;
-            }
-
-
-            $teacher_id = $this->teacher($va['live_type'],$va['id']);
             $teacher = M('zy_teacher')->where(array('id' => $teacher_id))->getField('name');
             $live_cate[$items]['tea_name'] = $teacher;
         }
@@ -427,7 +171,8 @@ class SchoolAction extends CommonAction {
         $teacherWhere['is_del'] = 0;
         $teacher = M('zy_teacher')->where($teacherWhere)->order('course_count desc,reservation_count desc,review_count desc,views desc')->limit(6)->select();
         $count['teacher'] = M('zy_teacher')->where($teacherWhere)->count();
-        //套餐列表
+
+        //班级列表
         $album_mount_map['uid'] = $school_info['uid'];
         $album_mount_map['mhm_id'] = $school_info['id'];
         $video_mount_map['is_activity'] = 1;
@@ -445,7 +190,7 @@ class SchoolAction extends CommonAction {
         $album = M('album')->where($albumWhere)->order('order_count desc,comment_count desc,collect_count desc')->limit(6)->select();
         $count['album'] = M('album')->where($albumWhere)->count();
         foreach ($album as $item=>$value){
-//            $mount_1and2 = M( 'zy_video_mount')->where ( 'aid='.$value['id'] )->getField('aid');
+//            $mount_1and2 = M( 'zy_video_mount')->where ( ['aid'=>$value['id'],'mhm_id'=>$mhm_id] )->getField('aid');
 //            if($mount_1and2){
 //                $album[$item]['mount_iand'] = 1;
 //            }
@@ -453,7 +198,12 @@ class SchoolAction extends CommonAction {
             $cate_name = M('zy_package_category')->where(array('zy_package_category_id'=>$album_category['1']))->find();
             $album[$item]['cate_name'] = $cate_name['title'];
 
-            $album[$item]['video_count'] = M('album_video_link')->where(array('album_id'=>$value['id']))->count();;
+            $album[$item]['video_count'] = M('album_video_link')->where(array('album_id'=>$value['id']))->count();
+
+            $all_price = getAlbumPrice($value['id'],$this->mid);
+            $album[$item]['price'] = $all_price['price'];
+            $album[$item]['oPrice'] = $all_price['oriPrice'];
+            $album[$item]['disPrice'] = $all_price['disPrice'];
         }
         M('school')->where(array('id'=> $mhm_id))->setInc('visit_num');
 
@@ -512,56 +262,6 @@ class SchoolAction extends CommonAction {
         $this->assign('teacher_count', $teacher_count);
         $this->assign('count', $count);
         $this->display('index');
-    }
-
-    //直播主讲教师id
-    protected function teacher($live_type,$id)
-    {
-        if($live_type == 1){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_zshd')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['invalidDate']=array('gt',time());
-                $live_data = M('zy_live_zshd')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        }elseif ($live_type == 3){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_gh')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['endTime']=array('gt',time());
-                $live_data = M('zy_live_gh')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        }
-        elseif ($live_type == 4){
-            $map = array();
-            $map['live_id']=$id;
-            $map['is_del']=0;
-            $map['startDate']=array('gt',time());
-            $live_data = M('zy_live_cc')->where($map)->order('startDate asc')->find();
-            if(!$live_data){
-                $maps = array();
-                $maps['live_id']=$id;
-                $maps['is_del']=0;
-                $maps['endTime']=array('gt',time());
-                $live_data = M('zy_live_cc')->where($maps)->order('invalidDate asc')->find();
-            }
-            $speaker_id = $live_data['speaker_id'];
-        }
-        return $speaker_id;
     }
 
     /*
@@ -661,7 +361,7 @@ class SchoolAction extends CommonAction {
 
         $school = model('school')->getSchoolInfoById($mhm_id);
         //机构域名
-        $school['domain'] = getDomain($school['doadmin'],$school['id']);
+        $school['domain'] = getDomain($school['doadmin'],$school['school_id']);
 
 //        $cate_id = intval($_GET['cateId']);
 
@@ -680,13 +380,16 @@ class SchoolAction extends CommonAction {
         $map['type'] = $type;
         $map['is_activity'] = 1;
         $map['is_del'] = 0;
-        $map['is_mount'] = 1;
         $map['listingtime'] = array('lt', time());
         $map['uctime'] = array('gt', time());
 //        $map['fullcategorypath'] =array('like','%' . $cate_id . '%');
 
         $data = M( 'zy_video' )->where($map)->order($order)->field('id,video_title,uid,is_activity,ctime,type,teacher_id,cover,is_charge,t_price,v_price,mhm_id')->findPage($limit);
         foreach($data['data'] as $key=>$val){
+            $mount_1and2 = M( 'zy_video_mount')->where ( ['vid'=>$val['id'],'mhm_id'=>$mhm_id] )->getField('vid');
+            if($mount_1and2){
+                $data['data'][$key]['mount_iand'] = 1;
+            }
             $school_info = model('school')->where('id='.$val['mhm_id'])->field('id,title,doadmin')->find();
             $data['data'][$key]['school_title'] = $school_info['title'];
             //机构域名
@@ -699,11 +402,8 @@ class SchoolAction extends CommonAction {
             }else{
                 $data['data'][$key]['order_count'] =  M( 'zy_order_live' )->where('live_id='.$val['id'])->count();
             }
-            $data['data'][$key]['mzprice']['price'] = $val['t_price'];
-            $data['data'][$key]['mzprice']['oriPrice'] = $val['v_price'];
-            if($school['uid'] == $this->mid || is_admin($this->mid)){
-                $data['data'][$key]['is_charge'] = 1;
-            }
+            $data['data'][$key]['mzprice'] = getPrice ( $val, $this->mid, true, true ,$val['type']);
+            $data['data'][$key]['mzprice']['t_price'] =  $data['data'][$key]['mzprice']['price'];
         }
         //广告图
         $adList = unserialize($school['banner']);
@@ -753,6 +453,13 @@ class SchoolAction extends CommonAction {
         $user_count = array_merge($list,$new);
         $user_count = count(array_unique($user_count)) ? : 1;*/
 
+        $chars = 'JMRZaNTU1bNOXcABIdFVWX2eSA9YhxKhxMmDEG3InYZfDEhxCFG5oPQjOP9QkKhxR9SsGIJtTU5giVqBCJrW29pEhx0MuFKvPTUVwQRSxCDNOyBWXzAYZ';
+        $mount_url_str = '';
+        for ( $i = 0; $i < 4; $i++ ){
+            $mount_url_str .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+        }
+
+        $this->assign('mount_url_str', "L".$mount_url_str);
         $this->assign('data', $data);
         $this->assign('listData', $data['data']);
 //        $this->assign('template', $template);
@@ -772,7 +479,6 @@ class SchoolAction extends CommonAction {
         $map['mhm_id'] = intval($_GET['id']);
         $map['is_activity'] = 1;
         $map['is_del'] = 0;
-        $map['is_mount'] = 1;
         $map['listingtime'] = array('lt', time());
         $map['uctime'] = array('gt', time());
         $map['fullcategorypath'] =array('like','%' . $cate_id . '%');
@@ -797,13 +503,13 @@ class SchoolAction extends CommonAction {
     }
 
     /*
-     * 机构套餐详情
+     * 机构班级详情
      */
     public function album_list($mhm_id){
         $limit = 4;
         $school = model('school')->getSchoolInfoById($mhm_id);
 
-        //套餐
+        //班级
         $album_mount_map['uid'] = $school['uid'];
         $album_mount_map['mhm_id'] = $mhm_id;
         $video_mount_map['is_activity'] = 1;
@@ -823,7 +529,7 @@ class SchoolAction extends CommonAction {
         $album = D('Album','classroom')->getList($albumWhere,$order,$limit);
         $count['album'] = M('album')->where($albumWhere)->count();
         foreach ($album['data'] as $item=>$value){
-//            $mount_1and2 = M( 'zy_video_mount')->where ( 'aid='.$value['id'] )->getField('aid');
+//            $mount_1and2 = M( 'zy_video_mount')->where ( ['aid'=>$value['id'],'mhm_id'=>$mhm_id] )->getField('aid');
 //            if($mount_1and2){
 //                $album[$item]['mount_iand'] = 1;
 //            }
@@ -831,6 +537,11 @@ class SchoolAction extends CommonAction {
             $cate_name = M('zy_package_category')->where(array('zy_package_category_id'=>$album_category['1']))->find();
             $album['data'][$item]['cate_name'] = $cate_name['title'];
             $album['data'][$item]['video_count'] = M('album_video_link')->where(array('album_id'=>$value['id']))->count();
+
+            $all_price = getAlbumPrice($value['id'],$this->mid);
+            $album['data'][$item]['price'] = $all_price['price'];
+            $album['data'][$item]['oPrice'] = $all_price['oriPrice'];
+            $album['data'][$item]['disPrice'] = $all_price['disPrice'];
         }
         /*$album = M('album')->where($albumWhere)->order('order_count desc,comment_count desc,collect_count desc')->findPage($limit);
         foreach ($album as $item=>$value){
@@ -1044,11 +755,11 @@ class SchoolAction extends CommonAction {
      * @return void
      */
     public function get_original_recommend() {
-        //数据分类 1:课程;2:套餐;
+        //数据分类 1:课程;2:班级;
         $limit = 1;
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
-        //套餐
+        //班级
         $album_table = "SELECT `id`,`re_sort`,2 as `type`,`album_category` as `category`,`uid`,`cover`,`album_title` as `title`,`album_score` as `score`,`album_intro` as `intro` FROM `{$albumtable}` WHERE `is_del`=0 AND `original_recommend`=1";
         echo $album_table . "<br/>";
         //课程
@@ -1066,11 +777,11 @@ class SchoolAction extends CommonAction {
      * @return void
      */
     public function get_best_recommend() {
-        //数据分类 1:课程;2:套餐;
+        //数据分类 1:课程;2:班级;
         $limit = intval($_POST['limit']);
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
-        //套餐
+        //班级
         $album_table = "SELECT `id`,`be_sort`,2 as `type`,`album_category` as `category`,`uid`,`is_offical`,`big_ids`,`middle_ids`,`small_ids`,`album_title` as `title`,`album_score` as `score`,`album_intro` as `intro` FROM `{$albumtable}` WHERE `is_del`=0 AND `best_recommend`=1";
         echo $album_table . "<br/>";
         //课程
@@ -1088,14 +799,14 @@ class SchoolAction extends CommonAction {
      * @return void
      */
     public function get_recommend() {
-        //数据分类 1:课程;2:套餐;
+        //数据分类 1:课程;2:班级;
         $limit = intval($_POST['limit']);
         $uid = intval($this->mid);
         $zy_ordertable = C('DB_PREFIX') . 'zy_order';
         $zy_order_albumtable = C('DB_PREFIX') . 'zy_order_album';
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
-        //套餐
+        //班级
         $album_table = "SELECT `id`,2 as `type`,`album_category` as `category`,`uid`,`is_offical`,`big_ids`,`middle_ids`,`small_ids`,`album_title` as `title`,`album_score` as `score`,`album_intro` as `intro` FROM `{$albumtable}` WHERE `is_del`=0 and `album_category` IN(SELECT `album_category` FROM `{$albumtable}` WHERE `id` IN (SELECT `album_id` AS `rid` FROM `{$zy_order_albumtable}` WHERE `uid`={$uid})) AND `id` NOT IN (SELECT `album_id` AS `rid` FROM `{$zy_order_albumtable}` WHERE `uid`={$uid})";
         //课程
         $video_table = "SELECT `id`,1 as `type`,`video_category` as `category`,`uid`,`is_offical`,`big_ids`,`middle_ids`,`small_ids`,`video_title` as `title`,`video_score` as `score`,`video_intro` as `intro` FROM `{$zy_videotable}` WHERE `is_del`=0 and `video_category` IN(SELECT `video_category` FROM `{$zy_videotable}` WHERE `id` IN (SELECT `video_id` AS `rid` FROM `{$zy_ordertable}` WHERE `uid`={$uid})) AND `id` NOT IN (SELECT `video_id` AS `rid` FROM `{$zy_ordertable}` WHERE `uid`={$uid})";
@@ -1103,7 +814,7 @@ class SchoolAction extends CommonAction {
         $sql = "SELECT * FROM ({$album_table} UNION {$video_table}) as `mysellwell`  LIMIT 0,{$limit}";
         //计算为我推荐总数
         $sql_count = "SELECT count(*) as `count` FROM ({$album_table} UNION {$video_table}) as `mysellwell` where 1;";
-        //1:先找为我推荐的套餐或者课程---根据分类来找
+        //1:先找为我推荐的班级或者课程---根据分类来找
         $count = M('')->query($sql_count);
         if (intval($count[0]['count'])) {
             //处理和返回
@@ -1129,13 +840,13 @@ class SchoolAction extends CommonAction {
      * @return void
      */
     public function get_my_collect() {
-        //数据分类 1:课程;2:套餐;
+        //数据分类 1:课程;2:班级;
         $limit = intval($_POST['limit']);
         $uid = intval($this->mid);
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
         $zy_collectiontable = C('DB_PREFIX') . 'zy_collection';
-        //套餐
+        //班级
         $album_table = "SELECT `id`,2 as `type`,`album_category` as `category`,`uid`,`is_offical`,`big_ids`,`middle_ids`,`small_ids`,`album_title` as `title`,`album_score` as `score`,`album_intro` as `intro` from `{$albumtable}` WHERE `id` in(SELECT `source_id` FROM `{$zy_collectiontable}` WHERE `uid`={$uid} and `source_table_name` = 'album' ORDER BY `ctime` DESC)";
         //课程
         $video_table = "SELECT `id`,1 as `type`,`video_category` as `category`,`uid`,`is_offical`,`big_ids`,`middle_ids`,`small_ids`,`video_title` as `title`,`video_score` as `score`,`video_intro` as `intro` from `{$zy_videotable}` WHERE `id` in(SELECT `source_id` FROM `{$zy_collectiontable}` WHERE `uid`={$uid} and `source_table_name` = 'zy_video' ORDER BY `ctime` DESC)";
@@ -1151,7 +862,7 @@ class SchoolAction extends CommonAction {
     public function get_watch_record() {
         $session_data = session('watch_history');
         $aids = implode(',', $session_data);
-        //数据分类 1:课程;2:套餐;
+        //数据分类 1:课程;2:班级;
         $limit = intval($_POST['limit']);
         $uid = intval($this->mid);
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
@@ -1167,8 +878,8 @@ class SchoolAction extends CommonAction {
         $limit = intval($_POST['limit']);
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
-        //数据分类 1:课程;2:套餐;
-        //套餐
+        //数据分类 1:课程;2:班级;
+        //班级
         $album_table = "SELECT `id`,2 as `type`,`big_ids`,`uid`,`is_offical`,`album_category` as `category`,`middle_ids`,`small_ids`,`album_title` as `title`,`album_order_count` as `number`,`album_score` as `score`,`album_intro` as `intro` from `{$albumtable}` WHERE `is_del`=0";
         //课程
         $video_table = "SELECT `id`,1 as `type`,`big_ids`,`uid`,`is_offical`,`video_category` as `category`,`middle_ids`,`small_ids`,`video_title` as `title`,`video_order_count` as `number`,`video_score` as `score`,`video_intro` as `intro` from `{$zy_videotable}` WHERE `is_del`=0 AND `is_activity`=1";
@@ -1186,8 +897,8 @@ class SchoolAction extends CommonAction {
         $albumtable = C('DB_PREFIX') . 'album';
         $zy_videotable = C('DB_PREFIX') . 'zy_video';
         //C('DB_PREFIX')
-        //数据分类 1:课程;2:套餐;
-        //套餐
+        //数据分类 1:课程;2:班级;
+        //班级
         $album_table = "SELECT `id`,2 as `type`,`big_ids`,`uid`,`is_offical`,`album_category` as `category`,`middle_ids`,`small_ids`,`album_title` as `title`,`ctime`,`album_score` as `score`,`album_intro` as `intro` from `{$albumtable}` WHERE `is_del`=0";
         //课程
         $video_table = "SELECT `id`,1 as `type`,`big_ids`,`uid`,`is_offical`,`video_category` as `category`,`middle_ids`,`small_ids`,`video_title` as `title`,`ctime`,`video_score` as `score`,`video_intro` as `intro` from `{$zy_videotable}` WHERE `is_del`=0 AND `is_activity`=1";
@@ -1305,7 +1016,7 @@ class SchoolAction extends CommonAction {
             $data['comment_count'] = $data['note_comment_count'];
             $data['iscollect'] = D('ZyCollection')->isCollect($data['id'], 'zy_note', intval($this->mid));
         }
-        //返回套餐或者课程信息
+        //返回班级或者课程信息
         $this->getRInfo($data['oid'], $data['type']);
         $data['title'] = msubstr($data['title'], 0, 40);
         $this->assign('type', $type);
@@ -1327,13 +1038,13 @@ class SchoolAction extends CommonAction {
             //取课程信息
             $data = M('ZyVideo')->where($map)->field($field)->find();
         } else if ($type == 2) {
-            //套餐
+            //班级
             if (!$id) {
                 $this->assign('isAdmin', 1);
-                $this->error('套餐不存在!');
+                $this->error('班级不存在!');
             }
             $field = '`album_title` as `title`,`album_category` as `category`,`album_score` as `score`,`uid`,`id`,`ctime`,`album_comment_count` as `comment_count`';
-            //取套餐信息
+            //取班级信息
             $data = M('Album')->where($map)->field($field)->find();
         } else {
             $this->assign('isAdmin', 1);
@@ -1684,7 +1395,7 @@ class SchoolAction extends CommonAction {
         }
         $this->display();
     }
-    //套餐列表
+    //班级列表
     public function  album() {
         if($_GET['id']){
             $mhm_id = model('school')->where(array('id'=>$_GET['id'],'status'=>1,'is_del'=>0))->getField('id');

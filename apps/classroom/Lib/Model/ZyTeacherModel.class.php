@@ -61,6 +61,28 @@ class ZyTeacherModel extends Model {
         }
         return $new_tid;
     }
+
+    /**
+     * @name 获取精选讲师信息
+     * @$field  所需字段
+     * @$order  排序条件
+     * @$limit  数据条数
+     * @return  array  讲师信息集合
+     */
+    public function getBestTeacherInfo($field,$order = 'ctime desc',$limit = 4){
+        $map = array('is_reject'=>0,'is_del'=>0,'is_best'=>1);
+        $teacher_info = $this->where($map)->field($field)->order($order)->limit($limit)->select();
+        return $teacher_info;
+    }
+
+    /**根据条件获取讲师信息
+     * @param $map 查询条件
+     * @return null
+     */
+    public function getTeacherInfoByMap($map,$field){
+        $teacher_info=$this->where($map)->field($field)->find();
+        return $teacher_info;
+    }
 }
 
 ?>

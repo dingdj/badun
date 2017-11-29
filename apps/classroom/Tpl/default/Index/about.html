@@ -1,0 +1,49 @@
+<include file="public/public_header"/>
+		<!--顶部导航栏-->
+		<div class="our">
+			<div class="our1" <if condition="$ad_list[0]">style="background: url({:cutImg($ad_list[0]['banner'],1920,420)}) center no-repeat"</if>>
+
+
+			<div class="our2">
+				<ul class="nav-click">
+					<volist name="cate_id" id="cate">
+                        <li value="{$cate['id']}"><a href="javasctipt:;" onclick="singleCate(this,{$cate['id']})" >{$cate['title']}</a></li>
+                    </volist>
+				</ul>
+			</div>
+			</div>
+		</div>
+
+        <div class="single-info"></div>
+
+<script>
+    $(function(){
+        var id = $(".nav-click li:first").attr("value");
+        singleCate(this,id);
+
+        $(".nav-click li:first").addClass("on");
+    });
+
+    //关于我们页面跳转
+    function singleCate(cate,id){
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/Index/getSingleInfo')}",
+            data: "id="+id,
+            async:false,
+            dataType:"text",
+            success:function(data){
+                $(".single-info").html('');
+                var data = JSON.parse(data);
+                if(data.text){
+                    $(".single-info").append(data.text);
+                }else{
+                    $(".single-info").append('<div class="introduction"><p>暂无相关信息。。</p></div>');
+                }
+                $(cate).parent('li').addClass('on').siblings().removeClass('on');
+            }
+        });
+    }
+</script>
+
+<include file="public/public_footer"/>

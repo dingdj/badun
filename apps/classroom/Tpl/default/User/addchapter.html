@@ -8,44 +8,33 @@
   .bottom{margin-bottom:20px;}
   .list tr{cursor: pointer;}
   .boxy-modal-blackout{position: fixed;}
+  .chaptertertitle{width: 250px;height: 30px;margin: 15px 0px 27px 0px}
+  .pop-area{position:fixed;left: 0px;top: 0;bottom: 0px;right: 0px;margin: auto;height:175px;background: white;}
+  .layer-content{padding: 0px!important;}
 </style>
 <link href="__THEME__/css/admincourse.css" rel="stylesheet" type="text/css">
 <dl class="pop-area">
-
- 
   <div class="list">
-
-
   </div>
-
   <div class="list bottom" id="list">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tbody></tbody>
     </table>
-
   </div>
 <input type ="hidden" id ="starttime"  value ={$starttime}>
-
-
-  <dt><span></span>请输入新增章节名称：</dt><input type="text"    id = "chaptertertitle"  name = "{$section.zy_video_section_id}"   />
+  <dt><span></span>请输入新增章节名称：</dt><input type="text" class="chaptertertitle" id = "chaptertertitle"  name = "{$section.zy_video_section_id}"   />
   <input type="hidden"   id = "chapterterid" value = "{$chaptertitle}"  />
-
-
-
-
   <dd>
     <input  type="button"  class="btn_w ml10" onclick="addchapter()" value="确定" />
-    <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="退出" />
+    <input type="button" class="btn_w ml10" onclick="ui.box.close()" value="取消" />
   </dd>
   <div class="clear"></div>
 </dl>
-
 <script>
   function addchapter()
   {
    var chaptertitle = $('#chaptertertitle').val();
    var id = $('#chapterterid').val();
-
     $.ajax({
       type: "POST",
       url:"{:U('classroom/User/addcourse')}",
@@ -66,8 +55,5 @@
       }
     });
   }
-
-
-
 
 </script>

@@ -4,16 +4,16 @@
             <form action="{:U('classroom/PayVideo/index')}" method="POST" target="_blank" class="pay_form">
                 <input type="hidden" value="{$vo['id']}" name="vid" />
                 <input type="hidden" value="zy_album" name="check_type" />
-                <input type="hidden" value="套餐：{$vo['album_title']}" name="title" />
+                <input type="hidden" value="班级：{$vo['album_title']}" name="title" />
                 <input type="hidden" id="money" value="{$vo['price']}" name="money" />
             </form>
             <a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}"><img src="{:getCover($vo['cover'],530,260)}" alt=""></a>
             <i class="taoke_bg"></i>
             <div class="txt">
-                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[套餐]  {:msubstr($vo['album_title'],0,20)}</a></h3>
+                <h3><a href="{:U('classroom/Album/view',array('id'=>$vo['id']))}">[班级]  {:msubstr($vo['album_title'],0,20)}</a></h3>
                 <p>{:msubstr($vo['album_intro'],0,50)}</p>
                 <div class="price">
-                    <span class="c1">套餐价格：</span>
+                    <span class="c1">班级价格：</span>
                     <span class="c2"><em>¥</em> {$vo['price']}</span>
                     <span class="c3">原价：¥ {$vo['oPrice']}</span>
                 </div>
@@ -48,12 +48,12 @@
             </ul>
             <div class="rightbox">
                 <div class="rightbox-item">共有 <php>echo count($vo['video']);</php> 门课程组合</div>
-                <div class="rightbox-item">套餐价格：<span class="price">¥ <em>{$vo['price']}</em></span></div>
+                <div class="rightbox-item">班级价格：<span class="price">¥ <em>{$vo['price']}</em></span></div>
                 <div class="rightbox-item">原价：<span class="del">¥{$vo['oPrice']}</span></div>
                 <div class="rightbox-item">立即节省：  ¥{$vo['disPrice']}</div>
                 <div class="rightbox-item">
                 <php>if($vo['price'] < 0 ){</php>
-                <a href="javascript:;">免费套餐</a>
+                <a href="javascript:;">免费班级</a>
                 <php>}else{</php>
                 <eq name="vo.isBuy" value="0">
                     <a href="javascript:;" class="charge_video">立即购买</a>
@@ -67,12 +67,12 @@
         <div class="bot">
             <ul>
                 <li>课程数：<php>echo count($vo['video']);</php>个</li>
-                <li>套餐价格： <span>¥{$vo['price']}</span></li>
+                <li>班级价格： <span>¥{$vo['price']}</span></li>
                 <li>
                 <gt name="vo.isCollect" value="0">
                 <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="0">取消收藏</a>
                 <else />
-                <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="1">收藏套餐</a>
+                <a href="javascript:;" onclick="collectAlbum(this,{$vo['id']})" data-type="1">收藏班级</a>
                 </gt>
                 
                 </li>

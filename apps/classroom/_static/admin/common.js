@@ -302,7 +302,7 @@ admin.delCouponAll=function(action){
     var ids=admin.getChecked();
     ids = ("undefined"== typeof(ids)|| ids=='') ? admin.getChecked() : ids;
     if(ids==''){
-        ui.error("卡券id不能为null");
+        ui.error("请选择要禁用的卡券");
         return false;
     }
     if(!confirm("是否确认？")){
@@ -455,7 +455,7 @@ admin.delVideoLib=function(type){
     },'json');
 };
 
-//批量删除套餐
+//批量删除班级
 admin.delAlbumAll=function(action,status){
 
     var ids=admin.getChecked();
@@ -523,6 +523,24 @@ admin.delLearns=function(type){
     },'json');
 };
 
+//添加卡券
+admin.addCoupon = function(action){
+    location.href = U('classroom/AdminEntityCard/'+action)+'&tabHash='+action;
+};
 
+//批量操作线下课程列表
+admin.delLineClassAll=function(action,type,status){
 
-
+    var ids=admin.getChecked();
+    ids = ("undefined"== typeof(ids)|| ids=='') ? admin.getChecked() : ids;
+    if(ids==''){
+        ui.error("id不能为null");
+        return false;
+    }
+    if(!confirm("是否确认？")){
+        return false;
+    }
+    $.post(U('classroom/Admin'+action+'/'+type),{ids:ids,status:status},function(msg){
+        admin.ajaxReload(msg);
+    },'json');
+};

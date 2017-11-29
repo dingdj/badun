@@ -14,11 +14,11 @@ class AdminWendaAction extends AdministratorAction
     public function _initialize()
     {
         // 管理标题项目
-        $this->pageTitle['index'] = '问答列表';
-        $this->pageTitle['cate'] = '问答分类';
+        $this->pageTitle['index'] = '列表';
+        $this->pageTitle['cate'] = '分类';
         // 管理分页项目
-        $this->pageTab[] = array('title' => $this->pageTitle['index'], 'tabHash' => 'index', 'url' => U('classroom/AdminWenda/index'));
-        $this->pageTab[] = array('title' => $this->pageTitle['cate'], 'tabHash' => 'cate', 'url' => U('classroom/AdminWenda/cate'));
+        $this->pageTab[] = array('title' => '列表', 'tabHash' => 'index', 'url' => U('classroom/AdminWenda/index'));
+        $this->pageTab[] = array('title' => '分类', 'tabHash' => 'cate', 'url' => U('classroom/AdminWenda/cate'));
 
         parent::_initialize();
     }
@@ -116,6 +116,7 @@ class AdminWendaAction extends AdministratorAction
             $type = M('zy_wenda')->where(array('id' => $vo['wid']))->getField('type');
             $list['data'][$key]['type'] = M('zy_wenda_category')->where(array('zy_wenda_category_id' => $type))->getField('title');
             $list['data'][$key]['uid'] = getUserSpace($vo['uid'], null, '_blank');
+            $list['data'][$key]['ctime'] = date("Y-m-d H:i:s",$vo['ctime']);
             if($vo['is_Adoption'] == 0)
             {
                 $list['data'][$key]['is_Adoption'] = "未采纳";

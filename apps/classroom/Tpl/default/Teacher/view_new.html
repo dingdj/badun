@@ -24,7 +24,7 @@
                 </ul>
 
 
-                <div class="teacher_course-content" style="height: 340px;">
+                <div class="teacher_course-content">
                     <!--<div class="trial-course video_all">-->
                        <!--<form  action ="{:U('classroom/PayTeacher/operatTeacherOrder')}"   method ="post"  target="_blank">-->
 
@@ -99,7 +99,7 @@
                     </div>
                 </div>
             </div>
-            <div class="teacher-media">
+            <!--<div class="teacher-media">
             	<div class="media-player-box">
             	<h3 class="new-title">照片/视频<span>
                 <php>if(!$photos_deatil){</php>
@@ -142,7 +142,7 @@
                     <php>}</php>
                 
                 </div>
-            </div>
+            </div>-->
             <div class="article-main">
                 <php>if($article['data'] == 0){</php>
                     <span class="title">文章<span class="count" data-domain="MKFmissyuxin">(0篇文章)</span></span>
@@ -158,7 +158,7 @@
                             <a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}">
                             <div class="article-cover"><img src="{:getCover($l['cover'],200,112)}" width="200" height="112"></div>
                             <div class="list-center">
-                                <div class="top"><span class="article-title">{$l.art_title}</span></div>
+                                <div class="article-top"><span class="article-title">{$l.art_title}</span></div>
                                 <div class="article-content">{:msubstr(t($l['article']),0,90,'utf-8',true)}</div>
                                 <div class="article-shot-actions">
                                     <span class="shot-action">{:date("Y-m-d H:i:s",$l['ctime'])}</span>
@@ -252,7 +252,6 @@
                                     </select>
                                 </label>
 
-
                                 <input type="hidden" name="score"  id="course_score"/>
                                 <textarea id="review_con" class="qa-ci-iarea js-reply-ipt-default" placeholder="点评可以是你对该讲师质量和难度的感受、学习建议，以及可能内容是否符合自己的期望等。..."></textarea>
                                 <div class="qa-reply-footright fr"> <span class="qa-tips"></span>
@@ -275,8 +274,8 @@
                             </ul>
                         </div>
                         <a href="javascript:;" class="item active"><span  onclick="new_orders(this,'0')">全部评价</span></a>
-                        <!--<a href="javascript:;" class="item"><span  onclick="new_orders(this,'3')" >1对1评价</span></a>-->
-                        <a href="javascript:;" class="item"><span  onclick="new_orders(this,'2')">班课评价</span></a>
+                        <!--<a href="javascript:;" class="item"><span  onclick="new_orders(this,'2')" >1对1评价</span></a>-->
+                        <a href="javascript:;" class="item"><span  onclick="new_orders(this,'3')">线下课评价</span></a>
                         <a href="javascript:;" class="item"><span  onclick="new_orders(this,'1')">视频课评价</span></a>
                     </div>
                 </div>
@@ -407,16 +406,11 @@ $(function(){
        liveReturn();
     });
 
-
-
 	$(".course-nav li").click(function(){
 		$(this).addClass("active").siblings().removeClass("active");
         var index = $(this).index();
         $(".teacher-course .video_all").hide().eq(index).show();
 	});
-
-
-
 
     if(onlineorder)
     {
@@ -782,9 +776,17 @@ function ajaxPinjia(score,content,skill,Professional,attitude){
         async:false,
         dataType:"text",
         success:function(data){
-            $('.js-ipt-cancel').click();
-            appendHtml(data);
-            ajaxReload();
+            try{
+                var data = JSON.parse(data);
+            }catch(e){}
+            if(data.status == 1){
+                $('.js-ipt-cancel').click();
+                //appendHtml(data);
+                ajaxReload();
+            }else{
+                ui.error("点评失败");
+                return false;
+            }
         }
     });
 }
@@ -796,7 +798,7 @@ function ajaxReload(){
     ui.success("点评成功");
     setTimeout(callback,1000);
 
-};
+}
 
 //检查字数输入
 function checklenth() {
@@ -916,14 +918,14 @@ function meetingteacher(sbt){
             $('.mask').show();
             return false;
         }
-        if(rechange_base>0 && money%rechange_base != 0){
+        /*if(rechange_base>0 && money%rechange_base != 0){
             if(rechange_base == 1){
                 ui.error('购买金额必须为整数');
             }else{
                 ui.error('购买金额必须为'+rechange_base+'的倍数');
             }
             return false;
-        }
+        }*/
 
         var mount_url = "{$_GET['mid']}";
         $.post(U("classroom/PayVideo/checkPay"),{check_type:check_type,vid:vid,money:money},function(data){

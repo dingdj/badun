@@ -1,6 +1,6 @@
 <include file="__THEME__/public_header" />
 <link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
-<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">
+<!--<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">-->
 <link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
 <style>
     .full-course:hover ul{
@@ -32,7 +32,7 @@
                 </li>
                 <li class="bg02">
                     <h5>用时</h5>
-                    <p>{:ceil($answerData['anser_time']/60)}分{:$answerData['anser_time'] % 60}秒</p>
+                    <p>{:floor($answerData['anser_time']/60)}分{:$answerData['anser_time'] % 60}秒</p>
                 </li>
                 <li class="bg03">
                     <h5>完成率</h5>

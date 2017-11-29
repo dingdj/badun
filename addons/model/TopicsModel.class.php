@@ -70,15 +70,15 @@ class TopicsModel extends Model {
 	 
 	 
 	 public function upPage($id){
-	     $upmap['id'] = array('lt',$id);
+	     $upmap['id'] = array('gt',$id);
 	     $upmap['is_del'] = 0;
 		  return $this->where($upmap)->order('dateline DESC ')->find();
 	 }
 	 public function downPage($id){
-         $downmap['id'] = array('gt',$id);
+         $downmap['id'] = array('lt',$id);
          $downmap['is_del'] = 0;
 
-		  return $this->where($downmap)->order('dateline ASC')->find();
+		  return $this->where($downmap)->order('dateline DESC')->find();
 	 }
 	 
 }

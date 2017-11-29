@@ -14,12 +14,12 @@ class AdminConfigAction extends AdministratorAction{
             'keyList' => array(
             	'upload_room',  	 	  //上传空间
                 'player_type',            //播放器类型
-                //'master_uid',             //Eduline对应的用户，后台发布的课程或套餐都属于当前设置的用户
+                //'master_uid',             //Eduline对应的用户，后台发布的课程或班级都属于当前设置的用户
                 //'vip_discount',			  //vip折扣，取值范围 0.00~10，请勿乱填
                 //'master_vip_discount',	  //Eduline产品vip折扣，取值范围 0.00~10，请勿乱填
-                'withdraw_basenum', 	  //提现的倍数，实际提现为该数的一倍及以上才会通过
-                'rechange_basenum', 	  //充值的倍数，实际充值为该数的一倍及以上才会通过，取值>=0.01
-                'rechange_default', 	  //充值默认金额
+                //'withdraw_basenum', 	  //提现的倍数，实际提现为该数的一倍及以上才会通过
+                //'rechange_basenum', 	  //充值的倍数，实际充值为该数的一倍及以上才会通过，取值>=0.01
+                //'rechange_default', 	  //充值默认金额
                 //'vip_price',        	  //VIP月单价
                 //'vip_year_price',   	  //包年VIP价格
                 'video_free_time',  	  //课程免费观看时长

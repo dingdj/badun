@@ -53,7 +53,7 @@ class AdminVideoAction extends AdministratorAction
         $this->_initClassroomListAdminTitle();
         $this->pageButton[] = array("title"=>"审核","onclick"=>"admin.crossVideos('crossVideos','批量审核','课程')");
         $this->pageKeyList = array('id','video_title','user_title','school_title','activity','ctime','DOACTION');
-        $listData = $this->_getData(20,0,3,2);
+        $listData = $this->_getData(20,0,['in', '3,6'],2);
         $this->displayList($listData);
     }
 
@@ -261,8 +261,8 @@ class AdminVideoAction extends AdministratorAction
                 $videokey = t($_POST['videokey']);
                 //获取上传空间 0本地 1七牛 2阿里云 3又拍云
                 if(getAppConfig('upload_room','basic') == 0 ) {
-                    if ($_POST['attach'][0]) {
-                        $video_address = getAttachUrlByAttachId($_POST['attach'][0]);
+                    if ($_POST['attach_ids']) {
+                        $video_address = getAttachUrlByAttachId($_POST['attach_ids']);
                     } else {
                         $video_address = $_POST['video_address'];
                     }
@@ -639,6 +639,7 @@ class AdminVideoAction extends AdministratorAction
         if( intval($_POST['cid']) ){
             $data['cid'] = $_POST['cid'];
             $data['is_free'] = $free;
+            $data['is_activity'] = 1;
         }
         if( t($_POST['oper']) == 'add') {
             $result = D('VideoSection')->setTable($stable)->addTreeCategory($pid, $title, $data);
@@ -686,7 +687,7 @@ class AdminVideoAction extends AdministratorAction
         }
 
         //查询讲师列表
-        $trlist = $this->teacherList();
+        $trlist = $this->teacherList(1);
         //获取会员等级
         $vip_levels = M('user_vip')->where('is_del=0')->order('sort desc')->getField('id,title');
         $school = model('School')->where(array('status'=>1,'is_del'=>0))->field('id,title')->findALL();
@@ -700,6 +701,7 @@ class AdminVideoAction extends AdministratorAction
     public function findSchoolTeacher(){
         $map = array(
             'is_del'=>0,
+            'is_reject'=>0,
             'mhm_id'=>$_POST['mhm_id']
         );
         $teacherlist = D('ZyTeacher')->where($map)->order("ctime DESC")->select();
@@ -718,14 +720,14 @@ class AdminVideoAction extends AdministratorAction
         if(empty($post['video_binfo'])) exit(json_encode(array('status'=>'0','info'=>"请输入课程简介")));
         if(empty($post['video_intro'])) exit(json_encode(array('status'=>'0','info'=>"请输入课程详情")));
         //if(empty($post['school'])) exit(json_encode(array('status'=>'0','info'=>"请选择所属机构")));
-        //if(empty($post['trid'])) exit(json_encode(array('status'=>'0','info'=>"请选择讲师")));
+        if($post['trid'] === 0) exit(json_encode(array('status'=>'0','info'=>"请先为该机构添加讲师")));
         if(empty($post['listingtime'])) exit(json_encode(array('status'=>'0','info'=>"请选择上架时间")));
         if(empty($post['uctime'])) exit(json_encode(array('status'=>'0','info'=>"请选择下架时间")));
         //if(empty($post['term'])) exit(json_encode(array('status'=>'0','info'=>"课程有效期不能为空")));
         $t_mhm_id = M('zy_teacher')->where(['id'=>$post['trid']])->getField('mhm_id');
-        //if($post['school'] != $t_mhm_id){
-            // exit(json_encode(array('status'=>'0','info'=>"讲师所属机构和课程所属机构不一致")));
-        // }
+        if($post['school'] != $t_mhm_id){
+             exit(json_encode(array('status'=>'0','info'=>"讲师所属机构和课程所属机构请保持一致")));
+         }
 
         $data['listingtime']  = $post['listingtime'] ? strtotime($post['listingtime']) : 0; //上架时间
         $data['uctime']       = $post['uctime'] ? strtotime($post['uctime']) : 0; //下架时间
@@ -759,28 +761,28 @@ class AdminVideoAction extends AdministratorAction
         $data['exam_id']              = t($post['exam_id']); //相关考试id
         $data['v_price']              = $post['v_price']; //市场价格
         $data['t_price']              = $post['t_price'];//销售价格
-        $data['vip_level']              = $post['vip_levels']; //vip等级
-        $data['is_tlimit']           = isset($post['is_tlimit']) ? intval($post['is_tlimit']) : 0; //限时打折
-        $data['starttime']              = $post['starttime'] ? strtotime($post['starttime']) : 0; //限时开始时间
+        $data['vip_level']            = $post['vip_levels']; //vip等级
+        $data['is_tlimit']            = isset($post['is_tlimit']) ? intval($post['is_tlimit']) : 0; //限时打折
+        $data['starttime']            = $post['starttime'] ? strtotime($post['starttime']) : 0; //限时开始时间
         $data['endtime']              = $post['endtime'] ? strtotime($post['endtime']) : 0; //限时结束时间
-        $data['limit_discount']      = isset($post['is_tlimit']) && ($post['limit_discount'] <= 1 && $post['limit_discount'] >= 0) ? $post['limit_discount'] : 1; //限时折扣
-        $data['teacher_id']          = intval($_POST['trid']);//获取讲师
-        $data['cover']                   = intval($post['cover_ids']); //封面
-        $data['term']                   = intval($post['term']); //有效期
-        $data['videofile_ids']          = isset($post['attach'][0]) ? intval($post['attach'][0]) : intval($post['videofile_ids']); //课件id
+        $data['limit_discount']       = isset($post['is_tlimit']) && ($post['limit_discount'] <= 1 && $post['limit_discount'] >= 0) ? $post['limit_discount'] : 1; //限时折扣
+        $data['teacher_id']           = intval($_POST['trid']);//获取讲师
+        $data['cover']                = intval($post['cover_ids']); //封面
+        $data['term']                 = intval($post['term']); //有效期
+        $data['videofile_ids']        = isset($post['attach'][0]) ? intval($post['attach'][0]) : intval($post['videofile_ids']); //课件id
 //        $data['videofile_ids']          = intval($post['videofile_ids']);
-        $data['is_best']                = isset($post['is_best']) ? intval($post['best_recommend']) : 0; //编辑精选
-        $data['is_mount']               = intval($post['is_mount']);
-        $data['best_sort']              = intval($post['best_sort']);
-        $data['is_best_like']           = intval($post['is_best_like']);
-        $data['best_like_sort']         = intval($post['best_like_sort']);
-        $data['is_cete_floor']          = intval($post['is_cete_floor']);
-        $data['cete_floor_sort']        = intval($post['cete_floor_sort']);
-        $data['is_re_free']             = intval($post['is_re_free']);
-        $data['re_free_sort']           = intval($post['re_free_sort']);
-//        $data['t_price']              = $data['v_price'] * $data['limit_discount'];
-        $data['type']                   = 1; //类型为点播
-        $video_tag                      = t($post['video_tag']);//课程标签
+        $data['is_best']              = isset($post['is_best']) ? intval($post['best_recommend']) : 0; //编辑精选
+        $data['is_mount']             = intval($post['is_mount']);
+        $data['best_sort']            = intval($post['best_sort']);
+        $data['is_best_like']         = intval($post['is_best_like']);
+        $data['best_like_sort']       = intval($post['best_like_sort']);
+        $data['is_cete_floor']        = intval($post['is_cete_floor']);
+        $data['cete_floor_sort']      = intval($post['cete_floor_sort']);
+        $data['is_re_free']           = intval($post['is_re_free']);
+        $data['re_free_sort']         = intval($post['re_free_sort']);
+//        $data['t_price']            = $data['v_price'] * $data['limit_discount'];
+        $data['type']                 = 1; //类型为点播
+        $video_tag                    = t($post['video_tag']);//课程标签
         if($data['vip_level']){
             $data['vip_pattern']      = $post['vip_pattern']; //vip使用模式
         }
@@ -953,12 +955,56 @@ class AdminVideoAction extends AdministratorAction
     }
 
     //讲师列表
-    private function teacherList(){
+    private function teacherList($mhm_id){
         $map = array(
-            'is_del'=>0
+            'is_del'=>0,
+            'is_reject'=>0,
+            'mhm_id'=>$mhm_id
         );
         $teacherlist=D('ZyTeacher')->where($map)->order("ctime DESC")->select();
         return $teacherlist;
+    }
+
+    //待审核课时列表
+    public function unauditLesson()
+    {
+        $vid      = intval($_GET['vid']);
+        $this->_initClassroomListAdminMenu();
+        $_REQUEST['tabHash'] = 'unauditLesson';
+        $v_title = D('ZyVideo','classroom')->getVideoTitleById($vid);
+        $this->pageTitle['unauditLesson'] = $v_title . '-课时审核';
+
+        $id     =  intval($_POST['zy_video_section_id']);
+        $title     =  t($_POST['title']);
+        $pid     =  intval($_POST['pid']);
+        $this->pageKeyList   = array('id', 'title', 'ptitle', 'video_title', 'DOACTION');
+        $this->pageButton[]  = array('title' => '搜索', 'onclick' => "admin.fold('search_form')");
+        $this->searchKey     = array('zy_video_section_id', 'title');
+        $this->pageButton[] = array("title"=>"通过","onclick"=>"admin.crossVideoSection('','$vid',1)");
+        $this->pageButton[] = array("title"=>"驳回","onclick"=>"admin.crossVideoSection('','$vid',1,1)");
+        $this->searchPostUrl = U('classroom/AdminVideo/unauditLesson', array('vid'=>$vid,'tabHash' => unauditLesson));
+        $this->pageButton[]  = array('title' => '查看课程', 'onclick' => "window.open('".U('classroom/Video/view',array('id'=>$vid,'is_look'=>1))."')");
+
+
+        $map['vid'] = $vid;
+        $map['pid'] = ['gt',0];
+        $map['is_activity'] = 3;
+        if(!empty($id))$map['zy_video_section_id']=$id;
+        if(!empty($title))$map['title']=array("like","%$title%");
+        if(!empty($pid))$map['pid']=$pid;
+
+        $listData = M('zy_video_section')->where($map)->order('sort asc,zy_video_section_id desc')->findPage(20);
+        foreach($listData['data'] as $key=>$val){
+            $val['id'] = $val['zy_video_section_id'];
+            $val['ptitle'] = M('zy_video_section')->where(array('zy_video_section_id'=>$val['pid']))->getField('title');
+            $val['video_title'] = D('ZyVideo')->getVideoTitleById($val['vid']);
+            $val['DOACTION'] =  '<a href="'.U('classroom/Video/view',array('id'=>$vid,'is_look'=>1)).'" target="_blank">查看课程</a>  | ';
+            $val['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideoSection(' . $val['id'] . ','.$val['vid'].',2)">通过审核</a> | ';
+            $val['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideoSection(' . $val['id'] . ','.$val['vid'].',2,1)">驳回</a>';
+            $listData['data'][$key] = $val;
+        }
+        $this->_listpk = 'id';
+        $this->displayList($listData);
     }
 
     //获取课程数据
@@ -1074,8 +1120,10 @@ class AdminVideoAction extends AdministratorAction
                 }
             }else{
 				$videotitle =t($value['video_title']);
-                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideo('.$value['id'].',true,' ."'{$videotitle}'".',' ."'{$tuid}'".')">通过审核</a> | ';
-                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideo('.$value['id'].',false,' ."'{$videotitle}'".',' ."'{$tuid}'".')">驳回</a>';
+//                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideo('.$value['id'].',true,' ."'{$videotitle}'".',' ."'{$tuid}'".')">通过审核</a> | ';
+//                $value['DOACTION'] .= '<a href="javascript:void();" onclick="admin.crossVideo('.$value['id'].',false,' ."'{$videotitle}'".',' ."'{$tuid}'".')">驳回</a>';
+                $value['DOACTION'] = '<a href=" ' . U('classroom/AdminVideo/unauditLesson', array('vid' => $value['id'], 'tabHash' => 'unauditLesson')) . ' ">课时审核</a> ';
+
             }
 
             if($mount == 1){
@@ -1089,6 +1137,7 @@ class AdminVideoAction extends AdministratorAction
             }
 
 //            $value['DOACTION'] .=    '<a onclick="admin.closeObject('.$value['id'].',\'Video\','.$value['is_del'].');" href="javascript:void(0)"> 删除</a> ';
+            //$value['DOACTION'] .=  ' | <a href="'.U('classroom/Video/view',array('id'=>$value['id'],'is_look'=>1)).'" target="_blank">查看课程</a> ';
 
         }
         return $list;
@@ -1434,21 +1483,38 @@ class AdminVideoAction extends AdministratorAction
         if($data['is_activity'] == 0 && $video == 1){
             $data['is_activity'] = 4;
         }
-        if(M('zy_video')->where($map)->data($data)->save()){
-            if($data['is_activity'] == 0){
-                $uid = M('zy_video')->where($map)->getField('uid');
+        $video = M('zy_video')->where($map)->getField('is_activity');
+        if($video == 7){
+            $data['is_activity'] = 1;
+        }
+        $data['utime'] = time();
+        $res = M('zy_video')->where($map)->data($data)->save();
+        if($res){
+            $video_info = M('zy_video')->where($map)->field('uid,video_title,is_activity')->find();
+
+            if($video_info['is_activity'] == 0){
                 $message['title']   = "课程审核被驳回";
-                $message['content'] = "你好，你上传的课程已被平台驳回，请修改信息后重新提交审核。";
-                $message['to']      = $uid;
-                model('Message')->postMessage($message,  $this->mid);
+                $message['body'] = "您好，您上传的课程 {$video_info['video_title']} 已被平台驳回，请修改信息后重新提交审核。";
+            }else if($video_info['is_activity'] == 1){
+                $message['title']   = "课程审核通过";
+                $message['body'] = "您好，您上传的课程 {$video_info['video_title']} 已审核通过。";
             }
+            if($_POST['cross'] == 'true'){
+                $sec_data['is_activity'] = 1;
+            }else{
+                $sec_data['is_activity'] = 2;
+            }
+            M('zy_video_section')->where(array('vid'=>$map['id'],'pid'=>['neq',0],'is_activity'=>0))->data($sec_data)->save();
+            $message['uid']      = $video_info['uid'];
+            $message['ctime'] = time();
+            model('Notify')->sendMessage($message);
+
             $credit = M('credit_setting')->where(array('id'=>38,'is_open'=>1))->field('id,name,score,count')->find();
             if($credit['score'] > 0){
                 $ctype = 6;
                 $note = '上传课程获得的积分';
             }
-            $uid = M('zy_video')->where($map)->getField('uid');
-            model('Credit')->addUserCreditRule($uid,$ctype,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
+            model('Credit')->addUserCreditRule($video_info['uid'],$ctype,$credit['id'],$credit['name'],$credit['score'],$credit['count'],$note);
 
             exit(json_encode(array('status'=>1,'info'=>'操作成功')));
         } else {
@@ -1456,18 +1522,17 @@ class AdminVideoAction extends AdministratorAction
         }
     }
 
-
     /**
      * 课程后台管理菜单
      * @return void
      */
     private function _initClassroomListAdminMenu(){
-        $this->pageTab[] = array('title'=>'已审课程','tabHash'=>'index','url'=>U('classroom/AdminVideo/index'));
-        $this->pageTab[] = array('title'=>'待审课程','tabHash'=>'unauditList','url'=>U('classroom/AdminVideo/unauditList'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('classroom/AdminVideo/index'));
+        $this->pageTab[] = array('title'=>'待审','tabHash'=>'unauditList','url'=>U('classroom/AdminVideo/unauditList'));
 //        $this->pageTab[] = array('title'=>'机构挂载课程列表','tabHash'=>'mount','url'=>U('classroom/AdminVideo/mount'));
         //$this->pageTab[] = array('title'=>'前台投稿待审课程列表','tabHash'=>'forwordUnauditList','url'=>U('classroom/AdminVideo/forwordUnauditList'));
-        $this->pageTab[] = array('title'=>'课程回收站','tabHash'=>'recycle','url'=>U('classroom/AdminVideo/recycle'));
-        $this->pageTab[] = array('title'=>'添加课程','tabHash'=>'addVideo','url'=>U('classroom/AdminVideo/addVideo'));
+        $this->pageTab[] = array('title'=>'回收站','tabHash'=>'recycle','url'=>U('classroom/AdminVideo/recycle'));
+        $this->pageTab[] = array('title'=>'添加','tabHash'=>'addVideo','url'=>U('classroom/AdminVideo/addVideo'));
         $this->pageTab[] = array('title'=>'视频库','tabHash'=>'videoLib','url'=>U('classroom/AdminVideo/videoLib'));
         $this->pageTab[] = array('title'=>'CC待同步视频库','tabHash'=>'videoLibVerify','url'=>U('classroom/AdminVideo/videoLibVerify'));
     }
@@ -1476,12 +1541,12 @@ class AdminVideoAction extends AdministratorAction
      * 课程后台的标题
      */
     private function _initClassroomListAdminTitle(){
-        $this->pageTitle['index']       = '已审课程';
+        $this->pageTitle['index']       = '已审';
         // $this->pageTitle['forwordUnauditList'] = '前台投稿待审课程列表';
         // $this->pageTitle['mount'] = '机构挂载课程';
-        $this->pageTitle['unauditList'] = '待审课程';
-        $this->pageTitle['recycle']     = '课程回收站';
-        $this->pageTitle['addVideo']    = '添加课程';
+        $this->pageTitle['unauditList'] = '待审';
+        $this->pageTitle['recycle']     = '回收站';
+        $this->pageTitle['addVideo']    = '添加';
         $this->pageTitle['videoLib']    = '视频库';
         $this->pageTitle['videoLibVerify']   = 'CC待同步视频库';
     }
@@ -1492,7 +1557,6 @@ class AdminVideoAction extends AdministratorAction
      */
     public function delcourse()
     {
-
         $ids = $_POST['ids'];
         $res = M('zy_video') ->where('id ='.$ids) ->delete();
        if($res !== false){
@@ -1640,5 +1704,70 @@ class AdminVideoAction extends AdministratorAction
         }
 
         $this->ajaxReturn(null,'取消挂载成功',1);
+    }
+    /**
+     * 审核课时
+     */
+    public function crossVideoSection()
+    {
+        if (!$_POST['ids']) {
+            exit(json_encode(array('status' => 0, 'info' => '错误的参数')));
+        }
+        $videomap['zy_video_section_id'] = ['in',$_POST['ids']];
+        if($_POST['ctype'] == 1){
+            $data['is_activity'] = 0;
+        }else{
+            $data['is_activity'] = 1;
+        }
+        $res = M('zy_video_section')->where($videomap)->data($data)->save();
+        if($res){
+            $map['vid'] = $_POST['vid'];
+            $map['pid'] = ['gt',0];
+            $map['is_activity'] = 3;
+            $count =  M('zy_video_section')->where($map)->count();
+        }else{
+            $this->ajaxReturn('系统繁忙，稍后再试');
+        }
+        if ($count == 0) {
+            $sectionmap['vid'] = $_POST['vid'];
+            $sectionmap['pid'] = ['gt',0];
+            $sectionmap['is_activity'] = 1;
+            $section_count =  M('zy_video_section')->where($sectionmap)->count();
+            if($section_count > 0){
+                $videoData['is_activity'] = 1;
+            }else{
+                $videoData['is_activity'] = 0;
+            }
+            $videoData['utime'] = time();
+            M('zy_video')->where(array('id'=>$_POST['vid']))->data($videoData)->save();
+            if ($videoData['is_activity'] == 0) {
+                $uid                = M('zy_video')->where(array('id'=>$_POST['vid']))->getField('uid');
+                $message['title']   = "课程审核被驳回";
+                $message['content'] = "你好，你上传的课程已被机构驳回，请修改信息后重新提交审核。";
+                $message['to']      = $uid;
+                model('Message')->postMessage($message, $this->mid);
+            }
+        }
+		/**
+        if($count > 0){
+            $videoData['is_activity'] = 1;
+        }else{
+            $videoData['is_activity'] = 0;
+        }
+        $videoData['utime'] = time();
+        M('zy_video')->where(array('id'=>$_POST['vid']))->data($videoData)->save();
+        if ($videoData['is_activity'] == 0) {
+            $uid                = M('zy_video')->where(array('id'=>$_POST['vid']))->getField('uid');
+            $message['title']   = "课程审核被驳回";
+            $message['content'] = "你好，你上传的课程已被机构驳回，请修改信息后重新提交审核。";
+            $message['to']      = $uid;
+            model('Message')->postMessage($message, $this->mid);
+        }
+		**/
+        if($_POST['ctype'] == 1){
+            $this->ajaxReturn('驳回成功');
+        }else{
+            $this->ajaxReturn('审核成功');
+        }
     }
 }

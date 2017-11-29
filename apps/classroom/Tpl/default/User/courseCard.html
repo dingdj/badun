@@ -22,6 +22,28 @@
     .couponlist .prcie{
         font-size: 22px;
     }
+
+    .center_right .center_right_con .hideBox{
+      border: 0px!important;
+      position: static!important;
+      width: 100%;
+      height: 30px;
+      background: #f5f5f5;
+    }
+    .center_right_con .hideBox li{
+      display: inline-block;
+      border: 0px!important;
+      background-color: transparent!important;
+      font-size: 14px;
+      color: #656565;
+      width: 75px!important;
+    }
+    .center_right_con .hideBox li:hover{
+      color: #00BED4;
+    }
+    .center_right_con .active{
+        color:#00BED4 !important;
+    }
 </style>
 <!--centerbox end-->
 <div class="content cbg" style="background-color:#f0f0f2;padding:30px 0;">
@@ -39,12 +61,12 @@
             </div>
             <div class="center_right_con">
             	<div class="tr_btn sort-select">
-                	<a id="showBox">全部<i class="icon-sj"></i></a>
-                    <ul class="hideBox" style="display: none;background:#fff;z-index: 1;">
-						<li data-value="0" onclick =order("0")>全部<i class="icon-sj"></i></li>
-                        <li data-value="1" onclick =order("1")>未使用<i class="icon-sj"></i></li>
-                        <li data-value="2" onclick =order("2")>已使用<i class="icon-sj"></i></li>
-                        <li data-value="3" onclick =order("3")>已过期<i class="icon-sj"></i></li>
+                	<!-- <a id="showBox">全部<i class="icon-sj"></i></a> -->
+                    <ul class="hideBox">
+                      <li data-value="0" onclick ="order(this,'0')" class="active">全部({$count.all})<i class="icon-sj"></i></li>
+                      <li data-value="1" onclick ="order(this,'1')">可用({$count.use})<i class="icon-sj"></i></li>
+                      <li data-value="2" onclick ="order(this,'2')">已用({$count.used})<i class="icon-sj"></i></li>
+                      <li data-value="3" onclick ="order(this,'3')">过期({$count.past})<i class="icon-sj"></i></li>
                     </ul>
                 </div>
             	<ul class="couponlist green">
@@ -68,7 +90,7 @@
                             </li>
                         </volist>
                         <else/>
-                        <li style="height: 149px;">您暂未获得课程卡~~</li>
+                        <!-- <li style="height: 149px;">您暂未获得课程卡~~</li> -->
                     </if>
                 </ul>
             </div>
@@ -78,7 +100,7 @@
 
 <script type="text/javascript">
 $(function(){
-    $("#showBox").click(function(){
+    /*$("#showBox").click(function(){
     if($(".hideBox").css("display")=="none"){
             $(".hideBox").show();
         }else{
@@ -88,10 +110,11 @@ $(function(){
     $(".hideBox li").click(function(){
         $("#showBox").html($(this).html());
         $(".hideBox").hide();
-    });
+    });*/
 });
     //筛选
-    function order(orderby){
+    function order(cate,orderby){
+        $(cate).addClass('active').siblings().removeClass('active');
         var type = 5;
         $.ajax({
             type: "POST",

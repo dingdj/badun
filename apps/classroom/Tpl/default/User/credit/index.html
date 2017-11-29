@@ -41,8 +41,8 @@
                     </div>
                     <p class="have-price"><span id="lan_txt_ols">需花费¥0</span></p>
                     <div class="foni_rea_lik">充值方式：
-                        <label><input type="radio" name="re_type" value="1" checked="checked"/>余额<i>（当前账户可用¥{$account['learn']}）</i></label>
-                        <label><input type="radio" name="re_type" value="2"/>收入<i>（当前账户可用¥{$account['split']}）</i></label>
+                        <label><input type="radio" name="re_type" value="lcnpay" checked="checked"/>余额<i>（当前账户可用¥{$account['learn']}）</i></label>
+                        <label><input type="radio" name="re_type" value="spipay"/>收入<i>（当前账户可用¥{$account['split']}）</i></label>
                         <b>注：余额&收入与积分的兑换比例为 {$split_score_pro}</b>
                     </div>
                 </div>
@@ -74,9 +74,9 @@
         obj.value = obj.value.replace(/\D|^0/g,'')
         var re_type = $('input:radio[name="re_type"]:checked').val(),
                 sple_score = parseFloat("{$sple_score}");
-        if(re_type == 1){
+        if(re_type == 'lcnpay'){
             var stock = parseFloat("{$account['learn']}") * sple_score;
-        }else if(re_type == 2){
+        }else if(re_type == 'spipay'){
             var stock = parseFloat("{$account['split']}") * sple_score;
         }
 
@@ -117,9 +117,9 @@
         var re_type = $('input:radio[name="re_type"]:checked').val(),
                 sple_score = parseFloat("{$sple_score}"),
                 blanle = exchange_score / sple_score;
-        if(re_type == 1){
+        if(re_type == 'lcnpay'){
             var contion_text = "您确认花费¥"+blanle+"余额，充值"+exchange_score+"积分吗？";
-        }else if(re_type == 2){
+        }else if(re_type == 'spipay'){
             var contion_text = "您确认花费¥"+blanle+"收入，充值"+exchange_score+"积分吗？";
         }
         if(confirm(contion_text)){

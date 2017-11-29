@@ -9,7 +9,7 @@ class ZyVoteModel extends Model
 	public $tableName   = 'zy_vote'; //映射到投票表
 	//可收藏的资源类型
 	public $_collType  = array(
-		1=>'album',//套餐收藏
+		1=>'album',//班级收藏
 		2=>'zy_video',//课程收藏
 		3=>'zy_question',//提问收藏
 		4=>'zy_note',//笔记收藏
@@ -17,7 +17,7 @@ class ZyVoteModel extends Model
 	);
 	//可投票的资源集合
 	private $_collList  = array(
-		'album',//套餐投票
+		'album',//班级投票
 		'zy_video',//课程投票
 		'zy_question',//提问投票
 		'zy_note',//笔记投票
@@ -26,7 +26,7 @@ class ZyVoteModel extends Model
 	
 	//可投票的资源集合
 	private $_collListField  = array(
-		'Album'=>'id,`album_title`',//套餐要取得字段
+		'Album'=>'id,`album_title`',//班级要取得字段
 		'ZyVideo'=>'id,`video_title`',//课程投票
 		'ZyQuestion'=>'id,`qst_title`',//提问投票
 		'ZyNote'=>'id,`note_title`',//笔记投票
@@ -34,7 +34,7 @@ class ZyVoteModel extends Model
 	);
 	//可投票的资源集合
 	private $_collField  = array(
-		'Album'=>'album_collect_count',//套餐投票
+		'Album'=>'album_collect_count',//班级投票
 		'ZyVideo'=>'video_collect_count',//课程投票
 		'ZyQuestion'=>'qst_collect_count',//提问投票
 		'ZyNote'=>'note_collect_count',//笔记投票

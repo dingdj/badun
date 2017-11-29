@@ -12,7 +12,7 @@ class ZyLearncModel extends Model {
     //关联ID的类型描述
     protected static $relTypes = array(
         'zy_order'       => '课程订单',
-        'zy_order_album' => '套餐订单',
+        'zy_order_album' => '班级订单',
         'zy_withdraw'    => '提现记录',
         'zy_recharge'    => '充值记录'
     );

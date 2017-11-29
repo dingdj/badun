@@ -3,7 +3,7 @@ tsload(APPS_PATH.'/classroom/Lib/Action/CommonAction.class.php');
 class PayAction extends CommonAction{
 
     /**
-     * 充值积分
+     * 充值余额
      */
     public function recharge(){
         ini_set('display_errors', '1');
@@ -14,38 +14,31 @@ class PayAction extends CommonAction{
 
         //必须要先登陆才能进行操作
         if($this->mid <= 0) $this->error('请先登录在进行充值');
-        $pay_list = array('alipay','unionpay','wxpay');
+        $pay_list = array('alipay','unionpay','wxpay','cardpay');
         if(!in_array($_POST['pay'],$pay_list)){
             $this->error('支付方式错误');
         }
 
-        $money = floatval($_POST['money']);
-        if($money <= 0){
+        $money_str = t($_POST['money']);
+        $money = array_filter(explode('=>',$money_str))[0] ? : 0;
+        if ($_POST['pay'] != 'cardpay' && $money <= 0) {
             $this->error('请选择或填写充值金额');
-        }
-        $rechange_base = getAppConfig('rechange_basenum');
-        if($rechange_base>0 && $money%$rechange_base != 0){
-            if($rechange_base == 1){
-                $this->error('充值金额必须为整数');
-            }else{
-                $this->error("充值金额必须为{$rechange_base}的倍数");
-            }
         }
 
         $re = D('ZyRecharge');
-        if($_POST['pay'] == 'wxpay' && $this->is_wap){//strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')
-            $pay_type = 'wap_wxpay';
-        }else{
-            $pay_type = $_POST['pay'];
-        }
         $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
 
+        if ($_POST['pay'] == 'cardpay'){
+            $note = "{$this->site['site_keyword']}-余额充值：充值卡 ".t($_POST['card_number']);
+        }else{
+            $note = "{$this->site['site_keyword']}-余额充值：{$money_str}元";
+        }
         $id = $re->addRechange(array(
             'uid'      => $this->mid,
             'type'     => 2,
             'money'    => $money,
-            'note'     => "{$this->site['site_keyword']}-积分充值-{$money}元",
-            'pay_type' => $pay_type,
+            'note'     => $note,
+            'pay_type' => $_POST['pay'],
             'pay_pass_num'=>$pay_pass_num,
         ));
         if(!$id) $this->error("操作异常");
@@ -53,20 +46,23 @@ class PayAction extends CommonAction{
         if($_POST['pay'] == 'alipay'){
             $this->alipay(array(
                 'out_trade_no' => $pay_pass_num,
-                'subject'      => "{$this->site['site_keyword']}-积分充值",
                 'total_fee'    => $money,
+                'subject'      => "{$this->site['site_keyword']}-余额充值",
+                'money_str'    => $money_str,
             ));
         }elseif($_POST['pay'] == 'unionpay'){
             $this->unionpay(array(
                 'out_trade_no' => $pay_pass_num,
                 'money' => $money,
-                'subject' => "{$this->site['site_keyword']}-积分充值"
+                'subject' => "{$this->site['site_keyword']}-余额充值",
+                'money_str'    => $money_str,
             ));
         }elseif($_POST['pay'] == 'wxpay'){
             $res = $this->wxpay(array(
                 'out_trade_no'  => $pay_pass_num,
                 'total_fee'     => $money * 100,//单位：分
-                'subject'       => "{$this->site['site_keyword']}-积分充值",
+                'subject'       => "{$this->site['site_keyword']}-余额充值",
+                'money_str'    => $money_str,
             ));
             if($res){
                 if($this->is_pc){
@@ -80,7 +76,7 @@ class PayAction extends CommonAction{
                         $data = array('status'=>1,'data'=>['html'=>$res,'pay_pass_num'=>$pay_pass_num]);
                         echo json_encode($data);
                     }else {
-                        $redirect_url = 'http://' . strip_tags($_SERVER['HTTP_HOST']) . "/my/recharge/" . sunjiami(rand(100, 999), 'wx_pay') . "/{$pay_pass_num}.html";
+                        $redirect_url = 'http://' . strip_tags($_SERVER['HTTP_HOST']) . "/my/account/" . sunjiami(rand(100, 999), 'wx_pay') . "/{$pay_pass_num}.html";
                         $data = array('status' => 1, 'data' => ['html' => $res . "&redirect_url={$redirect_url}", 'pay_pass_num' => $pay_pass_num]);
                         echo json_encode($data);
                         exit;
@@ -91,6 +87,13 @@ class PayAction extends CommonAction{
                 echo json_encode($data);
                 exit;
             }
+        } elseif ($_POST['pay'] == 'cardpay'){
+            $res = $this->cardpay(array(
+                'out_trade_no' => $pay_pass_num,
+                'card_number'  => t($_POST['card_number']),
+                'subject'      => "{$this->site['site_keyword']}-充值卡充值余额",
+            ));
+            echo json_encode($res);exit;
         }
     }
 
@@ -116,27 +119,34 @@ class PayAction extends CommonAction{
             $this->error('支付类型错误');
         }
         $type = intval($_POST['user_vip']);
-        $vip_length = "+1 year";
+        
         $vip = M('user_vip')->where('id=' . $type)->find();
-        $money = $vip['vip_year'];
+
+        $vip_type_time  = $_POST['vip_type_time'];
+        $vip_time       = $_POST['vip_time'] >= 1 ? $_POST['vip_time'] : 1 ;
+        if($vip_type_time == 'year'){
+            $vip_length = "+{$vip_time} year";
+            $money      = $vip['vip_year']*$vip_time;
+            $vip_length_info = "{$vip_time}年";
+        } else {
+            $vip_length = "+{$vip_time} month";
+            $money      = $vip['vip_month']*$vip_time;
+            $vip_length_info = "{$vip_time}月";
+        }
 
         $re = D('ZyRecharge');
-        if($_POST['pay'] == 'wxpay' && $this->is_wap){//strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')
-            $pay_type = 'wap_wxpay';
-        }else{
-            $pay_type = $_POST['pay'];
-        }
+        $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
+
         $id = $re->addRechange(array(
             'uid'      => $this->mid,
             'type'     => "3,{$type}",
             'vip_length' => $vip_length,
             'money'    => $money,
-            'note'     => "{$this->site['site_keyword']}-{$vip['title']}充值",
-            'pay_type' => $pay_type,
+            'note'     => "{$this->site['site_keyword']}-{$vip['title']}充值+$vip_length_info",
+            'pay_type' => $_POST['pay'],
+            'pay_pass_num'=>$pay_pass_num,
         ));
         if(!$id) $this->error("操作异常");
-        $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
-        $re->where(['id'=>$id])->save(['pay_pass_num'=>$pay_pass_num]);
 
         if($_POST['pay'] == 'alipay'){
             $this->alipay(array(
@@ -186,6 +196,7 @@ class PayAction extends CommonAction{
     protected function alipay($args){
         $notify_url = 'http://'.strip_tags($_SERVER['HTTP_HOST']).'/alipay_alinu_scvp.html';//异步地址
         $return_url = 'http://'.strip_tags($_SERVER['HTTP_HOST']).'/alipay_aliru_scvp.html';//同步地址
+        $passback_params = urlencode(sunjiami(json_encode(array('money_str'=>$args['money_str'])),"hll"));
 
         if($this->is_pc){
             //设置支付的Data信息
@@ -195,7 +206,7 @@ class PayAction extends CommonAction{
                 "out_trade_no"  => $args['out_trade_no'],//商户网站订单系统中唯一订单号，必填
                 "total_amount"  =>  "{$args['total_fee']}",//(string)$args['total_fee'],//付款金额 新版
                 "product_code"  => 'FAST_INSTANT_TRADE_PAY',//销售产品码，与支付宝签约的产品码名称。 注：目前仅支持FAST_INSTANT_TRADE_PAY
-                //'passback_params' => $passback_params,//自定义参数 仅服务端异步可以接收
+                'passback_params' => $passback_params,//自定义参数 仅服务端异步可以接收
             );
             $alipay_type = 'pc';
         }elseif($this->is_wap){
@@ -206,7 +217,7 @@ class PayAction extends CommonAction{
                 "out_trade_no"  => $args['out_trade_no'],//商户网站订单系统中唯一订单号，必填
                 "total_amount"  =>  "{$args['total_fee']}",//(string)$args['total_fee'],//付款金额 新版
                 "product_code"  => 'QUICK_WAP_WAY',//销售产品码，与支付宝签约的产品码名称。 注：目前仅支持QUICK_WAP_WAY
-                //'passback_params' => $passback_params,//自定义参数 仅服务端异步可以接收
+                'passback_params' => $passback_params,//自定义参数 仅服务端异步可以接收
             );
             $alipay_type = 'wap';
         }
@@ -220,6 +231,7 @@ class PayAction extends CommonAction{
     public function alinu(){
         //获取阿里回调到服务器异步的参数
         $response = model('AliPay')->aliNotify();
+        file_put_contents('logs/alipayre_success_account.txt',json_encode($response));
 
         //商户订单号
         $out_trade_no = t($response['out_trade_no']);
@@ -230,28 +242,19 @@ class PayAction extends CommonAction{
 
         $re = D('ZyRecharge','classroom');
         if ($trade_status == 'TRADE_SUCCESS'|| $trade_status == 'TRADE_FINISHED') {
-            $res = $re->setNormalPaySuccess($out_trade_no,$trade_no);
+            $res = $re->setNormalPaySuccess($out_trade_no,$trade_no,$response['passback_params'],false);
             if($res){
                 echo 'success';
             }else{
                 echo 'fail';
             }
         }
-
-        exit;
-        //以下是v2
-        include SITE_PATH.'/api/pay/alipay/alipay.php';
-        $alipay_config = $this->getAlipayConfig($alipay_config);
-        //计算得出通知验证结果
-        $alipayNotify = new AlipayNotify($alipay_config);
-        $verify_result = $alipayNotify->verifyNotify();
-        if(!$verify_result) exit('fail');
     }
 
     public function aliru(){
         unset($_GET['app'],$_GET['mod'],$_GET['act']);
 
-        $this->assign('jumpUrl', U('classroom/User/recharge'));
+        $this->assign('jumpUrl', U('classroom/Vip/index'));
         //商户订单号
         $out_trade_no = $_GET['out_trade_no'];
         //支付宝交易号
@@ -260,32 +263,6 @@ class PayAction extends CommonAction{
         $re = D('ZyRecharge');
         $result = $re->setPaySuccess($out_trade_no,$trade_no);
 
-        if($result){
-            $this->success('充值成功！');
-        }else{
-            $this->error('充值失败！');
-        }
-
-        exit;
-        unset($_GET['app'],$_GET['mod'],$_GET['act']);
-        include SITE_PATH.'/api/pay/alipay/alipay.php';
-        $alipay_config = $this->getAlipayConfig($alipay_config);
-        //计算得出通知验证结果
-        $alipayNotify = new AlipayNotify($alipay_config);
-        $verify_result = $alipayNotify->verifyReturn();
-        $this->assign('isAdmin', 1);
-        $this->assign('jumpUrl', U('classroom/User/recharge'));
-        if(!$verify_result) $this->error('操作异常');
-        //商户订单号
-        $out_trade_no = $_GET['out_trade_no'];
-        //支付宝交易号
-        $trade_no = $_GET['trade_no'];
-        //交易状态
-        $trade_status = $_GET['trade_status'];
-        $re = D('ZyRecharge');
-        if($trade_status == 'TRADE_FINISHED'||$trade_status == 'TRADE_SUCCESS') {
-            $result = $re->setSuccess($out_trade_no, $trade_no);
-        }
         if($result){
             $this->success('充值成功！');
         }else{
@@ -312,11 +289,12 @@ class PayAction extends CommonAction{
                 }
             }
 
+            $attr = urlencode(sunjiami(json_encode(array('money_str'=>$data['money_str'])),"hll"));
             $attributes = [
                 'body' => isset($data['subject']) ? $data['subject'] : '充值中心',
                 'out_trade_no' => "{$data['out_trade_no']}",
                 'total_fee' => "{$data['total_fee']}",
-                //'attach' => 1,//自定义参数 仅服务端异步可以接收9
+                'attach' => $attr,//自定义参数 仅服务端异步可以接收9
             ];
 
             $wxPay = model('WxPay')->wxPayArouse($attributes, $from, $notifyUrl);
@@ -336,16 +314,16 @@ class PayAction extends CommonAction{
     }
 
     /**
-     * @name 微信公众号支付回调
+     * @name 微信app支付回调
      */
     public function appwxpay_success(){
         //获取微信回调到服务器异步的参数
         $response = model('WxPay')->appWxNotify();
-        file_put_contents('logs/wxpayre_success_app_scores.txt',json_encode($response));
+        file_put_contents('logs/wxpayre_success_app_pay.txt',json_encode($response));
 
-        //商户订单号
+        //商户订单号out_tr ade_no
         if($response["return_code"] == "SUCCESS" && $response["result_code"] == "SUCCESS"){
-            D('ZyRecharge')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id'],$response['out_trade_no']);
+            D('ZyRecharge','classroom')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id'],$response['attach']);
         }
     }
 
@@ -356,13 +334,14 @@ class PayAction extends CommonAction{
     {
         //获取微信回调到服务器异步的参数
         $response = model('WxPay')->wxNotify();
-        file_put_contents('logs/wxpayre_success_scores.txt',json_encode($response));
+        file_put_contents('logs/wxpayre_success_pay.txt',json_encode($response));
 
         //商户订单号
         if($response["return_code"] == "SUCCESS" && $response["result_code"] == "SUCCESS"){
-            D('ZyRecharge')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id']);
+            D('ZyRecharge','classroom')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id'],$response['attach']);
         }
     }
+
     /**
      * @name 查询支付状态
      */
@@ -378,6 +357,34 @@ class PayAction extends CommonAction{
             echo json_encode(['status'=>1,'info'=>"",'data'=>$url]);exit;
         }else{
             echo json_encode(['status'=>0]);exit;
+        }
+    }
+
+    protected function cardpay($arge){
+        $coupon_model = model('Coupon');
+        $res = $coupon_model->grantCouponByCode($arge['card_number']);
+
+        if($res){
+            $coupon_info = $coupon_model->where(['code'=>$arge['card_number']])->field('id,recharge_price')->find();
+            //添加余额并加相关流水
+            $learnc = D('ZyLearnc','classroom')->recharge($this->mid,$coupon_info['recharge_price']);
+            if(!$learnc) {
+                return false;
+            }
+            //D('ZyLearnc','classroom')->addFlow($this->mid, 1, $coupon_info['recharge_price'], '充值卡充值余额：' . $coupon_info['recharge_price'], $coupon_info['id'], 'coupon');
+            D('ZyLearnc','classroom')->addFlow($this->mid, 1, $coupon_info['recharge_price'], '充值卡充值余额：' . $coupon_info['recharge_price'], $arge['out_trade_no'], 'zy_recharge');
+
+            M('coupon_user')->where(['cid'=>$coupon_info['id']])->setField('status',1);
+
+            $s['uid']   = $this->mid;
+            $s['title'] = "恭喜您使用充值卡充值余额成功";
+            $s['body']  = "恭喜您使用充值卡充值余额{$coupon_info['recharge_price']}成功";
+            $s['ctime'] = time();
+            model('Notify')->sendMessage($s);
+
+            return ['status'=>1,'info'=>"充值成功",'data'=>''];
+        }else{
+            return ['status'=>0,'info'=>$coupon_model->getError(),'data'=>''];
         }
     }
 

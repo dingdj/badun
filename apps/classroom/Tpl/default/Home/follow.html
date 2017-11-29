@@ -3,6 +3,7 @@
 <include file="../User/public/_top" />
 <style>
     .center_right_tit div a{width: 80px;}
+    .detailmeg{width:710px}
 </style>
 <!--centerbox end-->
 <div class="content cbg">
@@ -21,13 +22,13 @@
             <div class="center_right_con">
                 <ul class="user-wenda">
                     <if condition="$teacher_data['data'] eq null">
-                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有关注讲师。。</li>
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 0;">您还没有关注讲师。。</li>
                         <else/>
                         <foreach name="teacher_data['data']" item="l" key="k">
                             <php>if($l['tid'] != 0){</php>
                             <li  class="li" <php> if($k == 0) echo ""</php>>
                             <div class="discusslist"> <a target="_blank" title="Sunflower" class="otherHead" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}"><img width="40" height="40" src="{:getCover($l['head_id'],180,180)}"></a>
-                                <div class="detailmeg">
+                                <div class="detailmeg" style="width:760px;">
                                     <div class="mynote">
                                         <em>讲师姓名:</em><a target="_blank" href="{:U('classroom/teacher/view',array('id'=>$l['tid']))}">{$l.name}</a>
                                         <em>头衔:</em><a>{$l.title}</a><br/>
@@ -58,7 +59,7 @@
             <div class="center_right_con">
                 <ul class="user-wenda">
                     <if condition="$school_data['data'] eq null">
-                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 20px;">您还没有关注机构。。</li>
+                        <li style="border: none;box-shadow: none;padding: 0px;margin: 14px 0 35px 0;">您还没有关注机构。。</li>
                         <else/>
                         <foreach name="school_data['data']" item="l" key="k">
                         <li  class="li">

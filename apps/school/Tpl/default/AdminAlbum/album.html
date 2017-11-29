@@ -3,18 +3,18 @@
     <input type="hidden" name="video_ids" id="albumids" value="{$album_video}" >
 
     <div class="admin-kcidfixed" style="display: table-cell">
-        <foreach name="data" item="d">
+        <!--<foreach name="data" item="d">
             <php>
                 $name = D('ZyVideo','classroom')->getVideoTitleById($d);
                 if($name){
             </php>
 	        <a href="javascript:;" onclick="removeVideo(this,{$d})">{$name}&nbsp;×</a>
 	        <php>}</php>
-        </foreach>
+        </foreach>-->
         <div id="albumlist">
 
         </div>
-        <input type="text" id="salbum"  placeholder="请输入课程关键字查找"  class="s-txt" style="width:200px; " />
+        <!--<input type="text" id="salbum"  placeholder="请输入课程关键字查找"  class="s-txt" style="width:200px; " />-->
         <ul class="admin-kcid" style="display:none">
 
         </ul>
@@ -22,6 +22,12 @@
 
 </dd>
 <script>
+    $(function(){
+        //获取指定机构课程
+        var mhm_id = "{$mhm_id}";
+        getVideoList(mhm_id);
+    });
+
     $("#salbum").keyup(function(){
         var sval= $.trim($("#salbum").val());
         var mhm_id = $.trim($("#form_mhm_id").val());
@@ -46,7 +52,7 @@
         });
     })
     var albumids="{$album_video}";
-    //选中套餐事件
+    //选中班级事件
     var selectAlbum=function(cate,id){
         if(albumids.indexOf(id.toString())>=0){
             ui.error("已选择此课程，请勿重复选择!");
@@ -59,12 +65,43 @@
         $(".admin-kcid").css("display","none");
     }
 
-    //删除选中套餐
+    //删除选中班级
     var removeVideo=function(cate,id){
         var gid = id.toString()+",";
         albumids= albumids.replace(gid,"");
         $("#albumids").val(albumids);
         $(cate).remove();
 
+    }
+
+    function getVideoList(id){
+        var html = '';
+        var videos = "{$videos}";
+        videos = videos.split(',');
+        $("#albumlist").html('');
+        $.ajax({
+            type: 'POST',
+            url: "{:U('school/AdminAlbum/getVideoList')}",
+            data: {mhm_id: id},
+            dataType: "json",
+            cache: false,
+            success: function (data) {
+                if(typeof data != 'object'){
+                    var data = eval('('+data+')');
+                }
+                if(data){
+                    $.each(data,function(i,n){
+                        var checked = '';
+                        if($.inArray(n.id, videos) != -1){
+                            checked = 'checked';
+                        }
+                        html += '<input type="checkbox" name="video[]" value="'+ n.id+'" '+checked+'/>'+ n.video_title;
+                    });
+                }else{
+                    html += '暂时没有课程数据。。';
+                }
+                $("#albumlist").append(html);
+            }
+        });
     }
 </script>

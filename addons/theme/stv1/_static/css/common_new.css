@@ -1,6 +1,5 @@
 @charset "utf-8";
 /* CSS Document */
-
 .banner,.bannerwrap,.center-type,.centerbox,.communitybox,.content,.footer,.fullSlide,.header,.itembox,.itembox2,.jgitembox,.livepalce,.login-footer,.teacherpalce,.topbox,.toppic{float:left;width:100%;min-width:1200px;}
 .wrap{margin:0 auto;width:1200px;zoom:1;}
 .wrap:after,.wrap:before{display:table;content:"";}
@@ -200,11 +199,11 @@
 .loginwrap dd input:focus{border-color:#8fd8ea;box-shadow:0 0 2px 2px rgba(0,175,220,.1);}
 .loginwrap dd a{display:block;width:100%;height:40px;border-radius:5px;background-color:#00a2ca;color:#fff;text-align:center;font-weight:600;font-size:15px;line-height:40px;}
 .loginwrap dd a:hover{background-color:#00add9;}
-.loginhead{height:99px;border-bottom:solid 1px #c7d6e3;background-color:#f6f9fc;}
+.loginhead{height:80px;border-bottom:solid 1px #c7d6e3;background-color:#313336;}
 .loginhead .logo{margin-top:10px;}
 .logincontent{overflow:hidden;padding:40px 0;}
-.loginleft{float:left;padding:60px 0 0 100px;width:700px;}
-.loginright{float:right;margin:80px 0 150px 0;padding:15px 25px;width:300px;border:solid 1px #b6c7d6;border-radius:3px;}
+.loginleft{float:left;padding:60px 0 0 80px;width:560px;}
+.loginright{float:right;margin:80px 80px 150px 0;padding:15px 25px;width:300px;border:solid 1px #b6c7d6;border-radius:3px;}
 .loginright h3{margin-bottom:20px;color:#333;text-align:center;font-size:14px;line-height:30px;}
 .loginright .item{margin-bottom:15px;}
 .loginright input.inp{padding:0 9px;width:280px;height:40px;border:solid 1px #b6c7d6;border-radius:3px;text-align:left;line-height:40px;}
@@ -235,6 +234,7 @@
 .loginform dt{position:absolute;margin-left:-115px;width:100px;color:#333;text-align:right;font-size:14px;line-height:40px;}
 .loginform dt span{margin-right:5px;color:#d63535;}
 .loginform dd{color:#333;font-size:14px;line-height:40px;}
+.loginform dd a{color:#fff}
 .loginform dd .inp{padding:9px;width:300px;height:20px;border:solid 1px #b6c7d6;border-radius:3px;}
 .loginform input.inp{padding:0 9px;width:280px;height:40px;}
 .loginform.organisation input.inp{width:380px;}
@@ -245,7 +245,7 @@
 .loginform p{padding:10px 0 0;font-size:12px;}
 .loginform.organisation p{width:400px;color:#666;line-height:20px;}
 .loginform.organisation .sele{margin-top:5px;width:150px;height:30px;border:solid 1px #b6c7d6;border-radius:3px;}
-.loginform dd .yzm{display:inline-block;width:128px;height:38px;border:solid 1px ##00BED4;border-radius:3px;background-color:#00BED4;color:#fff;vertical-align:middle;text-align:center;font-size:14px;line-height:38px;}
+.loginform dd .yzm ,.loginform dd .width97{display:inline-block;width:128px;height:38px;border:solid 1px ##00BED4;border-radius:3px;background-color:#00BED4;color:#fff;vertical-align:middle;text-align:center;font-size:14px;line-height:38px;}
 .loginform .check{color:#333;line-height:30px;cursor:pointer;}
 .loginform .check input{margin:-3px 5px 0 0;}
 .loginform dd .btn{display:block;width:298px;height:38px;border:solid 1px ##00BED4;border-radius:3px;background-color:#00BED4;color:#fff;vertical-align:middle;text-align:center;font-size:14px;line-height:38px;}

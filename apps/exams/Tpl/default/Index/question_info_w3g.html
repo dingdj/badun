@@ -1,0 +1,102 @@
+<include file="__THEME__/public_header_w3g"/>
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<link rel="stylesheet" type="text/css" href="__APP__/icon/iconfont.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer_media.css">
+<link rel="stylesheet" type="text/css" href="__APP__/css/exam_2.0.css">
+<div class="cover"></div>
+<div class="min-height-wrap">
+    <div class="exam-header">
+        <div class="back-date">
+            <a href="javascript:window.history.go(-1);;"><i class="icon icon-fanhui1"></i></a>
+        </div>
+    </div>
+    <div class="static-exam">
+    	<php>$question_num = 1;</php>
+    		<switch name="question.type_info.question_type_key">
+	            <case value="radio|judge|multiselect">
+	            	<!-- 单选题 -->
+	            	<dl id="ex{$question_num}" data-question_num="{$question_num}">
+		            	<dt>
+			                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$question.type_info.question_type_title}</strong></h5>
+			                <h3>{$question.content}</h3>
+			            </dt>
+			            <dd>
+			                <volist name="question.answer_options" id="answer">
+                                <p data-answer="{$key}"><em>{$key}</em>{$answer}</p>
+                            </volist>
+			            </dd>
+			            <div class="operation">
+			                <!--答案解析-->
+			                <div class="analysis" style="display: block;">
+			                    <div class="analysis-pic">
+			                        <h6>正确答案</h6><abbr><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></abbr>
+			                    </div>
+			                    <div class="analysis-txt">
+			                    	<h6>考点</h6>
+			                        <p>{$question.exams_point_title}</p>
+			                        <h6>解析</h6>
+			                        <p>{$question.analyze}</p>
+			                    </div>
+			                </div>
+			            </div>
+			        </dl>
+	            </case>
+	            <case value="completion">
+	            	<!-- 填空题 -->
+		            <dl id="ex{$question_num}" data-question_num="{$question_num}">
+		            	<dt>
+			                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$question.type_info.question_type_title}</strong></h5>
+			                <h3>{$question.content}</h3>
+			            </dt>
+			            <dd>
+	                        <volist name="question.answer_true_option" id="answer">
+	                            <label>{$i}、<input type="text"></label>
+	                        </volist>
+			            </dd>
+			            <div class="operation">
+			                <!--答案解析-->
+			                <div class="analysis" style="display: block;">
+			                    <div class="analysis-pic">
+			                        <h5>正确答案</h5>
+			                        <ul>
+			                            <volist name="question.answer_true_option" id="answer_true">
+		                                    <li>{$i}、{$answer_true}</li>
+		                                </volist>
+			                        </ul>
+
+			                    </div>
+			                    <div class="analysis-txt">
+			                    	<h6>考点</h6>
+			                        <p>{$question.exams_point_title}</p>
+			                        <h6>解析</h6>
+			                        <p>{$question.analyze}</p>
+			                    </div>
+			                </div>
+			            </div>
+			        </dl>
+	            </case>
+	            <case value="essays">
+	            	<!-- 简述题-->
+		            <dl id="ex{$question_num}" data-type="{$options_type.question_type_key}" data-question_num="{$question_num}">
+	            		<dt>
+			                <h5><small>{$question_num}</small>/{$paper_options.questions_count}<strong>{$question.type_info.question_type_title}</strong></h5>
+			                <h3>{$question.content}</h3>
+			            </dt>
+			            <div class="operation">
+			                <!--答案解析-->
+			                <div class="analysis" style="display: block;">
+			                    <div class="analysis-txt">
+			                    	<h6>考点</h6>
+			                        <p>{$question.exams_point_title}</p>
+			                        <h6>解析</h6>
+			                        <p>{$question.analyze}</p>
+			                    </div>
+			                </div>
+			            </div>
+			        </dl>
+	            </case>
+            </switch>
+    </div>
+</div>
+<include file="__THEME__/public_footer_w3g"/>
+<script src="__APP__/js/public_header_footer_media.js"></script>

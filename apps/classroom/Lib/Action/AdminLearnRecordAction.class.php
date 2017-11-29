@@ -179,8 +179,8 @@ class AdminLearnRecordAction extends AdministratorAction {
             }else{
                 $url = U('classroom/Album/view', array('id'=>$value['oid']));
             }
-            $list['data'][$key]['qst_title']  = '<div style="width:200px;height:30px;overflow:hidden;"><a href="'.$url.'" target="_bank">'.$value['qst_title'].'</a></div>';
-            $list['data'][$key]['qst_description']  = '<div style="width:200px;height:30px;overflow:hidden;">'.$value['qst_description'].'</div>';
+            $list['data'][$key]['qst_title']  = '<a href="'.$url.'" target="_bank">'.$value['qst_title'].'</a>';
+            $list['data'][$key]['qst_description']  = $value['qst_description'];
 
             if($value['type']==1){
                 $list['data'][$key]['oid']  = getVideoNameForID($value['oid']);
@@ -194,7 +194,7 @@ class AdminLearnRecordAction extends AdministratorAction {
             $type = "未知课程";
             $list['data'][$key]['oid'] = getQuickLink($url,$list['data'][$key]['oid'],$type);
 
-            $list['data'][$key]['type']     = ($value['type']==1)?'课程':'套餐';
+            $list['data'][$key]['type']     = ($value['type']==1)?'课程':'班级';
             $list['data'][$key]['ctime']    = date('Y-m-d',$value['ctime']);
         }
         unset($val);

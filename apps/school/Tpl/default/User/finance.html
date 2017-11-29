@@ -6,13 +6,17 @@
 	    <include file="../User/_left" />
 	    <!--右-->
         <div class="jgpage_right">
-        	<div class="jgpage_right_tit mb50">独立财务账户</div>
-            <div class="jgpage_right_con showEdit" style="<php>if($data){</php>display: none;<php>}</php>">
-                <div class="text"><a href="javascript:;" class="retFinance">返回账户列表</a></a></div>
-            	<div class="txt">您可以填写并提交独立财务账户申请，我们的工作人员将在收到申请的15个工作日内审核您的申请并及时反馈，请耐心等待。</div>
+            <div class="jgpage_right_con showEdit" style="<php>if($data && !$verified){</php>display: none;<php>}</php>">
+                <if condition="!$verified"><div class="text"><a href="javascript:;" class="retFinance">返回账户列表</a></a></div></if>
+                <if condition="$verified['status'] eq -1">
+                    <div style="width: 810px;padding-bottom: 20px;text-align: center">
+                        <b style="color:red;">未通过审核，请修改资料后重新提交</b><php>if($verified['dis_reason']){</php><label>驳回理由：{$verified.dis_reason}</label><php>}</php>
+                    </div>
+                </if>
+                <div class="txt">您可以填写并提交独立财务账户申请，我们的工作人员将在收到申请的15个工作日内审核您的申请并及时反馈，请耐心等待。</div>
                 <div class="jgbox">
                 <form id="renzhengform" method="POST" action="" name="detail_form" onsubmit="return false;">
-                <php>if(!$verified || $verified['status'] != 0){</php>
+                <php>if(!$verified || $verified['status'] != 0 || $verified['status'] == -1){</php>
                 	<div class="jgformitem">
                     	<label><span>*</span>选择开户行:</label>
                         <select name="accounttype" id="accounttype" style="width:210px ;">
@@ -36,12 +40,12 @@
                     </div>
                     <div class="jgformitem">
                     	<label><span></span>申请理由:</label>
-                        <textarea class="jg_textarea" placeholder="奋进的高三生活~~~" id="reason" name="reason"></textarea>
+                        <textarea class="jg_textarea" placeholder="请输入申请理由" id="reason" name="reason">{$data.reason}</textarea>
                     </div>
                     <div class="jgformitem">
                     	<label><span>*</span>认证附件:</label>
                     	<div class="jgf_filed">
-					        {:W('Upload',array('inputname'=>'attach','attachIds'=>$verified['attachIds'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
+					        {:W('Upload',array('inputname'=>'attach','attachIds'=>$data['attach_id'], 'uploadType'=>'image', 'urlquery'=>'attach_type=feed_image&upload_type=image&thumb=1'))}
 					    </div>
                         <p>申请独立财务账户需提交一下材料：</p>
                         <p>营业执照、税务登记证、组织机构代码、对公账号相关信息、机构法人身份证复印件</p>
@@ -75,13 +79,13 @@
 		                	<php>if($verified['attachment']){</php>{$verified['attachment']}<php>}else{</php>无<php>}</php>
 		                </div>
 		                <div class="jgformitem">
-		                    <input  class="jg_btn"  type="submit" style="background: #ccc;width: 200px;" value="已申请,请等待审核">
+		                    <input  class="jg_btn"  type="submit" style="background: #ccc;border:0;width: 200px;" value="已申请,请等待审核">
 		                </div>
                 	<php>}</php>
                 </from>
                 </div>
             </div>
-            <div class="cent_r_box pb40 clearfix hideEidt" style="<php>if(!$data){</php>display: none;<php>}</php>">
+            <div class="cent_r_box pb40 clearfix hideEidt" <php>if(!$data['is_school'] || $verified){</php>style="display: none;"<php>}</php>>
                 <div class="box_block">
                     <table class="table_ye" cellpadding="0" cellspacing="1" bordercolor="#dddddd"border="1" width="100%">
                     <thead>
@@ -127,7 +131,7 @@ function saveFinance(){
 	if(!/^\d{16,19}$/.test(account)){notes('对公账号格式错误', 'failure');return false;}
 
 	if(!accountmaster){notes('请输入账号开户人', 'failure');return false;}
-	if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(accountmaster))){notes('账号开户人格式错误', 'failure');return false;}
+	//if(!/^[\u4E00-\u9FA5·]{2,}$/.test($.trim(accountmaster))){notes('账号开户人格式错误', 'failure');return false;}
 
 	if(!tel_num){notes('请输入联系电话', 'failure');return false;}
 	if(!/^[\d\-]{7,11}$/.test(tel_num)){notes('联系电话格式错误', 'failure');return false;}

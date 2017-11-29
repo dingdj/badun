@@ -25,10 +25,10 @@
                                     <li data-value="最受欢迎" onclick =order("hot")>最受欢迎</li>
                                 </ul>
                             </div>
-                            <b class="item nav-active" data-type="1"  vtype = '1'><span>在线直播</span></b>
-                            <b class="item" data-type="2"  vtype = '2'><span>线下班课</span></b>
-                            <b class="item" data-type="3"  vtype = '3'><span>视频课程</span></b>
-                            <b class="item" data-type="4"  vtype = '4'><span>1对1课程</span></b>
+                            <b class="item nav-active" data-type="1"  vtype = '1'><span>直播课程</span></b>
+                            <b class="item" data-type="3"  vtype = '3'><span>录播课程</span></b>
+                            <b class="item" data-type="2"  vtype = '2'><span>线下课程</span></b>
+                            <!--<b class="item" data-type="4"  vtype = '4'><span>1对1课程</span></b>-->
                         </div>
                     </div>
                 </div>
@@ -63,6 +63,40 @@
                     <div class="page">
                         <div class="pagebox live" data-type="2">
                             {$live.html}
+                        </div>
+                    </div>
+                    <php>}else{</php>
+                    <ul class="online-course" >
+                    <li class="item" style="height: 148px;">暂无课程</li>
+                    </ul>
+                    <php>}</php>
+                </div>
+
+                <div class="video_all" style="display: none;">
+                    <ul class="online-course">
+                    <php>if($course['data']){</php>
+                        <foreach name="course.data" item="l" key="k">
+                            <li class="item">
+                                <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}"><img src="{:getCover($l['cover'],180,180)}" alt="{$l.video_title}"></a>
+                                <div class="info">
+                                    <div class="new-title"><a class="title" href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></div>
+                                    <ul class="course-info">
+                                    <li>课时长度：{$l.section_num}课时</li>
+                                    <li>班级人数：{$l.video_order_count}人</li>
+                                    <li>上架时间：<span>{:date("Y-m-d H:i",$l['listingtime'])}</span></li>
+                                    <li>上课方式：在线授课（支持手机观看）</li>
+                                    </ul>
+                                    <div class="button-box">
+                                        <div class="price">课程总价：<php>  if( $l['price']  == 0 ||  $l['is_charge'] == 1)  {</php>  <span   style = "color : #56b02a;"> 免费</span>   <php>  } else {</php>  <span>￥ {$l['price']}</span> <php>}</php> </div>
+                                        <div > <span   style = "color : #f63;"    id ="charge_video"  onclick = "buycoursevideo({$l['id']},{$l['price']})"> 立即购买 </span>   </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </foreach>
+					</ul>
+                    <div class="page">
+                        <div class="pagebox course" data-type="1">
+                            {$course.html}
                         </div>
                     </div>
                     <php>}else{</php>
@@ -108,42 +142,7 @@
                     <php>}</php>
                 </div>
 
-
-                <div class="video_all" style="display: none;">
-                    <ul class="online-course">
-                    <php>if($course['data']){</php>
-                        <foreach name="course.data" item="l" key="k">
-                            <li class="item">
-                                <a href="{:U('classroom/Video/view',array('id'=>$l['id']))}"><img src="{:getCover($l['cover'],180,180)}" alt="{$l.video_title}"></a>
-                                <div class="info">
-                                    <div class="new-title"><a class="title" href="{:U('classroom/Video/view',array('id'=>$l['id']))}">{$l.video_title}</a></div>
-                                    <ul class="course-info">
-                                    <li>课时长度：{$l.section_num}课时</li>
-                                    <li>班级人数：{$l.video_order_count}人</li>
-                                    <li>上架时间：<span>{:date("Y-m-d H:i",$l['listingtime'])}</span></li>
-                                    <li>上课方式：在线授课（支持手机观看）</li>
-                                    </ul>
-                                    <div class="button-box">
-                                        <div class="price">课程总价：<php>  if( $l['price']  == 0 ||  $l['is_charge'] == 1)  {</php>  <span   style = "color : #56b02a;"> 免费</span>   <php>  } else {</php>  <span>￥ {$l['price']}</span> <php>}</php> </div>
-                                        <div > <span   style = "color : #f63;"    id ="charge_video"  onclick = "buycoursevideo({$l['id']},{$l['price']})"> 立即购买 </span>   </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </foreach>
-					</ul>
-                    <div class="page">
-                        <div class="pagebox course" data-type="1">
-                            {$course.html}
-                        </div>
-                    </div>
-                    <php>}else{</php>
-                    <ul class="online-course" >
-                    <li class="item" style="height: 148px;">暂无课程</li>
-                    </ul>
-                    <php>}</php>
-                </div>
-
-                <div class="video_all"  style="display: none;">
+                <!--<div class="video_all"  style="display: none;">
                     <ul class="meet-course">
                         <php>if($meetone['data']){</php>
                         <foreach name="meetone.data" item="l" key="k">
@@ -173,7 +172,7 @@
                         <li class="item" style="height: 148px;">暂无课程</li>
                     </ul>
                     <php>}</php>
-                </div>
+                </div>-->
 
             </div>
         </div>
@@ -274,14 +273,14 @@ function buycoursevideo(vid,money,playtype) {
         $('.mask').show();
         return false;
     }
-    if(rechange_base>0 && money%rechange_base != 0){
+    /*if(rechange_base>0 && money%rechange_base != 0){
         if(rechange_base == 1){
             ui.error('购买金额必须为整数');
         }else{
             ui.error('购买金额必须为'+rechange_base+'的倍数');
         }
         return false;
-    }
+    }*/
 
     var mount_url = "{$_GET['mid']}";
     $.post(U("classroom/PayVideo/checkPay"),{check_type:check_type,vid:vid,money:money},function(data){
@@ -384,7 +383,7 @@ function ajaxBang(_this,inputType){
         dataType:"json",
         success:function(data){
 			try{
-				var data = JSON.param(data);
+				var data = JSON.parse(data);
 			}catch(e){}
             appendHtml(data,_this);
         }

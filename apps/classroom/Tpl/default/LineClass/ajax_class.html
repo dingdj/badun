@@ -8,7 +8,7 @@
 				</span>
 				<span class="txt">
 					<h4>{:msubstr(t($vo['course_name']),0,10,'utf-8',true)}</h4>
-					<if condition="$vo['course_price'] eq 0"><b style="color: #56b02a;">免费 </b><else/><b>¥{$vo['course_price']}</b></if>
+					<if condition="$vo['price'] eq 0"><b style="color: #56b02a;">免费 </b><else/><b>¥{$vo['price']}</b></if>
 					<p>{:date('Y-m-d',$vo['listingtime'])}～{:date('Y-m-d',$vo['uctime'])}</p>
 					<p>{$vo['teach_areas'] | default='无限制'}</p>
 				</span>

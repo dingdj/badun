@@ -2,28 +2,22 @@
 <style type="text/css">
 	#video .common-header{display: none;}
 </style>
-<div class="wrap" style="width:100%;">
-    <iframe name="videoBox" id="video" src="{$playback_url}" width="100%"  height="800" frameborder="0" scrolling="no"></iframe>
+
+<div class="content">
+    <div class="wrap" style="padding-bottom: 20px">
+        <div class="content-place">
+            <ul>
+                <li>
+                    <a href="/">首页</a><span>&gt;</span>
+                    <a href="{:U('classromm/Video/index')}">课程</a><span>&gt;</span>
+                    <a href="javascript:;">{$liveInfo['video_title']} 直播回放</a>
+                </li>
+            </ul>
+        </div>
+        <iframe name="videoBox" id="video" src="{$playback_url}" width="100%"  height="800" frameborder="0" scrolling="no"></iframe>
+    </div>
 </div>
+
 <!--footer-->
 <include file="__THEME__/public_footer" />
 <!-- 遮罩层 -->
-<if condition="$header eq 5">
-    <script>
-    $(function(){
-    	var iframe = document.getElementById("video");
-        if (!/*@cc_on!@*/0) {
-		    iframe.onload = function(){
-		        $(".common-header",document.frames("videoBox").document).remove();
-		    };
-		} else {
-		    iframe.onreadystatechange = function(){
-		        if (iframe.readyState == "complete"){
-		            alert("Local iframe is now loaded.");
-		        }
-		    };
-		}
-    })
-
-    </script>
-</if>

@@ -224,4 +224,17 @@ class SchoolModel extends Model {
         return $new_uid;
     }
 
+    /**
+     * @name 获取精选机构信息
+     * @$field  所需字段
+     * @$order  排序条件
+     * @$limit  数据条数
+     * @return  array  讲师信息集合
+     */
+    public function getBestSchoolInfo($field,$order = 'ctime desc',$limit = 12){
+        $map = array('status'=>1,'is_del'=>0,'is_best'=>1);
+        $school_info = $this->where($map)->field($field)->order($order)->limit($limit)->select();
+        return $school_info;
+    }
+
 }

@@ -11,9 +11,9 @@ $menu = array(
 		'finance'   => '财务',
 //		'exam'      => '考试系统',
 //		'live'      => '直播系统',
-		'mall'      => '积分商城',
+		'mall'      => '商城',
 		'school'    => '机构',
-//		'apps'		=> L('PUBLIC_APPLICATION'),
+		//'apps'		=> L('PUBLIC_APPLICATION'),
 //		'extends'	=> '扩展',//L('PUBLIC_EXPANSION'),
 	),
 	//后台菜单配置
@@ -29,7 +29,7 @@ $menu = array(
 				'站点配置'      => 'admin/Config/site',//L('PUBLIC_WEBSITE_SETTING')
                 '首页配置'      => 'admin/Config/setIndex',
                 '注册配置'      => 'admin/Config/register',//L('PUBLIC_REGISTER_SETTING')
-                '导航条配置'      => 'admin/Config/nav',//L('PUBLIC_NAVIGATION_SETTING')
+                '头部导航配置'  => 'admin/Config/nav',//L('PUBLIC_NAVIGATION_SETTING')
                 '底部导航管理' 	=> 'admin/Single/index',
                 '权限菜单配置'  => 'admin/Apps/setPermNode',
                 '群发消息'      => 'admin/Home/message',
@@ -37,6 +37,7 @@ $menu = array(
 				//'邀请配置'    => 'admin/Config/invite',
 				'短信接口配置'  => 'admin/Config/sms',
 				'邮件配置'      => 'admin/Config/email',//L('PUBLIC_EMAIL_SETTING')
+				'微信配置'      => 'admin/Config/weixin',//L('PUBLIC_EMAIL_SETTING')
 				'附件配置'      => 'admin/Config/attach',//L('PUBLIC_FILE_SETTING')
                 '附件管理'	    =>	'admin/Content/attach',//L('PUBLIC_FILE_MANAGEMENT')
                 'APP下载地址'   => 'admin/Config/appConfig',
@@ -51,9 +52,9 @@ $menu = array(
 			),
             '支付管理' => array(
                // '银联配置'      =>  'admin/Config/unionpay',
-                '支付宝配置'    =>  'admin/Config/alipay',
+                '支付宝支付配置'    =>  'admin/Config/alipay',
                 '微信支付配置'  =>  'admin/Config/wxpay',
-//                '通用支付配置'  =>  'admin/Config/wxpay',
+                '通用支付配置'  =>  'admin/Config/payConfig',
                 '申请退款配置'  =>  'admin/Config/refundConfig',
             ),
             '应用及插件' => array(
@@ -63,18 +64,18 @@ $menu = array(
                 '第三方登录'    => "admin/Addons/admin?pluginid=4",
             ),
             '其他配置'  => array(
-                '存储及播放器配置'     => 'classroom/AdminConfig/index',
-                '直播配置'       => 'live/AdminConfig/baseConfig',
-                '平台分成比例配置' => 'admin/Config/divideIntoConfig',
+                '存储配置'     	=> 'classroom/AdminConfig/index',
+                '直播配置'      => 'live/AdminConfig/baseConfig',
+                '分成配置' 		=> 'admin/Config/divideIntoConfig',
             ),
 		),
         'statistics'=> array(
             "统计管理"	=>	array(
                 '访问统计'	   =>	'admin/Home/visitorCount',//L('PUBLIC_VISIT_CALCULATION')
-                '学员活跃统计'  => 'admin/Home/studentActive',
+                '活跃度统计'  => 'admin/Home/studentActive',
                 '学员信息统计'  => 'admin/Home/usersOrder',
                 '订单统计'     => 'admin/Home/allOrder',
-                '订单收益统计' => 'admin/Home/vipOrder',
+                '收益统计' => 'admin/Home/vipOrder',
 				'学习记录统计' => 'classroom/AdminLearnRecord/index'
             ),
         ),
@@ -83,7 +84,7 @@ $menu = array(
     		L('PUBLIC_USER')				=>	array(
     			'用户管理'        =>	'admin/User/index',//L('PUBLIC_USER_MANAGEMENT')
     			'用户组管理'      =>	'admin/UserGroup/index',//L('PUBLIC_USER_GROUP_MANAGEMENT')
-    			'用户认证'        => 'admin/User/verifyCategory',
+    			'讲师认证'        => 'admin/User/verified',
                 '讲师管理'        => 'classroom/AdminTeacher/index',
                 //'用户学币管理' => 'classroom/AdminLearnc/index',
             ),
@@ -91,33 +92,29 @@ $menu = array(
     	
     	'content'	=> array(
             '营销卡管理' => array(
-                '用户卡券管理'  => 'classroom/AdminUserCard/index',
-                '课程实体卡管理'    => 'classroom/AdminEntityCard/index',
-                '课程优惠券管理'=> 'classroom/AdminVideoCoupon/index',
+                '卡券领取管理'  => 'classroom/AdminUserCard/index',
+                '课程卡管理'    => 'classroom/AdminCourseCard/index',
+                '优惠券管理'=> 'classroom/AdminVideoCoupon/index',
                 '会员卡管理'    => 'classroom/AdminVipCard/index',
                 '打折卡管理'    => 'classroom/AdminDiscount/index',
-                '充值卡管理'    => 'classroom/AdminRecharge/index',
+                //'充值卡管理'    => 'classroom/AdminRechargeCard/index',
+                '实体卡管理'    => 'classroom/AdminEntityCard/index',
             ),
             '内容管理' => array(//L('PUBLIC_CONTENT_MANAGEMENT')
                 '资讯管理'		=> 'admin/Topic/index',
                 '小组管理'		=>	'group/Admin/index',
-                '咨询管理'      =>	'admin/Doubt/index',
+                //'咨询管理'      =>	'admin/Doubt/index',
                 '公告管理'      =>	'admin/Notice/index',
                 '私信管理'	    =>	'admin/Content/message',//L('PUBLIC_PRIVATE_MESSAGE_MANAGEMENT')
                 '反馈管理'      =>	'admin/Suggest/index',
                 '系统消息管理'  =>	'admin/SystemMessage/index',
 //                '标签管理'		=>  'admin/Home/tag',//L('PUBLIC_TAG_MANAGEMENT')
-                '搜索关键字管理' =>  'admin/SearchKeywords/index',
+                //'搜索关键字管理' =>  'admin/SearchKeywords/index',
                 //'活动管理'		=>	'event/Admin/index',
 				'验证码管理'    =>	'admin/Verify/index',
             ),
-            '积分管理' => array(
-                '积分配置'       => 'mall/AdminGlobalConfig/credit',
-                '平台积分充值比例配置' => 'admin/Config/rechargeIntoConfig',
-                '用户积分管理'    => 'mall/AdminGlobal/index',
-            ),
             '等级头衔管理' => array(
-                'VIP等级'       => 'classroom/AdminVip/index',
+                '会员等级'       => 'classroom/AdminVip/index',
                 //'机构等级'      => 'classroom/AdminSchoolVip/index',
                 '讲师头衔'      => 'classroom/AdminTeacherVip/index',
             ),
@@ -125,39 +122,60 @@ $menu = array(
 //                '众筹申请管理'     => 'classroom/AdminCrow/index',
 //                '众筹列表'     => 'classroom/AdminCrow/crowList',
 //            ),
+			'财务配置' => array(
+				'积分规则配置'       => 'mall/AdminGlobalConfig/credit',
+				'余额&积分配置' => 'admin/Config/rechargeIntoConfig',
+				'会员模式管理' => 'admin/Config/vipPatternConfig',
+			),
     	),
 
         'classroom' => array(
-            '内容管理' => array(
-                '课程管理'          => 'classroom/AdminVideo/index',
-                '机构课程挂载管理'  => 'classroom/AdminVideoMount/index',
-                '套餐管理'          => 'classroom/AdminAlbum/index',
-                '机构套餐挂载管理'  => 'classroom/AdminAlbumMount/index',
-                '问答管理'          =>'classroom/AdminWenda/index',
-                '笔记管理'          => 'classroom/AdminNote/index',
-                '提问管理'          => 'classroom/AdminQuestion/index',
-                '点评管理'          => 'classroom/AdminReview/index',
-                // '约课管理' 		    => 'classroom/AdminCourse/index',
-                '文库管理'          => 'classroom/AdminLibrary/index',
-//	 			'课程卡管理'         => 'classroom/AdminVideoCard/index',
-                '分类配置'          => 'classroom/AdminClassroomCategory/index',
-            ),
-            '直播系统' => array(
-                '直播间管理'         => 'live/AdminLive/index',
-                '机构直播课程挂载管理' => 'live/AdminLiveMount/index',
+			'点播课管理' => array(
+				'点播课管理'         => 'classroom/AdminVideo/index',
+			),
+			'直播课管理' => array(
+				'直播间管理'         => 'live/AdminLive/index',
 //                '平台剩余并发情况'   => 'live/AdminArrCourse/index',
 //                '实际并发数'         => 'live/AdminActualCon/index',
 //                '并发量管理'         =>	'live/AdminConcurrent/index',
 //                '并发量折扣管理'     =>'live/AdminConPrice/index',
 //                '排课截止时间管理'   => 'live/AdminLivetime/index',
 //					'直播间管理2' => 'live/Admin/index',
+			),
+			'班级管理' => array(
+				'班级管理'           => 'classroom/AdminAlbum/index',
+			),
+            '线下课管理' => array(
+                '线下课管理'         => 'classroom/AdminLineClass/index',
             ),
-            '考试系统' => array(
+            '机构挂载管理' => array(
+                '点播挂载管理'  => 'classroom/AdminVideoMount/index',
+                '直播挂载管理' => 'live/AdminLiveMount/index',
+                '班级挂载管理'  => 'classroom/AdminAlbumMount/index',
+			),
+			/**
+            '考试管理' => array(
                 '题库管理'          => 'exam/AdminQuestion/index',
                 '试卷管理'          => 'exam/AdminPaper/index',
                 '考试管理'          => 'exam/AdminExam/index',
                 '用户考试记录'      => 'exam/AdminUserExam/index',
                 '考试分类配置'   => 'exam/AdminCategory/index',
+            ),**/
+			'考试管理' => array(
+				'分类管理' => 'exams/AdminCategory/subject',
+				'考点管理' => 'exams/AdminPoint/index',
+				'试题管理' => 'exams/AdminQuestion/index',
+				'试卷管理' => 'exams/AdminPaper/index',
+				'成绩管理' => 'exams/AdminExamsUser/index'
+			),
+            '内容管理' => array(
+                '问答管理'          =>'classroom/AdminWenda/index',
+                '笔记管理'          => 'classroom/AdminNote/index',
+                '提问管理'          => 'classroom/AdminQuestion/index',
+                '点评管理'          => 'classroom/AdminReview/index',
+                '文库管理'          => 'classroom/AdminLibrary/index',
+//	 			'课程卡管理'         => 'classroom/AdminVideoCard/index',
+                '分类配置'          => 'classroom/AdminClassroomCategory/index',
             ),
         ),
 
@@ -165,12 +183,15 @@ $menu = array(
             '订单与账户' => array(
                 '订单管理'         => 'classroom/AdminOrder/index',
                 '申请退款管理'     =>  'classroom/AdminApplirefund/index',
-                //     '提现申请'  => 'classroom/AdminWithdraw/index',
+                '提现申请'         => 'classroom/AdminWithdraw/index',
                 '卡号列表'         => 'classroom/AdminCard/index',
+                '支付记录'     => 'classroom/AdminRecharge/index',
             ),
-            '用户分成' => array(
-                '用户分成管理'     => 'classroom/AdminUserSplit/index',
-                '用户分成明细'     => 'classroom/AdminSplit/splitVideo',
+            '财务明细管理' => array(
+                '余额管理' => 'classroom/AdminLearnc/index',
+                '分成管理'     => 'classroom/AdminUserSplit/index',
+                '分成明细'     => 'classroom/AdminSplit/splitVideo',
+                '积分管理'    => 'mall/AdminGlobal/index',
             ),
         ),
 
@@ -178,34 +199,34 @@ $menu = array(
             '机构' => array(
                 '机构管理'        => 'school/AdminSchool/index',
                 '独立域名管理'	  => 'school/AdminDomaiName/index',
-                '视频空间管理' 	  => 'school/AdminVideoSpace/index',
+                //'视频空间管理' 	  => 'school/AdminVideoSpace/index',
                 '独立财务账号管理' => 'school/AdminFinance/index',
             ),
             '内容管理' => array(
-                '课程管理'        => 'school/AdminVideo/index',
-                '直播间管理'      => 'school/AdminLive/index',
-                '套餐管理'        => 'school/AdminAlbum/index',
-                '讲师管理'        => 'school/AdminTeacher/index',
+                '点播课管理'        => 'school/AdminVideo/index',
+                '直播课管理'      => 'school/AdminLive/index',
+                '班级课管理'        => 'school/AdminAlbum/index',
                 '线下课管理'      => 'school/AdminLineClass/index',
             ),
             '用户'=>	array(
-                '用户管理'        =>	'school/AdminUser/index',
-                '用户组管理'      =>	'school/AdminUserGroup/index',//L('PUBLIC_USER_GROUP_MANAGEMENT')
+                '用户管理'        => 'school/AdminUser/index',
+                //'用户组管理'      => 'school/AdminUserGroup/index',//L('PUBLIC_USER_GROUP_MANAGEMENT')
+                '讲师管理'        => 'school/AdminTeacher/index',
             ),
             '数据统计' => array(
                 '数据看板'        => 'school/AdminStatistics/showDataCount',
-                '学员活跃统计'    => 'school/AdminStatistics/studentActive',
-                '订单收益统计'    => 'school/AdminStatistics/vipOrder',
+                '活跃度统计'    => 'school/AdminStatistics/studentActive',
+                '收益统计'    => 'school/AdminStatistics/vipOrder',
                 '订单统计'        => 'school/AdminStatistics/allOrder',
                 '学习记录统计'    => 'school/AdminLearnRecord/index'
             ),
             '营销卡管理' => array(
-                '用户卡券管理'    => 'school/AdminUserCard/index',
-                '课程实体卡管理'  => 'school/AdminEntityCard/index',
-                '课程优惠券管理'  => 'school/AdminVideoCoupon/index',
-				'打折卡管理'      => 'school/AdminDiscount/index',
-//                '会员卡管理'      => 'school/AdminVipCard/index',
-//                '充值卡管理'      => 'school/AdminRecharge/index',
+				'卡券领取管理'  => 'school/AdminUserCard/index',
+				'课程卡管理'    => 'school/AdminCourseCard/index',
+				'优惠券管理'    => 'school/AdminVideoCoupon/index',
+				'打折卡管理'    => 'school/AdminDiscount/index',
+				//'充值卡管理'    => 'classroom/AdminRechargeCard/index',
+				'实体卡管理'    => 'school/AdminEntityCard/index',
             ),
             '订单与账户' => array(
                 '订单管理'    => 'school/AdminOrder/index',
@@ -218,12 +239,13 @@ $menu = array(
         'mall' => array(
             '商城管理' => array(
                 '商品管理'       => 'mall/AdminGoods/index',
-                '商品订单管理'       => 'mall/AdminGoodsOrder/index',
+                '订单管理'       => 'mall/AdminGoodsOrder/index',
                 '收货地址管理'       => 'mall/AdminGoodsAddress/index',
                 //'商品评论管理' => 'mall/AdminGoodsComment/index',
                 '商品分类配置'    => 'mall/AdminGoodsCate/index',
             ),
         ),
+        
 
 //    	'task'	=> array(
 //			L('PUBLIC_TASK_INFO')			=> array(
@@ -234,12 +256,12 @@ $menu = array(
 //				'任务配置'				=> 'admin/Task/taskConfig'
 //	 		)
 //	 	),
-//    	'apps'	=> array(
-//			L('PUBLIC_APP_MANAGEMENT')			=>	array(
-//	    		L('PUBLIC_INSTALLED_APPLIST')	=>	'admin/Apps/index',
-//	    		L('PUBLIC_UNINSTALLED_APPLIST')	=>	'admin/Apps/install',
-//	    	),
-//	 	),
+   	'apps'	=> array(
+			L('PUBLIC_APP_MANAGEMENT')			=>	array(
+	    		L('PUBLIC_INSTALLED_APPLIST')	=>	'admin/Apps/index',
+	    		L('PUBLIC_UNINSTALLED_APPLIST')	=>	'admin/Apps/install',
+	    	),
+	 	),
 //	    'extends'		=> array(
 //	 		'插件管理' => array(
 //

@@ -46,7 +46,7 @@
 <div class="buyOperating">
 	<div class="w-close"><a class="mr15 mt5">×</a></div>
 	<div class="w-notice">
-    	<h4>提示：该套餐需要支付<em class="coin_num_l">{$data['mzprice']['overplus']}</em>学币，您当前账户余额为<em class="coin_num_l">{$data['balance']['balance']}</em>学币。是否继续？</h4>
+    	<h4>提示：该班级需要支付<em class="coin_num_l">{$data['mzprice']['overplus']}</em>学币，您当前账户余额为<em class="coin_num_l">{$data['balance']['balance']}</em>学币。是否继续？</h4>
 	</div>
     <div class="agreement">
     	<a><span id="protocol" class="agree"></span>我已经阅读并同意</a>
@@ -248,8 +248,8 @@ var arr=['他妈的', '你妈的', '傻×', '衮蛋', '你妹儿'];
           $(this).siblings(".qa-tr-up").css({"display":"inline","color":"#333333"}); //显示js-qa-tr-num同级的qa-tr-up
           var show_id = $(this).attr('show_id');
           var stype = $(this).attr('type');
-          eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:套餐;
-          eval('var kzid='+stype+'_kzid');  //课程或者套餐ID
+          eval('var kztype='+stype+'_kztype');  //数据分类 1:课程;2:班级;
+          eval('var kzid='+stype+'_kzid');  //课程或者班级ID
           eval('var type='+stype+'_type');  //分类类型 1:提问,2:点评,3:笔记
          // eval('var limit='+stype+'_limit');  //查询条数
           eval('var page='+stype+'_page');  //当前分页
@@ -375,7 +375,7 @@ var buyOperat = function(id,type){
 		return;
 	}
 	if($(".agree").size() < 1){
-		notes("购买套餐必须同意《收费课程服务协议》",'failure');
+		notes("购买班级必须同意《收费课程服务协议》",'failure');
 		return;
 	}
 	var id = '<?php echo $_GET["id"]; ?>';

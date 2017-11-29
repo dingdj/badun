@@ -33,38 +33,23 @@ class LineClassAction extends CommonAction {
     private function view_info(){
         $id = intval($_GET ['id']);
         $map ['course_id'] = $id;
-        $map ['is_activity'] = 1;
-        $map ['is_del'] = 0;
-        $map ['uctime'] = array('gt', time());
 
-        $data = $this->video->where($map)->find();
+        $data = D('ZyLineClass')->getLineclassById($id);
         if (!$data) {
             $this->assign('isAdmin', 1);
-            $this->error('课程不存在~~~~!!');
+            $this->error('课程不存在。。');
         }
         //添加围观人数
         $this->video->where($map)->setInc('view_nums');
-        //讲师信息
-        $teacher = M("zy_teacher")->where("id=" . $data["teacher_id"])->find();
-        if ($teacher) {
-            $data['user'] = $teacher;
-            //讲师等级
-            $teacher_title = M('zy_teacher_title_category')->where('zy_teacher_title_category_id=' . $data['user']['title'])->find();
-            $data['user']['teacher_title'] = $teacher_title['title'];
-        }
         // 是否已购买
         $data['is_buy'] = M('zy_order_teacher')->where(array('uid'=>$this->mid, 'video_id'=>$id))->getField('pay_status') ? : 0;
 
-        $mhm_id = $data['mhm_id'];
-        if ($mhm_id) {
-            //机构信息
-            $mhmData = model('School')->getSchoolInfoById($mhm_id);
-            //机构域名
-            $mhmData['domain'] = getDomain($mhmData['doadmin'],$mhmData['school_id']);
-        }
-        //线下课价格
-        $data['t_price'] = $data['course_price'];
-        $data['mzprice']['price'] = getPrice($data,$this->mid);
+        //机构信息
+        $schoolMap['id'] = $data['mhm_id'];
+        $mhmData = model('School')->getSchoolFindStrByMap($schoolMap);
+        //机构域名
+        $mhmData['domain'] = getDomain($mhmData['doadmin'],$mhmData['school_id']);
+
         //查看购买状态
         $tid = M('zy_teacher')->where('uid =' .$this->mid)->getField('id');
         if ($tid != null  &&  $tid == $data['teacher_id']) {
@@ -78,11 +63,30 @@ class LineClassAction extends CommonAction {
             $mybuy = 1;
         }
 
+        //讲师信息
+        $teacher = M("zy_teacher")->where("id=" . $data["teacher_id"])->find();
+        if ($teacher) {
+            $data['user'] = $teacher;
+            //讲师等级
+            $teacher_title = M('zy_teacher_title_category')->where('zy_teacher_title_category_id=' . $data['user']['title'])->find();
+            $data['user']['teacher_title'] = $teacher_title['title'];
+        }
         //讲师联系方式
         $contactWay = model('User')->where('uid='.$data['user']['uid'])->field('phone,email')->find();
 
-		$url = U('classroom/Video/view',array('id'=>$id));
-        $this->assign ( 'url', $url );
+        if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+            //微信分享配置
+            tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'core', 'OpenSociax', 'jssdk.php')));
+            $weixin = model('Xdata')->get('admin_Config:weixin');
+            $jssdk = new JSSDK($weixin['appid'], $weixin['appsecret']);
+            $signPackage = $jssdk->GetSignPackage();
+
+            $this->assign('is_wx',true);
+            $this->assign('signPackage', $signPackage);
+        }
+
+        $url = U('classroom/LineClass/view', array('id' => $id));
+        $this->assign('url', $url);
         $this->assign ( 'uid', $this->mid );
         $this->assign ( 'mybuy', $mybuy );
         $this->assign ( 'vid', $id );
@@ -183,7 +187,7 @@ class LineClassAction extends CommonAction {
             foreach ( $data ['data'] as $key => &$value ) {
                 //线下课价格
                 $value['t_price'] = $value['course_price'];
-                $value['course_price'] = getPrice($value,$this->mid);
+                $value['price'] = getPrice($value,$this->mid,4);
                 $value['teacher_uid'] = D('ZyTeacher')->where('id='.$value['teacher_id'])->getField('uid');
                 $value['teach_areas'] = D('ZyTeacher')->where('id='.$value['teacher_id'])->getField('Teach_areas');
                 // 是否已购买
@@ -326,7 +330,7 @@ class LineClassAction extends CommonAction {
             foreach ( $data ['data'] as $key => &$value ) {
                 //线下课价格
                 $value['t_price'] = $value['course_price'];
-                $value['course_price'] = getPrice($value,$this->mid);
+                $value['price'] = getPrice($value,$this->mid);
                 $value['teacher_uid'] = D('ZyTeacher')->where('id='.$value['teacher_id'])->getField('uid');
                 $value['teach_areas'] = D('ZyTeacher')->where('id='.$value['teacher_id'])->getField('Teach_areas');
                 // 是否已购买

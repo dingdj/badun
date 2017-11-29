@@ -10,7 +10,7 @@ class ZyGuessYouLikeModel extends Model {
 
     /**
      *记录猜你喜欢的类型及分类id
-     * @param $type 0点播1套餐2直播3讲师
+     * @param $type 0点播1班级2直播3讲师
      * @param $cate_id 分类全路径第一个id极好的
      * @param $uid 用户id
      * @return 状态 ture为成功
@@ -39,7 +39,7 @@ class ZyGuessYouLikeModel extends Model {
     }
 
     /**
-     * @param $type 类型 0点播1套餐2直播3讲师
+     * @param $type 类型 0点播1班级2直播3讲师
      * @param $uid 用户id
      * @return $data
      */
@@ -71,12 +71,7 @@ class ZyGuessYouLikeModel extends Model {
             foreach ($data as $key => $val){
                 $data[$key]['video_intro']  = mb_substr(t($val['video_intro']),0,50,'utf-8' );
                 $data[$key]['mhmName']      = model('School')->getSchooldStrByMap(array('id'=>$val['mhm_id']),'title');
-                if($val['type'] == 1){
-                    $data[$key]['money_data']   = getPrice ( $val, $this->mid, true, true );
-                }else{
-                    $data[$key]['money_data']['oriPrice'] = $val['t_price'];
-                    $data[$key]['money_data']['price'] = $val['t_price'];
-                }
+                $data[$key]['mzprice']      = getPrice ( $val, $uid, true, true );
             }
         }else if($type == 3){
             $map['is_del']      = 0;

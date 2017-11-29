@@ -4,7 +4,7 @@
 <div class="buyOperating">
     <div class="w-close"><a class="mr15 mt5">×</a></div>
     <div class="w-notice">
-        <h4>提示：该套餐需要支付<em id="total_price" class="coin_num_l">{$merge_video_list['total_price']?:0}</em>学币，您当前账户余额为<em class="coin_num_l">{$user_info['balance']?:0}</em>学币。是否继续？</h4>
+        <h4>提示：该班级需要支付<em id="total_price" class="coin_num_l">{$merge_video_list['total_price']?:0}</em>学币，您当前账户余额为<em class="coin_num_l">{$user_info['balance']?:0}</em>学币。是否继续？</h4>
     </div>
     <div class="agreement">
         <a><span id="protocol" class="agree"></span>我已经阅读并同意</a>
@@ -186,7 +186,7 @@ var countPrice = 0;
 	}
 	function buyVideos(){
 		if($('.agreement .agree').size() < 1){
-	        notes("购买套餐必须同意《收费课程服务协议》",'failure');
+	        notes("购买班级必须同意《收费课程服务协议》",'failure');
 	        return;
 	    }
         var vids = new Array();

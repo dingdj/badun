@@ -14,29 +14,23 @@ class AdminSchoolAction extends AdministratorAction
     public function _initialize()
     {
 
-		if(is_admin($this->mid)){
-			$this->pageTitle['index']       = '机构列表';
-			$this->pageTab[] = array('title'=>'机构列表','tabHash'=>'index','url'=>U('school/AdminSchool/index'));
-		}else{
-			$this->pageTitle['index']       = '我的机构';
-			$this->pageTab[] = array('title'=>'我的机构','tabHash'=>'index','url'=>U('school/AdminSchool/index'));
-            $this->pageTitle['teacherVerify']      = '待审核讲师列表';
-            $this->pageTab[] = array('title'=>'待审核讲师列表','tabHash'=>'teacherVerify','url'=>U('school/AdminSchool/teacherVerify'));
-		}
+        $this->pageTitle['index']       = '已审';
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('school/AdminSchool/index'));
+
 
         if(is_admin($this->mid)){
-            $this->pageTitle['verify']       = '机构认证审核列表';
-            $this->pageTab[] = array('title'=>'机构认证审核列表','tabHash'=>'verify','url'=>U('school/AdminSchool/verify'));
-            $this->pageTitle['editVerify']  = '机构信息审核列表';
-            $this->pageTab[] = array('title'=>'机构信息审核列表','tabHash'=>'editVerify','url'=>U('school/AdminSchool/editVerify'));
-            $this->pageTitle['divideVerify']  = '机构与挂载机构分成比例审核列表';
-            $this->pageTab[] = array('title'=>'机构与挂载机构分成比例审核列表','tabHash'=>'divideVerify','url'=>U('school/AdminSchool/divideVerify'));
+            $this->pageTitle['verify']       = '资格审核';
+            $this->pageTab[] = array('title'=>'资格审核','tabHash'=>'verify','url'=>U('school/AdminSchool/verify'));
+            $this->pageTitle['editVerify']  = '信息更新审核';
+            $this->pageTab[] = array('title'=>'信息更新审核','tabHash'=>'editVerify','url'=>U('school/AdminSchool/editVerify'));
+            $this->pageTitle['divideVerify']  = '分成比例审核';
+            $this->pageTab[] = array('title'=>'分成比例审核','tabHash'=>'divideVerify','url'=>U('school/AdminSchool/divideVerify'));
 //            $this->pageTitle['buyideVerify']  = '机构与购买机构分成比例审核列表';
 //            $this->pageTab[] = array('title'=>'机构与购买机构分成比例审核列表','tabHash'=>'buyideVerify','url'=>U('school/AdminSchool/buyideVerify'));
 //            $this->pageTitle['pinclassVerify']  = '机构与销课者分成比例审核列表';
 //            $this->pageTab[] = array('title'=>'机构与销课者分成比例审核列表','tabHash'=>'pinclassVerify','url'=>U('school/AdminSchool/pinclassVerify'));
-            $this->pageTitle['addSchool']    = '添加机构';
-            $this->pageTab[] = array('title'=>'添加机构','tabHash'=>'addSchool','url'=>U('school/AdminSchool/addSchool'));
+            $this->pageTitle['addSchool']    = '添加';
+            $this->pageTab[] = array('title'=>'添加','tabHash'=>'addSchool','url'=>U('school/AdminSchool/addSchool'));
         }
         parent::_initialize();
 
@@ -68,6 +62,7 @@ class AdminSchoolAction extends AdministratorAction
 			$this->displayList($list);
 		}else{
 			$data = model('School')->getSchoolInfoById(is_school($this->mid));
+            $data['doadmin'] = $data['doadmin'] ? $data['doadmin'].".".$_SERVER["HTTP_HOST"] : "";
 			$this->assign($data);
 			$this->display('school');
 		}
@@ -395,6 +390,7 @@ class AdminSchoolAction extends AdministratorAction
         $data['status'] = $status;
         $data['cuid'] = intval($this->mid);
         $res = model('School')->where($map)->save($data);
+
         if($res){
             $return['status'] = 1;
             if($status == 1) {
@@ -419,7 +415,7 @@ class AdminSchoolAction extends AdministratorAction
                         // 删除微博信息
                         $feed_ids = model('Feed')->where('uid=' . $user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
                         model('Feed')->cleanCache($feed_ids);
-                        model('Notify')->sendNotify($user_group['uid'], 'admin_user_doverify_ok');
+                        model('Notify')->sendNotify($user_group['uid'], 'admin_school_doverify_ok');
 
                         unset($user_group);
                         unset($maps);
@@ -439,7 +435,7 @@ class AdminSchoolAction extends AdministratorAction
                         // 删除微博信息
                         $feed_ids = model('Feed')->where('uid=' . $user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
                         model('Feed')->cleanCache($feed_ids);
-                        model('Notify')->sendNotify($user_group['uid'], 'admin_user_doverify_ok');
+                        model('Notify')->sendNotify($user_group['uid'], 'admin_school_doverify_ok');
 
                         unset($user_group);
                         unset($maps);
@@ -474,7 +470,7 @@ class AdminSchoolAction extends AdministratorAction
                         $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
                         model('Feed')->cleanCache($feed_ids);
 
-                        model('Notify')->sendNotify($user_group['uid'],'admin_user_doverify_reject', $rejectInfo);
+                        model('Notify')->sendNotify($user_group['uid'],'admin_school_doverify_reject', $rejectInfo);
                         unset($user_group);
                         unset($maps);
                     }
@@ -494,7 +490,7 @@ class AdminSchoolAction extends AdministratorAction
                     $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
                     model('Feed')->cleanCache($feed_ids);
 
-                    model('Notify')->sendNotify($user_group['uid'],'admin_user_doverify_reject', $rejectInfo);
+                    model('Notify')->sendNotify($user_group['uid'],'admin_school_doverify_reject', $rejectInfo);
                 }
             }
         }else{
@@ -945,7 +941,7 @@ class AdminSchoolAction extends AdministratorAction
             }
             $school = model('School')->where('id ='.$id)-> find() ;
             if($school['doadmin']){
-                $school['doadmin'] = $school['doadmin'].'.igenwoxue.com';
+                $school['doadmin'] = $school['doadmin'] . '.'.$_SERVER["HTTP_HOST"];
             }
             $this->pageTitle['editSchool'] = '编辑机构-' . $school['title'];
 
@@ -970,55 +966,6 @@ class AdminSchoolAction extends AdministratorAction
     }
 
     /**
-     * 机构讲师认证审核
-     */
-    public function teacherVerify(){
-        $this->pageButton[] = array('title'=>'驳回认证','onclick'=>"admin.mzVerifySchool('',-1)");
-        $this->pageKeyList = array('uname','usergroup_id','category','realname','idcard','phone','reason','info','school','specialty','address','s_address','attachment','certification','other_data','DOACTION');
-        $mhm_id = $this->school_id;
-        $listData = D('user_verified')->where(array('verified'=>2,'mhm_id'=>$mhm_id))->findpage(20);
-//        $s['uid']=uid;
-//        $s['title'] = "恭喜您成功加入众筹";
-//        $s['body'] = "恭喜您成功购买众筹：";
-//        $s['ctime'] = time();
-//        model('Notify')->sendMessage($s);
-        // 获取认证分类的Hash数组
-        $categoryHash = model('CategoryTree')->setTable('user_verified_category')->getCategoryHash();
-        //数据的格式化
-        foreach($listData['data'] as $k=>$v){
-            $userinfo = model('user')->getUserInfo($listData['data'][$k]['uid']);
-            $listData['data'][$k]['uname'] = $userinfo['uname'];
-            $listData['data'][$k]['usergroup_id'] = D('user_group')->where('user_group_id='.$v['usergroup_id'])->getField('user_group_name');
-            if($listData['data'][$k]['identity_id']){
-                $a = explode('|', $listData['data'][$k]['identity_id']);
-                $listData['data'][$k]['attachment'] = "";
-                foreach($a as $key=>$val){
-                    if($val !== ""){
-                        $attachInfo = D('attach')->where("attach_id=$a[$key]")->find();
-                        $listData['data'][$k]['attachment'] .= msubstr($attachInfo['name'],0,25,"UTF-8",ture).'&nbsp;<a href="'.getImageUrl($attachInfo['save_path']).$attachInfo['save_name'].'" target="_blank">下载</a><br />';
-                    }
-                }
-                unset($a);
-            }
-            if($listData['data'][$k]['attach_id']){
-                $a = explode('|', $listData['data'][$k]['attach_id']);
-                $listData['data'][$k]['certification'] = "";
-                foreach($a as $key=>$val){
-                    if($val !== ""){
-                        $attachInfo = D('attach')->where("attach_id=$a[$key]")->find();
-                        $listData['data'][$k]['certification'] .= msubstr($attachInfo['name'],0,25,"UTF-8",ture).'&nbsp;<a href="'.getImageUrl($attachInfo['save_path']).$attachInfo['save_name'].'" target="_blank">下载</a><br />';
-                    }
-                }
-                unset($a);
-            }
-            $listData['data'][$k]['category'] = $categoryHash[$v['user_verified_category_id']];
-            $listData['data'][$k]['reason'] = str_replace(array("\n", "\r"), array('', ''), format($listData['data'][$k]['reason']));
-            $listData['data'][$k]['DOACTION'] = '<a href="javascript:void(0)" onclick="admin.mzTeacherVerify('.$v['id'].',0)">通过</a> - ';
-            $listData['data'][$k]['DOACTION'] .='<a href="javascript:void(0)" onclick="admin.mzTeacherVerifyBox('.$v['id'].')">驳回</a>';
-        }
-        $this->displayList($listData);
-    }
-    /**
      * 修改认证状态 信息
      * @return json 返回操作后的JSON信息数据
      */
@@ -1028,183 +975,6 @@ class AdminSchoolAction extends AdministratorAction
         M('user_verified')->where($map)->save($data);
 
         echo json_encode(array('status'=>1,'data'=>"认证成功"));exit();
-    }
-    /**
-     * 驳回理由 窗口(讲师审核)
-     * @return void
-     */
-    public function getTeacherVerifyBox () {
-        $id = intval($_GET['id']);
-        $this->assign('id', $id);
-        $this->assign('action','doTeacherVerify');
-        $this->display('verify');
-    }
-    /**
-     * 执行认证 (讲师)
-     * @return json 返回操作后的JSON信息数据
-     */
-    public function doTeacherVerify(){
-        $status = intval($_POST['status']);
-        $id = $_POST['id'];
-        if(is_array($id)){
-            $map['id'] = array('in',$id);
-        }else{
-            $map['id'] = $id;
-        }
-        $datas['verified'] = $status;
-        $res = M('user_verified')->where($map)->save($datas);
-        if($res){
-            $return['status'] = 1;
-            if($status == 1){
-                $user_group = M('user_verified')->where('id='.$id)->find();
-                if($user_group['mhm_id']){
-                    $mhdata['mhm_id'] = $user_group['mhm_id'];
-                    M('user') ->where('uid ='.$user_group['uid']) -> save($mhdata);
-                }
-
-                //添加成为老师
-                if($user_group["user_verified_category_id"]==6){
-                    $data["uid"]   = $user_group['uid'];
-                    $data["Teach_areas"] = $user_group['address'];
-                    $data["name"]  = $user_group['realname'];
-                    $data["mhm_id"] = $user_group['mhm_id'];
-                    $data["ctime"] = time();
-                    $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
-
-                    $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
-                    if($res){
-                        $data['is_reject'] = 0;
-                        M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
-                    }else{
-                        M("zy_teacher")->add($data);
-                    }
-                }
-                //结束
-                $maps['uid'] = $user_group['uid'];
-                $maps['user_group_id'] = $user_group['usergroup_id'];
-                $exist = D('user_group_link')->where($maps)->find();
-                if ( !$exist ){
-                    D('user_group_link')->add($maps);
-                    // 清除用户组缓存
-                    model ( 'Cache' )->rm('user_group_'.$user_group['uid']);
-                    // 清除权限缓存
-                    model('Cache')->rm('perm_user_'.$user_group['uid']);
-                    // 删除微博信息
-                    $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
-                    model('Feed')->cleanCache($feed_ids);
-
-                    model('Notify')->sendNotify($user_group['uid'],'admin_user_doverify_ok');
-                    unset($user_group);
-                    unset($maps);
-                }
-                $return['data'] = "认证成功";
-            }
-            if($status == 3){
-                $return['data']	  = "驳回成功";
-                $map['verified'] = -1 ;
-                $rejectInfo = t($_POST['reason']);
-                //$data['act'] = '驳回';
-                if(is_array($id)){
-                    foreach($id as $k=>$v){
-                        $result = M('user_verified')->where('id='.$v)->save($map);
-                        if($result){
-                            $user_group = M('user_verified')->where('id='.$v)->find();
-                            $teacher = M('zy_teacher')->where('uid='.$user_group['uid'])->count();
-                            if($teacher){
-                                $data['is_reject'] = 1;
-                                M('zy_teacher')->where('uid='.$user_group['uid'])->save($data);
-                            }
-                        }
-                        //添加成为老师
-//                        if($user_group["user_verified_category_id"]==6){
-//                            $data["uid"]   = $user_group['uid'];
-//                            $data["Teach_areas"] = $user_group['address'];
-//                            $data["name"]  = $user_group['realname'];
-//                            $data["mhm_id"] = $user_group['mhm_id'];
-//                            $data["ctime"] = time();
-//                            $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
-//
-//                            $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
-//                            if($res){
-//                                $data['is_reject'] = 0;
-//                                M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
-//                            }else{
-//                                M("zy_teacher")->add($data);
-//                            }
-//                        }
-                        //结束
-                        $maps['uid'] = $user_group['uid'];
-                        $maps['user_group_id'] = $user_group['usergroup_id'];
-                        D('user_group_link')->where($maps)->delete();
-                        // 清除用户组缓存
-                        model ( 'Cache' )->rm ('user_group_'.$user_group['uid']);
-                        // 清除权限缓存
-                        model('Cache')->rm('perm_user_'.$user_group['uid']);
-                        // 删除微博信息
-                        $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
-                        model('Feed')->cleanCache($feed_ids);
-
-                        $s['uid']=$user_group['uid'];
-                        $s['title'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
-                        $s['body'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
-                        $s['ctime'] = time();
-                        model('Notify')->sendMessage($s);
-                        unset($user_group);
-                        unset($maps);
-                    }
-                }else{
-                    $result = M('user_verified')->where('id='.$id)->save($map);
-                    if($result){
-                        $user_group = M('user_verified')->where('id='.$id)->find();
-                        $teacher = M('zy_teacher')->where('uid='.$user_group['uid'])->count();
-                        if($teacher){
-                            $data['is_reject'] = 1;
-                            M('zy_teacher')->where('uid='.$user_group['uid'])->save($data);
-                        }
-                    }
-                    //添加成为老师
-//                    if($user_group["user_verified_category_id"]==6){
-//                        $data["uid"]   = $user_group['uid'];
-//                        $data["Teach_areas"] = $user_group['address'];
-//                        $data["name"]  = $user_group['realname'];
-//                        $data["mhm_id"] = $user_group['mhm_id'];
-//                        $data["ctime"] = time();
-//                        $data['identification'] = date(md).mt_rand(1000,9999).$data['uid'];
-//
-//                        $res = M("zy_teacher")->where('uid='.$user_group['uid'])->find();
-//                        if($res){
-//                            $data['is_reject'] = 0;
-//                            M("zy_teacher")->where('uid='.$user_group['uid'])->save($data);
-//                        }else{
-//                            M("zy_teacher")->add($data);
-//                        }
-//                    }
-                    //结束
-                    $maps['uid'] = $user_group['uid'];
-                    $maps['user_group_id'] = $user_group['usergroup_id'];
-                    D('user_group_link')->where($maps)->delete();
-                    // 清除用户组缓存
-                    model ( 'Cache' )->rm ('user_group_'.$user_group['uid']);
-                    // 清除权限缓存
-                    model('Cache')->rm('perm_user_'.$user_group['uid']);
-                    // 删除微博信息
-                    $feed_ids = model('Feed')->where('uid='.$user_group['uid'])->limit(1000)->getAsFieldArray('feed_id');
-                    model('Feed')->cleanCache($feed_ids);
-
-                    $s['uid']=$user_group['uid'];
-                    $s['title'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
-                    $s['body'] = "抱歉，您的讲师认证申请被该机构驳回。驳回理由：.'$rejectInfo'.。请修改信息后重新申请";
-                    $s['ctime'] = time();
-                    model('Notify')->sendMessage($s);
-                    unset($user_group);
-                    unset($maps);
-                }
-            }
-        }else{
-            $return['status'] = 0;
-            $return['data']   = "认证失败";
-        }
-        echo json_encode($return);exit();
     }
 
     /**

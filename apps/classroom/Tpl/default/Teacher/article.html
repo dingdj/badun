@@ -27,7 +27,7 @@
                     	<a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}">
                         <div class="article-cover"><img src="{:getCover($l['cover'],200,112)}" width="200" height="112"></div>
                         <div class="list-center">
-                            <div class="top"><span class="article-title">{$l.art_title}</span></div>
+                            <div class="article-top"><span class="article-title">{$l.art_title}</span></div>
                             <div class="article-content">
                             <p>{:msubstr(t($l['article']),0,95,'utf-8',true)}<a href="{:U('classroom/Teacher/checkDeatil',array('id'=>$data['id'],'aid'=>$l['id']))}" class="fr">查看更多</a>
                             </div>

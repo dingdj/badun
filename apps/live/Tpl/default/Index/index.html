@@ -103,9 +103,9 @@
                     <a class="next"><i class="icon-n"></i></a>
                 </div>
                 <div class="bd">
-                    <div class="picList">
+                    <div class="picList" style="width:1220px;">
                         <volist name="perfect" id="pft" offset="0" length="48">
-                            <li style="display:block;float: left;list-style: none;margin: 0 20px 20px 0;width: 283px;border: solid 1px #e4e4e4;">
+                            <li style="overflow:hidden;display:block;float: left;list-style: none;margin: 0 20px 20px 0;width: 279px;border: solid 1px #e4e4e4;">
                                 <div class="pic">
                                     <a href="{:U('live/Index/view',array('id'=>$pft['id']))}">
                                         <img src="{:cutImg($pft['cover'],283,151)}" alt="{$pft['video_title']}"></a>
@@ -123,10 +123,10 @@
                                 </h3>
                                 <div class="info" style="overflow: hidden;padding: 0 10px 10px;font-size: 14px;line-height: 20px;">
                                     <div class="fr" style="color: #999;font-size: 12px;"><i class="icon-num"></i>{$pft['view_nums']}人在围观</div>
-                                    <if condition="($pft['is_charge'] eq 0) AND ($pft['t_price'] neq 0)">
-                                        <div class="price">¥{$pft['t_price']}</div>
-                                        <else/>
+                                    <if condition="$pft['mzprice']['price'] eq 0 ">
                                         <div class="price" style="color: #56b02a">免费</div>
+                                        <else/>
+                                        <div class="price">¥{$pft['mzprice']['price']}</div>
                                     </if>
                                 </div>
                             </li>
@@ -140,68 +140,70 @@
 </div>
 
 <volist name="cateData" id="cates">
-    <div class="itembox pt40">
-        <div class="wrap">
-            <div class="itemtit"><a class="fr"
-                                    href="{:U('classroom/Video/index',array('cateId'=>$cates['zy_currency_category_id'],'vtype' =>'2'))}">更多</a>
-                <h2 class="indextit03"><em></em>{$cates['title']}</h2></div>
-            <div class="itemcon">
-                <ul class="livepagelist">
-                    <volist name="cates.live_cate_data" id="cate">
-                        <li>
-                            <a href="{:U('live/Index/view',array('id'=>$cate['id']))}"><img
-                                    src="{:cutImg($cate['cover'],600,300)}" alt=""></a>
-                            <div class="top">
-                                <h3>{$cate['video_title']|msubstr=0,13,'utf-8',true}</h3>
-                                <p>{$cate['mhm_name']}
-                                    <span>|</span>{$cate['video_str_tag']}
-                                </p>
-                                <a class="more" href="{:U('live/Index/view',array('id'=>$cate['id']))}">查看详情</a>
-                            </div>
-                            <div class="bot">
-                                <p>{:limitNumber($cate['video_binfo'],80)}</p>
-                                <div class="info">
-                                    <div class="score">
-                                        <if condition="$cate.video_score  GT 0 "><i class="icon-star"></i>
-                                            <else/>
-                                            <i class="icon-star_no"></i></if>
-                                        <if condition="$cate.video_score  GT 20 "><i class="icon-star"></i>
-                                            <else/>
-                                            <i class="icon-star_no"></i></if>
-                                        <if condition="$cate.video_score  GT 40 "><i class="icon-star"></i>
-                                            <else/>
-                                            <i class="icon-star_no"></i></if>
-                                        <if condition="$cate.video_score  GT 60 "><i class="icon-star"></i>
-                                            <else/>
-                                            <i class="icon-star_no"></i></if>
-                                        <if condition="$cate.video_score  GT 80 "><i class="icon-star"></i>
-                                            <else/>
-                                            <i class="icon-star_no"></i></if>
-                                    </div>
-                                    <div class="fl">({$cate['reviewCount']}人)<span>|</span>购买人数：{$cate['video_order_count']}
-                                    </div>
-                                    <div class="fx fr"><a href="http://www.jiathis.com/share"
-                                                          class="jiathis jiathis_txt" target="_blank"><i
-                                            class="icon-02"></i>分享</a></div>
-                                    <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js"
-                                            charset="utf-8"></script>
-                                    <php>if($cate['is_Collection']){</php>
-                                    <div class="sc fr"><a class="had" href="javascript:;"
-                                                          onClick="collectVideo(this,{$cate['id']},0)"><i
-                                            class="icon-01"></i>已收藏</a></div>
-                                    <php>}else{</php>
-                                    <div class="sc fr"><a href="javascript:;"
-                                                          onClick="collectVideo(this,{$cate['id']},1)"><i
-                                            class="icon-01"></i>收藏</a></div>
-                                    <php>}</php>
+    <if condition="$cates['live_cate_data']">
+        <div class="itembox pt40">
+            <div class="wrap">
+                <div class="itemtit"><a class="fr"
+                                        href="{:U('classroom/Video/index',array('cateId'=>$cates['zy_currency_category_id'],'vtype' =>'2'))}">更多</a>
+                    <h2 class="indextit03"><em></em>{$cates['title']}</h2></div>
+                <div class="itemcon">
+                    <ul class="livepagelist">
+                        <volist name="cates.live_cate_data" id="cate">
+                            <li>
+                                <a href="{:U('live/Index/view',array('id'=>$cate['id']))}"><img
+                                        src="{:cutImg($cate['cover'],600,300)}" alt=""></a>
+                                <div class="live_top">
+                                    <h3>{$cate['video_title']|msubstr=0,13,'utf-8',true}</h3>
+                                    <p>{$cate['mhm_name']}
+                                        <span>|</span>{$cate['video_str_tag']}
+                                    </p>
+                                    <a class="more" href="{:U('live/Index/view',array('id'=>$cate['id']))}">查看详情</a>
                                 </div>
-                            </div>
-                        </li>
-                    </volist>
-                </ul>
+                                <div class="bot">
+                                    <p>{:limitNumber($cate['video_binfo'],80)}</p>
+                                    <div class="info">
+                                        <div class="score">
+                                            <if condition="$cate.video_score  GT 0 "><i class="icon-star"></i>
+                                                <else/>
+                                                <i class="icon-star_no"></i></if>
+                                            <if condition="$cate.video_score  GT 20 "><i class="icon-star"></i>
+                                                <else/>
+                                                <i class="icon-star_no"></i></if>
+                                            <if condition="$cate.video_score  GT 40 "><i class="icon-star"></i>
+                                                <else/>
+                                                <i class="icon-star_no"></i></if>
+                                            <if condition="$cate.video_score  GT 60 "><i class="icon-star"></i>
+                                                <else/>
+                                                <i class="icon-star_no"></i></if>
+                                            <if condition="$cate.video_score  GT 80 "><i class="icon-star"></i>
+                                                <else/>
+                                                <i class="icon-star_no"></i></if>
+                                        </div>
+                                        <div class="fl">({$cate['reviewCount']}人)<span>|</span>购买人数：{$cate['video_order_count']}
+                                        </div>
+                                        <div class="fx fr"><a href="http://www.jiathis.com/share"
+                                                              class="jiathis jiathis_txt" target="_blank"><i
+                                                class="icon-02"></i>分享</a></div>
+                                        <script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js"
+                                                charset="utf-8"></script>
+                                        <php>if($cate['is_Collection']){</php>
+                                        <div class="sc fr"><a class="had" href="javascript:;"
+                                                              onClick="collectVideo(this,{$cate['id']},0)"><i
+                                                class="icon-01"></i>已收藏</a></div>
+                                        <php>}else{</php>
+                                        <div class="sc fr"><a href="javascript:;"
+                                                              onClick="collectVideo(this,{$cate['id']},1)"><i
+                                                class="icon-01"></i>收藏</a></div>
+                                        <php>}</php>
+                                    </div>
+                                </div>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
+    </if>
 </volist>
 
 <script type="text/javascript">

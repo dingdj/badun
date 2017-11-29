@@ -20,11 +20,11 @@ var saveReason = function () {
 	var douid = "{$douid}";
 	var dotite = "{$dotite}";
 
-	$.post(U('public/Message/doPost'),{to:douid,content:'123',dotitle:dotite,dotype:'被驳回'},function(msg) {
-	},'json');
+	//$.post(U('public/Message/doPost'),{to:douid,content:'123',dotitle:dotite,dotype:'被驳回'},function(msg) {
+	//},'json');
 
 	// 提交驳回
-	$.post(U('admin/User/doVerify'), {id:id, status:-1, reason:reason}, function (res) {
+	$.post(U('admin/User/doVerify'), {id:id, status:0, reason:reason}, function (res) {
 		if (res.status) {
 			ui.success('操作成功');
 			setTimeout(function () {

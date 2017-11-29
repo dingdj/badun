@@ -67,16 +67,53 @@ class IndexAction extends CommonAction{
         //机构列表
         $data = model('School')->where($map)->order($order)->findPage(8);
         if ($data['data']) {
+            //课程查询条件
+            $videoMap['is_del']      = 0;
+            $videoMap['is_mount']    = 1;
+            $videoMap['is_activity'] = 1;
+            $videoMap['uctime']      = ['gt',time()];
+            $videoMap['listingtime'] = ['lt',time()];
+            //讲师查询条件
+            $teaMap['is_del'] = 0;
+            //班级查询条件
+            $albumMap['is_del'] = 0;
+            $albumMap['status'] = 1;
+            $albumMap['is_mount'] = 1;
+            //线下课查询条件
+            $lineMap['is_del'] = 0;
+            $lineMap['status'] = 1;
             foreach ($data['data'] as $key => &$value) {
-                $maps = array('mhm_id'=>$value['id']);
+                //挂载课程
+                $school_info = model('School')->where('id='.$value['id'])->field('id,uid')->find();
+                $mount_map['uid']    = $school_info['uid'];
+                $mount_map['mhm_id'] = $value['id'];
+                $mount_map['is_activity']    = 1;
+                $mount_map['is_del'] = 0;
+                $mount_id = M( 'zy_video_mount')->where ( $mount_map )->field('vid')->select();
+                $mount_ids = implode(',',getSubByKey($mount_id,'vid'));
+                unset($videoMap['_string'],$videoMap['mhm_id']);
+                if($mount_ids) {
+                    $videoMap['_string'] = " (`mhm_id` = {$value['id']} ) or (`id` IN ({$mount_ids})) ";
+                }else{
+                    $videoMap['mhm_id'] = $value['id'];
+                }
+                $maps['mhm_id'] = $teaMap['mhm_id'] = $albumMap['mhm_id'] = $lineMap['mhm_id'] = $value['id'];
                 foreach (array_filter(explode(',', $value['str_tag'])) as $k => $v){
                     $value['new_str_tag'] .= "<span>{$v}</span>";
                 }
-                $value['counts'] = D('ZyVideo')->where($maps)->count();
+                $value['counts'] = D('ZyVideo','classroom')->where($videoMap)->count();
                 /*$user = model('User')->findUserInfo($value['uid'],'location');
                 $value['location'] = $user['location'];*/
-                $value['learn_count'] = D('zy_order_course')->where($maps)->count();
-                $value['teacher_count'] = D('ZyTeacher')->where($maps)->count();
+                //$value['learn_count'] = D('zy_order_course')->where($maps)->count();
+                //课程购买数
+                $order_video_count = D('ZyVideo','classroom')->where($videoMap)->sum('video_order_count');
+                //班级购买数
+                $order_album_count = D('Album','classroom')->where($albumMap)->sum('order_count');
+                //线下课购买数
+                $order_lineclass_count = D('ZyLineClass','classroom')->where($lineMap)->sum('course_order_count');
+                $value['learn_count'] = $order_video_count+$order_album_count+$order_lineclass_count;
+                //讲师购买数
+                $value['teacher_count'] = D('ZyTeacher','classroom')->where($teaMap)->count();
                 //机构等级
                 $school_vip = M('school_vip')->where(['id'=>$value['school_vip']])->find();
                 $value['school_vip_name'] = $school_vip['title'] ?: '普通机构';
@@ -125,7 +162,7 @@ class IndexAction extends CommonAction{
                 $value['favorable_rate'] = round($star,2).'%' ? : 0;
                 //机构域名
                 if($value['doadmin'] != 'www'){
-                    $value['domain'] = getDomain($value['doadmin']);
+                    $value['domain'] = getDomain($value['doadmin'],$value['id']);
                 }else{
                     $value['domain'] = U('school/School/index',array('id'=>$value['id']));
                 }
@@ -163,26 +200,9 @@ class IndexAction extends CommonAction{
                 $live_data = $this->live_data($val['live_type'],$val['id']);
                 $datas[$key]['live']['count'] = $live_data['count'];
                 $datas[$key]['live']['now'] = $live_data['now'];
-                $datas[$key]['mzprice']['price'] = $val['t_price'];
-                $datas[$key]['mzprice']['oriPrice'] = $val['v_price'];
-            }else{
-                $datas[$key]['mzprice'] = getPrice ( $val, $this->mid, true, true );
             }
-            //如果为管理员/机构管理员自己机构的课程 则免费
-            if(is_admin($this->mid) || $val['is_charge'] == 1) {
-                $datas[$key]['mzprice']['price'] = 0;
-            }
-            if(is_school($this->mid) ==  $val['mhm_id']){
-                $datas[$key]['mzprice']['price'] = 0;
-            }
-
-            //如果是讲师自己的课程 则免费
-            $mid = $this -> mid;
-            $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-            if($mid == intval($val['uid']) || $tid == $val['teacher_id'])
-            {
-                $datas[$key]['mzprice']['price'] = 0;
-            }
+            $datas[$key]['mzprice'] = getPrice ( $val, $this->mid, true , true);
+            
         }
         //精选课程
         $favouritmap = array();
@@ -200,7 +220,7 @@ class IndexAction extends CommonAction{
                 $favourites[$k]['mzprice']['price'] = $v['t_price'];
                 $favourites[$k]['mzprice']['oriPrice'] = $v['v_price'];
             }else{
-                $favourites[$k]['mzprice'] = getPrice ( $v, $this->mid, true, true );
+                $favourites[$k]['mzprice'] = getPrice ( $v, $this->mid, true , true);
             }
             if(ceil($v['t_price']) > 0){
                 $favourites[$k]['v_prices'] = $v['t_price'];
@@ -236,33 +256,7 @@ class IndexAction extends CommonAction{
         foreach ($hot as $ks=>$vs){
             $mhmName = model('School')->getSchoolInfoById($vs['mhm_id']);
             $hot[$ks]['mhmName'] = $mhmName['title'];
-            if($v['type'] == 2){
-                $hot[$ks]['mzprice']['price'] = $vs['t_price'];
-                $hot[$ks]['mzprice']['oriPrice'] = $vs['v_price'];
-            }else{
-                $hot[$ks]['mzprice'] = getPrice ( $vs, $this->mid, true, true );
-            }
-            if(ceil($vs['v_price']) > 0){
-                $hot[$ks]['v_prices'] = $vs['v_price'];
-            }else{
-                $hot[$ks]['v_prices'] = 0;
-            }
-
-            //如果为管理员/机构管理员自己机构的课程 则免费
-            if(is_admin($this->mid) || $vs['is_charge'] == 1) {
-                $hot[$ks]['mzprice']['price'] = 0;
-            }
-            if($vs['mhm_id'] && is_school($this->mid) ==  $vs['mhm_id']){
-                $hot[$ks]['mzprice']['price'] = 0;
-            }
-
-            //如果是讲师自己的课程 则免费
-            $mid = $this -> mid;
-            $tid =  M('zy_teacher')->where('uid ='.$mid)->getField('id');
-            if($mid == intval($vs['uid']) || $tid == $vs['teacher_id'])
-            {
-                $hot[$ks]['mzprice']['price'] = 0;
-            }
+            $hot[$ks]['mzprice'] = getPrice ( $vs, $this->mid, true , true);
         }
         /*if($cateId){
             $this->assign('showNowArea',model('CategoryTree')->setTable('zy_currency_category')->getCategoryList($cateId));

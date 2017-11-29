@@ -1,0 +1,62 @@
+.min-height-wrap {min-height: 31rem}
+.cover {z-index:100;position: fixed;top: 0;width: 100%;height: 100%;background-color: rgba(0,0,0,.5);display: none;}
+.icon {background: transparent;}
+
+/*支付*/
+.df_course-info,.df_pay-coupon,.df_pay-price,.df_pay-protocol,.df_pay-style{background:#fff;margin-top:10px}
+.df_course-info dt h3,.df_pay-coupon h3,.df_pay-style dt h3{color:#888;font-size:14px;line-height:36px;padding:0 3%}
+.df_course-info dd,.df_pay-style dd{border-top:1px solid #ededed}
+.df_course-info dd a,.df_pay-coupon a{display:inline-block;width:94%;padding:3%}
+.df_course-info dd a span{float:left;width:30%;height:60px;overflow:hidden}
+.df_course-info dd a span img{width:100%;min-height:60px}
+.df_course-info dd a h3{float:left;font-size:14px;color:#333;margin-left:3%}
+.df_course-info dd a h3 p{color:#fc0203;margin-top:23px}
+.df_pay-style dd{display:inline-block;width:94%;padding:3% 3% 2%}
+.df_pay-style dd img{float:left}
+.df_pay-style dd i{float:right;width:16px;height:16px;border-radius:50%;font-size:19px;color:#57BC4C}
+.df_pay-coupon a{padding:0 3%;line-height:44px}
+.df_pay-coupon h3{float:left;line-height:44px}
+.df_pay-coupon p{float:right;color:#ccc;font-size:12px}
+.df_pay-coupon p i{font-size:14px;color:#656565;margin-left:10px}
+.df_pay-price dd{display:inline-block;width:94%;padding:0 3%;line-height:36px}
+.df_pay-price h3{float:left;color:#888;font-size:14px}
+.df_pay-price p{float:right;color:#ff4000;font-size:14px}
+.df_pay-protocol{padding:0 3%;line-height:44px;color:#888;font-size:14px;margin-bottom:52px}
+.df_pay-protocol i{margin-right:10px;color:#57BC4C}
+.df_pay-protocol .on{color:#57BC4C}
+.df_pay-protocol a{color:#188eee}
+.df_pay-buy{position:fixed;background:#fff;width:100%;bottom:0;line-height:50px;font-size:18px}
+.df_pay-buy h3{float:left;width:55%;font-size:14px;color:#888;text-align:center}
+.df_pay-buy h3 strong{font-size:18px;color:#ff4000}
+.df_pay-buy a{float:right;width:45%;height:52px;text-align:center;background:#00BED4;color:#fff}
+
+/*优惠券*/
+.yh_coupon{display:inline-block;width:100%;line-height:36px;background:#fff;border-bottom:1px solid #ededed}
+.yh_coupon li{float:left;width:25%;text-align:center;font-size:14px;border-bottom:2px solid transparent}
+.yh_coupon .active{border-bottom:2px solid #00BED4}
+.yh_coupon .active a{color:#00BED4}
+.yh_coupon li a{display:block;color:#333}
+.yh_coupon_order{padding:0 5%;background:#fff;display:none}
+.yh_blue_carlist{padding-bottom:20px}
+.yh_coupon_order h3{color:#888;font-size:14px;line-height:36px}
+.yh_blue_carlist dd{display:inline-block;width:100%}
+.yh_blue_carlist dd .txt{float:left;width:74%;border:solid 1px #eee;border-right:0;padding:0 0 0 3%;height:127px}
+.yh_blue_carlist dd .txt h3{font-size:30px;color:#98d9fa;margin-top:10px}
+.yh_blue_carlist dd .txt h3 small{font-size:12px;color:#666;margin-left:10px}
+.yh_blue_carlist dd .txt p{color:#999;line-height:18px;font-size:12px}
+.yh_blue_carlist dd .txt p em{color:red;padding:0 2%}
+.yh_blue_carlist dd a{float:left;width:22%;height:127px;background:url(../images/blue.png) no-repeat;background-size:100px 129px;color:#fff;font-size:14px;padding-top:25px;text-align:center}
+
+/*打折卡*/
+.yh_red_carlist{width:100%;height:204px;padding-bottom:20px}
+.yh_red_carlist .hy_red_date{display:block;height:80px;background:url(../images/red.png) 0 0 no-repeat;background-size:100% 80px;text-align:center}
+.yh_red_carlist h3{color:#fff;font-size:20px;display:inline-block;margin-top:12px}
+.yh_red_carlist h3 small{display:block;color:#bc3838;font-size:12px;line-height:12px}
+.yh_red_carlist .txt{padding:14px 5% 0;border:1px solid #eee;border-top:0;height:109px}
+.yh_red_carlist p{color:#666;font-size:12px;display:block}
+.yh_red_carlist .txt a{display:block;width:60%;border-radius:50px;border:1px solid #eee;text-align:center;line-height:32px;color:#e56d5d;margin:10px auto 0}
+
+/*实体卡*/
+.yh_white_carlist input{width:90%;border:1px solid #eee;height:35px;line-height:35px;margin-bottom:20px;padding:0 5%}
+.hy_tit_price{color:#656565;font-size:14px;background:#fff;padding:0 5%;line-height:36px;margin-top:5px}
+.hy_tit_price span{color:#fc6f4d}

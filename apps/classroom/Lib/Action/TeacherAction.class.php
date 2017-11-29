@@ -30,7 +30,7 @@ class TeacherAction extends CommonAction{
      * 教师首页显示方法
      */
     public function index(){
-        $where="t.is_del=0 AND t.is_reject=0 ";
+        $where="t.is_del=0 AND t.is_reject=0 AND t.verified_status =1";
         $order="t.collect_num desc,t.views desc";
         //$subject_category= intval($_GET['subject_category']);
 
@@ -97,7 +97,7 @@ class TeacherAction extends CommonAction{
         /*if($cateId){
             $this->assign('showNowArea',model('CategoryTree')->setTable('zy_currency_category')->getCategoryList($cateId));
         }*/
-        $size=10;
+        $size=12;
 
         //获取科目列表
         $subject_category=M("zy_teacher_category")->where('pid=0')->findALL();
@@ -115,21 +115,14 @@ class TeacherAction extends CommonAction{
 
             $map['is_del']      = 0;
             $map['is_active']   = 1;
+            $time = time();
+            $where = "is_del=0 AND is_mount = 1 AND is_activity IN (1,5,6,7) AND uctime>$time AND listingtime<$time ";
             foreach($data as $key=>$value){
-                $map['speaker_id']  = $value['id'];
-                $zshd = M('zy_live_zshd')->where($map)->field('speaker_id')->select();
-                if($zshd){
+                $where .= "AND teacher_id = {$value['id']}";
+
+                $live_true = M('zy_video')->where($where)->getField('teacher_id');
+                if($live_true){
                     $data[$key]['live_true'] = 1;
-                }else{
-                    $gh = M('zy_live_gh')->where($map)->field('speaker_id')->select();
-                    if($gh){
-                        $data[$key]['live_true'] = 1;
-                    }else {
-                        $cc = M('zy_live_cc')->where($map)->field('speaker_id')->select();
-                        if($cc){
-                            $data[$key]['live_true'] = 1;
-                        }
-                    }
                 }
             }
             foreach($data as $key=>$value){
@@ -623,7 +616,8 @@ class TeacherAction extends CommonAction{
         $id   = intval($_GET['id']);
         $map = array('tid'=>$id,'is_del'=>0);
         M('zy_teacher')->where('id='.$id)->setInc('views');
-        $data = $this->teacher->getTeacherInfo($id);
+        $teaMap = array('id'=>$id,'is_del'=>0,'is_reject'=>0,'verified_status'=>1);
+        $data = $this->teacher->getTeacherInfoByMap($teaMap);
         if(!$data){
             $this->assign('isAdmin', 1);
             $this->assign('jumpUrl', U('classroom/Teacher/index'));
@@ -793,58 +787,13 @@ class TeacherAction extends CommonAction{
         $meetonecount = M("zy_order_teacher")->where($meetonemap)->count();
 
 
-        if($this->base_config['live_opt'] == 1){
-            $tid = M('ZyTeacher')->where("uid=".$this->mid)->getField('id');
-            $livevideomap['speaker_id']  = $id;
-            $livevideomap['is_del']      = 0;
-            $livevideomap['is_active']   = 1;
-            $field = 'live_id';
-            $live_data = M('zy_live_zshd')->where($livevideomap)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $livecount = M('zy_video')->where($vmap)-> count();
-
-        }else if($this->base_config['live_opt'] == 2){
-
-        }else if($this->base_config['live_opt'] == 3){
-
-            $livevideomap['speaker_id']  = $id;
-            $livevideomap['is_del']      = 0;
-            $livevideomap['is_active']   = 1;
-            $field = 'live_id';
-            $live_data = M('zy_live_gh')->where($livevideomap)->order('invalidDate asc')->field($field)->select();
-
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $livecount = M('zy_video')->where($vmap)->count();
-
-//            $val['url'] = $this->gh_config['video_url'].'/teacher/index.html?liveClassroomId='.$val['room_id'].'&customer='.$this->gh_config['customer'].'&customerType=taobao&sp=0';
-        }else if($this->base_config['live_opt'] == 4){
-
-            $livevideomap['speaker_id']  = $id;
-            $livevideomap['is_del']      = 0;
-            $livevideomap['is_active']   = 1;
-            $field = 'live_id';
-            $live_data = M('zy_live_cc')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $livecount = M('zy_video')->where($vmap)->count();
-        }
+        $vmap['is_del'] = 0;
+        $vmap['is_activity'] = 1;
+        $vmap['type'] = 2;
+        $vmap['listingtime'] = array('lt', time());
+        $vmap['uctime'] = array('gt', time());
+        $vmap['teacher_id'] = $id;
+        $livecount = M('zy_video')->where($vmap)-> count();
 
         if(!$livecount)
         {
@@ -854,7 +803,7 @@ class TeacherAction extends CommonAction{
         $time = time();
         $tuid  =  M('zy_teacher')->where('id='.$id)->getField('uid');
 
-        $videowhere = " uid = {$tuid} OR teacher_id=$id AND is_del=0 AND type=1 AND is_mount = 1 AND is_activity=1 AND uctime>$time AND listingtime<$time";
+        $videowhere = " (uid = {$tuid} OR teacher_id=$id) AND is_del=0 AND type=1 AND is_mount = 1 AND is_activity=1 AND uctime>$time AND listingtime<$time";
         $coursecount =M("zy_video")->where($videowhere)->count();
 
         $this->assign ( 'onlineorder', $onlineorder );
@@ -924,7 +873,7 @@ class TeacherAction extends CommonAction{
         $tid = intval($_GET['tid']);
         $time = time();
         $uid   =   M('zy_teacher')->where('id ='.$tid)->getField('uid');
-        $where = " uid = {$uid} OR teacher_id=$tid AND is_del=0 AND type=1 AND is_mount = 1 AND is_activity=1 AND uctime>$time AND listingtime<$time";
+        $where = " (uid = {$uid} OR teacher_id=$tid) AND is_del=0 AND type=1 AND is_mount = 1 AND is_activity=1 AND uctime>$time AND listingtime<$time";
         $course = M("zy_video")->where($where)->order('rand()')->findPage(2);
         foreach ($course['data'] as $key => $val) {
             $count = M('zy_video_section')->where('vid='.$val['id'])->count();
@@ -1006,56 +955,14 @@ class TeacherAction extends CommonAction{
 
         $limit      = 9;
         $tid = intval($_GET['tid']);
-        if($this->base_config['live_opt'] == 1){
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,live_id';
-            $live_data = M('zy_live_zshd')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('rand()')->findPage(2);
 
-        }else if($this->base_config['live_opt'] == 2){
-
-        }else if($this->base_config['live_opt'] == 3){
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'live_id';
-            $live_data = M('zy_live_gh')->where($map)->order('invalidDate asc')->field($field)->select();
-
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('rand()')->findPage(2);
-
-//            $val['url'] = $this->gh_config['video_url'].'/teacher/index.html?liveClassroomId='.$val['room_id'].'&customer='.$this->gh_config['customer'].'&customerType=taobao&sp=0';
-        }else if($this->base_config['live_opt'] == 4){
-            $map['speaker_id']  = $tid;
-            $map['is_del']      = 0;
-            $map['is_active']   = 1;
-            $field = 'id,subject,roomid,startDate,invalidDate,teacherJoinUrl,studentJoinUrl,teacherToken,assistantToken,studentClientToken,studentToken,live_id';
-            $live_data = M('zy_live_cc')->where($map)->order('invalidDate asc')->field($field)->select();
-            $live_id = trim(implode(',',array_unique(getSubByKey($live_data,'live_id'))),',');
-            $vmap['id'] = ['in',$live_id];
-            $vmap['is_del'] = 0;
-            $vmap['is_activity'] = 1;
-            $vmap['type'] = 2;
-            $vmap['listingtime'] = array('lt', time());
-            $vmap['uctime'] = array('gt', time());
-            $data = M('zy_video')->where($vmap)->order('ctime desc')->order('rand()')->findPage(2);
-
-        }
+        $vmap['is_del'] = 0;
+        $vmap['is_activity'] = 1;
+        $vmap['type'] = 2;
+        $vmap['listingtime'] = array('lt', time());
+        $vmap['uctime'] = array('gt', time());
+        $vmap['teacher_id'] = $tid;
+        $data = M('zy_video')->where($vmap)->order('rand()')->findPage(2);
 
         foreach($data['data'] as $key =>$val) {
             $count = M('zy_video_section')->where(array('vid' => $val['id'], 'pid' => ['gt', '0']))->count();
@@ -1626,7 +1533,7 @@ class TeacherAction extends CommonAction{
 
         if($res){
             $_data['review_count'] = array('exp','`review_count` + 1');
-            //套餐
+            //班级
             M('zy_teacher')->where(array('id'=>array('eq',intval($_POST["teacher_id"]))))->save($_data);
             exit(json_encode(array('status'=>'1','info'=>'评论成功')));
         }else{
@@ -1638,7 +1545,7 @@ class TeacherAction extends CommonAction{
         $res=M("zy_teacher_review")->where("id=".$id)->data(array("is_del"=>1))->save();
         if($res){
             $_data['review_count'] = array('exp','`review_count` - 1');
-            //套餐
+            //班级
             M('zy_teacher')->where(array('id'=>array('eq',intval($_GET["teacher_id"]))))->save($_data);
             exit(json_encode(array('status'=>'1','info'=>'删除成功')));
         }else{
@@ -1740,11 +1647,15 @@ class TeacherAction extends CommonAction{
             foreach ($data['data'] as $k=>$v) {
                 $v['ctime']=getDateDiffer($v['ctime']);//格式化时间数据
                 if ($v['type'] == 1) {
-                    $data['data'][$k]['oid'] = getVideoNameForID($v['oid']);
+                    //$data['data'][$k]['oid'] = getVideoNameForID($v['oid']);
+                    $data['data'][$k]['type_name'] = '视频课程';
                 } else if ($v['type'] == 2) {
-                    $data['data'][$k]['oid'] = getAlbumNameForID($v['oid']);
-                } else {
-//                    $list['data'][$key]['oid'] = '不存在';
+                    $data['data'][$k]['type_name'] = '班级课程';
+                }else if ($v['type'] == 3) {
+                    //$data['data'][$k]['oid'] = getAlbumNameForID($v['oid']);
+                    $data['data'][$k]['type_name'] = '线下课程';
+                } else if ($v['type'] == 4) {
+                    $data['data'][$k]['type_name'] = '讲师评价';
                 }
                 $data['data'][$k]['tname'] = M('zy_teacher')->where('id ='.$v['tid'])->getField('name');
                 $data['data'][$k]['star'] = $v['star']/20;
@@ -1829,6 +1740,9 @@ class TeacherAction extends CommonAction{
             $data['tid'] = t($_POST['tid']);
             $data['ctime'] = time();
             $data['uid'] = t($_POST['review_uid']);
+            $data['oid'] = t($_POST['tid']);
+            $data['type'] = 4;
+            $data['review_source'] = 'web网页';
         }
         $res = M('zy_review')->add($data);
         if ($res) {

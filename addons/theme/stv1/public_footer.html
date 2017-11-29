@@ -1,40 +1,23 @@
     <!--footer start-->
-    <div class="post-service yensen" style="height: 260px">
-        <div class="post-service-box">
-            <div class="other-service">
-                <volist name="pageCategory" id="vo" offset="0" length="5">
-                    <div class="service-class" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
-                        <a href="javascript:;"><span>{$key}</span></a>
-                        <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
-                            <a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
-                        </volist>
-                    </div>
-                </volist>
-                <div class="tel-box">
-                    <div class="tel-icon">
-                        <img src="{:getCover($site['wx_qrcode'],120,120)}">
-                    </div>
-                    <div class="week">关注官方微信</div>
+    <div class="post-service yensen">
+        <div class="other-service">
+            <volist name="pageCategory" id="vo" offset="0" length="5">
+                <div class="service-class" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
+                    <a href="javascript:;"><span>{$key}</span></a>
+                    <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                        <a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
+                    </volist>
                 </div>
+            </volist>
+            <div class="tel-box">
+                <div class="tel-icon">
+                    <img src="{:getCover($site['wx_qrcode'],120,120)}">
+                </div>
+                <div class="week">关注官方微信</div>
             </div>
-            <div class="post-service-pers">
-                <!--
-                <div class="about">
-                    <a href="javascript:;">关于我们</a>
-                    <a href="javascript:;">联系我们</a>
-                    <a href="javascript:;">联系客服</a>
-                    <a href="javascript:;">商家入驻</a>
-                    <a href="javascript:;">帮助中心</a>
-                    <a href="javascript:;">手机{$site['site_keyword']}</a>
-                    <a href="javascript:;">友情链接</a>
-                    <a href="javascript:;">代理合作</a>
-                    <a href="{:U('group/Index/index')}" style="border:none;">{$site['site_keyword']}社区</a>
-                </div>
-                -->
-                <div class="copyright-box">
-                    {$site['site_footer']}
-                </div>
-            </div>
+        </div>
+        <div class="copyright-box">
+            {$site['site_footer']}
         </div>
     </div>
     <!--footer end-->
@@ -94,9 +77,11 @@
                 </div>
             </li>
 
+            <!--
             <li><a href="{:U('exam/Index/index')}">
                 <i class="icon-04"></i>
             </a></li>
+            -->
 
             <li>
                 <a href="javascript:;">

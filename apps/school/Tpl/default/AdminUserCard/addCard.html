@@ -5,8 +5,8 @@
 	</div>
 	<div class="tit_tab">
 		<ul>
-			<li><a href="{:U('school/AdminUserCard/index',array('tabHash'=>'index'))}">用户卡券列表</a></li>
-			<li><a href="{:U('school/AdminUserCard/addCard',array('tabHash'=>'addCard'))}" <php>if($_GET['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>添加用户卡券</a></li>
+			<li><a href="{:U('school/AdminUserCard/index',array('tabHash'=>'index'))}">列表</a></li>
+			<li><a href="{:U('school/AdminUserCard/addCard',array('tabHash'=>'addCard'))}" <php>if($_GET['tabHash'] == $_REQUEST['tabHash']){ echo 'class="on"';}</php>>{$pageTitle}</a></li>
 		</ul>
 	</div>
 	<div class="form2">
@@ -21,10 +21,10 @@
 			<dd>
 				<select id="type" name="type" >
 					<option>请选择</option>
-					<option value="1" <eq name="coupon.type" value="1">selected="selected"</eq>>课程优惠券</option>
+					<option value="1" <eq name="coupon.type" value="1">selected="selected"</eq>>优惠券</option>
 					<option value="2" <eq name="coupon.type" value="2">selected="selected"</eq>>打折卡</option>
-					<option value="3" <eq name="coupon.type" value="3">selected="selected"</eq>>会员卡</option>
-					<option value="4" <eq name="coupon.type" value="4">selected="selected"</eq>>充值卡</option>
+					<!--<option value="3" <eq name="coupon.type" value="3">selected="selected"</eq>>会员卡</option>
+					<option value="4" <eq name="coupon.type" value="4">selected="selected"</eq>>充值卡</option>-->
 				</select>
 				<select id="coupon" name="type">
 					<if condition="$coupon">
@@ -118,7 +118,7 @@ $(function(){
 			ui.error("不能给自己发放卡券!");
 			return false;
 		}
-		if(cid == 0){
+		if(parseInt(cid) <= 0){
 			ui.error("请选择优惠券!");
 			return false;
 		}

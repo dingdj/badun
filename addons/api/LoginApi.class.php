@@ -4,8 +4,6 @@
  * utime : 2016-03-06
  */
 
-use GuzzleHttp\Client;
-
 class LoginApi extends Api{
 
     private $passport;
@@ -37,32 +35,17 @@ class LoginApi extends Api{
        $result = $this->passport->loginLocal($uname,$upwd,false,true);
        if ($result){
            //查询有无token
-           $token=M('ZyLoginsync')->where(array('uid'=>$result['uid']))->find();
+           $token=M('login')->where(array('uid'=>$result['uid']))->find();
 
            if(!$token){
                $data['oauth_token']         = getOAuthToken($result['uid']);//添加app认证
                $data['oauth_token_secret']  = getOAuthTokenSecret();
                $data['uid']                 = $result['uid'];
-	       $data['vhall_user_id']       = $vhall_user_id = substr(time(),-4,4).$result['uid'];
-               
+
                $result['oauth_token']        = $data['oauth_token'];
                $result['oauth_token_secret'] = $data['oauth_token_secret'];
-
-               M('ZyLoginsync')->add($data);
-           }else{
-               $vhall_user_id = $token['vhall_user_id'];
+               M('login')->add($data);
            }
-           $client          = new Client();
-           $url             = 'http://e.vhall.com/api/vhallapi/v2/user/get-user-id';
-           $res = $client->request("post",$url,['query' => [ 'auth_type'=>1,'account'=>'v20471089','password'=>'Zwjy123456','third_user_id'=>$vhall_user_id]]);
-           $vhall_data = json_decode($res->getBody(),true);
-           if(empty($vhall_data['data']) === true){
-               $vhall_user_pass     = C('SECURE_CODE').$vhall_user_id;
-               $reg_url             = 'http://e.vhall.com/api/vhallapi/v2/user/register';
-               $re = $client->request("post",$reg_url,['query' => [ 'auth_type'=>1,'account'=>'v20471089','password'=>'Zwjy123456','third_user_id'=>$vhall_user_id],'pass'=>$vhall_user_pass]);
-               $result['vhall']   = json_decode($re->getBody());
-           }
-
            //操作积分
            model('Credit')->getCreditInfo($result['uid'],1);
            $this->exitJson($result);
@@ -87,7 +70,7 @@ class LoginApi extends Api{
         $res=M('login')->where($data)->find();
         if($res){
             $result = M('User')->where(['uid'=>$res['uid']])->find();
-            $token = M('ZyLoginsync')->where(array('uid'=>$result['uid']))->find();
+            $token = M('login')->where(array('uid'=>$result['uid']))->find();
 
             $result['oauth_token']         = $token['oauth_token'];
             $result['oauth_token_secret']  = $token['oauth_token_secret'];
@@ -134,7 +117,7 @@ class LoginApi extends Api{
             if($res){
                 $this->exitJson( array() ,10010,"手机已被注册");
             }
-            $phone=M('ResphoneCode')->where(array('phone'=>$email))->find();
+            $phone=M('ResphoneCode')->where(array('phone'=>$email))->order('stime desc')->find();
             if($phone['code']!=$code){
                 $this->exitJson( array() ,10010,"验证码不正确");
             }
@@ -175,7 +158,7 @@ class LoginApi extends Api{
         $uid = $this->_user_model->add($map);
         if($uid){
             if($type==2){
-                M('ResphoneCode')->where(array('phone'=>$email))->delete();
+                //M('ResphoneCode')->where(array('phone'=>$email))->delete();
             }
             // 添加积分
             model('Credit')->setUserCredit($uid,'init_default');
@@ -188,8 +171,7 @@ class LoginApi extends Api{
             $data['type']                = t($this->data['type_oauth']) ?: 'location';
             $data['type_uid']            = t($this->data['type_uid']);
             $data['uid']                 = $uid;
-	    $data['vhall_user_id']       = substr(time(),-4,4).$uid;
-            M('zy_loginsync')->add($data);
+            //M('zy_loginsync')->add($data);
             M('login')->add($data);
             $this->exitJson($data);
         }else{
@@ -207,7 +189,7 @@ class LoginApi extends Api{
         if($res){
             $this->exitJson( array() ,10010,"手机已被注册");
         }
-        $phone=M('ResphoneCode')->where(array('phone'=>$email))->find();
+        $phone=M('ResphoneCode')->where(array('phone'=>$email))->order('stime desc')->find();
         if($phone['code']!=$code){
             $this->exitJson( array() ,10010,"验证码不正确");
         }
@@ -223,7 +205,7 @@ class LoginApi extends Api{
         if($res){
             $this->exitJson( array() ,10011,"手机已被注册");
         }
-        $stime=M('ResphoneCode')->where(array('phone'=>$phone))->getField('stime');
+        $stime=M('ResphoneCode')->where(array('phone'=>$phone))->order('stime desc')->getField('stime');
         if($stime!=""){
             $stime=time()-$stime;
             if($stime<60){
@@ -234,7 +216,7 @@ class LoginApi extends Api{
         $rnum = rand(100000,999999);
         $sendres = model('Sms')->send($phone,$rnum);
         //先删除原来数据库保存的字段
-        $dres=M('ResphoneCode')->where(array('phone'=>$phone))->delete();
+        //$dres=M('ResphoneCode')->where(array('phone'=>$phone))->delete();
         $map['phone']=$phone;
         $map['code']=$rnum;
         $map['stime']=time();
@@ -257,7 +239,7 @@ class LoginApi extends Api{
 	    //根据用户电话查询用户信息
 		$user = model('User')->where(array('phone'=>$phone))->find();
 		if( empty($user) ) $this->exitJson( array() ,10020,'手机未绑定');
-		$stime = M('ResphoneCode')->where(array('phone'=>$phone))->getField('stime');
+		$stime = M('ResphoneCode')->where(array('phone'=>$phone))->order('stime desc')->getField('stime');
 		if($stime!=""){
 			$stime=time()-$stime;
 			if($stime<60){
@@ -266,7 +248,7 @@ class LoginApi extends Api{
 		}
 		//如果存在那么先删除之前的验证码
 		$code = rand(100000,999999);//手机验证码
-		M('ResphoneCode')->where(array('phone'=>$phone))->delete();
+		//M('ResphoneCode')->where(array('phone'=>$phone))->delete();
 		if(model('Sms')->send($phone,$code)){
 			$map['phone'] = $phone;
 			$map['code']  = $code;
@@ -284,7 +266,7 @@ class LoginApi extends Api{
         if(!preg_match("/^[1][34578]\d{9}$/",$phone)) {
             $this->exitJson( array() ,10021,"手机号格式错误！");
         }
-        $phone=M('ResphoneCode')->where(array('phone'=>$phone))->find();
+        $phone=M('ResphoneCode')->where(array('phone'=>$phone))->order('stime desc')->find();
         if($phone['code']!=$code){
             $this->exitJson( array() ,10022,"验证码不正确");
         }
@@ -305,7 +287,7 @@ class LoginApi extends Api{
 		if(!model('Register')->isValidPassword($pwd, $repwd)){
 			$this->exitJson( array() ,10024,model('Register')->getLastError());
 		}
-	    $phone=M('ResphoneCode')->where(array('phone'=>$phone))->find();
+	    $phone=M('ResphoneCode')->where(array('phone'=>$phone))->order('stime desc')->find();
 	    if($phone['code']!=$code){
 	        $this->exitJson( array() ,10022,"验证码不正确");
 	    }
@@ -319,7 +301,7 @@ class LoginApi extends Api{
 	    $user= M("user")->where("phone=".$this->data['phone'])->find();
 	    $res && model('User')->cleancache($user['uid']);
 		if($res !== false){
-			M('ResphoneCode')->where('phone='.$this->data['phone'])->delete();
+			//M('ResphoneCode')->where('phone='.$this->data['phone'])->delete();
 			$this->exitJson(true);
 		}
 		$this->exitJson( array() ,10024,"修改失败，请重试");

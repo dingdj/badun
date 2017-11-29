@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
     <style>
 		body{background-color: #fff}
         li.border_sx .bd .n2,li.border_sx .bd .n3{
@@ -55,6 +55,13 @@
 								<a href="javascript:;" class="<eq name="vtype" value="1">checked</eq>" data-type="vtype" data-value="1" >录播<span class="icon-ck"></span></a>
 								<a href="javascript:;" class="<eq name="vtype" value="2">checked</eq>" data-type="vtype" data-value="2" >直播<span class="icon-ck"></span></a>
 							</dd>
+							<dt>会员</dt>
+							<dd name="group-list">
+                                <a href="javascript:;" >不限<span class="icon-ck"></span></a><!--<if condition="$_GET['vip_id'] eq null">class="checked"</if>-->
+                                <volist name="vip_levels" id="vo">
+                                    <a href="javascript:;" <if condition="$_GET['vip_id'] eq $key">class="checked"</if>  data-type="vip_id" data-value="{$key}" >{$vo}<span class="icon-ck"></span></a>
+                                </volist>
+							</dd>
 							<dt>价格区间</dt>
 							<dd name="group-list">
 								<a href="javascript:;" class="<eq name="Think.get.lower" value="1">checked</eq>" data-type="lower" data-value="1">不限<span class="icon-ck"></span></a>
@@ -68,7 +75,7 @@
 							<dd name="check-list">
 								<a href="javascript:;" class="<eq name="charge" value="1">checked</eq>" data-type="charge" data-value="1" >可试听<span class="icon-ck"></span></a>
 								<a href="javascript:;" class="<eq name="videofile" value="1">checked</eq>" data-type="videofile" data-value="1" >有资料<span class="icon-ck"></span></a>
-								<a href="javascript:;" class="<eq name="eaxm_id" value="1">checked</eq>" data-type="eaxm_id" data-value="1" >有考试<span class="icon-ck"></span></a>
+								<!--<a href="javascript:;" class="<eq name="eaxm_id" value="1">checked</eq>" data-type="eaxm_id" data-value="1" >有考试<span class="icon-ck"></span></a>-->
 							</dd>
 							<div class="btn">
 								<a class="fr screen prevValue" href="javascript:;">确定</a>
@@ -81,7 +88,7 @@
 			<php>if($cateId){</php>
 			<div class="searchdiv">在“<span>{:msubstr(t($title),0,10,'utf-8',true)}</span>”分类下，找到{$data.count}门课程</div>
 			<php>}</php>
-			<ul class="classlist clearfix" style="padding-bottom: 10px;float:left">
+			<ul class="classlist clearfix" style="padding-bottom: 10px;float:left;width:100%">
 				<php>if($listData){</php>
 					<volist name="listData" id="vo">
 						<li>
@@ -229,7 +236,7 @@
 			$.ajax({
 				type: "GET",
 				url:"{:U('classroom/Video/getVideoList')}",
-				data:"p="+p+"&orderBy={$_GET['orderBy']}&cateId={$_GET['cateId']}&vtype={$_GET['vtype']}&charge={$_GET['charge']}&videofile={$_GET['videofile']}&eaxm_id={$_GET['eaxm_id']}&lower={$_GET['lower']}&mhm_id={$_GET['mhm_id']}",
+				data:"p="+p+"&orderBy={$_GET['orderBy']}&cateId={$_GET['cateId']}&vtype={$_GET['vtype']}&charge={$_GET['charge']}&videofile={$_GET['videofile']}&eaxm_id={$_GET['eaxm_id']}&lower={$_GET['lower']}&mhm_id={$_GET['mhm_id']}&best={$_GET['best']}",
 				dataType:"json",
 				success:function(data){
 					appendHtml(data);
@@ -248,4 +255,4 @@
 		}
 	});
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

@@ -31,7 +31,7 @@ use EasyWeChat\MiniProgram\Core\AbstractMiniProgram;
 class QRCode extends AbstractMiniProgram
 {
     const API_GET_WXACODE = 'https://api.weixin.qq.com/wxa/getwxacode';
-    const API_GET_WXACODE_UNLIMIT = 'http://api.weixin.qq.com/wxa/getwxacodeunlimit';
+    const API_GET_WXACODE_UNLIMIT = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit';
     const API_CREATE_QRCODE = 'https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode';
 
     /**
@@ -70,6 +70,30 @@ class QRCode extends AbstractMiniProgram
     {
         $params = [
             'scene' => $scene,
+            'width' => $width,
+            'auto_color' => $autoColor,
+            'line_color' => $lineColor,
+        ];
+
+        return $this->getStream(self::API_GET_WXACODE_UNLIMIT, $params);
+    }
+
+    /**
+     * Get app code unlimit.
+     *
+     * @param string $scene
+     * @param string $page
+     * @param int    $width
+     * @param bool   $autoColor
+     * @param array  $lineColor
+     *
+     * @return \Psr\Http\Message\StreamInterface
+     */
+    public function appCodeUnlimit($scene, $page = null, $width = null, $autoColor = null, $lineColor = null)
+    {
+        $params = [
+            'scene' => $scene,
+            'page' => $page,
             'width' => $width,
             'auto_color' => $autoColor,
             'line_color' => $lineColor,

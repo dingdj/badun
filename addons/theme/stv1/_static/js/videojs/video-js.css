@@ -298,7 +298,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%; }
+  height: 100%;
+}
 
 body.vjs-full-window {
   padding: 0;
@@ -381,7 +382,7 @@ body.vjs-full-window {
   transition: all 0.4s; }
 
 .vjs-big-play-centered .vjs-big-play-button {
-  top: 50%;
+  top: 38%;
   left: 50%;
   margin-top: -0.75em;
   margin-left: -1.5em; }
@@ -720,6 +721,7 @@ body.vjs-full-window {
   right: -1.9em;
   font-size: 0.9em;
   color: #000;
+  width:60px;
   content: attr(data-current-time);
   padding: 6px 8px 8px 8px;
   background-color: #fff;

@@ -42,4 +42,12 @@ class ConfigApi extends Api
         }
         $this->exitJson((object)[],0,'暂时不能获取该配置');
     }
+
+    //支付开关配置
+    public function paySwitch(){
+        $payConfig = model('Xdata')->get("admin_Config:payConfig");
+        $config['pay'] = $payConfig['pay'];
+
+        $this->exitJson($config,1);
+    }
 }

@@ -13,11 +13,11 @@ class AdminDomaiNameAction extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index']       = '独立域名列表';
-        $this->pageTab[] = array('title'=>'独立域名列表','tabHash'=>'index','url'=>U('school/AdminDomaiName/index'));
+        $this->pageTitle['index']       = '已审';
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('school/AdminDomaiName/index'));
         if(is_admin($this->mid)){
-            $this->pageTitle['domaiName']    = '待审核独立域名';
-            $this->pageTab[] = array('title'=>'待审核独立域名','tabHash'=>'domaiName','url'=>U('school/AdminDomaiName/domaiName'));
+            $this->pageTitle['domaiName']    = '待审';
+            $this->pageTab[] = array('title'=>'待审','tabHash'=>'domaiName','url'=>U('school/AdminDomaiName/domaiName'));
         }
         parent::_initialize();
 
@@ -107,14 +107,15 @@ class AdminDomaiNameAction extends AdministratorAction
 
         $this->pageKeyList = array( 'id','title','logo','uid','doadmin','ctime','DOACTION');
         $where = array('status'=>0,'type'=>2);
-        $listData = M('school_verified')->where($where)->findpage(20);        
+        $listData = M('school_verified')->where($where)->findpage(20);
+        $http_host = $_SERVER['HTTP_HOST'];//stristr($_SERVER['HTTP_HOST'], '.', false);
         foreach($listData['data'] as $k=>$v){
             $listData['data'][$k]['logo'] = "<img src=".getCover($v['logo'] , 60 ,60)." width='60px' height='60px'>";
             $listData['data'][$k]['uid'] = getUserSpace($v['uid'], null, '_blank');
 			$listData['data'][$k]['title'] = model('School')->where('uid='.$v['uid'])->getField('title');
 			$listData['data'][$k]['ctime'] = date('Y-m-d H:i:s', $v["ctime"]);
             if($v['doadmin']){
-                $listData['data'][$k]['doadmin'] = $v['doadmin'].".igenwoxue.com";
+                $listData['data'][$k]['doadmin'] = $v['doadmin'].".".$http_host;
             }
 			$listData['data'][$k]['DOACTION'] = '<a href="javascript:void(0)" onclick="admin.mzVerify('.$v['id'].',1,2)">通过</a> - ';
             $listData['data'][$k]['DOACTION'] .= '<a href="javascript:void(0)" onclick="admin.mzVerify('.$v['id'].',-1,2)">驳回</a>';

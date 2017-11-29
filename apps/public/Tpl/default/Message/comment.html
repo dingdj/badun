@@ -16,6 +16,9 @@
            <!--  <div class="user-con-title"> <h5>全部评论</h5></div> -->
             <!--后台私信-->
             <ul class="user-wenda">
+                <if condition="$video_data['data'] eq null">
+                    <li style="padding:5px 0;">您还没有相关评论。。</li>
+                <else/>
                 <foreach name="data.data" item="l">
                 <li class="li">
                     <div class="discusslist"> <a target="_blank" title="{:getUserName($l['uid'])}" class="otherHead" href="{:U('classroom/UserShow/index',array('uid'=>$l['uid']))}"><img width="40" height="40" src="{:getUserFace($l['uid'])}"></a>
@@ -35,6 +38,7 @@
                     </div>
                 </li>
                 </foreach>
+                </if>
             </ul>
 
             <!--分页-->

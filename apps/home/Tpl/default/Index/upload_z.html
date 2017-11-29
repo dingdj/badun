@@ -149,7 +149,7 @@ window.onload=function()
 			{
 				if(oHeadSearch[0].value.indexOf(arr[i])>-1)
 				{
-					tag('套餐标题内容不得包含敏感词','transparent');
+					tag('班级标题内容不得包含敏感词','transparent');
 					return false;
 				}
 				if(oHeadSearch[1].value.indexOf(arr[i])>-1)
@@ -170,7 +170,7 @@ window.onload=function()
 			}
 			if(oHeadSearch[0].value=='')
 			{
-				tag('套餐标题内容不得为空','transparent');
+				tag('班级标题内容不得为空','transparent');
 				return false;
 			}
 			else if(oUploadTextareaA.value=='')
@@ -230,7 +230,7 @@ function removal_value(obj)
             <h3 class="tit_list tit_list_a">内容管理</h3>
             <ul>
                 <li><a href="{:U('home/Index/index')}">课程</a></li>
-                <li><a href="{:U('home/Index/index_zj')}">套餐</a></li>
+                <li><a href="{:U('home/Index/index_zj')}">班级</a></li>
                 <li><a href="{:U('home/Index/qanda')}">问答</a></li>
                 <li><a href="{:U('home/Index/note')}">笔记</a></li>
                 <li><a href="{:U('home/Index/comments')}">评论</a></li>
@@ -275,7 +275,7 @@ function removal_value(obj)
                             </span>
                             <div id="Album_Title" class="myInput1 fl w343">
                               <input type="text" class="head_search upload_input_a" id="head_search" rel="输入关键字">
-                              <span id="s_span">请添写套餐标题</span>
+                              <span id="s_span">请添写班级标题</span>
                             </div>
                         </div>
                         <div class="mt10b20 clearfix">
@@ -311,7 +311,7 @@ function removal_value(obj)
                             </span>
                             <div class="menu_Title myInput1 fl w343">
                               <input type="text" class="head_search upload_input_a" id="head_search" rel="输入关键字">
-                              <span id="s_span">请添写套餐标题</span>
+                              <span id="s_span">请添写班级标题</span>
                             </div>
                             <ul id="menu" class="menu">
                                        <li>
@@ -552,14 +552,14 @@ function removal_value(obj)
                             </span>
                             <div id="Album_Title3" class="myInput1 fl w343">
                               <input type="text" class="head_search upload_input_a" id="head_search" rel="输入关键字">
-                              <span id="s_span">请添写套餐标题</span>
+                              <span id="s_span">请添写班级标题</span>
                             </div>
                         </div>
                         <hr class="das_l"></hr>
                     </div>
                     <div class="fl">
                         <!--<div class="w227 mt10b20 clearfix">
-                                套餐：<a class="green_txt" href="javascript:;">添加到套餐</a>
+                                班级：<a class="green_txt" href="javascript:;">添加到班级</a>
                         </div>-->
                         <div class="w227 mt10b20 clearfix">
                             <span class="selected_title mr15 color_hui fl">
@@ -630,6 +630,6 @@ function removal_value(obj)
         <p class="mt10 ml20 bg_phone">手机每天再多领40积分</p>
     </div>
 </div>
-<include file="__THEME__/public_footer_g" />
+<include file="__THEME__/public_footer" />
 </body>
 </html>

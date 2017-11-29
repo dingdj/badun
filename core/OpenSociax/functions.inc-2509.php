@@ -3559,9 +3559,9 @@ function downloadFile($fileurl, $filepath)
 }
 
 /**
- * 查询一个用户是否购买过一个套餐
+ * 查询一个用户是否购买过一个班级
  * @param $uid 要查询的用户
- * @param $vid 套餐ID
+ * @param $vid 班级ID
  * @return mixed 如果购买过则返回订单ID，否则返回false
  */
 function isBuyAlbum($uid, $aid)

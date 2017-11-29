@@ -52,6 +52,13 @@ class ExamsPaperModel extends Model
                 $paper_options = D("ExamsPaperOptions",'exams')->getPaperOptionsById($v['exams_paper_id']);
                 $data[$key]['questions_count'] = $paper_options['questions_count'];
                 $data[$key]['score'] = $paper_options['score'];
+                $data[$key]['exams_paper_id'] = intval($v['exams_paper_id']);
+                $data[$key]['exams_subject_id'] = intval($v['exams_subject_id']);
+                $data[$key]['exams_module_id'] = intval($v['exams_module_id']);
+                $data[$key]['exams_limit'] = intval($v['exams_limit']);
+                $data[$key]['exams_count'] = intval($v['exams_count']);
+                $data[$key]['reply_time'] = intval($v['reply_time']);
+                $data[$key]['exams_limit'] = intval($v['exams_limit']);
             }
         }
         return $data;

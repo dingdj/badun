@@ -11,7 +11,7 @@ class AdminExpendOrderAction extends AdministratorAction {
 
     //课程订单模型对象
     protected $order = null;
-    //套餐订单模型对象
+    //班级订单模型对象
     protected $orderAlbum = null;
     //约课订单模型对象
     protected $orderCourse = null;
@@ -23,10 +23,10 @@ class AdminExpendOrderAction extends AdministratorAction {
         parent::_initialize();
         $this->pageTab[] = array('title' => '课程订单', 'tabHash' => 'index', 'url' => U('school/AdminExpendOrder/index'));
         $this->pageTab[] = array('title' => '直播课堂订单', 'tabHash' => 'live', 'url' => U('school/AdminExpendOrder/live'));
-        $this->pageTab[] = array('title' => '套餐订单', 'tabHash' => 'album', 'url' => U('school/AdminExpendOrder/album'));
+        $this->pageTab[] = array('title' => '班级订单', 'tabHash' => 'album', 'url' => U('school/AdminExpendOrder/album'));
         $this->pageTitle['index'] = '课程订单 - 交易记录';
         $this->pageTitle['live'] = '直播订单 - 交易记录';
-        $this->pageTitle['album'] = '套餐订单 - 交易记录';
+        $this->pageTitle['album'] = '班级订单 - 交易记录';
         //默认搜索提交地址
         $this->searchPostUrl = U(APP_NAME . '/' . MODULE_NAME . '/' . ACTION_NAME, array('tabHash' => ACTION_NAME));
         //实例化模型
@@ -168,7 +168,7 @@ class AdminExpendOrderAction extends AdministratorAction {
     }
 
     /**
-     * 套餐订单列表
+     * 班级订单列表
      * @return void
      */
     public function album() {
@@ -205,7 +205,7 @@ class AdminExpendOrderAction extends AdministratorAction {
                 $_POST['uid'] = t($_POST['uid']);
                 $map['uid'] = array('in', $_POST['uid']);
             }
-            //套餐ID
+            //班级ID
             if (!empty($_POST['album_id'])) {
                 $map['album_id'] = $_POST['album_id'];
             }
@@ -243,7 +243,7 @@ class AdminExpendOrderAction extends AdministratorAction {
         $learn_status = array('未开始', '学习中', '已完成');
         //折扣类型
         $discount_type = array('<span style="color:gray">无折扣</span>', '会员折扣', '限时优惠');
-        //取得套餐订单的套餐ID
+        //取得班级订单的班级ID
         if ($val['order_album_id'] > 0) {
             $val['order_album_title'] = getAlbumNameForID($val['order_album_id']);
         } else {
@@ -286,7 +286,7 @@ class AdminExpendOrderAction extends AdministratorAction {
         if($val['live_id']){
             $val['live_title'] = '<div style="width:300px;">' . getVideoNameForID($val['live_id']) . '</div>';
         }
-        //取得套餐名称
+        //取得班级名称
         if($val['album_id']){
             $val['album_title'] = '<div style="width:300px;">' . getAlbumNameForID($val['album_id']) . '</div>';
         }
@@ -365,7 +365,7 @@ class AdminExpendOrderAction extends AdministratorAction {
 
             $data = M('zy_order_live')->find($id);
         }else if($type == 'zy_order_album'){
-            $this->pageTab[] = array('title' => '查看套餐订单-ID:' . $id, 'tabHash' => 'viewOrder', 'url' => U('classroom/AdminOrder/viewOrder', array('id' => $id,'type'=>$type)));
+            $this->pageTab[] = array('title' => '查看班级订单-ID:' . $id, 'tabHash' => 'viewOrder', 'url' => U('classroom/AdminOrder/viewOrder', array('id' => $id,'type'=>$type)));
             //显示字段
             $this->pageKeyList = array(
                 'id','ctime','uid','mhm_title', 'order_title', 'old_price', 'discount',
@@ -374,7 +374,7 @@ class AdminExpendOrderAction extends AdministratorAction {
             //点击按钮返回来源页面
             $this->submitAlias = '返 回';
             $this->onsubmit = 'admin.zyPageBack()';
-            $this->pageTitle['viewOrder'] = '套餐订单  - 查看详细';
+            $this->pageTitle['viewOrder'] = '班级订单  - 查看详细';
             $this->savePostUrl = U(APP_NAME . '/' . MODULE_NAME . '/' . ACTION_NAME);
 
             $data = M('zy_order_album')->find($id);

@@ -7,142 +7,174 @@
 
 <div class="body">
     <div class="center_right_con Manage_all" style="display:block;">
-        <?php if($isEditCard):?>
-        <div class="user-Release">
-            <form method="post" action="{:U('classroom/User/card')}" class="infobox">
-                <dl>
-                    <dt><span>*</span>开户银行：</dt>
-                    <dd>
-                        <select class="inputcheckbox select" name="accounttype">
-                            <option value="">-选择银行-</option>
-                            <?php foreach($banks as $bank):?>
-                            <option <?php echo $data['accounttype']==$bank?' selected="selected"':''?> value="{$bank}">{$bank}</option>
-                            <?php endforeach;?>
-                        </select>
-                    </dd>
-                </dl>
-                <dl>
-                    <dt><span>*</span>开户省：</dt>
-                    <dd>
-                        {:W('Area',array('curPro'=>$data['province'],'curCity'=>$data['city'],'area'=>$data['area'],'city_names'=>$data['location'],'tpl'=>'zyCardArea'))}
-                    </dd>
-                </dl>
-                <dl>
-                    <dt><span>*</span>开户分行地址：</dt>
-                    <dd>
-                        <textarea class="tex01" id="bankarea"  name="bankofdeposit" rows="3" cols="20">{$data['bankofdeposit']}</textarea>
-                        <p >详细的分行地址/开户行，如不清楚，请咨询银行客服。</p>
-                    </dd>
-                </dl>
-                <dl>
-                    <dt><span>*</span>银行帐号：</dt>
-                    <dd>
-                        <input type="text" id ="bankcard" class="inp01" rel="银行帐号" name="account" value="{$data['account']}" placeholder="请填写与您提供的银行账户持卡人姓名一致的储蓄卡帐号">
-                    </dd>
-                </dl>
-                <dl>
-                    <dt><span>*</span>开户姓名：</dt>
-                    <dd>
-                        <input type="text" class="inp01" rel="开户姓名" id= "cardname"  name="accountmaster" value="{$data['accountmaster']}" placeholder="请填写与您提供的银行账户持卡人姓名开户姓名">
-                    </dd>
-                </dl>
-                <dl>
-                    <dt><span>*</span>手 机：</dt>
-                    <dd>
-                        <input type="text" class="inp01" id="head_search" rel="手机" name="tel_num" value="{$data['tel_num']}" placeholder="请填写你的手机号码">
-                    </dd>
-                </dl>
-                <dl>
-                    <dd>
-                        <a href="javascript:;" class="btn" type="button" onclick="saveCard(this)">提 交</a>
-                    </dd>
-                </dl>
-            </form>
+        <if condition="$_GET['edit'] eq 'yes'">
+            <div class="user-Release">
+                <form method="post" action="{:U('classroom/User/card')}" class="infobox">
+                    <dl>
+                        <dt><span>*</span>开户银行：</dt>
+                        <dd>
+                            <select class="inputcheckbox select" name="accounttype">
+                                <option value="">-选择银行-</option>
+                                <?php foreach($banks as $bank):?>
+                                <option <?php echo $data['accounttype']==$bank?' selected="selected"':''?> value="{$bank}">{$bank}</option>
+                                <?php endforeach;?>
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>开户省：</dt>
+                        <dd>
+                            {:W('Area',array('curPro'=>$data['province'],'curCity'=>$data['city'],'area'=>$data['area'],'city_names'=>$data['location'],'tpl'=>'zyCardArea'))}
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>开户分行地址：</dt>
+                        <dd>
+                            <textarea class="tex01" id="bankarea"  name="bankofdeposit" rows="3" cols="20">{$data['bankofdeposit']}</textarea>
+                            <p >详细的分行地址/开户行，如不清楚，请咨询银行客服。</p>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>银行帐号：</dt>
+                        <dd>
+                            <input type="text" id ="bankcard" class="inp01" rel="银行帐号" name="account" value="{$data['account']}" placeholder="请填写与您提供的银行账户持卡人姓名一致的储蓄卡帐号">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>开户姓名：</dt>
+                        <dd>
+                            <input type="text" class="inp01" rel="开户姓名" id= "cardname"  name="accountmaster" value="{$data['accountmaster']}" placeholder="请填写与您提供的银行账户持卡人姓名开户姓名">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><span>*</span>手 机：</dt>
+                        <dd>
+                            <input type="text" class="inp01" id="head_search" rel="手机" name="tel_num" value="{$data['tel_num']}" placeholder="请填写你的手机号码">
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dd>
+                            <a href="javascript:;" class="btn" type="button" onclick="saveCard(this)">提 交</a>
+                        </dd>
+                    </dl>
+                </form>
 
-            <style type="text/css">
-                .user-Release{padding:0 5% 20px}
-                .user-Release dt{color:#333;line-height: 36px;}
-                .user-Release dt span{color:#f23838;padding: 0 5px}
-                .user-Release dd select,.user-Release dd input{border:1px solid #eee;height: 30px;background: #f7f7f7;padding:0 15px;border-radius: 4px}
-                .user-Release dd textarea{width: 100%;line-height: 18px;border: 1px solid #eee;background: #f7f7f7;padding: 0 5px;border-radius: 4px;}
-                .user-Release dd p{color:#888;font-size: 12px;line-height: 30px;}
-                .user-Release dd input{width:100%;height: 36px;}
-                .user-Release dd .btn{background: #00bed4;color: #fff;font-size: 16px;text-align: center;margin-top: 20px;border-radius: 4px;line-height: 40px;}
-                .user-set-sz .label{ width:110px}
-                .user-set-sz li p{ left:115px}
-                .user-set-sz{ padding-left:130px}
-                .user-set-sz .user-submit{ width:332px;}
-            </style>
-        </div>
-        <?php else:?>
-        <div class="cent_r_box pb40 clearfix">
-            <div class="box_block">
-                <table class="table_ye" cellpadding="0" cellspacing="1" bordercolor="#dddddd"border="1" width="100%">
-                    <thead>
-                    <tr><td width="16%">银行卡</td>
-                        <td width="36%">卡号</td>
-                        <td width="16%">持卡人姓名</td>
-                        <td width="16%">联系方式</td>
-                        <td width="16%">操作</td>
-                    </tr></thead>
-                    <tbody><tr>
-                        <td><?php echo $data['accounttype']?></td>
-                        <td><?php echo $data['account']?></td>
-                        <td><?php echo $data['accountmaster']?></td>
-                        <td><?php echo $data['tel_num']?></td>
-                        <td><a href="{:U('classroom/User/card', array('edit'=>'yes'))}">修改</a></td>
-                    </tr>
-                    </tbody></table>
+                <style type="text/css">
+                    .user-Release{padding:0 5% 20px}
+                    .user-Release dt{color:#333;line-height: 36px;}
+                    .user-Release dt span{color:#f23838;padding: 0 5px}
+                    .user-Release dd select,.user-Release dd input{border:1px solid #eee;height: 30px;background: #f7f7f7;padding:0 15px;border-radius: 4px}
+                    .user-Release dd textarea{width: 100%;line-height: 18px;border: 1px solid #eee;background: #f7f7f7;padding: 0 5px;border-radius: 4px;}
+                    .user-Release dd p{color:#888;font-size: 12px;line-height: 30px;}
+                    .user-Release dd input{width:100%;height: 36px;}
+                    .user-Release dd .btn{background: #00bed4;color: #fff;font-size: 16px;text-align: center;margin-top: 20px;border-radius: 4px;line-height: 40px;}
+                    .user-set-sz .label{ width:110px}
+                    .user-set-sz li p{ left:115px}
+                    .user-set-sz{ padding-left:130px}
+                    .user-set-sz .user-submit{ width:332px;}
+                </style>
             </div>
-        </div>
+            <else/>
+
+            <if condition="$isEditCard">
+                <div class="cent_r_box pb40 clearfix">
+                    <div class="box_block">
+                        <table class="table_ye" cellpadding="0" cellspacing="1" bordercolor="#dddddd"border="1" width="100%">
+                            <thead>
+                            <tr><td width="16%">银行卡</td>
+                                <td width="36%">卡号</td>
+                                <td width="16%">持卡人姓名</td>
+                                <td width="16%">联系方式</td>
+                                <td width="16%">操作</td>
+                            </tr></thead>
+                            <tbody>
+                            <volist name="card_data" id="data">
+                                <tr><td><?php echo $data['accounttype']?></td>
+                                    <td><?php echo $data['account']?></td>
+                                    <td><?php echo $data['accountmaster']?></td>
+                                    <td><?php echo $data['tel_num']?></td>
+                                    <td><a href="javascript:;" onclick="doBond(this,{$data['id']})">解绑</a></td></tr>
+                            </volist>
+                            </tbody></table>
+                    </div>
+                    <a href="{:U('classroom/User/card', array('edit'=>'yes'))}">添加银行卡</a>
+                </div>
+
+                <else/>
+
+                <a href="{:U('classroom/User/card', array('edit'=>'yes'))}">添加银行卡</a>
+            </if>
+        </if>
+        <?php if($isEditCard):?>
+
+        <?php else:?>
+
         <?php endif;?>
     </div>
 </div>
 
 <script type="text/javascript">
 
-function saveCard(o){
-	var form = $(o).parents('form');
-	var val = form.find('select:first').children(':selected').val();
-	if(!$.trim(val)){
-		alert('请选择开户银行');
-		form.find('select:first').focus();
-		return false;
-	}
-	var province = form.find('select#province').children(':selected').val();
-	var city = form.find('select#city').children(':selected').val();
-	if(province<=0||city<=0){
-        alert('请选择开户省市');
-		return false;
-	}
-	
-	var itxts = form.find('input:text');
-	if(!$('#bankarea').val()){
-        alert('请输入分行地址/开户行');
-        $('#bankarea').focus(); return false;
-	}	if(!$('#cardname').val()){
-        alert('请输入分行地址/开户行');
-        $('#cardname').focus(); return false;
-	}
-	if(!/^\d{16,19}$/.test($('#bankcard').val())){
-        alert('请正确的银行帐号');
-        $('#bankcard').focus(); return false;
-	}
-	if(!/^1[3458][0-9]{9}$/.test($('#head_search').val())){
-        alert('请输入正确的手机');
-        $('#head_search').focus(); return false;
-	}
-	$.post('{:U("classroom/User/card")}', form.serialize(), function(data){
-		if(data.status){
-            alert('保存成功');
-			setTimeout(function(){
-				window.location = '{:U("classroom/User/card")}';
-			}, 2000);
-		}else{
-            alert('保存失败');
-		}
-	}, 'json');
-}
+    function saveCard(o){
+        var form = $(o).parents('form');
+        var val = form.find('select:first').children(':selected').val();
+        if(!$.trim(val)){
+            alert('请选择开户银行');
+            form.find('select:first').focus();
+            return false;
+        }
+        var province = form.find('select#province').children(':selected').val();
+        var city = form.find('select#city').children(':selected').val();
+        if(province<=0||city<=0){
+            alert('请选择开户省市');
+            return false;
+        }
+
+        var itxts = form.find('input:text');
+        if(!$('#bankarea').val()){
+            alert('请输入分行地址/开户行');
+            $('#bankarea').focus(); return false;
+        }	if(!$('#cardname').val()){
+            alert('请输入分行地址/开户行');
+            $('#cardname').focus(); return false;
+        }
+        if(!/^\d{16,19}$/.test($('#bankcard').val())){
+            alert('请正确的银行帐号');
+            $('#bankcard').focus(); return false;
+        }
+        if(!/^1[3458][0-9]{9}$/.test($('#head_search').val())){
+            alert('请输入正确的手机');
+            $('#head_search').focus(); return false;
+        }
+        $.post('{:U("classroom/User/card")}', form.serialize(), function(data){
+            if(data.status){
+                alert('保存成功');
+                setTimeout(function(){
+                    window.location = '{:U("classroom/User/card")}';
+                }, 2000);
+            }else{
+                alert('保存失败');
+            }
+        }, 'json');
+    }
+
+    function doBond(obj,id){
+        if(id == '' || !id){
+            alert("请选择要解绑的银行卡");return false;
+        }
+        if(confirm("确定解绑该银行卡？")){
+            $.post('{:U("classroom/User/doBondUncard")}', {id:id}, function(data){
+                if(data.status){
+                    alert(data.info);
+                    setTimeout(function(){
+                        window.location = "{:U('classroom/User/card')}";
+                    }, 2000);
+                }else{
+                    alert(data.info);
+                }
+            }, 'json');
+        }
+    }
 
 </script>
 

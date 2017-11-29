@@ -13,11 +13,11 @@ class AdminFinanceAction extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index']       = '独立账号列表';
-        $this->pageTab[] = array('title'=>'独立账号列表','tabHash'=>'index','url'=>U('school/AdminFinance/index'));
+        $this->pageTitle['index']       = '已审';
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('school/AdminFinance/index'));
         if(is_admin($this->mid)){
-            $this->pageTitle['finance']    = '待审核独立账号';
-            $this->pageTab[] = array('title'=>'待审核独立账号','tabHash'=>'finance','url'=>U('school/AdminFinance/finance'));
+            $this->pageTitle['finance']    = '待审';
+            $this->pageTab[] = array('title'=>'待审','tabHash'=>'finance','url'=>U('school/AdminFinance/finance'));
         }
         parent::_initialize();
 
@@ -185,11 +185,12 @@ class AdminFinanceAction extends AdministratorAction
                     D('ZyBcard')->add($data);
                 }
                 $return['data'] = "审核通过";
+                model('Notify')->sendNotify($finance['uid'],'admin_school_finance_ok');
             }
             if($status == -1){
                 $return['data']   = "驳回成功";
+                model('Notify')->sendNotify($finance['uid'],'admin_school_finance_reject');
             }
-            
         }else{
             $return['status'] = 0;
             $return['data']   = "审核失败";

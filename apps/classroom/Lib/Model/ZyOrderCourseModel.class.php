@@ -39,11 +39,11 @@ class ZyOrderCourseModel extends Model{
     }
 
     /**
-     * 通过套餐取得某个用户的课程订单列表
-     * @param integer $id 套餐订单ID，
-     * @param string $vl 该套餐包含的全部课程的id列表，逗号分割值
+     * 通过班级取得某个用户的课程订单列表
+     * @param integer $id 班级订单ID，
+     * @param string $vl 该班级包含的全部课程的id列表，逗号分割值
      * @param boolean $useVidKey 返回数组是否使用video_id作为键名
-     * @return array 返回包含该用户订购某个套餐下面的课程订单列表
+     * @return array 返回包含该用户订购某个班级下面的课程订单列表
      */
     public function getAlbumOrderList($id, $vl = null, $useVidKey = false){
         $where = "order_album_id = '$id'";
@@ -66,7 +66,7 @@ class ZyOrderCourseModel extends Model{
     }
 
     /**
-     * 取得套餐学习状态
+     * 取得班级学习状态
      * @param integer $uid 用户UID
      * @param integer $albumId 课程ID
      * @return integer|false (课程学习状态(0:未开始,1:学习中,2:已完成))，失败返回false
@@ -76,10 +76,10 @@ class ZyOrderCourseModel extends Model{
     }
 
     /**
-     * 取得套餐学习状态
+     * 取得班级学习状态
      * @param integer $uid 用户UID
-     * @param integer $albumId 套餐ID
-     * @return integer|false (套餐学习状态(0:未开始,1:学习中,2:已完成))，失败返回false
+     * @param integer $albumId 班级ID
+     * @return integer|false (班级学习状态(0:未开始,1:学习中,2:已完成))，失败返回false
      */
     public function getAlbumLearnStatus($uid, $albumId){
         $id = $this->albumOrder->getAlbumOrderId($uid, $albumId);
@@ -103,11 +103,11 @@ class ZyOrderCourseModel extends Model{
     }
 
     /**
-     * 课程或套餐的学习状态
+     * 课程或班级的学习状态
      * @param integer $uid 用户UID
-     * @param integer $id 课程ID/套餐ID
-     * @param $type 1为课程，否则为套餐
-     * @return integer|false (课程/套餐学习状态(0:未开始,1:学习中,2:已完成))，失败返回false
+     * @param integer $id 课程ID/班级ID
+     * @param $type 1为课程，否则为班级
+     * @return integer|false (课程/班级学习状态(0:未开始,1:学习中,2:已完成))，失败返回false
      */
     public function getLearnStatus($uid, $id, $type){
         if($type == 1){
@@ -128,10 +128,10 @@ class ZyOrderCourseModel extends Model{
     }
 
     /**
-     * 查询一个用户是否购买过一个套餐
+     * 查询一个用户是否购买过一个班级
      * @param integer $uid 用户UID
-     * @param integer $albumId 套餐ID
-     * @return integer|false 返回对应的套餐订单ID，如果失败则返回false
+     * @param integer $albumId 班级ID
+     * @return integer|false 返回对应的班级订单ID，如果失败则返回false
      */
     public function isBuyAlbum($uid, $albumId){
         $video = $this->where(array('uid'=>$uid, 'order_album_id'=>$albumId,'order_type'=>1))->field('id,pay_status')->find();
@@ -151,7 +151,7 @@ class ZyOrderCourseModel extends Model{
      */
     public function isBuyVideo($uid, $videoId){
         $video = $this->where(array('uid'=>$uid, 'video_id'=>$videoId))->field('id,pay_status')->find();
-        if($video['pay_status'] == 3 || $video['pay_status'] == 6){
+        if($video['pay_status'] == 3 || $video['pay_status'] == 4 || $video['pay_status'] == 6){
             return $video['id'];
         }else{
             return false;

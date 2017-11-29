@@ -45,6 +45,9 @@ class VideoApi extends Api
 
         $time                 = time();
         $where                = "is_del=0 AND is_activity=1 AND uctime>$time AND listingtime<$time";
+        if( $this->data['vip_id'] ){
+            $where .= " AND vip_lveel = " . $this->data['vip_id'];
+        }
         $this->data['cateId'] = intval($this->data['cateId']);
         if ($this->data['cateId'] > 0) {
             $idlist = implode(',', $this->category->getVideoChildCategory(intval($this->data['cateId']), 1));
@@ -85,23 +88,7 @@ class VideoApi extends Api
             $value['price']       = getPrice($value, $this->mid); // 计算价格
             $value['imageurl']    = getCover($value['cover'], 280, 160);
             $value['video_score'] = round($value['video_score'] / 20); // 四舍五入
-            if ($value['type'] == 1) {
-                $value['teacher_name'] = D('ZyTeacher', 'classroom')->where(array('id' => $value['teacher_id']))->getField('name');
-            } else {
-                switch ($value['live_type']) {
-                    case 1:
-                        $tid = M('zy_live_zshd')->where(array('live_id' => $value['id']))->getField('speaker_id');
-                        break;
-                    case 3:
-                        $tid = M('zy_live_gh')->where(array('live_id' => $value['id']))->getField('speaker_id');
-                        break;
-                    case 4:
-                        $tid = M('zy_live_cc')->where(array('live_id' => $value['id']))->getField('speaker_id');
-                        break;
-                    default;
-                }
-                $value['teacher_name'] = D('ZyTeacher', 'classroom')->where(array('id' => $tid))->getField('name');
-            }
+            $value['teacher_name'] = D('ZyTeacher', 'classroom')->where(array('id' => $value['teacher_id']))->getField('name');
             $value['buy_count']     = (int) D('ZyOrderCourse', 'classroom')->where(array('video_id' => $value['id']))->count();
             $value['section_count'] = (int) M('zy_video_section')->where(['vid' => $value['id'], 'pid' => ['neq', 0]])->count();
         }
@@ -127,8 +114,6 @@ class VideoApi extends Api
         $data['vip_level']        = intval($data['vip_level']);
         $data['reviewCount']      = D('ZyReview', 'classroom')->getReviewCount(1, $id);
 
-        $data['video_title']         = $data['video_title'];
-        $data['video_intro']         = $data['video_intro'];
         $data['video_category_name'] = getCategoryName($data['video_category'], true);
         $data['cover']               = getCover($data['cover'], 280, 160);
         $data['iscollect']           = D('ZyCollection', 'classroom')->isCollect($id, 'zy_video', intval($this->mid));
@@ -145,7 +130,7 @@ class VideoApi extends Api
         ));
         $data['isBuy']       = D('ZyOrderCourse', 'classroom')->isBuyVideo($this->mid, $id) ? 1 : 0;
         $data['is_buy']      = $data['isBuy'];
-        $data['is_play_all'] = ($data['isBuy'] || intval($data['mzprice']['price']) <= 0) ? 1 : 0;
+        $data['is_play_all'] = ($data['isBuy'] || floatval ($data['mzprice']['price']) <= 0) ? 1 : 0;
         //$data ['user'] = M ( 'User' )->getUserInfo ( $data ['uid'] );
         $data['recommend_list'] = $this->recommend(array('type' => 1));
         $data['school_info']    = model('School')->getSchoolInfoById($data['mhm_id']);
@@ -230,18 +215,18 @@ class VideoApi extends Api
 
     /**
      * 获取提问/笔记/点评
-     * @param integer kztype //数据分类 1:课程;2:套餐;
-     * @param integer kzid //课程或者套餐ID
+     * @param integer kztype //数据分类 1:课程;2:班级;3:线下课;4:讲师
+     * @param integer kzid //课程或者班级ID
      * @param integer type //分类类型 1:提问,2:点评,3:笔记
      */
     public function render()
     {
-        $kztype = intval($this->data['kztype']); //数据分类 1:课程;2:套餐;
-        $kzid   = intval($this->data['kzid']); //课程或者套餐ID
+        $kztype = intval($this->data['kztype']); //数据分类 1:课程;2:班级;3:线下课;4:讲师
+        $kzid   = intval($this->data['kzid']); //课程或者班级ID
         $type   = intval($this->data['type']); //分类类型 1:提问,2:点评,3:笔记
 
         $stable = parse_name($this->tableList[$type], 1);
-        //如果是课程的话就是=，套餐就是in
+        //如果是课程的话就是=，班级就是in
         $map['oid']       = $kzid;
         $map['parent_id'] = 0;
         $map['type']      = $kztype;
@@ -273,10 +258,10 @@ class VideoApi extends Api
                 if ($value['type'] == 1) {
 //是课程
                     $video_title          = M('zy_video')->where('id=' . $value['oid'] . ' and is_del=0')->getField('video_title');
-                    $value['video_title'] = $video_title ? $video_title : $this->exitJson(array(), 0, '套餐找不到了');
+                    $value['video_title'] = $video_title ? $video_title : $this->exitJson(array(), 0, '班级找不到了');
                 } else {
                     $video_title          = M('album')->where('id=' . $value['oid'] . ' and is_del=0')->getField('album_title');
-                    $value['video_title'] = $video_title ? $video_title : $this->exitJson(array(), 0, '套餐找不到了');
+                    $value['video_title'] = $video_title ? $video_title : $this->exitJson(array(), 0, '班级找不到了');
                 }
             }
             $value['username'] = msubstr($value['username'], 0, 8);
@@ -292,7 +277,7 @@ class VideoApi extends Api
         return $count;
     }
 
-    //取课程/套餐分类
+    //取课程/班级分类
     public function getVideoGroup()
     {
         $cateId = intval($this->data['cateId']);
@@ -322,15 +307,15 @@ class VideoApi extends Api
         }
         $this->exitJson($data);
     }
-    //添加课程/套餐提问
+    //添加课程/班级提问
     public function addQuestion()
     {
         $data['parent_id']       = intval($this->data['pid']);
         $data['qst_title']       = t($this->data['title']);
         $data['qst_description'] = t($this->data['content']);
-        $data['type']            = intval($this->data['kztype']); //提问类型【1:课程;2:套餐;】
+        $data['type']            = intval($this->data['kztype']); //提问类型【1:课程;2:班级;】
         $data['uid']             = intval($this->mid);
-        $data['oid']             = intval($this->data['kzid']); //对应的ID【套餐ID/课程ID】
+        $data['oid']             = intval($this->data['kzid']); //对应的ID【班级ID/课程ID】
         $data['qst_source']      = '手机端';
         $data['ctime']           = time();
 
@@ -345,14 +330,14 @@ class VideoApi extends Api
         }
         $i = M('ZyQuestion')->add($data);
         if ($i) {
-            //更改套餐或课程的总提问数
+            //更改班级或课程的总提问数
             if (intval($_POST['kztype']) == 1) {
                 $_data['video_question_count'] = array('exp', '`video_question_count` + 1');
                 //课程
                 M('ZyVideo')->where(array('id' => array('eq', $data['oid'])))->save($_data);
             } else {
                 $_data['album_question_count'] = array('exp', '`album_question_count` + 1');
-                //套餐
+                //班级
                 M('Album')->where(array('id' => array('eq', $data['oid'])))->save($_data);
             }
             $_data['qst_comment_count'] = array('exp', '`qst_comment_count` + 1');
@@ -405,13 +390,13 @@ class VideoApi extends Api
         }
         $this->exitJson($data);
     }
-    //添加课程/套餐笔记
+    //添加课程/班级笔记
     public function addNote()
     {
         $data['parent_id']        = intval($this->data['pid']);
         $data['type']             = intval($this->data['kztype']); //
         $data['uid']              = intval($this->mid);
-        $data['oid']              = intval($this->data['kzid']); //对应的ID【套餐ID/课程ID】
+        $data['oid']              = intval($this->data['kzid']); //对应的ID【班级ID/课程ID】
         $data['is_open']          = intval($this->data['is_open']);
         $data['note_source']      = '手机端';
         $data['note_title']       = filter_keyword(t($this->data['title']));
@@ -424,7 +409,7 @@ class VideoApi extends Api
             $this->exitJson(array(), 10017, '添加笔记需要先登录');
         }
         if (!$data['oid']) {
-            $this->exitJson(array(), 10017, '请选择课程或套餐');
+            $this->exitJson(array(), 10017, '请选择课程或班级');
         }
         if (!$data['note_title']) {
             $this->exitJson(array(), 10017, '请输入笔记标题');
@@ -434,14 +419,14 @@ class VideoApi extends Api
         }
         $i = M('ZyNote')->add($data);
         if ($i) {
-            //更改套餐或课程的总提问数
+            //更改班级或课程的总提问数
             if (intval($_POST['kztype']) == 1) {
                 $_data['video_note_count'] = array('exp', '`video_note_count` + 1');
                 //课程
                 M('ZyVideo')->where(array('id' => array('eq', $data['oid'])))->save($_data);
             } else {
                 $_data['album_note_count'] = array('exp', '`album_note_count` + 1');
-                //套餐
+                //班级
                 M('Album')->where(array('id' => array('eq', $data['oid'])))->save($_data);
             }
             $_data['note_comment_count'] = array('exp', '`note_comment_count` + 1');
@@ -479,7 +464,7 @@ class VideoApi extends Api
     //添加点评api
     public function addReview()
     {
-        //查看此人是否已经购买此课程//套餐
+        //查看此人是否已经购买此课程//班级
         if (intval($this->data['kztype']) == 1) {
             //课程
             //判断是否是自己添加的课程
@@ -492,10 +477,16 @@ class VideoApi extends Api
             if (!$isbuy) {
                 $this->exitJson(array(), 10019, '需要购买之后才能点评');
             }
-        } else {
-            //套餐
+        } else if (intval($this->data['kztype']) == 2) {
+            //班级
             $isbuy = isBuyAlbum($this->mid, intval($this->data['kzid']));
             if (!$isbuy) {
+                $this->exitJson(array(), 10019, '需要购买之后才能点评');
+            }
+        } else if (intval($this->data['kztype']) == 3) {
+            //线下课
+            $isbuy = M('zy_order_teacher')->where(array('uid' => $this->mid, 'video_id' => intval($this->data['kzid'])))->getField('pay_status');
+            if ($isbuy == 3) {
                 $this->exitJson(array(), 10019, '需要购买之后才能点评');
             }
         }
@@ -511,7 +502,7 @@ class VideoApi extends Api
         $data['type']               = intval($this->data['kztype']); //
         $data['uid']                = intval($this->mid);
         $data['is_secret']          = intval($this->data['is_secret']);
-        $data['oid']                = intval($this->data['kzid']); //对应的ID【套餐ID/课程ID】
+        $data['oid']                = intval($this->data['kzid']); //对应的ID【班级ID/课程ID】
         $data['review_source']      = '手机客户端';
         $data['review_description'] = filter_keyword(t($this->data['content']));
         $data['ctime']              = time();
@@ -530,7 +521,7 @@ class VideoApi extends Api
         }
         $i = M('ZyReview')->add($data);
         if ($i) {
-            //点评之后 要计算此套餐的总评分
+            //点评之后 要计算此班级的总评分
             $star = M('ZyReview')->where(array('oid' => intval($this->data['kzid']), 'parent_id' => 0, 'type' => array('eq', intval($this->data['kztype']))))->Avg('star');
             if (intval($this->data['kztype']) == 1) {
                 $_data['video_score']         = intval($star);
@@ -544,10 +535,10 @@ class VideoApi extends Api
                 } else {
                     model('Credit')->getCreditInfo($this->mid, 13);
                 }
-            } else {
+            } else if (intval($this->data['kztype']) == 2) {
                 $_data['album_score']         = intval($star);
                 $_data['album_comment_count'] = array('exp', '`album_comment_count` + 1');
-                //套餐
+                //班级
                 M('Album')->where(array('id' => array('eq', $data['oid'])))->save($_data);
             }
             //session('mzaddreview',time()+180);
@@ -569,7 +560,7 @@ class VideoApi extends Api
         $fields .= "{$otablename}.`learn_status`,{$otablename}.`uid`,{$otablename}.`id` as `oid`,";
         $fields .= "{$vtablename}.`video_title`,{$vtablename}.`video_category`,{$vtablename}.`id`,{$vtablename}.`video_intro`,{$vtablename}.video_score,";
         $fields .= "{$vtablename}.`cover`,{$vtablename}.`video_address`,{$vtablename}.`teacher_id`,{$vtablename}.video_order_count,{$vtablename}.t_price";
-        // 不是通过套餐购买的
+        // 不是通过班级购买的
         $where = "{$otablename}.`is_del`=0 and {$otablename}.`uid`={$uid} AND {$otablename}.pay_status = 3 AND $vtablename.type= 1";
 
         $data = M('zy_order_course')->join("{$vtablename} on {$otablename}.`video_id`={$vtablename}.`id`")->where($where)->field($fields)->limit($this->_limit())->select();
@@ -653,7 +644,7 @@ class VideoApi extends Api
     }
 
     /**
-     * 删除购买的套餐和课程 <--type   1:课程;2:套餐;-->
+     * 删除购买的班级和课程 <--type   1:课程;2:班级;-->
      * @param int $return
      * @return void|array
      */
@@ -768,8 +759,8 @@ class VideoApi extends Api
     /**
      * classroom/Public/collect
      * 收藏功能
-     * 套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
-     *  1=>'album',//套餐收藏
+     * 班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+     *  1=>'album',//班级收藏
      *    2=>'zy_video',//课程收藏
      * @param int $type 0:取消收藏;1:收藏;
      * @return bool
@@ -778,7 +769,7 @@ class VideoApi extends Api
     {
         $zyCollectionMod = D('ZyCollection', 'classroom');
         $type            = intval($this->data['type']); //0:取消收藏;1:收藏;
-        $sctype          = intval($this->data['sctype']); //套餐收藏/课程收藏/提问收藏/笔记收藏/点评收藏
+        $sctype          = intval($this->data['sctype']); //班级收藏/课程收藏/提问收藏/笔记收藏/点评收藏/线下课收藏
         $source_id       = intval($this->data['source_id']); //资源ID
         if ($sctype <= 0) {
             $this->exitJson(array(), 10023, '收藏资源错误');
@@ -883,11 +874,13 @@ class VideoApi extends Api
             $vid        = $val;
             $sql        = '(time_limit = 0 or time_limit >= ' . time() . ')';
             $pay_status = (int) M('zy_order_course')->where(array('uid' => intval($this->mid), 'video_id' => $val, '_string' => $sql))->getField('pay_status');
-            if ($pay_status === 1) {
-                $this->exitJson((object) [], 0, '已有相同课程订单存在');
-            } else if ($pay_status === 3) {
+
+            if ($pay_status === 3) {
                 $this->exitJson((object) [], 0, '该课程你已经购买,无需重复购买');
+            } else if ($pay_status == 4){
+                $this->exitJson((object) [], 0, '该课程正在申请退款');
             }
+
             $avideos[$val]          = D("ZyVideo", 'classroom')->getVideoById($val);
             $avideos[$val]['price'] = getPrice($avideos[$val], $uid, true, true);
             $videodata              = $videodata . D('ZyVideo', 'classroom')->getVideoTitleById($val) . ",";
@@ -912,7 +905,17 @@ class VideoApi extends Api
                 if ($total_price === false) {
                     $this->exitJson((object) [], 0, $this->error);
                 }
-
+                if($total_price === 0){
+                    $coupon_id = M('coupon_user')->where(['id'=>$this->coupon_id])->getField('cid');
+                    $vtype = 'zy_video';
+                    $res = D('ZyVideo','classroom')->addOrder($vid,$vtype,$coupon_id);
+                    if($res){
+                        $order_info = $this->getSourceInfo($vid);
+                        $this->exitJson(['is_free' => 1, 'order_info' => $order_info], 1, '购买成功');
+                    } else {
+                        $this->exitJson((object) [], 0, '购买失败');
+                    }
+                }
             }
             $ext_data = [
                 'coupon_id' => $this->coupon_id,
@@ -931,8 +934,8 @@ class VideoApi extends Api
                     'uid'          => $this->mid,
                     'type'         => 1,
                     'money'        => $total_price,
-                    'note'         => "购买课程:{$videodata}",
-                    'pay_type'     => 'alipay',
+                    'note'         => "{$this->site['site_keyword']}在线教育-购买课程：{$videodata}",
+                    'pay_type'     => $this->pay_for == 'wxpay' ? 'app_wxpay' : $this->pay_for,
                     'pay_pass_num' => $pay_pass_num,
                 ));
                 if (!$pay_id) {
@@ -940,28 +943,43 @@ class VideoApi extends Api
                 }
 
                 $pay_data['is_free'] = 0;
-                $pay_for             = in_array($this->pay_for, array('alipay', 'wxpay')) ? [$this->pay_for] : ['alipay', 'wxpay'];
+                $pay_for             = in_array($this->pay_for, array('alipay', 'wxpay','lcnpay')) ? [$this->pay_for] : ['alipay', 'wxpay','lcnpay'];
                 foreach ($pay_for as $p) {
                     switch ($p) {
                         case "alipay":
                             $pay_data['alipay'] = $this->alipay(array(
                                 'vid'          => $vid,
-                                'vtype'        => 'zy_video',
-                                'out_trade_no' => $pay_pass_num,
                                 'total_fee'    => $total_price,
-                                'subject'      => "购买课程:{$videodata}",
+                                'out_trade_no' => $pay_pass_num,
+                                'vtype'        => 'zy_video',
+                                'subject'      => "{$this->site['site_keyword']}在线教育-购买课程：{$videodata}",
                                 'coupon_id'    => $this->coupon_id,
                             ), 'video');
                             break;
                         case "wxpay":
                             $pay_data['wxpay'] = $this->wxpay([
-                                'subject'      => "购买课程:{$videodata}",
+                                'vid'          => $vid,
                                 'total_fee'    => $total_price * 100,
                                 'out_trade_no' => $pay_pass_num,
-                                'vid'          => $vid,
                                 'vtype'        => 'zy_video',
+                                'subject'      => "{$this->site['site_keyword']}在线教育-购买课程：{$videodata}",
                                 'coupon_id'    => $this->coupon_id,
                             ], 'video');
+                            break;
+                        case "lcnpay":
+                            $res = $this->lcnpay([
+                                'vid'          => $vid,
+                                'total_fee'    => $total_price,
+                                'out_trade_no' => $pay_pass_num,
+                                'vtype'        => 'zy_video',
+                                'subject'      => "购买课程：{$videodata}",
+                                'coupon_id'    => $this->coupon_id,
+                            ], 'video');
+                            if($res === true){
+                                $this->exitJson([], 1,"购买成功");
+                            }else{
+                                $this->exitJson([], 0,$res);
+                            }
                             break;
                     }
                 }
@@ -1100,7 +1118,7 @@ class VideoApi extends Api
                 'question',
             ));
             $info['isBuy']       = D('ZyOrder', 'classroom')->isBuyVideo($this->mid, $source_id);
-            $info['is_play_all'] = ($info['isBuy'] || intval($info['mzprice']['price']) <= 0) ? 1 : 0;
+            $info['is_play_all'] = ($info['isBuy'] || floatval($info['mzprice']['price']) <= 0) ? 1 : 0;
             $info['school_info'] = model('School')->getSchoolInfoById($info['mhm_id']);
         }
         return $info;
@@ -1119,7 +1137,7 @@ class VideoApi extends Api
             }
             $this->coupon = $coupon;
             //优惠券类型是否符合
-            if (!in_array($coupon['type'], [1, 2])) {
+            if (!in_array($coupon['type'], [1, 2, 5])) {
                 $this->error = '该优惠券不能用于购买课程';
                 return false;
             }
@@ -1138,6 +1156,10 @@ class VideoApi extends Api
                     break;
                 case "2":
                     $price = $price * $coupon['discount'] / 10;
+                    break;
+                case "5":
+                    $price = 0;
+                    break;
                 default:
                     break;
             }
@@ -1210,7 +1232,7 @@ class VideoApi extends Api
         $id             = intval($this->data['id']);
         $video_mod      = D('ZyVideo', 'classroom');
         $video_mod->mid = $this->mid;
-        $list           = $video_mod->getCanuseCouponList($id);
+        $list           = $video_mod->getCanuseCouponList($id,$this->canot);
         $list ? $this->exitJson($list, 1) : $this->exitJson((object) [], 0, '没有可用优惠券');
     }
 
@@ -1263,7 +1285,7 @@ class VideoApi extends Api
         }
 
         $time  = time();
-        $where = "is_del=0 AND is_activity=1 ";
+        $where = "is_del=0 AND is_activity=1 AND uctime>$time";
         if (isset($this->data['time'])) {
             list($listingtime, $uctime) = explode(',', $this->data['time']);
             if ($listingtime && $uctime) {
@@ -1295,7 +1317,9 @@ class VideoApi extends Api
             $value['t_price']      = $value['course_price'];
             $value['price']        = getPrice($value, $this->mid, true, false, 4); // 计算价格
             $value['imageurl']     = getAttachUrlByAttachId($value['cover']);
-            $value['teacher_name'] = D('ZyTeacher', 'classroom')->where(array('id' => $value['teacher_id']))->getField('name');
+            $teacher = D('ZyTeacher','classroom')->where(array('id'=>$value['teacher_id']))->field('uid,name')->find();
+            $value['teacher_name']= $teacher['name'];
+            $value['teacher_uid'] = $teacher['uid'];
             $value['teach_areas']  = D('ZyTeacher')->where('id=' . $value['teacher_id'])->getField('Teach_areas');
             // 是否已购买
             $status          = M('zy_order_teacher')->where(array('uid' => $this->mid, 'video_id' => $value['course_id']))->getField('pay_status');
@@ -1321,8 +1345,11 @@ class VideoApi extends Api
             $this->exitJson(array(), 10007, '线下课程不存在');
         }
         // 是否已购买
-        $status         = M('zy_order_teacher')->where(array('uid' => $this->mid, 'video_id' => $data['course_id']))->getField('pay_status');
-        $data['is_buy'] = $status ? 1 : 0;
+        $data['is_buy'] = 0;
+        $status         = M('zy_order_teacher')->where(array('uid' => $this->mid, 'video_id' => $id))->getField('pay_status');
+        if($status == 3){
+            $data['is_buy'] = 1;
+        }
         $this->exitJson($data);
     }
 
@@ -1343,23 +1370,27 @@ class VideoApi extends Api
         $vid         = 0;
         foreach ($vids as $key => $val) {
             $vid        = $val;
+            //判断是否为该用户的线下课程
+            $teacher_id = M('zy_teacher_course')->where('course_id='.$vid)->getField('teacher_id');
+            $teacher_uid = M('zy_teacher')->where('id='.$teacher_id)->getField('uid');
+            if($uid == $teacher_uid){
+                $this->exitJson((object) [], 0, '该课程不需要您购买');
+            }
             $pay_status = (int) M('zy_order_teacher')->where(array('uid' => intval($this->mid), 'video_id' => $val))->getField('pay_status');
-            if ($pay_status === 1) {
-                $this->exitJson((object) [], 0, '已有相同线下课程订单存在');
-            } else if ($pay_status === 3) {
+            if ($pay_status === 3) {
                 $this->exitJson((object) [], 0, '该线下课程你已经购买,无需重复购买');
             }
-            $avideos[$val] = D('ZyLineClass', 'classroom')->getLineclassById($val);
-            $videodata     = $avideos[$val]['course_name'];
-            if ($avideos[$val]['price'] <= 0 || $avideos[$val]['is_charge'] == 1) {
+            $avideos[$val]          = D('ZyLineClass', 'classroom')->getLineclassById($val);
+            $avideos[$val]['price'] = getPrice($avideos[$val], $uid, true, true, 4);
+            $videodata              = $avideos[$val]['course_name'];
+            if ($avideos[$val]['price']['price'] <= 0 || $avideos[$val]['is_charge'] == 1) {
                 $this->addOrder($avideos[$val], $avideos[$val]['price'], array(), 'teacher');
             } else {
                 // 当购买过之后，或者课程的创建者是当前购买者的话，价格为0
-                $avideos[$val]['is_buy'] = M('zy_order_teacher')->where(array('uid' => $uid, 'video_id' => $val))->getField('pay_status') ?: 0;
-                $total_price += ($avideos[$val]['is_buy'] || $avideos[$val]['uid'] == $uid) ? 0 : round($avideos[$val]['price'], 2);
+                $avideos[$val]['is_buy'] = M('zy_order_teacher')->where(array('uid' => $uid, 'video_id' => $val, 'pay_status' => 3))->count() ?: 0;
+                $total_price += ($avideos[$val]['is_buy'] || $avideos[$val]['uid'] == $uid) ? 0 : round($avideos[$val]['price']['price'], 2);
             }
         }
-
         //需要付费
         if ($total_price > 0) {
             //同步更新过期的支付订单
@@ -1378,7 +1409,7 @@ class VideoApi extends Api
                     'type'         => 1,
                     'money'        => $total_price,
                     'note'         => "购买课程:{$videodata}",
-                    'pay_type'     => 'alipay',
+                    'pay_type'     => $this->pay_for == 'wxpay' ? 'app_wxpay' : $this->pay_for,
                     'pay_pass_num' => $pay_pass_num,
                 ));
                 if (!$pay_id) {
@@ -1386,46 +1417,47 @@ class VideoApi extends Api
                 }
 
                 $pay_data['is_free'] = 0;
-
-                if (in_array($this->pay_for, array('alipay', 'wxpay'))) {
-                    if ($this->pay_for == 'alipay') {
-                        $pay_data['alipay'] = $this->alipay(array(
-                            'vid'          => $vid,
-                            'vtype'        => 'zy_teacher',
-                            'out_trade_no' => $pay_id,
-                            'total_fee'    => $total_price,
-                            'subject'      => "购买课程:{$videodata}",
-                            'coupon_id'    => $this->coupon_id,
-                        ), 'video');
-                    } elseif ($this->pay_for == 'wxpay') {
-                        $pay_data['wxpay'] = $this->wxpay([
-                            'body'         => "购买课程:{$videodata}",
-                            'money'        => $total_price * 100,
-                            'out_trade_no' => $pay_id,
-                            'vid'          => $vid,
-                            'vtype'        => 'zy_teacher',
-                            'coupon_id'    => $this->coupon_id,
-                        ], 'video');
+				//$pay_for             = in_array($this->pay_for, array('alipay', 'wxpay')) ? [$this->pay_for] : ['alipay', 'wxpay'];
+                $pay_for             = in_array($this->pay_for, array('alipay', 'wxpay','lcnpay')) ? [$this->pay_for] : ['alipay', 'wxpay','lcnpay'];
+                foreach ($pay_for as $p) {
+                    switch ($p) {
+                        case "alipay":
+                            $pay_data['alipay'] = $this->alipay(array(
+                                'vid'          => $vid,
+                                'vtype'        => 'zy_teacher',
+                                'out_trade_no' => $pay_pass_num,
+                                'total_fee'    => $total_price,
+                                'subject'      => "购买课程:{$videodata}",
+                                'coupon_id'    => $this->coupon_id,
+                            ),"video");
+                            break;
+                        case "wxpay":
+                            $pay_data['wxpay'] = $this->wxpay([
+                                'subject'         => "购买课程:{$videodata}",
+                                'total_fee'    => $total_price * 100,
+                                'out_trade_no' => $pay_pass_num,
+                                'vid'          => $vid,
+                                'vtype'        => 'zy_teacher',
+                                'coupon_id'    => $this->coupon_id,
+                            ], 'video');
+                            break;
+                        case "lcnpay":
+                            $res = $this->lcnpay([
+                                'vid'          => $vid,
+                                'total_fee'    => $total_price,
+                                'out_trade_no' => $pay_pass_num,
+                                'vtype'        => 'zy_teacher',
+                                'subject'      => "购买课程：{$videodata}",
+                                'coupon_id'    => $this->coupon_id,
+                            ], 'video');
+                            if($res === true){
+                                $this->exitJson([], 1,"购买成功");
+                            }else{
+                                $this->exitJson([], 0,$res);
+                            }
+                            break;
                     }
-                } else {
-                    $pay_data['alipay'] = $this->alipay(array(
-                        'vid'          => $vid,
-                        'vtype'        => 'zy_teacher',
-                        'out_trade_no' => $pay_id,
-                        'total_fee'    => $total_price,
-                        'subject'      => "购买课程:{$videodata}",
-                        'coupon_id'    => $this->coupon_id,
-                    ), 'video');
-                    $pay_data['wxpay'] = $this->wxpay([
-                        'body'         => "购买课程:{$videodata}",
-                        'money'        => $total_price * 100,
-                        'out_trade_no' => $pay_id,
-                        'vid'          => $vid,
-                        'vtype'        => 'zy_teacher',
-                        'coupon_id'    => $this->coupon_id,
-                    ], 'video');
-                }
-
+				}
                 $this->exitJson($pay_data, 1);
             }
             $this->exitJson((object) [], 0, '订单生成失败,请重新尝试');
@@ -1438,7 +1470,7 @@ class VideoApi extends Api
             $s['body']    = "恭喜您成功购买线下课程：" . trim($videodata, ",");
             $s['ctime']   = time();
             model('Notify')->sendMessage($s);
-            $order_info = $this->getSourceInfo($vid);
+            $order_info = $data = D ( 'ZyLineClass','classroom' )->getLineclassById($vid);
             //操作积分
             model('Credit')->getCreditInfo($this->mid, 30);
             $this->exitJson(['is_free' => 1, 'order_info' => $order_info], 1, '购买成功');

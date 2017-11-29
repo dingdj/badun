@@ -12,11 +12,11 @@ class AdminGoodsAddressAction extends AdministratorAction
      * 初始化，
      */
     public function _initialize(){
-        $this->pageTitle['index']       = '收货地址列表';
-        $this->pageTitle['addAddress']       = '添加收货地址';
+        $this->pageTitle['index']       = '列表';
+        $this->pageTitle['addAddress']       = '添加';
 
-        $this->pageTab[] = array('title'=>'收货地址列表','tabHash'=>'index','url'=>U('mall/AdminGoodsAddress/index'));
-        $this->pageTab[] = array('title'=>'添加收货地址','tabHash'=>'addAddress','url'=>U('mall/AdminGoodsAddress/addAddress'));
+        $this->pageTab[] = array('title'=>'列表','tabHash'=>'index','url'=>U('mall/AdminGoodsAddress/index'));
+        $this->pageTab[] = array('title'=>'添加','tabHash'=>'addAddress','url'=>U('mall/AdminGoodsAddress/addAddress'));
         parent::_initialize();
     }
 
@@ -151,7 +151,7 @@ class AdminGoodsAddressAction extends AdministratorAction
      */
     public function editAddress(){
         $_REQUEST ['tabHash'] = 'editAddress';
-        $this->pageTitle ['editAddress'] = '编辑收货地址';
+        $this->pageTitle ['editAddress'] = '编辑';
 
         $id = intval($_REQUEST ['id']);
         $data = M('Address')->find($id);
@@ -160,7 +160,7 @@ class AdminGoodsAddressAction extends AdministratorAction
             $this->error ( '参数错误' );
             exit;
         }
-        $this->pageTab [] = array ('title' => '编辑收货地址', 'tabHash' => 'editAddress','url' => U ( 'mall/AdminGoodsAddress/editAddress' ));
+        $this->pageTab [] = array ('title' => '编辑', 'tabHash' => 'editAddress','url' => U ( 'mall/AdminGoodsAddress/editAddress' ));
 
         $this->savePostUrl = U ( 'mall/AdminGoodsAddress/addAddress', array ('id' => $id) );
         $this->assign('data',$data);

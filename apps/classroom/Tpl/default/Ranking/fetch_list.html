@@ -5,7 +5,7 @@
 	} ?>
 	<em class="rnum hot"><php>if($data['nowPage'] > 1){</php>{$page}.<php>} else {</php>{$key + 1}.<php>}</php></em>
 	<div class="box_mainb w276 fl">
-		<php>if($vo['type'] == 2){</php><p class="sj_r">套餐</p><php>}</php>
+		<php>if($vo['type'] == 2){</php><p class="sj_r">班级</p><php>}</php>
 		<php>if($vo['is_buy']){</php><p class="sj_l">已支付</p><php>}</php>
 		<?php if($vo['is_offical'] == 1):?>
 			<div class="tag_box">
@@ -61,7 +61,7 @@
 					<a class="topics fl" data-id="{$vo['id']}"><span class="Test_<?php echo in_array($vo['id'], $vms)?'true':'wrong';?>"></span>如需组合，请勾选 </a>
 					<a class="fr look" href="{:U('classroom/Video/view',array('id'=>$vo['id']))}" target="_blank">查看课程</a>
 				<php>} else {</php>
-					<a class="fr look" href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" target="_blank">查看套餐</a>
+					<a class="fr look" href="{:U('classroom/Album/view',array('id'=>$vo['id']))}" target="_blank">查看班级</a>
 				<php>}</php>
 			</div>
 		</div>

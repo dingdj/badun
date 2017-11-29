@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 
 <!--content start-->
 <div class="body">
@@ -243,9 +243,7 @@
      */
     function huifuBang(cate,id){
         if(MID==0){
-            if(confirm("该操作需要登录1111？")){
-                window.location.href = "{:U('public/Passport/login_g')}";
-            }
+            window.location.href = "{:U('public/Passport/login_g')}";
             return;
         }
         var cmval= $('#content').val();
@@ -364,4 +362,4 @@
         }
     };
 </script>
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

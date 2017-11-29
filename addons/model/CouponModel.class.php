@@ -39,6 +39,11 @@ class CouponModel extends Model{
 			$v['vip_grade_list'] = M('user_vip')->where(['id'=>$v['vip_grade']])->find() ?: array();
 			isset($v['vip_grade_list']['cover']) && $v['vip_grade_list']['cover_url'] = getCover($v['vip_grade_list']['cover']);
             $v['vip_grade_list'] = (object)$v['vip_grade_list'];
+            if($v['video_type'] == 1 || $v['video_type'] == 2){
+                $v['video_title'] = D('ZyVideo','classroom')->getVideoTitleById($v['video_id']);
+            }else if($v['video_type'] == 3){
+                $v['video_title'] = D('Album','classroom')->getAlbumTitleById($v['video_id']);
+            }
         }
         return $data;
     }
@@ -62,9 +67,10 @@ class CouponModel extends Model{
      *  uid:用户uid
      * @param int $status 优惠券使用状态 -1表示所有
      * @param int $limit 获取分页条数
+     * @param int $is_app 数据获取对象是否是app
      * @return array
      */
-    public function getUserCouponList($map = [],$status = -1,$limit = 20){
+    public function getUserCouponList($map = [],$status = -1,$limit = 20,$is_app = 0){
         $subSql = " AND u.is_del = 0 AND c.status != 3";
         if(in_array($status,[0,1])){
             if($status == 1){
@@ -76,8 +82,12 @@ class CouponModel extends Model{
         if($map['type']){
             $subSql .=" AND c.type = ".$map['type'];
         }
+        $subSql .=" AND c.coupon_type = ".$map['coupon_type'];
         if($map['sid']){
             $subSql .=" AND c.sid = ".$map['sid'];
+        }
+        if($is_app == 1){
+            $subSql .=" AND c.video_type != 3";
         }
         if($map['etime']){
             $time = time();
@@ -200,35 +210,35 @@ class CouponModel extends Model{
             switch($info['status']){
                 case 0:
                     //已经过期
-                    $this->error = '该优惠券已过期';
+                    $this->error = '该卡券已过期';
                     break;
                 case 1:
                     $time = strtotime(date('Y-m-d'));
-                    //正常,检测优惠券是否过期
+                    //正常,检测卡券是否过期
                     if($info['end_time'] < $time){
                         $info['status'] = 0;
-                        $this->error = '该优惠券已过期';
+                        $this->error = '该卡券已过期';
                         //更新状态
         				$this->setStatus($info['id'],0);
                     }
                     break;
                 case 2:
                     //已经使用
-                    $this->error = '该优惠券已被领取';
+                    $this->error = '该卡券已被领取';
                     break;
                 case 3:
                     //已经废弃
-                    $this->error = '该优惠券已失效';
+                    $this->error = '该卡券已失效';
                     break;
             }
         }else{
-            $this->error = '未能查询到优惠券';
+            $this->error = '未能查询到卡券';
         }
         return ($info && $info['status'] == 1) ? $this->addUserCoupon($info,$mid): false;
     }
     /**
-     * @name 发放优惠券(给用户添加合法的优惠券)
-     * @param array $info 单条优惠券的详细信息
+     * @name 发放卡券(给用户添加合法的卡券)
+     * @param array $info 单条卡券的详细信息
      * @return boolean true:成功 false:失败
      */
     final private function addUserCoupon(array $info,$mid = 0){
@@ -268,5 +278,46 @@ class CouponModel extends Model{
             D('ZyOrderCourse','classroom')->where(['id'=>['in',$order_ids]])->save(['pay_status'=>6]);
             M('coupon_user')->where(['id'=>['in',$coupon_ids]])->save(['status'=>0]);
         }
+    }
+
+    /**
+     * @name 检测优惠券是否领取完
+     * @param int $coupon_id 优惠券ID
+     * @param int $status 是否更改卡券状态（1是,0否）
+     * @return boolean true:领取完 false:未领取完
+     */
+    public function checkCouponCount($coupon_id,$status = 1){
+        $count = $this->where(['id'=>$coupon_id])->getField('count');
+        $user_count = M('coupon_user')->where(['cid'=>$coupon_id])->count();
+        if($user_count >= $count && $status == 1){
+            $this->setStatus($coupon_id,2);
+        }
+        return false;
+    }
+
+    /*
+     * @name 取消使用优惠券
+     * @param int $coupon_id 优惠券ID
+     */
+    public function cancelExchangeCard($coupon_id){
+        $coupon = $this->getCouponInfoById($coupon_id);
+        $map['cid'] = $coupon['coupon_id'];
+        $status = M('coupon_user')->where($map)->getField('status');
+        if($status == 2){
+            if($coupon['coupon_type'] == 1){
+                $res = M('coupon_user')->where($map)->delete();
+                if($res){
+                    $data['status'] = 1;
+                    $result = $this->where($map)->save($data);
+                }
+            }else{
+                $data['status'] = 0;
+                $res = M('coupon_user')->where($map)->save($data);
+                if($res){
+                    $result = $this->checkCouponCount($coupon['coupon_id']);
+                }
+            }
+        }
+        return $result  ? true: false;
     }
 }

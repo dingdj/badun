@@ -1,0 +1,49 @@
+<!--底部介绍-->
+<div class="bottom">
+    <div class="footer_introduce">
+        <div class="bot1">
+            <h1>咨询热线</h1>
+            <h2>{$site.site_phone}</h2>
+            <div class="bot11">
+                <ul>
+                    <li><a href="javascript:;"><img src="{:getCover($site['wx_qrcode'],120,120)}"></a>
+                        <div class="bot12">
+                            <h5>{$site['site_keyword']}教育研究院</h5>
+                        </div>
+                    </li>
+                    <li><a href="javascript:;"><img src="{:getCover($site['wb_qrcode'],120,120)}"></a>
+                        <div class="bot12">
+                            <h5>{$site['site_keyword']}教育联盟</h5>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="bot3">
+            <volist name="pageCategory" id="vo" offset="0" length="5">
+                <div class="bot2" style='width:160px; <if condition="$key eq 5">border:none;</if>'>
+                    <a href="javascript:;"><span>{$key}</span></a>
+                    <volist name="vo['child']" id="v" key ="j" offset="0" length="5">
+                        <a target="_blank" <php>if($v['url']) {</php> href="{$v['url']}" <php>}else{</php> href="{:U('public/Single/info',array('id'=>$v['id']))}" <php>}</php> >{$v.title}</a>
+                    </volist>
+                </div>
+            </volist>
+        </div>
+    </div>
+</div>
+<!--底部-->
+<div class="record">
+    <a href="http://www.miitbeian.gov.cn/"><p>{$site['site_footer']}</p></a>
+</div>
+
+<!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+<div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+</div>
+<eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+</eq>
+
+
+</body>
+</html>

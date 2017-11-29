@@ -14,11 +14,11 @@ class AdminLiveMountAction  extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index']       = '课程挂载管理';
-        $this->pageTitle['action']       = '待审核课程挂载管理';
+        $this->pageTitle['index']       = '已审';
+        $this->pageTitle['action']       = '待审';
 
-        $this->pageTab[] = array('title'=>'挂载课程列表','tabHash'=>'index','url'=>U('live/AdminLiveMount/index'));
-        $this->pageTab[] = array('title'=>'待审核挂载课程列表','tabHash'=>'action','url'=>U('live/AdminLiveMount/action'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('live/AdminLiveMount/index'));
+        $this->pageTab[] = array('title'=>'待审','tabHash'=>'action','url'=>U('live/AdminLiveMount/action'));
 
         parent::_initialize();
     }

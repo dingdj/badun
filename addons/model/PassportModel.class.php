@@ -129,7 +129,7 @@ class PassportModel {
 	 * @return array|boolean 成功获取用户数据时返回用户信息数组，否则返回false
 	 */
 	public function getLocalUser($login, $password) {
-
+		
 		$login = addslashes($login);
 		$password = addslashes($password);
 
@@ -222,7 +222,7 @@ class PassportModel {
             unset($user['password']);
             unset($user['login_salt']);
             $user['userface']=getUserFace($user['uid'],'m');
-            $token=M('ZyLoginsync')->where(array('uid'=>$user['uid']))->find();
+            $token=M('login')->where(array('uid'=>$user['uid']))->find();
             $user['oauth_token']=$token['oauth_token'];
             $user['oauth_token_secret']=$token['oauth_token_secret'];
             return $user;
@@ -275,7 +275,7 @@ class PassportModel {
 
 		// 注册cookie
 		if(!$this->getCookieUid() ||  $is_remember_me ) {
-			$expire = 3600 * 24 * 15;
+			$expire = 15 * 60;
 			$code = C('SECURE_CODE').'.'.$uid;
 			cookie('TSV3_LOGGED_USER',jiami($code),array('expire'=>$expire));
 			

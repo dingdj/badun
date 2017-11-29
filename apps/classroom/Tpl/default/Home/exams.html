@@ -38,7 +38,7 @@
                                         <td>{$vo.right_rate}</td>
                                         <td>
                                             <a target="_blank" href="{:U('exams/Index/showWrongPaper',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc01">查看题目</a>
-                                            <a target="_blank" href="{:U('exams/Index/wrongExamsroom',['joinType'=>$vo['exams_mode'],'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc02">错题再练</a>
+                                            <a target="_blank" href="{:U('exams/Index/wrongExamsroom',['joinType'=>1,'paper_id'=>$vo['exams_paper_id'],'temp'=>$vo['exams_users_id']])}" class="bgc02">错题再练</a>
                                             <i class="icon iconshan deleteExeams" data-temp_id="{$vo.exams_users_id}"></i>
                                         </td>
                                     </tr>
@@ -62,11 +62,17 @@
                                 <volist name="list.data" id="vo">
                                     <li>
                                         <h4>
-                                            <p>{$vo.question_info.content}</p>
+                                            <php>if($vo['question_info']['content']){</php>
+                                            <p>{:t($vo['question_info']['content'])}</p>
+                                            <php>}else{</php>
+                                            <p style="color: #F00;">该试题已被删除</p>
+                                            <php>}</php>
                                             <small>收藏时间：{:date('Y-m-d H:i:s',$vo['ctime'])}</small>
                                         </h4>
                                         <span>
+                                            <php>if($vo['question_info']['content']){</php>
                                             <a href="{:U('exams/Index/showQuestioninfo',['question_id'=>$vo['source_id']])}" class="bgc01">查看题目</a>
+                                            <php>}</php>
                                             <i class="icon iconshan deleteCollection" data-question_id="{$vo['source_id']}"></i>
                                         </span>
                                     </li>

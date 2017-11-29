@@ -54,24 +54,24 @@
 			<p>根据用户状态</p>
       </dd>
     </dl>
-    <dl class="lineD">
-      <dt>VIP类型：</dt>
-      <dd>
-          <select name="vip_type">
-              <option value="0" <eq name="crrdit_user.vip_type" value="0"> selected="selected"</eq>>普通用户</option>
-              <volist name="vip_title" id="l">
-                <option value="{$l.id}" <eq name="crrdit_user.vip_type" value="$l['id']"> selected="selected"</eq>>{$l.title}</option>
-              </volist>
-          </select>
-      </dd>
-    </dl>
-    <dl class="lineD">
-      <dt>VIP时间：</dt>
-      <dd>
-          <input name="vip_expire" type="text" value="<php>if($crrdit_user['vip_expire']){</php>{:date("Y-m-d H:i:s", $crrdit_user['vip_expire'])}<php>}</php>" class="s-txt"  onfocus="core.rcalendar(this,'full');" readonly="readonly">
-          <p>设置VIP到期时间</p>
-      </dd>
-    </dl>
+    <!--<dl class="lineD">-->
+      <!--<dt>VIP类型：</dt>-->
+      <!--<dd>-->
+          <!--<select name="vip_type">-->
+              <!--<option value="0" <eq name="crrdit_user.vip_type" value="0"> selected="selected"</eq>>普通用户</option>-->
+              <!--<volist name="vip_title" id="l">-->
+                <!--<option value="{$l.id}" <eq name="crrdit_user.vip_type" value="$l['id']"> selected="selected"</eq>>{$l.title}</option>-->
+              <!--</volist>-->
+          <!--</select>-->
+      <!--</dd>-->
+    <!--</dl>-->
+    <!--<dl class="lineD">-->
+      <!--<dt>VIP时间：</dt>-->
+      <!--<dd>-->
+          <!--<input name="vip_expire" type="text" value="<php>if($crrdit_user['vip_expire']){</php>{:date("Y-m-d H:i:s", $crrdit_user['vip_expire'])}<php>}</php>" class="s-txt"  onfocus="core.rcalendar(this,'full');" readonly="readonly">-->
+          <!--<p>设置VIP到期时间</p>-->
+      <!--</dd>-->
+    <!--</dl>-->
     <dl class="lineD">
       <dt>操作：</dt>
       <dd>

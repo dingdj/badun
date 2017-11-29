@@ -24,13 +24,13 @@ class AdminUserCardAction extends AdministratorAction{
     private function _initTabSpecial() {
         // Tab选项
         $this->pageTab [] = array (
-            'title' => '用户卡券列表',
+            'title' => '列表',
             'tabHash' => 'index',
             'url' => U ( 'school/AdminUserCard/index' )
         );
         if(!is_admin($this->mid)){
             $this->pageTab [] = array (
-                'title' => '添加用户卡券',
+                'title' => '添加',
                 'tabHash' => 'addCard',
                 'url' => U ( 'school/AdminUserCard/addCard' )
             );
@@ -39,7 +39,7 @@ class AdminUserCardAction extends AdministratorAction{
 
     public function index(){
         $this->_initTabSpecial();
-        $this->assign('pageTitle','用户卡券管理');
+        $this->assign('pageTitle','列表');
         //页面配置
         $id     =  intval($_POST['id']);
         $uid    =  intval($_POST['uid']);
@@ -75,7 +75,7 @@ class AdminUserCardAction extends AdministratorAction{
             }
             $val['type'] = M('coupon')->where('id='.$val['cid'])->getField('type');
             if($val['type'] == 1){
-                $val['type'] = "<span>课程优惠券</span>";
+                $val['type'] = "<span>优惠券</span>";
             }else if($val['type'] == 2){
                 $val['type'] = "<span>打折卡</span>";
             }else if($val['type'] == 3){
@@ -118,11 +118,11 @@ class AdminUserCardAction extends AdministratorAction{
             $userCard['uname'] = getUserName($userCard['uid']);
             $coupon =  M('coupon')->where('id='.$userCard['cid'])->find();
             $coupon['vip_grade'] = M('user_vip')->where('id='.$coupon['vip_grade'])->getField('title');
-            $this->assign('pageTitle','编辑优惠券');
+            $this->assign('pageTitle','编辑');
             $this->assign('userCard',$userCard);
             $this->assign('coupon',$coupon);
         }else{
-            $this->assign('pageTitle','添加优惠券');
+            $this->assign('pageTitle','添加');
         }
         $this->display();
         /*$this->pageKeyList = array ( 'uid','type','cid');
@@ -227,6 +227,10 @@ class AdminUserCardAction extends AdministratorAction{
     public function doUserCard(){
 
         $id		=	intval($_POST['id']);
+        $cid	=	intval($_POST['cid']);
+        if(!$cid){
+            echo json_encode(array('status'=>0,'info'=>'对不起，添加失败！'));exit;
+        }
         //$type	= 	t($_GET['type']);
 
         $info = model('Coupon')->where('id='.$_POST['cid'])->getField('exp_date');
@@ -241,12 +245,16 @@ class AdminUserCardAction extends AdministratorAction{
             $data['mhm_id'] = $this->school_id;
         }
         if(!$id){
-            $res = M('coupon_user')->add($data);
+            $user_coupon = M('coupon_user')->where(['uid'=>$data['uid'],'cid'=>$data['cid']])->count();
+            if(!$user_coupon){
+                $res = M('coupon_user')->add($data);
+            }
             if(!$res){
                 echo json_encode(array('status'=>0,'info'=>'对不起，添加失败！'));exit;
             }else{
-                $map['status'] = 2;
-                model('Coupon')->where('id='.$data['cid'])->save($map);
+                //$map['status'] = 2;
+                //model('Coupon')->where('id='.$data['cid'])->save($map);
+                model('Coupon')->checkCouponCount($data['cid']);
                 echo json_encode(array('status'=>1,'info'=>'添加成功'));exit;
             }
         }else{

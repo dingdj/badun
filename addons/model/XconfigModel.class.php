@@ -58,7 +58,6 @@ class XconfigModel extends Model {
 			return $_res[$key];
 		}
 		$list = $this->pagekey_lget($keys[0]);
-		//dd($keys[1],$list['live_AdminLive_editCcLiveRoom']);
 		return $list ? $list[$keys[1]] : '';
 	}
 
@@ -83,7 +82,7 @@ class XconfigModel extends Model {
 			$data = array();
 			$map['`list`'] = $list_name;
 			
-			$result	= D('system_config')->order('id ASC')->where($map)->findAll();
+			$result	= D('system_config')->order('id ASC')->where($map)->findAll();	
 			if($result) {
 				foreach($result as $v) {
 					$data[$v['key']] = unserialize($v['value']);

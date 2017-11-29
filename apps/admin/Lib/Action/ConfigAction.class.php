@@ -33,14 +33,16 @@ class ConfigAction extends AdministratorAction {
 		$this->pageTitle ['unionpay'] = '银联配置';
 		$this->pageTitle ['alipay'] = '阿里支付配置';
 		$this->pageTitle ['wxpay'] = '微信支付配置';
-		$this->pageTitle ['curpay'] = '通用支付配置';
-		$this->pageTitle ['sms'] = '短信配置';
-		$this->pageTitle['getInviteList'] = '邀请列表';
+        $this->pageTitle ['payConfig'] = '通用支付配置';
+        $this->pageTitle ['sms'] = '短信配置';
+        $this->pageTitle ['weixin'] = '微信配置';
+        $this->pageTitle['getInviteList'] = '邀请列表';
 		$this->pageTitle ['editSeo'] = '编辑SEO';
 		$this->pageTitle ['setUcenter'] = 'Ucenter配置';
 		$this->pageTitle ['appConfig'] = 'APP配置';
 		$this->pageTitle ['divideIntoConfig'] = '平台分成比例配置';
-		$this->pageTitle ['rechargeIntoConfig'] = '平台积分充值比例配置';
+		$this->pageTitle ['rechargeIntoConfig'] = '余额&积分配置';
+		$this->pageTitle ['vipPatternConfig'] = '会员模式管理';
 		$this->pageTitle['commentSwitch'] = '评论开关配置';
 		$this->pageTitle['refundConfig'] = '申请退款配置';
 		parent::_initialize ();
@@ -150,6 +152,23 @@ class ConfigAction extends AdministratorAction {
 		$this->onsubmit = 'admin.checkRegisterConfig(this)';
 		$this->displayConfig ();
 	}
+
+	/**
+	 * 系统配置 - 卖家支付宝配置
+	 */
+	public function alipay() {
+		$this->pageKeyList = array (
+//			'alipay_partner',       //合作身份者id，以2088开头的16位纯数字
+//			'seller_email',         //卖家支付宝帐号
+			'app_id',         		//支付宝应用app_id
+//			'alipay_key',           //安全检验码，以数字和字母组成的32位字符
+			'private_key',           //私钥
+			'public_key',           //公钥
+		);
+        $this->notEmpty = ['app_id','private_key','public_key'];
+		$this->displayConfig ();
+	}
+
 	/**
 	 * 系统配置 - 微信支付宝配置
 	 */
@@ -170,6 +189,8 @@ class ConfigAction extends AdministratorAction {
 			'apiclient_cert',//开放平台 私钥
 			'apiclient_key',//开放平台 公钥
 		);
+        $this->notEmpty = ['mp_appid','mp_mchid','mp_api_key','mp_api_secret','mp_apiclient_cert','mp_apiclient_key',
+            'mp_api_resource',];
 
 		$pageKeyData = model('Xdata')->get('admin_Config:wxpay');
         $pageKeyData['apiclient_cert'] = array_filter(explode('|',$pageKeyData['apiclient_cert_ids']))[1];
@@ -201,14 +222,18 @@ class ConfigAction extends AdministratorAction {
 	}
 
 	/**
-	 *
+	 *通用支付配置
 	 */
-	public function curpay(){
+	public function payConfig(){
         $this->pageKeyList = array (
-            'curpay_switch',
-            'curpay_money',
+            'tpay_switch',
+            'swn_switch',
+            'pay'
         );
-        $this->opt['curpay_switch'] = ['0'=>'关闭','1'=>'开启'];
+        $this->opt['tpay_switch'] = ['0'=>'关闭','1'=>'开启'];
+        $this->opt['swn_switch'] = ['0'=>'关闭','1'=>'开启'];
+        $this->opt['pay'] = ['alipay'=>'阿里支付','wxpay'=>'微信支付','lcnpay'=>'余额支付','cardpay'=>'充值卡支付'];//,'unionpay'=>'银联支付'
+        $this->notEmpty = ['pay'];
 
         $this->displayConfig ();
 	}
@@ -627,22 +652,6 @@ class ConfigAction extends AdministratorAction {
 		$this->displayConfig ();
 	}
 
-
-
-	/**
-	 * 系统配置 - 卖家支付宝配置
-	 */
-	public function alipay() {
-		$this->pageKeyList = array (
-//			'alipay_partner',       //合作身份者id，以2088开头的16位纯数字
-//			'seller_email',         //卖家支付宝帐号
-			'app_id',         		//支付宝应用app_id
-//			'alipay_key',           //安全检验码，以数字和字母组成的32位字符
-			'private_key',           //私钥
-			'public_key',           //公钥
-		);
-		$this->displayConfig ();
-	}
 	/**
 	 * 系统配置 - 短信接口配置
 	 */
@@ -654,7 +663,6 @@ class ConfigAction extends AdministratorAction {
 		);
 		$this->displayConfig ();
 	}
-
 
 	/**
 	 * 系统配置 - APP配置
@@ -698,6 +706,16 @@ class ConfigAction extends AdministratorAction {
 		$this->displayConfig ();
 	}
 
+	/**
+	 * 系统配置 - 微信配置（用于分享）
+	 */
+	public function weixin(){
+		$this->pageKeyList = array (
+			'appid',           //微信id
+			'appsecret',       //微信密钥
+		);
+		$this->displayConfig ();
+	}
 	/**
 	 * 系统配置 - 附件配置
 	 */
@@ -916,8 +934,9 @@ class ConfigAction extends AdministratorAction {
 			'onclick' => "javascript:location.href='" . U ( 'admin/Config/navAdd', 'addtype=1&tabHash=type' ) . "'"
 		);
 		// Tab选项
+		$this->pageTitle['nav'] = '列表';
 		$this->pageTab [] = array (
-			'title' => L('PUBLIC_HEAD_NAVIGATION'),
+			'title' => L('列表'),
 			'tabHash' => 'rule',
 			'url' => U ( 'admin/Config/nav' )
 		);
@@ -932,7 +951,7 @@ class ConfigAction extends AdministratorAction {
 		// 		'url' => U ( 'admin/Config/guestNav' )
 		// );
 		$this->pageTab [] = array (
-			'title' => L ( 'PUBLIC_ADD_NAVIGATION' ),
+			'title' => L ( '添加' ),
 			'tabHash' => 'type',
 			'url' => U ( 'admin/Config/navAdd' )
 		);
@@ -1321,8 +1340,9 @@ class ConfigAction extends AdministratorAction {
 			'is_app_navi',
 			'order_sort'
 		);
+        $this->pageTitle['navAdd'] = '添加';
 		$this->pageTab [] = array (
-			'title' => L('PUBLIC_HEAD_NAVIGATION'),
+			'title' => L('列表'),
 			'tabHash' => 'rule',
 			'url' => U ( 'admin/Config/nav' )
 		);
@@ -1337,7 +1357,7 @@ class ConfigAction extends AdministratorAction {
 		// 		'url' => U ( 'admin/Config/guestNav' )
 		// );
 		$this->pageTab [] = array (
-			'title' => L ( 'PUBLIC_ADD_NAVIGATION' ),
+			'title' => L ( '添加' ),
 			'tabHash' => 'type',
 			'url' => U ( 'admin/Config/navAdd' )
 		);
@@ -1863,24 +1883,26 @@ class ConfigAction extends AdministratorAction {
 	 * 系统配置 - 消息配置
 	 */
 	public function notify() {
-		$type = isset ( $_GET ['type'] ) ? intval ( $_GET ['type'] ) : 1;
+        $this->pageTitle['notify'] = '列表';
+        $this->assign ( 'pageTitle', $this->pageTitle );
+		$type = isset ( $_GET ['type'] ) ? intval ( $_GET ['type'] ) : 2;
 		// echo $type;exit;
+		//$this->pageTab [] = array (
+		//	'title' => '用户消息配置',
+		//	'tabHash' => 'notify_user',
+		//	'url' => U ( 'admin/Config/notify', array (
+		//		'type' => 1
+		//	) )
+		//);
 		$this->pageTab [] = array (
-			'title' => '用户消息配置',
-			'tabHash' => 'notify_user',
-			'url' => U ( 'admin/Config/notify', array (
-				'type' => 1
-			) )
-		);
-		$this->pageTab [] = array (
-			'title' => '管理员消息配置',
+			'title' => '列表',
 			'tabHash' => 'notify_admin',
 			'url' => U ( 'admin/Config/notify', array (
 				'type' => 2
 			) )
 		);
 		$this->pageTab [] = array (
-			'title' => '增加消息节点',
+			'title' => '添加',
 			'tabHash' => 'addNotifytpl',
 			'url' => U ( 'admin/Config/addNotifytpl' )
 		);
@@ -1905,16 +1927,16 @@ class ConfigAction extends AdministratorAction {
 	 * 消息模板页面
 	 */
 	public function notifytpl() {
-		$type = isset ( $_GET ['type'] ) ? intval ( $_GET ['type'] ) : 1;
+		$type = isset ( $_GET ['type'] ) ? intval ( $_GET ['type'] ) : 2;
+		//$this->pageTab [] = array (
+		//	'title' => '用户消息配置',
+		//	'tabHash' => 'notify_user',
+		//	'url' => U ( 'admin/Config/notify', array (
+		//		'type' => 1
+		//	) )
+		//);
 		$this->pageTab [] = array (
-			'title' => '用户消息配置',
-			'tabHash' => 'notify_user',
-			'url' => U ( 'admin/Config/notify', array (
-				'type' => 1
-			) )
-		);
-		$this->pageTab [] = array (
-			'title' => '管理员消息配置',
+			'title' => '消息配置',//管理员
 			'tabHash' => 'notify_admin',
 			'url' => U ( 'admin/Config/notify', array (
 				'type' => 2
@@ -1963,22 +1985,24 @@ class ConfigAction extends AdministratorAction {
 	 * 增加节点页面
 	 */
 	public function addNotifytpl() {
+        $this->pageTitle['addNotifytpl'] = '添加';
+        $this->assign ( 'pageTitle', $this->pageTitle );
+		//$this->pageTab [] = array (
+		//	'title' => '用户消息配置',
+		//	'tabHash' => 'notify_user',
+		//	'url' => U ( 'admin/Config/notify', array (
+		//		'type' => 1
+		//	) )
+		//);
 		$this->pageTab [] = array (
-			'title' => '用户消息配置',
-			'tabHash' => 'notify_user',
-			'url' => U ( 'admin/Config/notify', array (
-				'type' => 1
-			) )
-		);
-		$this->pageTab [] = array (
-			'title' => '管理员消息配置',
+			'title' => '列表',
 			'tabHash' => 'notify_admin',
 			'url' => U ( 'admin/Config/notify', array (
 				'type' => 2
 			) )
 		);
 		$this->pageTab [] = array (
-			'title' => '增加消息节点',
+			'title' => '添加',
 			'tabHash' => 'addNotifytpl',
 			'url' => '#'
 		);
@@ -2352,15 +2376,34 @@ define('UC_SYNC', {$ucopen});
 	}
 
 	/**
-	 * 平台积分充值比例配置
+	 * 余额&积分配置
 	 *
 	 */
 	public function rechargeIntoConfig(){
 		$this->pageKeyList = array (
-			'RMB',
-			'score',
+			'sple_score',
+			'withdraw_basenum', 	  //提现的倍数，实际提现为该数的一倍及以上才会通过
+			'rechange_basenum', 	  //充值的倍数，实际充值为该数的一倍及以上才会通过，取值>=0.01
+			'rechange_default', 	  //充值默认金额
 		);
+		$this->notEmpty = array('sple_score','withdraw_basenum','rechange_basenum','rechange_default');
 //        $this->onsubmit = 'admin.checkDivideIntoConfig(this)';
+
+		$this->displayConfig ();
+	}
+
+	/**
+	 * 会员模式配置
+	 *
+	 */
+	public function vipPatternConfig(){
+		$this->pageKeyList = array (
+			'vip_switch',
+		);
+
+		$this->opt ['vip_switch'] = array('0' => '独立模式', '1' => '阶梯模式');
+
+		$this->notEmpty = array('vip_switch');
 
 		$this->displayConfig ();
 	}
@@ -2372,7 +2415,8 @@ define('UC_SYNC', {$ucopen});
 		$config = model('Xdata')->get('admin_Config:index_item');
 		if(!isset($config['sort'])){
 			$config['tpl'] = 'index';
-			$config['sort'] = array('live','bestCourse','newCourse');
+			$config['sort'] = array('live','bestCourse','newCourse','counts','teacher','school','group','hotTopic');
+			$config['sort_new'] = array('six','open','hotVideo','live_new','teacher_new','starUser');
 			$config['use_old_header'] = 0;
 		}
 		$this->assign('config',$config);

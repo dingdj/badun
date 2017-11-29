@@ -109,14 +109,14 @@ class VideoSectionModel extends Model
 	 * @return integer $pid 父分类ID
 	 * @return array 指定父分类的树形结构
 	 */
-	public function getNetworkList($pid = 0 , $vid = '')
+	public function getNetworkList($pid = 0 , $vid = '' , $activity = -1)
 	{
-		// 子分类树形结构
+		// 子分类树形结构`
 		if($pid != 0) {
-			return $this->_MakeTree($pid , $vid);
+			return $this->_MakeTree($pid , $vid , 0 ,$activity);
 		}
 		// 全部分类树形结构
-		$list = $this->_MakeTree($pid , $vid);
+		$list = $this->_MakeTree($pid , $vid , 0 ,$activity);
 		return $list;
 	}
 	
@@ -126,9 +126,14 @@ class VideoSectionModel extends Model
 	 * @param integer $level 等级
 	 * @return array 树形结构
 	 */
-	private function _MakeTree($pid, $vid ,$level = 0)
+	private function _MakeTree($pid, $vid ,$level = 0 , $activity)
 	{
-		$result = $this->_model->where('pid='.$pid.' and vid='.$vid)->order('sort ASC')->findAll();
+		$map['pid'] = $pid;
+		$map['vid'] = $vid;
+		if($activity > -1){
+			$map['is_activity'] = $activity;
+		}
+		$result = $this->_model->where($map)->order('sort ASC')->findAll();
 		if($result) {
 			foreach($result as $key => $value) {
 				$id = $value[$this->_talbe.'_id'];
@@ -144,7 +149,12 @@ class VideoSectionModel extends Model
 				$list[$id]['video_type'] = M('zy_video_data')->where('status=1 and is_del=0 and id='.$value['cid'])->getField('type');
 				$list[$id]['level'] = $level;
                 $list[$id]['is_free'] = (int)$value['is_free'];
-                $child = $this->_MakeTree($value[$this->_talbe.'_id'], $vid , $level + 1);
+				$list[$id]['is_activity'] = (int)$value['is_activity'];
+                if($activity > -1){
+                    $child = $this->_MakeTree($value[$this->_talbe.'_id'], $vid , $level + 1 ,$activity+1);
+                }else{
+                    $child = $this->_MakeTree($value[$this->_talbe.'_id'], $vid , $level + 1 ,-1);
+                }
 				$child && $list[$id]['child'] = $child;
 			}
 		}

@@ -32,14 +32,19 @@ class WxPayModel extends Model {
             $trade_type = 'APP';
         }
         $attributes = array_merge($attributes,[
-            'total_fee'        => 1, // (int)测试付款金额 新版单位：分
             'notify_url'       => "$notifyUrl", // 支付结果通知网址，如果不设置则会使用配置里的默认地址
             'spbill_create_ip' => getIp(),//APP和网页支付提交用户端ip，Native支付填调用微信支付API的机器IP。
             'trade_type'       => $trade_type,//JSAPI，MWEB，NATIVE，APP
         ]);
+        $tpay_switch = model('Xdata')->get("admin_Config:payConfig")['tpay_switch'];
+
+        //设置支付的Data信息 //(string)测试付款金额 新版单位：分
+        if($tpay_switch){
+            $attributes['total_fee']  = 1;
+        }
+
         $order = new Order($attributes);
         $result = $payment->prepare($order);
-	//dump($result);exit;
 		if($result->return_code != 'SUCCESS'){
 			return false;
 		}
@@ -130,8 +135,9 @@ class WxPayModel extends Model {
      */
     private function getWxpayConfig($from){
         $pageKeyData = model('Xdata')->get('admin_Config:wxpay');
+
         if($from == 'api'){
-			$pageKeyData['apiclient_cert'] = array_filter(explode('|',$pageKeyData['apiclient_cert_ids']))[1];
+            $pageKeyData['apiclient_cert'] = array_filter(explode('|',$pageKeyData['apiclient_cert_ids']))[1];
             $pageKeyData['apiclient_key'] = array_filter(explode('|',$pageKeyData['apiclient_key_ids']))[1];
             $apiclient_cert = model('Attach')->getFilePath($pageKeyData['apiclient_cert']);
             $apiclient_key = model('Attach')->getFilePath($pageKeyData['apiclient_key']);

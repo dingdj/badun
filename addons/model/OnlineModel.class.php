@@ -101,7 +101,7 @@ class OnlineModel{
 		// 开始统计
 		// TODO:需要计划任务支持移动上一日数据到备份表，现在在每次统计之后备份今天之前的数据到备份表
 		// 从logs累计总的用户数，总的游客数到stats表
-		$userDataSql = "SELECT COUNT(1) AS pv, COUNT(DISTINCT uid) AS pu, COUNT(ip) AS guestpu, `day`, isGuest 
+		$userDataSql = "SELECT COUNT(1) AS pv, COUNT(DISTINCT uid) AS pu, COUNT(distinct(ip)) AS guestpu, `day`, isGuest
 						FROM `".C('DB_PREFIX')."online_logs`
 						WHERE id <= {$max_id}
 						GROUP BY day, isGuest";
@@ -447,7 +447,7 @@ class OnlineModel{
 		$videoCount = M('zy_order_course')->where($whereVideo)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','sum(price) as d_count'])->group('d_time')->order('ctime desc')->select();
         //直播订单
 		$liveCount = M('zy_order_live')->where($whereVideo)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','sum(price) as d_count'])->group('d_time')->order('ctime desc')->select();
-		//套餐订单
+		//班级订单
 		$albumCount = M('zy_order_album')->where($whereOrder)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','sum(price) as d_count'])->group('d_time')->order('ctime desc')->select();
 		//数据组装
 		$yData = $this->mergeCountData($this->haddleDate([],$videoCount),$this->haddleDate([],$liveCount),$this->haddleDate([],$albumCount));
@@ -520,7 +520,7 @@ class OnlineModel{
 		$videoCount = M('zy_order_course')->where($whereOrder)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','count(*) as d_count'])->group('d_time')->order('ctime desc')->select();
 		//直播订单
 		$liveCount = M('zy_order_live')->where($whereOrder)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','count(*) as d_count'])->group('d_time')->order('ctime desc')->select();
-		//套餐订单
+		//班级订单
 		$albumCount = M('zy_order_album')->where($whereOrder)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','count(*) as d_count'])->group('d_time')->order('ctime desc')->select();
 		//约课订单
 		$teacherCount = M('zy_order_teacher')->where($whereTeacher)->field(['FROM_UNIXTIME(ctime,"%Y-%m-%d")as d_time','count(*) as d_count'])->group('d_time')->order('ctime desc')->select();

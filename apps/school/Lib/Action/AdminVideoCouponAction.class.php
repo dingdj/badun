@@ -24,13 +24,13 @@ class AdminVideoCouponAction extends AdministratorAction{
     private function _initTabSpecial() {
         // Tab选项
         $this->pageTab [] = array (
-                'title' => '优惠券列表',
+                'title' => '列表',
                 'tabHash' => 'index',
                 'url' => U ( 'school/AdminVideoCoupon/index' )
         );
         if(!is_admin($this->mid)) {
             $this->pageTab [] = array(
-                'title' => '添加优惠券',
+                'title' => '添加',
                 'tabHash' => 'addTeacher',
                 'url' => U('school/AdminVideoCoupon/addCoupon')
             );
@@ -39,46 +39,36 @@ class AdminVideoCouponAction extends AdministratorAction{
 
     public function index(){
         $this->_initTabSpecial();
-        $this->assign('pageTitle','优惠券管理');
+        $this->assign('pageTitle','列表');
         //页面配置
         $id     =  intval($_POST['id']);
-        $sid    =  intval($_POST['sid']);
         $code   =  intval($_POST['code']);
-        $video_id   =  intval($_POST['video_id']);
-        $this->pageKeyList = array('id','school_title','code','maxprice','price','exp_date','status','end_time','ctime','is_del','DOACTION');
-        $this->searchKey = array('id','sid','code','video_id');
+        $this->pageKeyList = array('id','school_title','code','maxprice','price','exp_date','status','count','end_time','ctime','is_del','DOACTION');
+        $this->searchKey = array('id','code');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delCoupon')");
         $map = array('type'=>1,'coupon_type'=>0);
-        $school = model('School')->getAllSchol('','id,title');
-        $this->opt['sid'] = $school;
         if(!is_admin($this->mid)){
             $map['sid'] = $this -> school_id;
         }
         if(!empty($id))$map['id']=$id;
-        if(!empty($sid))$map['sid']=$sid;
         if(!empty($code))$map['code']=$code;
-        if(!empty($video_id))$map['video_id']=$video_id;
 		$coupon = model('Coupon');
         //数据列表
-        $listData = $coupon->where($map)->order('ctime DESC,id DESC')->findPage();$time = strtotime(date('Y-m-d'));
+        $listData = $coupon->where($map)->order('ctime DESC,id DESC')->findPage();
         $time = time();
         foreach($listData['data'] as $key=>$val){
             if($val['is_del'] == 1) {
-                $val['status'] == 3;
+                $val['status'] = 3;
             }
             if($val['status'] != 3 && $val['end_time'] < $time){
                 $val['status'] = 0;
                 $coupon->setStatus($val['id'],0);
             }
-//			$val['school_title'] = model('School')->where(array('id'=>$val['sid']))->getField('title');
             $school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
-            if(!$school['doadmin']){
-                $url = U('school/School/index', array('id' => $school['id']));
-            }else{
-                $url = getDomain($school['doadmin']);
-            }
+            $url = getDomain($school['doadmin'],$school['id']);
             $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
+
             $val['ctime']    = date("Y-m-d H:i:s", $val['ctime']);
 			$val['end_time'] = date("Y-m-d H:i:s", $val['end_time']);
 
@@ -118,17 +108,17 @@ class AdminVideoCouponAction extends AdministratorAction{
         $id   = intval($_GET['id']);
         
         $this->_initTabSpecial();
-        $this->pageKeyList = array ( 'sid','maxprice','price','exp_date','end_time','counts');
-        $this->notEmpty = array ( 'sid','maxprice','price','exp_date','end_time', 'counts');
+        $this->pageKeyList = array ( 'maxprice','price','exp_date','end_time','count');
+        $this->notEmpty = array ( 'maxprice','price','exp_date','end_time', 'count');
         if($id){
             $this->savePostUrl = U ( 'school/AdminVideoCoupon/doAddCoupon','type=save&id='.$id);
             $coupon = model('Coupon')->where( 'id=' .$id )->find ();
 			$coupon['end_time'] = date('Y-m-d H:i:s',$coupon['end_time']);
-            $this->assign('pageTitle','修改优惠券');
+            $this->assign('pageTitle','修改');
             //说明是编辑
             $this->displayConfig($coupon); 
         }else{
-			$this->assign('pageTitle','添加优惠券');
+			$this->assign('pageTitle','添加');
             $this->savePostUrl = U ('school/AdminVideoCoupon/doAddCoupon','type=add');
             //说明是添加
             $this->displayConfig();
@@ -141,22 +131,22 @@ class AdminVideoCouponAction extends AdministratorAction{
     public function doAddCoupon(){
         $id		=	intval($_GET['id']);
         $type	= 	t($_GET['type']);
-        $count  = 	intval($_POST['counts']);
-        if($count == 0){
-            $count = 1;
-        }
-		$max_price_sys = model('School')->where('id='.$this-> school_id)->getField('max_price_sys');
+		//$max_price_sys = model('School')->where('id='.$this-> school_id)->getField('max_price_sys');
         //要添加的数据
         //数据验证
         if(empty($_POST['maxprice'])){$this->error("优惠条件不能为空");}
         if(!is_numeric($_POST['price'])){$this->error('优惠条件必须为数字');}
-        if(intval($_POST['maxprice']) < $max_price_sys){$this->error('优惠条件必须大于'.$max_price_sys);}
+        //if(intval($_POST['maxprice']) < $max_price_sys){$this->error('优惠条件必须大于'.$max_price_sys);}
         if($_POST['price'] == ''){$this->error("价格不能为空");}
         if(!is_numeric($_POST['price'])){$this->error('价格必须为数字');}
+        if($_POST['price'] >= $_POST['maxprice']){$this->error("立减价格必须小于优惠条件");}
         if($_POST['exp_date'] == ''){$this->error("有效期不能为空");}
         if(!is_numeric($_POST['exp_date'])){$this->error('有效期必须为数字');}
 		if($_POST['end_time'] == ''){$this->error("终止时间不能为空");}
-        if(!is_numeric($count)) $this->error('生成数量必须为数字');
+        //if(!is_numeric($count)) $this->error('生成数量必须为数字');
+        if(!$_POST['count']) $this->error('兑换次数不能为空');
+        if(preg_match("/^[0-9]+$/",$_POST['count'] ) == 0){$this->error('兑换次数必须为正整数');}
+
         $params = array(
 			'type'=> 1,
 			'sid'=>$this-> school_id,
@@ -164,9 +154,11 @@ class AdminVideoCouponAction extends AdministratorAction{
 			'price'=>t($_POST['price']),
 			'exp_date'=>intval($_POST['exp_date']),
 			'end_time'=>strtotime($_POST['end_time']),
+            'count'=>intval($_POST['count']),
+            'ctime'=>time(),
 		);
         if($type == 'add'){
-			$num = 0;
+			/*$num = 0;
 			$couponModel = model('Coupon');
             for ($i = 0; $i < $count; $i++) {
 				$params['code'] = $this->create_code();
@@ -175,7 +167,11 @@ class AdminVideoCouponAction extends AdministratorAction{
 				$num++;
             }
             if(!$num)$this->error("对不起，添加失败！");
-            $this->success("成功添加".$num."个优惠券！");
+            $this->success("成功添加".$num."个优惠券！");*/
+            $params['code'] = $this->create_code();
+            $res=model('Coupon')->add($params);
+            if(!$res)$this->error("对不起，添加失败！");
+            $this->success("添加优惠券成功!");
         }else if($type=='save' && $id){
             $res=model('Coupon')->where("id=$id")->save($params);
             if(!$res)$this->error("对不起，修改失败！");

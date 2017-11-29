@@ -1,9 +1,12 @@
-<include file="__THEME__/public_header_twolevel"/>
-
+<include file="__THEME__/public_header_w3g"/>
+<script type="text/javascript" src="__THEME__/js/core.js"></script>
     <div class="body">
+        <!--挡板-->
+        <div class="covers"></div>
+
         <form>
         <div class="header2">
-            <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}" class="icon-back"></a>
+            <a href="{:U('classroom/User/index')}" class="icon-back"></a>
             <div>修改个人资料</div>
 
             <a href="javascript:;" class="save"  type="submit"   onclick="setUserInfo(this)">保存</a>
@@ -13,6 +16,13 @@
         	<dl>
             	<dt>昵称</dt>
                 <dd><input type="text"  name="uname" value="{:strpos($user['uname'],'@')?'':$user['uname']}"></dd>
+            </dl>
+            <dl>
+                <dt>头像</dt>
+                <dd><a href="javascript:(0)" onclick="upfile()" class="head" style="float: left;"><span id="show_cover" class="show_cover_diy"><img src="{:getUserFace($user['uid'],'b')}"></span></a>
+                    <input type="file" name="userCover" rel="9999" onchange="largeCover(this)" urlquery="attach_type=avatar&amp;upload_type=image&amp;thumb=1" class="file" id="File" style="width: 27%;margin-left: 40%;display: none;"/>
+                </dd>
+                <input name="userCover" id="large_cover" type="hidden" value="" class="s-txt">
             </dl>
             <dl>
             	<dt>联系电话</dt>
@@ -52,7 +62,7 @@
                 <dt><span>*</span>验证码：</dt>
                 <dd>
                     <input type="text" value="" class="inp01" style="width: 200px;" />
-                    <a href="javascript:;" class="fr" type="submit" step="2" style="margin:-50px 10px 0 0;">提交</a>
+                    <a href="javascript:;" class="fr" type="submit" step="2" style="margin:0 10px 0 0;">提交</a>
                 </dd>
             </dl>
 
@@ -68,7 +78,7 @@
                     </div>
                     <div id="modify_pe_edit" style="display:none">
                         <input type="text" value="{$user.email}" old="{$user.email}" class="inp01" style="width: 200px;" />
-                        <a href="javascript:;" class="fr" type="save" style="margin:-50px 10px 0 0;">保存</a>
+                        <a href="javascript:;" class="fr" type="save" style="margin:0 10px 0 0;">保存</a>
                     </div>
                 </dd>
             </dl>
@@ -87,9 +97,9 @@
             	<!--<dt>所在地区</dt>-->
                 <!--<dd>{$user.location}</dd>-->
             <!--</dl>-->
-            <dl>
+            <dl class="pos-btns">
                 <dt>地区</dt>
-                <style>
+               <!-- <style>
                     select {
                         max-width: 75px;
                         border-radius: 4px;
@@ -98,8 +108,28 @@
                         padding: 0 5px;
                         height: 40px;
                     }
-                </style>
-                {:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}
+                </style>-->
+                <!--{:W('Area',array('curPro'=>$user['province'],'curCity'=>$user['city'],'area'=>$user['area'],'city_names'=>$user['location'],'tpl'=>'zyCardArea'))}-->
+                <dd><p id="position">{$user.position}</p></dd>
+                <input type="hidden" name="province" value="{$user['province']}"/>
+                <input type="hidden" name="city" value="{$user['city']}"/>
+                <input type="hidden" name="area" value="{$user['area']}"/>
+            </dl>
+            <!--选择地址弹出框-->
+            <dl class="gender-box">
+                <dt><span class="cancel">取消</span><span class="confirm" id="ConSelect">确定</span></dt>
+                <dd>
+                    <!--menu01-->
+                    <ul class="menu01">
+                        <volist name="area" id="arc" >
+                            <li><a href="javascript:(0)" onclick="choiceCity(this,{$arc['area_id']})" value="{$arc['area_id']}">{$arc.title}</a>
+                                <!--menu02-->
+                                <ul class="menu02" id="city">
+                                </ul>
+                            </li>
+                        </volist>
+                    </ul>
+                </dd>
             </dl>
             <dl>
             	<dt>个人简介</dt>
@@ -111,6 +141,66 @@
     </div>
 
 <script>
+    function upfile(){
+        return $("#File").click();
+    }
+    function largeCover(obj) {
+        if ("undefined" != typeof(core.uploadFile)) {
+            core.uploadFile.filehash = new Array();
+        }
+        core.plugInit('uploadFile', obj, function (data) {
+            $(obj).prev('.head').children('#show_cover').html('<img class="pic-size" width="80" height="80" src="' + data.src + '">');
+            var picurl = data.save_path+data.save_name;
+            $.ajax({
+                type:"POST",
+                url:"{:U('public/Account/doSaveAvatar',array('step'=>'save'))}",
+                data: "picurl="+picurl+"&picwidth="+300+"&x1="+300+"&y1="+300+"&x2="+300+"&y2="+300+"&w="+300+"&h="+300,
+                async:false,
+                dataType:"text",
+                success:function(data){
+                    if(data){
+                        $(obj).parents('dd').next('#large_cover').val(data.attach_id);
+                        alert('头像修改成功');
+                    }else{
+                        alert('头像修改失败');
+                    }
+                }
+            });
+        }, 'image');
+    }
+
+    /*$("#upload_file").click();
+    $("#upload_file").on("change", function () {
+        $.ajax({
+            type:"POST",
+            url:"{:U('widget/Upload/save',array('attach_type'=>'ad_image'))}",
+            data: "",
+            async:false,
+            dataType:"text",
+            success:function(data){
+                console.log(data);
+            }
+        });
+    });*/
+
+    /*$("#file0").change(function(){
+        // getObjectURL是自定义的函数，见下面
+        // this.files[0]代表的是选择的文件资源的第一个，因为上面写了 multiple="multiple" 就表示上传文件可能不止一个
+        // ，但是这里只读取第一个
+        var objUrl = getObjectURL(this.files[0]) ;
+        if (objUrl) {
+            // 在这里修改图片的地址属性
+            $("#img0").attr("src", objUrl) ;
+        }
+    }) ;
+    //建立一個可存取到該file的url
+    function getObjectURL(file) {
+        var url = null ;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        url = window.webkitURL.createObjectURL(file) ;
+        return url ;
+    }*/
+
     $(function(){
         $(".header").hide();
 
@@ -250,10 +340,98 @@
         });
     });
 
+    //城市选择
+    function choiceCity(cate,id){
+        $.ajax({
+            type:'POST',
+            url:"{:U('classroom/User/getAreaList')}",
+            data:{id:id},
+            dataType:'json',
+            success:function(res){
+                if (typeof res != 'object') {
+                    var res = eval('(' + res + ')');
+                }
+                $("input[name='province']").val(id);
+                var addHtml = '';
+                $(cate).next("#city").html('');
+                //$(cate).next("#area").html('');
+                if (res.status == 1) {
+                    $.each(res.data,function(i,n){
+                        addHtml += '<li><a href="javascript:(0)" onclick="choiceArea(this,'+n.area_id+')" value="'+n.area_id+'">';
+                        addHtml += n.title+'</a><ul class="menu03" id="area"></ul></li>';
+                    });
+                    $(cate).next("#city").append(addHtml);
+                    //$(cate).next("#area").append(addHtml);
+                }else{
+                    $(cate).next("#city").append(addHtml);
+                    //$(cate).next("#area").append(addHtml);
+                }
+            }
+        });
+    }
+    //县区选择
+    function choiceArea(cate,id){
+        $.ajax({
+            type:'POST',
+            url:"{:U('classroom/User/getAreaList')}",
+            data:{id:id},
+            dataType:'json',
+            success:function(res){
+                if (typeof res != 'object') {
+                    var res = eval('(' + res + ')');
+                }
+                $("input[name='city']").val(id);
+                var addHtml = '';
+                $(cate).next("#area").html('');
+                if (res.status == 1) {
+                    $.each(res.data,function(i,n){
+                        addHtml += '<li><a href="javascript:(0)" value="'+n.area_id+'">';
+                        addHtml += n.title+'</a></li>';
+                    });
+                    $(cate).next("#area").append(addHtml);
+                }else{
+                    $(cate).next("#area").append(addHtml);
+                }
+                $(cate).addClass('gen-on').parent('li').siblings().children('a').removeClass('gen-on');
+            }
+        });
+    }
+    $("#area a").live("click",function(){
+        var aid = $(this).attr('value');
+        $("input[name='area']").val(aid);
+        $(this).addClass('gen-on').parent('li').siblings().children('a').removeClass('gen-on');
+    });
+    //城市确认选择
+    $("#ConSelect").click(function(){
+        var province = $("input[name='province']").val();
+        var city     = $("input[name='city']").val();
+        var area     = $("input[name='area']").val();
+        $.ajax({
+            type:'POST',
+            url:"{:U('classroom/User/getAreaInfo')}",
+            data:{province:province,city:city,area:area},
+            dataType:'json',
+            success:function(res){
+                if (typeof res != 'object') {
+                    var res = eval('(' + res + ')');
+                }
+                if (res.status == 1) {
+                    $("#position").text(res.data);
+                    $(".gender-box").css("display","none");
+                    $(".covers").hide();
+                }else{
+                    return false;
+                }
+            }
+        });
+    });
+
     function setUserInfo(a){
         var form = $(a).parents('form');
-        var province = form.find('select#province option:selected').val();
-        var city     = form.find('select#city option:selected').val();
+        //var province = form.find('select#province option:selected').val();
+        //var city     = form.find('select#city option:selected').val();
+        var province = $("input[name='province']").val();
+        var city     = $("input[name='city']").val();
         var uname    = form.find('input[name=uname]');
         var intro    = form.find('input[name=intro]');
         if(!$.trim(uname.val())){
@@ -278,8 +456,24 @@
         }, 'json');
     }
 
+    /*显示地址菜单选择*/
+    $(".pos-btns").on("click",function(){
+        $(".covers").show();
+        $(this).siblings(".gender-box").show(200);
+        $("body").css("overflow","visible");
+    })
 
+    /*隐藏地址菜单选择*/
+    $(".gender-box .cancel,.covers").on("click",function(){
+        $(".gender-box").hide(200)
+        $(".covers").hide();
+        $("body").css("scr","auto");
+    })
+
+    $(".gender-box dd .menu01 li a").on("click",function(){
+        $(this).addClass("gen-on").parent().siblings().find("a").removeClass("gen-on")
+    });
 
 </script>
 
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

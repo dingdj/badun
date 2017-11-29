@@ -4,15 +4,16 @@
 	<div class="wrap">
     	<div class="content-place">
             <ul>
-                <li><a href="{:U('mall/Index/index')}">积分商城</a><span>&gt;</span><a href="javascript:;">{:msubstr(t($data['title']),0,15,'utf-8',true)}</a></li>
+                <li><a href="{:U('mall/Index/index')}">商城</a><span>&gt;</span><a href="javascript:;">{:msubstr(t($data['title']),0,15,'utf-8',true)}</a></li>
             </ul>
         </div>
         <div class="productbox">
         	<div class="pic"><img src="{:getCover($data['cover_id'],580,370)}" alt="{$data.title}" /></div>
             <div class="info">
             	<div class="title">
-                    <span class="mb">手机浏览</span>{$data.title}
-                    <div id="qrcode" class="fxp"></div>
+                    <span class="mb">手机浏览
+                        <div id="qrcode" class="fxp"></div>
+                    </span>{$data.title}
                 </div>
                 <div class="jfen">
                 	<ul>
@@ -26,6 +27,7 @@
                     <php>if($uid){</php>
                         <php>if($address['location']){</php>
                             <div class="con"><em id="old">{$address.location}&nbsp;&nbsp;{$address.address}</em>&nbsp;&nbsp;<a class="address" href="javascript:void(0);" id="charge_address">更换地址</a>
+                            <a class="address" href="{:U('classroom/User/address')}">新增地址</a>
                             <input class="address_id" name="address_id" value="{$address.id}" type="hidden" /></div>
                         <php>}else{</php>
                             <a href="{:U('classroom/User/address')}" style="color: #188eee;">新增地址</a>

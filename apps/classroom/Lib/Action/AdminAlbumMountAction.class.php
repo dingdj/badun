@@ -14,16 +14,16 @@ class AdminAlbumMountAction  extends AdministratorAction
      */
     public function _initialize()
     {
-        $this->pageTitle['index']       = '套餐挂载管理';
-        $this->pageTitle['action']       = '待审核套餐挂载管理';
+        $this->pageTitle['index']       = '已审';
+        $this->pageTitle['action']       = '待审';
 
-        $this->pageTab[] = array('title'=>'挂载套餐列表','tabHash'=>'index','url'=>U('classroom/AdminAlbumMount/index'));
-        $this->pageTab[] = array('title'=>'待审核挂载套餐列表','tabHash'=>'action','url'=>U('classroom/AdminAlbumMount/action'));
+        $this->pageTab[] = array('title'=>'已审','tabHash'=>'index','url'=>U('classroom/AdminAlbumMount/index'));
+        $this->pageTab[] = array('title'=>'待审','tabHash'=>'action','url'=>U('classroom/AdminAlbumMount/action'));
 
         parent::_initialize();
     }
     /**
-     * 套餐挂载列表管理
+     * 班级挂载列表管理
      */
     public function index(){
         $this->pageKeyList      = array('id','album_title','price','cover','user_title','ctime','mount_status','DOACTION');
@@ -38,7 +38,7 @@ class AdminAlbumMountAction  extends AdministratorAction
     }
 
     /**
-     * 待审核套餐挂载列表管理
+     * 待审核班级挂载列表管理
      */
     public function action(){
         $_REQUEST['tabHash'] = 'action';
@@ -54,7 +54,7 @@ class AdminAlbumMountAction  extends AdministratorAction
         $this->displayList($list);
     }
 
-    //获取套餐数据
+    //获取班级数据
     private function _getData($limit = 20, $is_del,$map){
         if(isset($_POST)){
             $_POST['id'] && $map['id'] = intval($_POST['id']);
@@ -67,7 +67,7 @@ class AdminAlbumMountAction  extends AdministratorAction
         foreach ($list['data'] as &$value){
             $value['album_title'] = msubstr($value['album_title'],0,20);
             $url = U('classroom/Album/view', array('id' => $value['id']));
-            $value['album_title'] = getQuickLink($url,$value['album_title'],"未知套餐");
+            $value['album_title'] = getQuickLink($url,$value['album_title'],"未知班级");
             $value['user_title'] = getUserSpace($value['uid'], null, '_blank');
             $value['price'] = $value['price'].'元';
             $value['ctime'] = date("Y-m-d H:i:s", $value['ctime']);

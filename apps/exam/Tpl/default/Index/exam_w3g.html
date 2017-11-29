@@ -1,4 +1,4 @@
-<include file="__THEME__/public_header_twolevel"/>
+<include file="__THEME__/public_header_w3g"/>
 <link href="__ROOT__/apps/exam/_static/css/exam_new.css" rel="stylesheet" type="text/css" />
 <style>
     .icon-time{background: url(__THEME__/icon/icon.png) 0 0 no-repeat;background-position:-313px -661px;}
@@ -82,7 +82,7 @@ window.onload=function(){
                 <ul class="question-conent-list">
                     <li>
                         <i>{$num}.</i>
-                        <div class="question" style="margin-left:10px;width:300px;">{$vo.question_content} {$vo.paper_content_point}分</div>
+                        <div class="question" style="margin-left:10px;width:97%;">{$vo.question_content} {$vo.paper_content_point}分</div>
                         <?php if($vo["question_type"]!=3){ ?>
                           <ol class="testpaper-question-choices" type="A">
                             <?php foreach ($vo["option_list"] as $l=> $list) {
@@ -277,4 +277,4 @@ function post_callback(_form,data){
 }
 </script>
 <!--footer-->
-<include file="__THEME__/public_footer_twolevel"/>
+<include file="__THEME__/public_footer_w3g"/>

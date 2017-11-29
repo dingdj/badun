@@ -63,7 +63,7 @@
 #tagcontent0{width:370px; position: absolute; overflow-x: hidden; overflow-y: auto; top:250px; bottom:0; }
 .checklabel{color:#999999;}
 .m-videoReportDialog .checklabel:hover{color:#16914E;}
-.tabs li{float:left; width:123px}
+.tabs li{float:left; width:123px;list-style: none}
 
 /*改过的*/
 body{text-align:left;overflow:hidden;padding-top:0 !important;}
@@ -132,7 +132,7 @@ padding:0px 15px 0 27px;}
 .video-list .li{ width:100%; float:left; height:auto; font-size:12px; padding:10px 0 10px 0;border-bottom:1px solid #eeeeee;}
 .video-list .li-fl{ width:40px; float:left; height: auto; margin-right:10px; text-align:center}
 .video-list .li-fl span{ width:40px;height: 30px; display: block; overflow: hidden;  text-overflow: ellipsis;white-space: nowrap;word-break:keep-all;-o-text-overflow:ellipsis; float:left;text-align:center}
-.video-list .li-fr h3{ width:270px; float:left; height: 30px; line-height:30px; font-weight:100;display: block; overflow: hidden;  text-overflow: ellipsis;white-space: nowrap;word-break:keep-all;-o-text-overflow:ellipsis; float:left;}
+.video-list .li-fr h3{ width:270px;  height: 30px; line-height:30px; font-weight:100;display: block; overflow: hidden;  text-overflow: ellipsis;white-space: nowrap;word-break:keep-all;-o-text-overflow:ellipsis;}
 
 .video-list .li-fl img{ width:40px; float:left; height: 40px;-moz-border-radius: 100px;-webkit-border-radius: 100px;border-radius:100px;}
 .video-list .li-fr{ width:270px; float:left; height: auto;}
@@ -264,3 +264,6 @@ padding:0px 15px 0 27px;}
 .txt_l {text-align: left;}
 .p10 {padding: 20px;}
 .mt10b20l_15 {margin: 10px 0 20px -15px;}
+
+.aplayer .aplayer-pic .aplayer-play .aplayer-icon-play,.aplayer .aplayer-pic .aplayer-pause .aplayer-icon-pause{position: absolute;left: 11px!important;font-size: 0!important;width: 40px;height: 40px;background-position: -344px -53px;line-height: 60px;top: 10px!important;}
+.aplayer .aplayer-pic .aplayer-pause .aplayer-icon-pause{background-position: -305px -53px}

@@ -1,0 +1,120 @@
+<include file="__THEME__/public_header" />
+<link rel="stylesheet" type="text/css" href="__APP__/css/public.css">
+<!--<link rel="stylesheet" type="text/css" href="__APP__/css/public_header_footer.css">-->
+<link rel="stylesheet" type="text/css" href="__APP__/css/style.css">
+<style>
+    .full-course:hover ul{
+        display: block;
+    }
+    .full-course ul{
+        display: none;
+    }
+</style>
+<!-- 面包屑导航 start -->
+<div class="topbox bg3f">
+    <div class="screen-outer">
+        <ul class="position-label-find">
+            <li>
+                <a href="/">首页></a>
+                <a href="{:U('classroom/Home/exams',['tab'=>4])}">试题收藏></a>
+                <a href="javascript:;">试题详情</a>
+            </li>
+        </ul>
+        <div class="screen-outer">
+            <div class="score-left">
+               <!--错题列表-->
+                <div class="error-exam">
+                    <dl>
+                        <dt>试题</dt>
+                        <dd>
+                            <a href="#ex{$question.exams_question_id}" class="on">1</a>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <!--答题-->
+            <div class="score-content">
+                <ul class="test-paper-box">
+                    <php>$question_num = 1;</php>
+                    <h4>试题解析</h4>
+                    <switch name="question.type_info.question_type_key">
+                        <case value="radio|multiselect|judge">
+                            <!-- 单多选 -->
+                            <li class="test-paper" id="ex{$question.exams_question_id}">
+                                <h5><small>{$question_num}</small>（{$question.type_info.question_type_title}）</h5>
+                                <p>{$question.content}</p>
+                                <ul class="answer">
+                                    <volist name="question.answer_options" id="answer">
+                                        <li><b>{$key}、</b>{$answer}</li>
+                                    </volist>
+                                </ul>
+                                <div class="choice">
+                                    <div class="collection">
+                                        <php>if($question['is_collect'] == 1){</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                        <php>}else{</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                        <php>}</php>
+                                    </div>
+                                </div>
+                                <div class="lu-ms-tim block">
+                                    <em>正确答案<strong><volist name="question.answer_true_option" id="answer_true">{$answer_true}</volist></strong></strong></em>
+                                </div>
+                                <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                            </li>
+                        </case>
+                        <case value="completion">
+                            <!-- 填空 -->
+                            <li class="test-paper" id="ex{$question.exams_question_id}">
+                                <h5><small>{$question_num}</small>（{$question.type_info.question_type_title}）</h5>
+                                <p>{$question.content}</p>
+                                <div class="choice">
+                                    <div class="collection">
+                                        <php>if($question['is_collect'] == 1){</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                        <php>}else{</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                        <php>}</php>
+                                    </div>
+                                </div>
+                                <div class="lu-ms-tim block">
+                                    <em class="blank-cls">正确答案
+                                        <ul>
+                                            <volist name="question.answer_true_option" id="answer_true">
+                                            <li><span><b>{$i}</b>、{$answer_true}</span></li>
+                                            </volist>
+                                        </ul>
+                                    </em>
+                                </div>
+                                <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                            </li>
+                        </case>
+                        <case value="essays">
+                            <!-- 解答 -->
+                            <li class="test-paper" id="ex{$question.exams_question_id}">
+                                <h5><small>{$question_num}</small>（{$question.type_info.question_type_title}）</h5>
+                                <p>{$question.content}</p>
+                                <div class="choice">
+                                    <div class="collection">
+                                        <php>if($question['is_collect'] == 1){</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="0"><i class="icon iconlike" style="background-position:-88px -8px;"></i><small>已收藏</small></span>
+                                        <php>}else{</php>
+                                            <span class="like" data-question_id="{$question.exams_question_id}" data-action="1"><i class="icon iconlike"></i><small>收藏题目</small></span>
+                                        <php>}</php>
+                                    </div>
+                                </div>
+                                <div class="block"><b>考点：</b>{$question.exams_point_title}</div>
+                                <div class="fz block"><b>解析：</b>{$question.analyze}</div>
+                            </li>
+                        </case>
+                    </switch>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__APP__/js/exercise.js"></script>
+<script src="__APP__/js/score.js"></script>

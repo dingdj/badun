@@ -104,7 +104,7 @@
 	color: #666666;
 	line-height: 20px;
 }
-/*套餐内容列表*/
+/*班级内容列表*/
 .piclist{
 	clear: both;
 	overflow: hidden;
@@ -292,7 +292,7 @@
 	line-height: 25px;
 }
 
-/* 好友的最新套餐*/
+/* 好友的最新班级*/
 
 .falbumlist{ width: 810px; clear:both;}
 .falbumlist .photo140 {
@@ -462,7 +462,7 @@
 	margin-bottom: 5px;
 	background-color: #FFFFFF;
 }
-/*编辑套餐*/
+/*编辑班级*/
 .edit_box{
 	margin-left: 10px;
 	margin-bottom: 30px;
@@ -555,7 +555,7 @@
 	font-size: 12px;
 	height: 30px;
 }
-/*套餐的照片排序*/
+/*班级的照片排序*/
 .order{
 	line-height: 30px;
 	margin-left: 10px;

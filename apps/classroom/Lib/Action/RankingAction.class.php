@@ -23,7 +23,7 @@ class RankingAction extends CommonAction {
 
         //课程热销排行
         $data['video'] = $this->getSingleList(true, 10, 'video', 1);
-        //套餐热销排行
+        //班级热销排行
         $data['album'] = $this->getSingleList(true, 10, 'album', 1);
         //每日新上
         unset($_POST);
@@ -51,7 +51,7 @@ class RankingAction extends CommonAction {
     }
 
     /**
-     * 套餐榜单
+     * 班级榜单
      */
     public function album() {
         $this->display("list_zj");

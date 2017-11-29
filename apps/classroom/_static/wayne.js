@@ -207,11 +207,9 @@ admin.crossVideo = function(id,cross,title,uid){
 		return false;
 	}
 
-
-if(cross)
-		{
-			var dotype = '已审核';
-		}
+	if(cross){
+		var dotype = '已审核';
+	}
 
 	var videotype = '课程';
 	var uid = uid;

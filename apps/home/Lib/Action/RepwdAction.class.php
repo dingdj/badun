@@ -5,6 +5,9 @@ tsload(APPS_PATH.'/classroom/Lib/Action/CommonAction.class.php');
 	 */
 	class RepwdAction extends CommonAction{
 		public function index(){
+			if( $this->mid ){
+	    		header("Location: ". U('classroom/Index/index'));
+	    	}
             $phoneCode = $_SESSION['repwdtime']; //保存在session中的时间
 
             if(!empty($phoneCode)){

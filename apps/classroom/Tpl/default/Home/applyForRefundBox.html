@@ -67,19 +67,16 @@
         }
         // 提交申请
         $.post(U('classroom/Home/doApplyFR'),
-                {id:id,order_type:type,refund_reason:refund_reason,refund_note:refund_note,voucher:voucher}, function (res) {
-                    if (res.status == 1) {
-                        ui.box.close();
-                        ui.success(res.info);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        ui.error(res.info);
-                        ui.box.close();
-                    }
-                }, 'json');
+            {id:id,order_type:type,refund_reason:refund_reason,refund_note:refund_note,voucher:voucher}, function (res) {
+                if (res.status == 1) {
+                    ui.box.close();
+                    ui.success(res.info);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    ui.error(res.info);
+                }
+            }, 'json');
     }
 </script>
-
-

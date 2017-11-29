@@ -1,0 +1,1032 @@
+.min-height-wrap {
+    min-height: 31rem
+}
+
+.cover {
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: none;
+}
+
+
+/*考试首页*/
+
+.mw-inner-box {
+    display: table;
+    margin: 0 auto;
+    width: 96%
+}
+
+.mw-custom-module li {
+    display: inline-block;
+    width: 100%;
+    background: #fff;
+    margin-top: 25px;
+    height: 130px;
+    box-shadow: 0 10px 20px 0 rgba(104, 120, 160, .24)
+}
+
+.mw-custom-module li a {
+    display: inline-block;
+    width: 90%;
+    padding: 0 5%;
+    height: 130px
+}
+
+.mw-custom-module li h3 {
+    max-width: 175px;
+    color: #333;
+    font-size: 20px;
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 35px;
+    font-weight: 600
+}
+
+.mw-custom-module li h3 p {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
+    font-weight: 400
+}
+
+.mw-custom-module li em {
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    float: right;
+    border-radius: 50%;
+    margin-top: 23px
+}
+.mw-custom-module li em img{border-radius: 50%;}
+
+.mw-custom-module li i {
+    display: inline-block;
+    line-height: 74px;
+    width: 74px;
+    height: 74px;
+    font-size: 36px;
+    margin-top: 3px;
+    background: #00BED4;
+    border-radius: 50%;
+    color: #fff
+}
+
+
+/*题目页面*/
+
+.selectul-screen {
+    position: relative;
+    height: 40px
+}
+
+.selectul {
+    display: inline-block;
+    width: 100%;
+    background-color: #f6f6f6
+}
+
+.selectul li {
+    float: left;
+    height: 40px;
+    width: 50%;
+    text-align: center;
+    /*line-height: 40px;*/
+    font-size: 14px
+}
+
+.selectul li i {
+    margin-left: 5px;
+    display: inline-block
+}
+
+.exam-subject li {
+    background: #fff;
+    border-top: 1px solid #e5e5e5
+}
+
+.exam-subject li a {
+    display: block;
+    padding: 0 3%
+}
+
+.exam-subject li h4 {
+    margin-top: 16px
+}
+
+.exam-subject li p {
+    padding: 6px 0 12px;
+    color: #9e9e9e;
+    font-size: 13px
+}
+
+.exam-subject li p small {
+    display: inline-block;
+    width: 40%;
+    font-size: 13px
+}
+
+.selectul-screen-content {
+    position: absolute;
+    width: 100%;
+    top: 42px;
+    border-top: 1px solid #e5e5e5
+}
+
+.selectul-screen-content .selectul-layer {
+    height: 246px;
+    overflow-y: auto;
+    background-color: #fff;
+    width: 100%;
+    font-size: 14px;
+    display: none
+}
+
+.selectul-screen-content .selectul-layer li a {
+    display: block;
+    line-height: 40px;
+    border-bottom: 1px solid transparent;
+    color: #757575;
+    padding: 0 0 0 10px
+}
+
+.three-selectul {
+    background-color: #FFF;
+    overflow-y: auto;
+    height: 246px;
+    float: left;
+    min-width: 33.33%;
+    display: none;
+}
+.three-selectul:first-child{
+	display: block;
+}
+
+.three-selectul li.on{
+    border-bottom: 1px solid rgb(0, 190, 212);
+}
+
+.three-selectul li a {
+    display: block;
+    line-height: 40px;
+    border-bottom: 1px solid transparent;
+    color: #757575;
+    padding: 0 0 0 10px;
+}
+.three-selectul li.on a{
+	color: rgb(0, 190, 212);
+}
+
+.date-condition {
+    height: auto!important;
+    width: 94%!important;
+    padding: 10px 3%
+}
+
+.date-condition h4 {
+    color: #333;
+    font-size: 14px
+}
+
+.date-condition dd {
+    float: left;
+    margin-top: 10px;
+    width: auto;
+    margin-right: 13px;
+    margin-bottom: 5px
+}
+
+.date-condition dd button {
+    font-size: 14px;
+    color: #656565;
+    background-color: #f4f4f4;
+    border-radius: 4px;
+    border: 0;
+    padding: 4px 10px;
+    border: 1px solid transparent
+}
+
+.date-condition dl {
+    display: inline-block
+}
+
+.deta-cancel {
+    width: 100%;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px
+}
+
+.deta-cancel dd {
+    float: right
+}
+
+.deta-cancel dd button {
+    padding: 5px 15px;
+    border-radius: 4px;
+    border: 0
+}
+
+.deta-cancel .btn01 {
+    color: #656565;
+    border: 1px solid #E5E5E5;
+    background-color: #fff
+}
+
+.deta-cancel .btn02 {
+    color: #fff;
+    background-color: #00BED4;
+    border: 1px solid transparent
+}
+
+.pattern-worap {
+    width: 90%;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    position: absolute;
+    z-index: 100;
+    height: 274px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    display: none
+}
+
+.pattern-worap h4 {
+    text-align: center;
+    line-height: 70px;
+    color: #333;
+    font-size: 18px;
+    border-bottom: 1px solid #e5e5e5
+}
+
+.pattern-worap p {
+    line-height: 50px;
+    margin: 0 5%;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 14px;
+    color: #9e9e9e
+}
+
+.pattern-worap p em {
+    display: inline-block;
+    width: 40%;
+    margin-left: 8%;
+    color: #333
+}
+
+.pattern-worap a {
+    display: inline-block;
+    width: 50%;
+    line-height: 50px;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    float: left;
+}
+
+.pattern-worap .c01 {
+    background: #00BED4
+}
+
+.pattern-worap .c02 {
+    background: #F7B659
+}
+
+.pattern-worap .a_btn {
+    width: 100%;
+}
+
+
+/** 隐藏试卷数据 **/
+
+.exam-subject li dl {
+    display: none;
+}
+
+.date-condition .selected {
+    background-color: #00BED4;
+    color: #FFF;
+}
+
+
+/*开始做题*/
+
+.exam-header {
+    line-height: 40px;
+    display: inline-block;
+    width: 90%;
+    padding: 0 5%;
+    color: #656565;
+    background: #fff;
+    width: 100%;
+}
+
+.exam-header .back-date {
+    float: left
+}
+
+.exam-header .back-date i {
+    margin-right: 25px
+}
+
+.exam-header .view-stop {
+    float: right;
+    font-size: 20px
+}
+
+.exam-header .view-stop a {
+    color: #656565;
+    float: right;
+}
+
+.exam-header .view-stop i {
+    font-size: 20px;
+    margin-left: 25px;
+    float:left;
+}
+
+.exam-header .the-stop, .delete {
+    width: 50%;
+    position: absolute;
+    z-index: 100;
+    height: 170px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    display: none
+}
+
+.exam-header .the-stop li {
+    line-height: 42px;
+    border-radius: 50px;
+    border: 1px solid #fff;
+    margin-bottom: 20px
+}
+
+.static-exam dl dt {
+    padding: 0 5%;
+    background: #f5f5f5;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5
+}
+
+.static-exam dl dt h5 {
+    color: #9e9e9e;
+    font-size: 10px;
+    line-height: 30px
+}
+
+.static-exam dl dt h5 small {
+    color: #00BED4;
+    font-size: 12px
+}
+
+.static-exam dl dt h5 strong {
+    color: #fff;
+    background: #d2d2d2;
+    border-radius: 2px;
+    padding: 0 4px;
+    margin-left: 3%
+}
+
+.static-exam dl dt h3 {
+    color: #404040;
+    font-size: 15px;
+    line-height: 30px;
+    padding-bottom: 15px
+}
+
+.static-exam dl dt h3 span {
+    display: inline-block;
+    color: #9e9e9e;
+    font-size: 13px;
+    border-bottom: 1px solid #404040
+}
+
+.static-exam dl dd {
+    padding: 10px 3%
+}
+
+.static-exam dl dd textarea {
+    width: 84%;
+    margin: 15px 5%;
+    min-height: 190px;
+    border-radius: 4px;
+    border: 1px solid #dcdcdc;
+    outline: 0;
+    padding: 0 3%;
+    line-height: 20px;
+    font-size: 13px
+}
+
+.static-exam dl dd label {
+    display: inline-block;
+    color: #9e9e9e;
+    font-size: 16px;
+    width: 90%;
+    margin: 15px 5%
+}
+
+.static-exam dl dd label input {
+    color: #404040;
+    font-size: 16px;
+    width: 89%;
+    height: 34px;
+    border: 1px solid #dcdcdc;
+    border-radius: 50px;
+    text-indent: 10px
+}
+
+.static-exam dl dd p {
+    color: #404040;
+    font-size: 15px;
+    line-height: 56px;
+    padding: 0 5%
+}
+
+.static-exam dl dd p em {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    background: #e1e1e6;
+    color: #fff;
+    border-radius: 50%;
+    margin-right: 15px
+}
+
+.static-exam dl dd .on em {
+    background: #00BED4
+}
+
+.static-exam dl dd .correct em {
+    background: #6bbc7c
+}
+
+.static-exam dl .next, .assignment {
+    width: 94%;
+    display: block;
+    margin: 0 3%;
+    text-align: center;
+    line-height: 44px;
+    color: #fff;
+    border-radius: 3px;
+    background: #00BED4;
+    font-size: 16px
+}
+.assignment {
+    margin-top: 20px
+}
+
+.btns-complete {
+    height: 84px;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.static-exam dl .operation {
+    margin: 15px 3%;
+    font-size: 14px;
+    color: #656565;
+    line-height: 14px
+}
+
+.static-exam dl .operation .operation-tit {
+    display: inline-block;
+    width: 100%
+}
+
+.static-exam dl .operation strong {
+    float: left
+}
+
+.static-exam dl .operation b {
+    float: right
+}
+
+.static-exam dl .operation i {
+    color: #888;
+    padding: 0 3px;
+    font-size: 14px;
+    display: inline-block
+}
+
+.static-exam dl .operation .analysis {
+    margin-top: 15px;
+    display: none
+}
+
+.static-exam dl .operation .analysis .analysis-pic {
+    width: 100%;
+    background: #fde7e4;
+    border-radius: 4px;
+    padding-bottom: 15px
+}
+
+.static-exam dl .operation .analysis .analysis-pic h6 {
+    font-size: 12px;
+    color: #333;
+    text-align: center;
+    line-height: 32px
+}
+
+.static-exam dl .operation .analysis .analysis-pic h5 {
+    font-size: 12px;
+    color: #333;
+    line-height: 32px;
+    padding: 0 10px
+}
+
+.static-exam dl .operation .analysis .analysis-pic ul {
+    display: inline-block
+}
+
+.static-exam dl .operation .analysis .analysis-pic li {
+    padding: 0 16px;
+    float: left;
+    line-height: 28px;
+    color: #333
+}
+
+.static-exam dl .operation .analysis .analysis-pic abbr, .static-exam dl .operation .analysis .analysis-pic em {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    color: #6bbc7c;
+    font-size: 30px;
+    line-height: 30px
+}
+
+.static-exam dl .operation .analysis .analysis-pic em {
+    color: #d25151
+}
+
+.static-exam dl .operation .analysis .analysis-txt h6 {
+    color: #888;
+    font-size: 16px;
+    line-height: 36px
+}
+
+.static-exam dl .operation .analysis .analysis-txt p {
+    color: #333;
+    font-size: 14px;
+    line-height: 22px
+}
+
+.static-exam dl {
+    display: none;
+}
+
+.static-exam dl:first-child {
+    display: block;
+}
+
+
+/*答题卡*/
+
+.answer-card {
+    position: absolute;
+    background-color: #FFF;
+    width: 100%;
+    display: none;
+}
+
+.answer-card h6 {
+    background: #f5f5f5;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    font-size: 12px;
+    color: #888;
+    text-indent: 10px;
+    line-height: 20px
+}
+
+.answer-card dd {
+    width: 320px;
+    margin: 0 auto;
+    display: table;
+    padding-bottom: 20px
+}
+
+.answer-card dd .on {
+    background: #00BED4
+}
+
+.answer-card dd .active {
+    border-color: #00BED4
+}
+
+.answer-card dd .err {
+    background: #d25151
+}
+
+.answer-card dd a {
+    width: 34px;
+    height: 34px;
+    text-align: center;
+    line-height: 34px;
+    border-radius: 50%;
+    color: #fff;
+    background: #e1e1e6;
+    margin: 20px 14px 0;
+    float: left;
+    border: 1px solid transparent
+}
+
+
+/*考试结果*/
+
+.cstlayer {
+    height: 330px;
+    background: #00BED4;
+    position: relative
+}
+
+.cstlayer-header {
+    display: inline-block;
+    width: 100%;
+    color: #fff;
+    line-height: 36px
+}
+
+.cstlayer-header i {
+    width: 6%;
+    float: left;
+    font-size: 18px
+}
+
+.cstlayer-header h3 {
+    width: 94%;
+    float: left;
+    font-size: 15px;
+    text-align: center
+}
+
+.cstlayer-content {
+    width: 110px;
+    height: 110px;
+    background-image: url(../icon/score.png);
+    -moz-background-size: 100%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin: 30px auto 0;
+    line-height: 110px;
+    text-align: center;
+    color: #fff;
+    font-size: 50px
+}
+
+.cstlayer-txt {
+    text-align: center;
+    line-height: 39px;
+    font-size: 12px;
+    color: #c9ced9
+}
+
+.add-eaxm {
+    display: block;
+    width: 38%;
+    line-height: 40px;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 50px;
+    text-align: center;
+    margin: auto
+}
+
+.business-card {
+    width: 94%;
+    background: #fff;
+    position: absolute;
+    margin-left: 3%;
+    bottom: -36px;
+    padding: 14px 0;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px 0 rgba(104, 120, 160, .24)
+}
+
+.business-card dt {
+    width: 20%;
+    color: #656565;
+    font-size: 12px;
+    padding: 0 15px;
+    float: left;
+    border-right: 1px solid #e5e5e5
+}
+
+.business-card dt h1 {
+    color: #00BED4;
+    text-align: center;
+    font-size: 28px
+}
+
+.business-card dd {
+    width: 69%;
+    float: left
+}
+
+.business-card dd a {
+    float: left;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 15px 0 20px
+}
+
+.business-card dd img {
+    width: 56px;
+    min-height: 50px
+}
+
+.business-card dd span {
+    float: left
+}
+
+.business-card dd span h4 {
+    font-size: 14px;
+    color: #333;
+    margin-top: 6px
+}
+
+.business-card dd span b {
+    font-size: 12px;
+    color: #888;
+    margin-right: 10px
+}
+
+.business-card dd span b em {
+    color: #333
+}
+
+.ranking-all {
+    margin-top: 47px;
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+    margin-bottom: 49px
+}
+
+.ranking-all tr:first-child {
+    border: 0
+}
+
+.ranking-all tr {
+    border-collapse: collapse;
+    border-top: 1px solid #e5e5e5
+}
+
+.ranking-all th {
+    color: #888;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 30px
+}
+
+.ranking-all td {
+    line-height: 60px
+}
+
+.ranking-all td h6 {
+    display: inline-block;
+    color: #00BED4
+}
+
+.ranking-all td:nth-child(2) {
+    display: inline-block
+}
+
+.ranking-all td a {
+    display: inline-block;
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-top: 15px;
+    margin-right: 10px
+}
+
+.ranking-all td a img {
+    width: 30px;
+    min-height: 30px
+}
+
+.ranking-all td small {
+    width: 90px;
+    font-size: 14px;
+    color: #333
+}
+
+.ranking-all td em {
+    color: #888;
+    font-size: 12px
+}
+
+.error-box-go {
+    position: fixed;
+    background: #fff;
+    bottom: 0;
+    border-top: 1px solid #e5e5e5;
+    display: inline-block;
+    width: 100%;
+    height: 49px;
+    text-align: center
+}
+
+.error-box-go a:first-child {
+    border-right: 1px solid #e5e5e5
+}
+
+.error-box-go a {
+    width: 49.7%;
+    float: left;
+    line-height: 36px;
+    margin-top: 6px;
+    color: #00BED4;
+    font-size: 16px
+}
+
+.exams_questions {
+    display: none;
+}
+
+.collect_hidden {
+    display: none;
+}
+
+
+/*我的考试*/
+
+.suren-coas {
+    display: inline-block;
+    width: 100%;
+    background: #fafafa;
+    border-bottom: 1px solid #e5e5e5
+}
+
+.suren-coas .on {
+    border-bottom: 2px solid #00BED4
+}
+
+.suren-coas .on a {
+    color: #00BED4
+}
+
+.suren-coas li {
+    float: left;
+    width: 25%;
+    text-align: center;
+    line-height: 44px;
+    font-size: 16px;
+    border-bottom: 2px solid transparent
+}
+
+.suren-coas li a {
+    display: block;
+    color: #333
+}
+
+.eaxm-record li, .suren-content li {
+    width: 100%;
+    display: inline-block;
+    border-bottom: 1px solid #e5e5e5;
+    position: relative
+}
+
+.suren-content li {
+    padding: 0 3%;
+    width: 100%;
+}
+
+.suren-content span {
+    float: left
+}
+
+.suren-content span h4 {
+    width: 230px;
+    color: #333;
+    font-size: 15px;
+    line-height: 45px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden
+}
+
+.suren-content span p {
+    color: #9e9e9e;
+    font-size: 13px
+}
+
+.suren-content strong {
+    float: right;
+    line-height: 75px;
+    color: #00BED4
+}
+
+.suren-content i {
+    float: right;
+    line-height: 75px;
+    color: #656565;
+    font-size: 20px
+}
+
+.asmarfr-pr .suren-content {
+    display: none
+}
+
+.asmarfr-pr .suren-content:first-child {
+    display: block
+}
+
+.asmarfr-pr .collection li {
+    padding-bottom: 12px
+}
+
+.asmarfr-pr .collection li h4 {
+    width: 100%;
+    height: 80px;
+    line-height: 26px;
+    overflow: hidden;
+    white-space: normal
+}
+
+.delete {
+    height: 120px;
+    border-top: 2px solid #00bed4;
+    width: 60%;
+    display: block;
+    background: #fff;
+    display: none
+}
+
+.delete h4 {
+    color: #656565;
+    font-size: 16px;
+    line-height: 70px
+}
+
+.delete a {
+    display: block;
+    float: left
+}
+
+.delete .c01 {
+    background: #E5E5E5;
+    color: #656565
+}
+
+.delete .c02 {
+    background: #00bed4
+}
+
+.suren-content li {
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
+.suren-content li .btn {
+    position: absolute;
+    top: 0px;
+    width: 95px;
+    display: block;
+    height: 100%;
+    text-align: center;
+    line-height: 68px;
+    color: #FFF;
+}
+
+.suren-content li .del {
+    background-color: #F00;
+    right: -190px;
+}
+
+.suren-content li .exams {
+    background-color: #f6b37f;
+    right: -95px;
+}
+
+.suren-content li .show {
+    background-color: #00BED4;
+    right: -95px;
+}

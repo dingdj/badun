@@ -15,7 +15,7 @@
 	     <div class="info">
 	         <div class="tit"><a href="{:U('live/Index/view',array('id'=>$vo['id']))}">{:limitNumber($vo['title'],54)}</a></div>
 	         <div class="con">
-	             <div class="price">{$vo.price}</div>
+	             <div class="price">{$vo.mzprice.price}</div>
 	             <div class="star">评分：
 	             <if condition="$vo['score'] GT 0 "> <span></span>
 	             <else /><span class="no"></span></if>

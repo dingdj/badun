@@ -1,26 +1,19 @@
+
+    <!--footer start-->
     <div class="footer">
-        <div class="link">
-            <a href="/">首页</a>
-            <span>|</span>
-            <if condition="$_SESSION['mid']">
-                <a href="{:U('classroom/UserShow/index',array('uid'=>$_SESSION['mid']))}">个人中心</a>
-                <else />
-                <a href="{:U('public/Passport/login_g')}">登录</a>
-            </if>
-            <span>|</span>
-            <php>if($this_mhm_id)  {</php>
-                <a href="{:U('public/Passport/reg',array('this_mhm_id'=> $this_mhm_id))}">注册</a>
-            <php>}else{</php>
-                <a href="{:U('public/Passport/reg')}">注册</a>
-            <php>}</php>
-            <span>|</span>
-            <a href="javascript:;">下载APP</a>
-            <span>|</span>
-            <a href="http://wpa.qq.com/msgrd?v=3&uin={$site.site_qq}&site=www.51eduline.com&menu=yes">联系客服</a>
-        </div>
-        <p>{$site['site_footer']}</p>
+        <b>{$site['site_footer']}</b>
     </div>
-    <a class="backtop"></a>
+    <!--footer end-->
+
+    <!--&lt;!&ndash; 统计代码&ndash;&gt;-->
+    <div id="site_analytics_code" style="display:none;">
+    {$site.site_analytics_code|base64_decode}
+    </div>
+    <eq name='site.site_online_count' value='1'>
+    <script src="{:SITE_URL}/online_check.php?uid={$mid}&uname={$user.uname}&mod={:MODULE_NAME}&app={:APP_NAME}&act={:ACTION_NAME}&action=trace"></script>
+    </eq>
+
+    <script src="__THEMEW3G__/js/script.js"></script>
 </div>
-<script src="__THEMEW3G__/js/script.js"></script>
 </body>
+</html>

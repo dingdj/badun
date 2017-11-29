@@ -29,7 +29,7 @@
             <a class="choose" href="javascript:;">余额充值</a>
         </div>
         <form action="{:U('classroom/Pay/recharge')}" method="post" id="recharge_form" style="background: #fff">
-            <input type="hidden" value="alipay" name="pay" />
+            <input type="hidden" value="<if condition='$is_wx'>wxpay<else/>alipay</if>" name="pay" />
             <input type="hidden" value="0" name="money" />
             <div class="teacher_bd db">
 
@@ -59,11 +59,13 @@
 
         <dl class="pay_dl marsty_docse">
             <dd id="select_pay">
-                <if condition="in_array('alipay',$payConfig['pay'])">
-                    <label class="selected" val="alipay"><img src="__THEME__/images/Alipay.png"><i></i></label>
+                <if condition="$is_wx eq null">
+                    <if condition="in_array('alipay',$payConfig['pay'])">
+                        <label class="selected" val="alipay"><img src="__THEME__/images/Alipay.png"><i></i></label>
+                    </if>
                 </if>
                 <if condition="in_array('wxpay',$payConfig['pay'])">
-                    <label  val="wxpay"><img src="__THEME__/images/weixinpay.png"><i></i></label>
+                    <label <if condition="$is_wx">class="selected"</if> val="wxpay"><img src="__THEME__/images/weixinpay.png"><i></i></label>
                 </if>
                 <if condition="in_array('unionpay',$payConfig['pay'])">
                     <!--<label val="unionpay"><img src="__THEME__/images/yyzf.png"></label>-->
@@ -224,7 +226,7 @@
                     if(data.status == 1){
                         var pay_pass_num = data.data.pay_pass_num;
                         '<if condition="$is_wx">'
-                        WeixinJSBridge.invoke(
+                            WeixinJSBridge.invoke(
                                 'getBrandWCPayRequest',JSON.parse(data.data.html),
                                 function(res){
                                     if(res.err_msg == "get_brand_wcpay_request:ok" ){

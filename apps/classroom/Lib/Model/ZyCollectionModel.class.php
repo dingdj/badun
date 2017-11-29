@@ -10,17 +10,18 @@ class ZyCollectionModel extends Model
 	
 	//可收藏的资源类型
 	public $_collType  = array(
-		1=>'album',//套餐收藏
+		1=>'album',//班级收藏
 		2=>'zy_video',//课程收藏
 		3=>'zy_question',//提问收藏
 		4=>'zy_note',//笔记收藏
 		5=>'zy_review',//点评收藏
 		6=>'crowdfunding', //众筹
+		7=>'zy_teacher_course', //线下课收藏
 	);
 
 	//可收藏的资源集合
 	private $_collList  = array(
-		'album',//套餐收藏
+		'album',//班级收藏
 		'zy_video',//课程收藏
 		'zy_question',//提问收藏
 		'zy_note',//笔记收藏
@@ -30,11 +31,13 @@ class ZyCollectionModel extends Model
         'zy_topic',
 		'zy_teacher',//讲师收藏
 		'doc',//文库收藏
+		'zy_teacher_course',//线下课收藏
+		'exams_question',// 新版考试系统试题收藏
 	);
 	
 	//可收藏的资源集合
 	private $_collListField  = array(
-		'Album'=>'id,`album_title`',//套餐要取得字段
+		'Album'=>'id,`album_title`',//班级要取得字段
 		'ZyVideo'=>'id,`video_title`',//课程收藏
 		'ZyQuestion'=>'id,`qst_title`,`qst_description`,`qst_help_count`',//提问收藏
 		'ZyNote'=>'id,`note_title`',//笔记收藏
@@ -43,10 +46,11 @@ class ZyCollectionModel extends Model
 		'crowdfunding'=>'id,`title`',//众筹收藏
 		'ZyTeacher'=>'uid,`name`',//讲师收藏
 		'doc'=>'id,`title`',//文库收藏
+		'zy_teacher_course'=>'course_id,`course_name`',//线下课收藏
 	);
 	//可收藏的资源集合
 	private $_collField  = array(
-		'Album'=>'collect_count',//套餐收藏
+		'Album'=>'collect_count',//班级收藏
 		'ZyVideo'=>'video_collect_count',//课程收藏
 		'ZyQuestion'=>'qst_collect_count',//提问收藏
 		'ZyNote'=>'note_collect_count',//笔记收藏
@@ -55,6 +59,7 @@ class ZyCollectionModel extends Model
 		'crowdfunding'=>'`collect_count`',//众筹收藏
 		'ZyTeacher'=>'collect_num',//讲师收藏
 		'doc'=>'collect_num',//文库收藏
+		'zy_teacher_course'=>'collect_num',//线下课收藏
 	);
 	
 	
@@ -184,12 +189,16 @@ class ZyCollectionModel extends Model
 	public function myCollection($stable,$limit,$uid=''){
 		$ctablename = $this->getTableName();
 		$otablename = M(parse_name(ucwords($stable)))->getTableName();
-		
+
 		//取得用户ID
 		$uid = (empty($uid) || ($uid == '')) ? $GLOBALS['ts']['mid'] : $uid;
 		//查询数据
-		$data =	M()->table(array($ctablename,$otablename))->where("{$ctablename}.source_id={$otablename}.id and {$ctablename}.uid={$uid} and  {$ctablename}.source_table_name='{$stable}'")->findPage($limit);
-		
+		if($stable == 'zy_teacher_course'){
+            $data =	M()->table(array($ctablename,$otablename))->where("{$ctablename}.source_id={$otablename}.course_id and {$ctablename}.uid={$uid} and  {$ctablename}.source_table_name='{$stable}'")->findPage($limit);
+        }else{
+            $data =	M()->table(array($ctablename,$otablename))->where("{$ctablename}.source_id={$otablename}.id and {$ctablename}.uid={$uid} and  {$ctablename}.source_table_name='{$stable}'")->findPage($limit);
+        }
+
 		return $data;
 	}
 	/**

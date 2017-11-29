@@ -35,13 +35,13 @@ class NoteAction extends CommonAction
 			//取课程信息
 			$data = M('ZyVideo')->where($map)->field($field)->find();
 		}else if($type == 2){
-			//套餐
+			//班级
 			if(!$id){
 				$this->assign('isAdmin',1);
-				$this->error('套餐不存在!');	
+				$this->error('班级不存在!');	
 			}
 			$field = '`album_title` as `title`,`album_category` as `category`,`album_score` as `score`,`uid`,`id`,`ctime`,`album_comment_count` as `comment_count`';
-			//取套餐信息
+			//取班级信息
 			$data = M('Album')->where($map)->field($field)->find();
 		}else{
 			$this->assign('isAdmin',1);
@@ -112,13 +112,13 @@ class NoteAction extends CommonAction
 			//取课程信息
 			$data = M('ZyVideo')->where($map)->field($field)->find();
 		}else if($type == 2){
-			//套餐
+			//班级
 			if(!$id){
 				$this->assign('isAdmin',1);
-				$this->error('套餐不存在!');	
+				$this->error('班级不存在!');	
 			}
 			$field = '`album_title` as `title`,`album_category` as `category`,`album_score` as `score`,`uid`,`id`,`ctime`,`album_comment_count` as `comment_count`';
-			//取套餐信息
+			//取班级信息
 			$data = M('Album')->where($map)->field($field)->find();
 		}else{
 				$this->assign('isAdmin',1);
@@ -140,7 +140,7 @@ class NoteAction extends CommonAction
 		$data['parent_id']           = 0;
 		$data['type']		         = intval($_POST['kztype']);//
 		$data['uid'] 			     = intval($this->mid);
-		$data['oid'] 			     = intval($_POST['kzid']);//对应的ID【套餐ID/课程ID】
+		$data['oid'] 			     = intval($_POST['kzid']);//对应的ID【班级ID/课程ID】
 		$data['is_open']             = intval($_POST['is_open']);
 		$data['note_source'] 	     = 'web网页';
 		$data['note_title']          = $data['qst_title']        = filter_keyword(t($_POST['title']));
@@ -156,7 +156,7 @@ class NoteAction extends CommonAction
 			$this->mzError('添加笔记需要先登录');
 		}
 		if(!$data['oid']){
-			$this->mzError('请选择课程或套餐');
+			$this->mzError('请选择课程或班级');
 		}
 		if(!$data['note_title']){
 			$this->mzError('请输入笔记标题');
@@ -172,14 +172,14 @@ class NoteAction extends CommonAction
         }
 		$i = M('ZyNote')->add($data);
 		if($i){
-			//更改套餐或课程的总提问数
+			//更改班级或课程的总提问数
 			if(intval($_POST['kztype']) == 1){
 				$_data['video_note_count'] = array('exp','`video_note_count` + 1');
 				//课程
 				M('ZyVideo')->where(array('id'=>array('eq',$data['oid'])))->save($_data);
 			}else{
 				$_data['album_note_count'] = array('exp','`album_note_count` + 1');
-				//套餐	
+				//班级	
 				M('Album')->where(array('id'=>array('eq',$data['oid'])))->save($_data);
 			}
 			//session('mzaddnote'.$data['oid'].$data['type'],time()+180);
@@ -202,7 +202,7 @@ class NoteAction extends CommonAction
 		$data['parent_id']           = 0;
 		$data['type']		         = 1;//
 		$data['uid'] 			     = intval($this->mid);
-		$data['oid'] 			     = intval($_POST['kecid']);//对应的ID【套餐ID/课程ID】
+		$data['oid'] 			     = intval($_POST['kecid']);//对应的ID【班级ID/课程ID】
 		$data['is_open']             = intval($_POST['is_open']);
 		$data['note_source'] 	     = 'web网页';
 		$data['note_title']          = filter_keyword(t($_POST['title']));
@@ -226,7 +226,7 @@ class NoteAction extends CommonAction
 		
 		$i = M('ZyNote')->add($data);
 		if($i){
-			//更改套餐或课程的总提问数
+			//更改班级或课程的总提问数
 			$_data['video_note_count'] = array('exp','`video_note_count` + 1');
 			//课程
 			M('ZyVideo')->where(array('id'=>array('eq',$data['oid'])))->save($_data);

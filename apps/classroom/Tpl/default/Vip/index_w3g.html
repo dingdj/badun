@@ -1,0 +1,413 @@
+<include file="__THEME__/public_header_w3g"/>
+
+<link rel="stylesheet" type="text/css" href="__THEMENEW__/css/style_new.css">
+<script src="__THEMENEW__/js/vip_index.js"></script>
+<style>
+    .commission-integral-balance dt{line-height: 50px;}
+    .btn_je_box{margin-left:0;}
+    .btn_hui_h{width: 150px;line-height:80px;font-size:25px;}
+</style>
+
+	<div id="transparent"></div>
+	<!-- 会员升级 -->
+	<dl class="commission-integral-balance continue-balance continue-two">
+		<dt>
+			<h4>
+				<span><img src="{:getUserFace($user['uid'],s)}"></span>
+				<b>{:getUserName($user['uid'])}
+					<!--<small><em>余额：</em>{$user.balance}</small>-->
+				</b>
+			</h4>
+			<i class="close">×</i>
+		</dt>
+		<dd>
+			<div class="Manage_all">
+				<div class="selected_title">会员升级</div>
+				<b class="vip_title">{$user.vip_title}</b>
+				<strong id="upgrade"></strong>
+				<strong>每月免费学习海量课程，更多超值优惠折扣</strong>
+				<div class="btn_je_box">
+					<a class="btn_hui_h on vip-month" href="javascript:void(0);"  data-type="month"></a>
+					<a class="btn_hui_h vip-year" href="javascript:void(0);" data-type="year"></a>
+					<div class="year-num">数量：
+						<div class="year-display">
+							<a href="javascript:void(0)" class="reduce">-</a>
+							<input type="text" value="1" name="count">
+							<a href="javascript:void(0)" class="add">+</a>
+						</div>
+					</div>
+				</div>
+                <div class="foni_rea_lik" style="margin-top:20px;">支付方式：
+                	<label><input type="radio" value="alipay" name="re_type" checked class="pay"><img src="__THEMENEW__/image/Alipay.png"></label>
+                	<label><input type="radio" value="wxpay" name="re_type" class="pay"><img src="__THEMENEW__/image/weixinpay.png"></label>
+                </div>
+			</div>
+			<div class="sjo_ing_plmb">
+				<a class="btn_big" type="button" value="" onclick="rechangeVip(this)">确认支付</a>
+				<p>应付：<em class="lan_txt ml15">¥0</em></p>
+			</div>
+            <form action="{:U('classroom/Pay/rechargeVip')}" method="post" id="form" >
+                <input type="hidden" name="user_vip" value="">
+                <input type="hidden" name="pay" value="alipay">
+                <input type="hidden" name="money" value="">
+                <input type="hidden" name="type" value="1">
+                <input type="hidden" name="vip_type_time" value="month">
+                <input type="hidden" name="vip_time" value="1">
+            </form>
+		</dd>
+	</dl>
+
+	<div class="vip-box"></div>
+	<div class="content">
+		<div class="wrap">
+			<div class="vip-service">
+				<div class="login-vip">
+                    <if condition="$_SESSION['mid']">
+                        <!-- 登录后显示 -->
+                        <div class="success-login">
+                            <span><img src="{:getUserFace($user['uid'],b)}"></span>
+                            <small>{:getUserName($user['uid'])}</small>
+                            <b><if condition="$user['vip_type'] gt 0">剩余有效期{$user.exp_date}天<else/>（非会员）</if>
+                                <strong><if condition="$user['vip_type'] gt 0"><img src="{:getAttachUrlByAttachId($user['vip_cover'])}"></if>{$user.vip_title}</strong>
+                            </b>
+                            <div class="login-vip-box">
+                                <if condition="$user['vip_type'] gt 0"><a href="javascript:;" class="vip-recharge" onclick="recharge({$user.vip_type},1)">会员续费</a></if>
+                                <if condition="$user['is_high'] neq 1 || $user['vip_type'] eq 0"><a href="javascript:;" class="vip-upgrade" onclick="recharge({$user.vip_type},2)"><if condition="$user['vip_type'] gt 0">会员升级<else/>开通会员</if></a></if>
+                            </div>
+                        </div>
+                        <else/>
+                        <!-- 未登录显示 -->
+                        <div class="not-login">
+                            <span><img src="__THEMENEW__/image/big.png"></span>
+                            <p>登录查看会员等级</p>
+                            <div class="login-vip-box">
+                                <a href="javascript:;" class="login">立即登录</a>
+                            </div>
+                        </div>
+                    </if>
+				</div>
+                <volist name="ad_list" id="adlt">
+                    <div class="vip-bag" style="background: url({$adlt['banner']}) center center no-repeat"></div>
+                </volist>
+			</div>
+
+			<!-- 会员类型 -->
+			<div class="body01">
+				<h1>会员类型</h1>
+				<div class="vip-style-box">
+					<ul class="vip-style">
+                        <volist name="vipInfo" id="vip" offset="0" length="5">
+                            <li>
+                                <img src="{:getAttachUrlByAttachId($vip['cover'])}">
+                                <h4>{$vip.title}</h4>
+                                <h5><small><em>{$vip.vip_month}</em>元/月</small><small><em>{$vip.vip_year}</em>元/年</small></h5>
+                                <p>开通{$vip.title}，每月免费学习海量课程</p>
+                                <a href="javascript:void(0)" <if condition="$user['vip_type'] lt $vip['id']">onclick="recharge({$vip['id']},1)"</if>>立即开通</a>
+                            </li>
+                        </volist>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 会员特权 -->
+			<div class="body01">
+				<h1>会员特权</h1>
+				<ul class="tle-all-card">
+                    <volist name="vipInfo" id="vip">
+                        <li><a href="javascript:void(0)">{$vip.title}</a></li>
+                    </volist>
+				</ul>
+				<div class="card-main">
+                    <volist name="vipInfo" id="vip">
+                        <ul class="classlist">
+                            <if condition="$vip['vip_course'] eq null">
+                                <p style="text-align: center;font-size: 16px;">暂时没有课程数据。。</p>
+                                <else/>
+                                <volist name="vip.vip_course" id="vce" offset="0" length="8">
+                                <li>
+                                    <div class="pic">
+                                        <a <if condition="$vce['type'] eq 1">href="{:U('classroom/Video/view',array('id'=>$vce['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vce['id']))}"</if>>
+                                            <img src="{:getCover($vce['cover'],275,160)}">
+                                        </a>
+                                    </div>
+                                    <h3>
+                                        <a <if condition="$vce['type'] eq 1">href="{:U('classroom/Video/view',array('id'=>$vce['id']))}"<else/>href="{:U('live/Index/view',array('id'=>$vce['id']))}"</if>>
+                                            {:msubstr(t($vce['video_title']),0,17,'utf-8',true)}
+                                        </a>
+                                    </h3>
+                                    <div class="info">
+                                        <div class="fr">{$vce['view_nums']}人围观</div>
+                                        <div class="price"><if condition="$vce['price'] eq 0"><span style="color: #56b02a;">免费</span> <else/> ￥{$vce['price']}</if></div>
+                                    </div>
+                                    <div class="bot">
+                                        <if condition="$vce['teacher_id'] gt 0">
+                                            <div class="std">
+                                                <a href="{:U('classroom/Teacher/view',array('id'=>$vce['teacher_id']))}">
+                                                    <img src="{:getCover($vce['head_id'],30,30)}">
+                                                </a>
+                                                <span><a href="{:U('classroom/Teacher/view',array('id'=>$vce['teacher_id']))}">{:msubstr(t($vce['teacher_name']),0,4,'utf-8',true)}</a></span>
+                                            </div>
+                                        </if>
+                                        <div class="name">
+                                            <a href="{$vce.domain}">{:msubstr(t($vce['mhm_title']),0,7,'utf-8',true)}</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </volist>
+                            </if>
+                            <if condition="count($vip['vip_course']) eq 8">
+                            <div class="all-buy">
+                                <a href="javascript:;" class="look-all" data-id="{$vip.id}">查看更多</a>
+                            </div>
+                            </if>
+                        </ul>
+                    </volist>
+				</div>
+			</div>
+
+			<!-- 最新会员 -->
+			<div class="body01">
+				<h1>最新会员</h1>
+				<div class="newest-vip">
+					<ul>
+                        <volist name="new_vip" id="nv">
+                            <li><a href="{:U('classroom/UserShow/index',array('uid'=>$nv['uid']))}"><img src="{:getUserFace($nv['uid'],b)}"></a></li>
+                        </volist>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script>
+    $(function () {
+        $(".login").click(function(){
+            reg_login();
+            return;
+        });
+
+        //取消按钮
+        $(".close").click(function(){
+            $("#transparent").hide();
+            $(".continue-balance").hide();
+            //清除缓存数据
+            $(".vip-month").text('');
+            $(".vip-year").text('');
+            $("#upgrade").show();
+            $("#upgrade").html('');
+            $(".vip_title").text('{$user.vip_title}');
+            $(".vip-month").addClass('on').siblings().removeClass('on');
+        });
+
+        //价格选择
+        $(".btn_hui_h").click(function(){
+            var price = $(this).attr('data-id');
+            var type_time = $(this).attr('data-type');
+            var count = $("input[name='count']").val();
+            var money = price*count;
+            $(this).addClass('on').siblings().removeClass('on');
+            $(".ml15").text('¥'+money);
+            $("input[name='money']").val(money);
+            $("input[name='vip_type_time']").val(type_time);
+        });
+
+        //支付方式
+        $(".pay").click(function(){
+            var pay_type = $(this).val();
+            $("input[name='pay']").val(pay_type);
+        });
+
+        //查看更多
+        $(".look-all").click(function(){
+            var id = $(this).data('id');
+            window.location.href = "{:U('classroom/Video/index')}"+'?vtype=1'+'&vip_id='+id;
+        });
+
+        //价格汇总
+        $(".add").click(function(){
+            var money = $(".btn_je_box .on").attr('data-id');
+            var count = $("input[name='count']").val();
+            var price = money*count;
+            $(".ml15").text('¥'+price);
+            $("input[name='money']").val(price);
+            $("input[name='vip_time']").val(count);
+        });
+        $(".reduce").click(function(){
+            var money = $(".btn_je_box .on").attr('data-id');
+            var count = $("input[name='count']").val();
+            var price = money*count;
+            $(".ml15").text('¥'+price);
+            $("input[name='money']").val(price);
+            $("input[name='vip_time']").val(count);
+        });
+    });
+    //会员续费
+    function recharge(vip,type){
+        if(UID <= 0){
+            reg_login();
+            return false;
+        }
+        //购买页
+        $("#transparent").show();
+        $(".continue-balance").show();
+
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/Vip/rechargeInfo')}",
+            data:{vip:vip,type:type},
+            dataType:"json",
+            success:function(data){
+                if(typeof data != 'object'){
+                    var data = eval('('+data+')');
+                }
+                if(data){
+                    var html = '升级至：';
+                    if(type == 1){
+                        $(".selected_title").text('会员续费');
+                        $(".vip_title").text(data.title);
+                        $("#upgrade").hide();
+                        $(".vip-month").text('¥'+data.vip_month+'元/月');
+                        $(".vip-month").attr('data-id',data.vip_month);
+                        $(".vip-year").text('¥'+data.vip_year+'元/年');
+                        $(".vip-year").attr('data-id',data.vip_year);
+                        $(".ml15").text('¥'+data.vip_month);
+                        $("input[name='user_vip']").val(data.id);
+                        $("input[name='money']").val(data.vip_month);
+                    }else{
+                        $(".selected_title").text('充值会员');
+                        $.each(data,function(i,n){
+                            if(i == 0){
+                                html += '<label><input type="radio" name="vip" value="'+ n.id +'" checked>'+ n.title+'</label>';
+                                $(".vip-month").text('¥'+n.vip_month+'元/月');
+                                $(".vip-month").attr('data-id',n.vip_month);
+                                $(".vip-year").text('¥'+n.vip_year+'元/年');
+                                $(".vip-year").attr('data-id',n.vip_year);
+                                $(".ml15").text('¥'+n.vip_month);
+                                $("input[name='user_vip']").val(n.id);
+                                $("input[name='money']").val(n.vip_month);
+                            }else{
+                                html += '<label><input type="radio" name="vip" value="'+ n.id +'" class="vip_change">'+ n.title+'</label>';
+                            }
+                        });
+                        $("#upgrade").append(html);
+                    }
+                }else{
+                    return false;
+                }
+            }
+        });
+    }
+
+    //会员选择
+    $(".vip_change").live('click',function(){
+        $("input[name='vip']").addClass('vip_change');
+        //重置价格选择
+        $(".vip-month").addClass('on').siblings().removeClass('on');
+        $("input[name='vip_type_time']").val('month');
+
+        var vip = $(this).val();
+        var count = $("input[name='count']").val();
+        var money = '';
+        $("input[name='user_vip']").val(vip);
+        $.ajax({
+            type:"POST",
+            url:"{:U('classroom/Vip/getVipInfo')}",
+            data:{vip:vip},
+            dataType:"json",
+            success:function(data){
+                if(typeof data != 'object'){
+                    var data = eval('('+data+')');
+                }
+                if(data){
+                    $(".vip-month").text('¥'+data.vip_month+'元/月');
+                    $(".vip-month").attr('data-id',data.vip_month);
+                    $(".vip-year").text('¥'+data.vip_year+'元/年');
+                    $(".vip-year").attr('data-id',data.vip_year);
+                    money = (data.vip_month) * count;
+                    $(".ml15").text('¥'+money);
+                    $("input[name='user_vip']").val(data.id);
+                    $("input[name='money']").val(money);
+                }else{
+                    return false;
+                }
+            }
+        });
+    });
+
+    //充值VIP
+    function rechangeVip(){
+        var form  = $("#form");
+        var pay   = form.find('input:hidden[name="pay"]').val();
+        var type  = form.find('input:hidden[name="type"]').val();
+
+        if(pay!='alipay'&&pay!='unionpay'&&pay!='wxpay'){
+            notes('支付方式错误', 'failure');
+            return false;
+        }
+        if(type != 0 && type !=1){
+            notes('充值类型错误', 'failure');
+            return false;
+        }
+
+        var s = 0;
+        if(pay == 'wxpay'){
+            $.ajax({
+                url: "{:U('classroom/Pay/rechargeVip')}",
+                data:form.serialize(),
+                async:false,
+                type:'post',
+                dataType:"json",
+                success: function(data){
+                    if(typeof data != 'object'){
+                        var data = eval('('+data+')');
+                    }
+                    clearInterval(s);
+                    if(data.status == 1){
+                        s = setInterval(function(){
+                            $.ajax({
+                                url: "{:U('classroom/Pay/getPayStatus')}",
+                                data:{pay_pass_num:data.data.pay_pass_num},
+                                type:'post',
+                                success: function(res){
+                                    try{
+                                        res = JSON.parse(res);
+                                        if(res.status == 1){
+                                            clearInterval(s);
+                                            $(".hide_box").fadeToggle();
+                                            $(".shang_box").fadeToggle();
+                                            notes('使用微信充值成功','success');
+                                            setTimeout(function(){
+                                                location.reload();
+                                            },2000);
+                                        }
+                                    }catch(e){
+                                        return;
+                                    }
+                                }
+                            });
+                        },1800);
+                        $("body").append(data.data.html);
+                        $("#transparent").show();
+                        $("#transparent").css('z-index','2001');
+                        return true;
+                    }
+                },
+                error: function(){
+                    return false
+                }
+
+            });
+        }else{
+            form.submit();
+        }
+    }
+
+    //微信关闭支付重置遮罩层
+    $(".shang_close").live('click',function(){
+        $("#transparent").hide();
+        $("#transparent").css('z-index','1000');
+    });
+
+</script>
+
+<include file="__THEME__/public_footer" />

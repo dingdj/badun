@@ -7,12 +7,12 @@
 class ZyLearncModel extends Model {
 
     protected $tableName = 'zy_learncoin'; //映射到学币表
-    protected $flowModel = null;//流水模型对象
+    public $flowModel = null;//流水模型对象
 
     //关联ID的类型描述
     protected static $relTypes = array(
         'zy_order'       => '课程订单',
-        'zy_order_album' => '套餐订单',
+        'zy_order_album' => '班级订单',
         'zy_withdraw'    => '提现记录',
         'zy_recharge'    => '充值记录'
     );
@@ -35,8 +35,6 @@ class ZyLearncModel extends Model {
     public function _initialize(){
         $this->flowModel = M('zy_learncoin_flow');
     }
-
-
 
     /**
      * 检查一个用户的余额/冻结的数量是否够支配
@@ -191,7 +189,7 @@ class ZyLearncModel extends Model {
         $data['rel_type'] = $relType;
         $data['ctime']    = time();
         $data['balance']  = $user['balance'];
-        return $this->flowModel()->add($data)? true : false;
+        return $this->flowModel()->add($data);
     }
     
     
@@ -241,47 +239,6 @@ class ZyLearncModel extends Model {
     public function getVip($uid){
         return $this->where(array('uid'=>$uid))->getField('vip_type');
     }
-
-
-    /**
-     * 设置用户的vip状态，自动累加和设置类型
-     * @param integer $uid
-     * @param integer|string $time vip时间，+秒 或 str time 如+12 month,+1 year
-     * @param integer $type 时间类型 (1:按月,2:按年)
-     * @return boolean 成功返回true或失败返回false
-     */
-    public function setVip($uid, $time, $type = 1){
-        if( !$type ) return false;
-        $user = $this->getUser($uid);
-        if(!$user) return false;
-        //如果当前是VIP，并且过期时间大于0，那么继续累加时间
-        if($user['vip_type']>0 && $user['vip_expire']>0){
-            $now = $user['vip_expire'];
-        }else{ /*从当前时间开始计算*/
-            $now = time();
-        }
-        //时间累加
-        if(is_string($time)){
-            $time = strtotime($time, $now)+0;
-        }else{
-            $time += $now;
-        }
-        //如果之前以前的vip级别高于现在
-        $user_vip     = M('user_vip')->where('id='.$type)->getField('sort');
-        $user_vip_now = M('user_vip')->where('id='.$user['vip_level'])->getField('sort');
-        if($user_vip_now >= $user_vip){
-        	$type = $user_vip_now;
-        }
-        
-        //set
-        $set = array(
-            'vip_type'    => $type,
-            'vip_expire'  => $time
-        );
-        $result = $this->where(array('uid'=>$uid))->save($set);
-        return $result !== false;
-    }
-
 
     /**
      * 强制设置VIP状态
@@ -382,5 +339,111 @@ class ZyLearncModel extends Model {
         return $this->flowModel;
     }
 
+
+    /**
+     * 设置用户的vip状态，自动累加和设置类型
+     * @param integer $uid
+     * @param integer|string $time vip时间，+秒 或 str time 如+12 month,+1 year
+     * @param integer $type 时间类型 (1:按月,2:按年)
+     * @return boolean 成功返回true或失败返回false
+     */
+    public function setVip($uid, $time, $type = 1){
+        if( !$type ) return false;
+        $user = $this->getUser($uid);
+        if(!$user) return false;
+
+        //如果之前以前的vip级别高于现在
+        $user_vip     = M('user_vip')->where('id='.$type)->getField('sort');//当前充值级别
+        $user_vip_now = M('user_vip')->where('id='.$user['vip_type'])->find();//已经充值级别
+        if($user_vip_now['sort'] >= $user_vip){
+            $type = $user_vip_now['id'];
+            $now  = $user['vip_expire'];
+        } else {
+            $now = time();
+        }
+
+        //时间累加
+        if(is_string($time)){
+            $time = strtotime($time, $now)+0;
+        }else{
+            $time += $now;
+        }
+
+        //set
+        $set = array(
+            'vip_type'    => $type,
+            'vip_expire'  => $time,
+            'ctime'       => time(),
+        );
+        $result = $this->where(array('uid'=>$uid))->save($set);
+        if($result) return true; else return false;
+    }
+
+    /**
+     * 设置用户的vip状态，自动累加和设置类型
+     * @param integer $uid
+     * @param integer|string $time vip时间，+秒 或 str time 如+12 month,+1 year
+     * @param integer $type 时间类型 (1:按月,2:按年)
+     * @return boolean 成功返回true或失败返回false
+     */
+    public function setVipOld($uid, $time, $type = 1){
+        if( !$type ) return false;
+        $user = $this->getUser($uid);
+        if(!$user) return false;
+        //如果当前是VIP，并且过期时间大于0，那么继续累加时间
+        if($user['vip_type']>0 && $user['vip_expire']>0){
+            $now = $user['vip_expire'];
+        }else{ /*从当前时间开始计算*/
+            $now = time();
+        }
+        //时间累加
+        if(is_string($time)){
+            $time = strtotime($time, $now)+0;
+        }else{
+            $time += $now;
+        }
+        //如果之前以前的vip级别高于现在
+        $user_vip     = M('user_vip')->where('id='.$type)->getField('sort');
+        $user_vip_now = M('user_vip')->where('id='.$user['vip_level'])->getField('sort');
+        if($user_vip_now >= $user_vip){
+            $type = $user_vip_now;
+        }
+
+        //set
+        $set = array(
+            'vip_type'    => $type,
+            'vip_expire'  => $time
+        );
+        $result = $this->where(array('uid'=>$uid))->save($set);
+        return $result !== false;
+    }
+
+    /**
+     * 取得一个用户的会员扩展信息
+     * @param integer $uid 用户UID
+     * @return array
+     */
+    public function getUserVip($uid){
+        $userInfo = $this->where(array('uid'=>$uid))->find();
+        //查看是否到期
+        $vip_expire = $this->where(array('uid'=>$uid))->getField('vip_expire');
+        if($vip_expire <= time()){
+            $this->cleanExpireVip();
+        }
+        if($userInfo['vip_type']){
+            $vipInfo = M('user_vip')->where('id='.$userInfo['vip_type'])->find();
+            $userInfo['vip_title'] = $vipInfo['title'];
+            $userInfo['vip_cover'] = $vipInfo['cover'];
+            //判断当前用户会员等级是否为最高等级
+            $othervip = M('user_vip')->where(array('is_del'=>0,'sort'=>['gt',$vipInfo['sort']]))->getField('id');
+            if(!$othervip){
+                $userInfo['is_high'] = 1;
+            }
+        }else{
+            $userInfo['vip_title'] = '普通用户';
+        }
+
+        return $userInfo;
+    }
 
 }
