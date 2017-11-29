@@ -12,7 +12,7 @@ class IndexAction extends CommonAction
      * Eduline课堂首页方法
      * @return void
      */
-    public function index() {
+    public function index() {dd(1);
         $city = $this->getVisitCity() ?:'110100';
         // 取得首页配置
         $config = model('Xdata')->get('admin_Config:index_item');
