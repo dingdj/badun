@@ -530,7 +530,7 @@ class PassportAction extends CommonAction
         $registerConf = model('Xdata')->get('admin_Config:register');
         $interest = M('zy_currency_category')->where('pid=0')->findALL();
         $school = model('School')->findALL();
-        $school_title = array_column($school,'title','id');
+        $school_title = i_array_column($school,'title','id');
         $this_mhm_id = explode('H',$_GET['this_mhm_id']);
         if($this_mhm_id[1]){
             $this->assign( 'mount_reg' , true);
