@@ -870,7 +870,7 @@ class HomeAction extends UserAction
         $data   = array('video_title', 'start');
         $start  = t($_GET['start']);
         $end    = t($_GET['end']);
-        if (!empty($start && $end)) {
+        if (!empty($start) && !empty($end)) {
             $map['start'] = array('BETWEEN', array($start, $end));
         }
         $map['mhm_id']      = $school;
@@ -999,7 +999,7 @@ class HomeAction extends UserAction
         $end  = t($_GET['end']);
         $nums = M('concurrent')->where('id = 1')->getField('Concurrent_nums');
 
-        if (!empty($start && $end)) {
+        if (!empty($start) && !empty($end)) {
             $map['start'] = array('BETWEEN', array($start, $end));
         }
         $serth              = array('start', 'maxmannums');

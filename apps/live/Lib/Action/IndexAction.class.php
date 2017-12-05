@@ -1012,6 +1012,7 @@ class IndexAction extends CommonAction {
      * @return void
      */
     public function watch() {
+        //dd($this->user);
         $id = intval($_GET['id']);
 
         if(!$this->mid){
