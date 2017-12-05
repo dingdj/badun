@@ -1,15 +1,14 @@
 <html><head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>workerman-chat PHP聊天室 Websocket(HTLM5/Flash)+PHP多进程socket实时推送技术</title>
-  <script type="text/javascript">
-  //WebSocket = null;
-  </script>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <link href="./css/style.css" rel="stylesheet">
-  <!-- Include these three JS files: -->
-  <script type="text/javascript" src="./js/swfobject.js"></script>
-  <script type="text/javascript" src="./js/web_socket.js"></script>
-  <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <link href="/css/jquery-sinaEmotion-2.1.0.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+	
+  <script type="text/javascript" src="/js/swfobject.js"></script>
+  <script type="text/javascript" src="/js/web_socket.js"></script>
+  <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-sinaEmotion-2.1.0.min.js"></script>
 
   <script type="text/javascript">
     if (typeof console == "undefined") {    this.console = { log: function (msg) {  } };}
@@ -17,7 +16,6 @@
     WEB_SOCKET_SWF_LOCATION = "/swf/WebSocketMain.swf";
     // 开启flash的websocket debug
     WEB_SOCKET_DEBUG = true;
-	  
     var ws, name, client_list={};
 
     // 连接服务端
@@ -54,7 +52,7 @@
     function onmessage(e)
     {
         console.log(e.data);
-        var data = eval("("+e.data+")");
+        var data = JSON.parse(e.data);
         switch(data['type']){
             // 服务端ping客户端
             case 'ping':
@@ -95,7 +93,7 @@
         if(!name || name=='null'){  
             name = '游客';
         }
-    }
+    }  
 
     // 提交对话
     function onSubmit() {
@@ -125,26 +123,35 @@
 
     // 发言
     function say(from_client_id, from_client_name, content, time){
-    	$("#dialog").append('<div class="speech_item"><img src="http://lorempixel.com/38/38/?'+from_client_id+'" class="user_icon" /> '+from_client_name+' <br> '+time+'<div style="clear:both;"></div><p class="triangle-isosceles top">'+content+'</p> </div>');
+        //解析新浪微博图片
+        content = content.replace(/(http|https):\/\/[\w]+.sinaimg.cn[\S]+(jpg|png|gif)/gi, function(img){
+            return "<a target='_blank' href='"+img+"'>"+"<img src='"+img+"'>"+"</a>";}
+        );
+
+        //解析url
+        content = content.replace(/(http|https):\/\/[\S]+/gi, function(url){
+            if(url.indexOf(".sinaimg.cn/") < 0)
+                return "<a target='_blank' href='"+url+"'>"+url+"</a>";
+            else
+                return url;
+        }
+        );
+
+    	$("#dialog").append('<div class="speech_item"><img src="http://lorempixel.com/38/38/?'+from_client_id+'" class="user_icon" /> '+from_client_name+' <br> '+time+'<div style="clear:both;"></div><p class="triangle-isosceles top">'+content+'</p> </div>').parseEmotion();
     }
 
-    //回车发送内容
-    function keydown(thi){
-        if(event.keyCode == 13){
-            var content = $('#textarea').val();
-            if(content == ''){
-                alert('聊天内容不能为空！');
-                return false;
-            }
-            onSubmit();
-        }
-    }
     $(function(){
     	select_client_id = 'all';
 	    $("#client_list").change(function(){
 	         select_client_id = $("#client_list option:selected").attr("value");
 	    });
+        $('.face').click(function(event){
+            $(this).sinaEmotion();
+            event.stopPropagation();
+        });
     });
+
+
   </script>
 </head>
 <body onload="connect();">
@@ -157,19 +164,28 @@
 	               <div class="caption" id="dialog"></div>
 	           </div>
 	           <form onsubmit="onSubmit(); return false;">
-	                <select style="margin-bottom:8px;display: none;" id="client_list">
+	                <select style="margin-bottom:8px" id="client_list">
                         <option value="all">所有人</option>
                     </select>
-                    <textarea class="textarea thumbnail" id="textarea" onkeydown="keydown()"></textarea>
-                    <div class="say-btn"><input type="submit" class="btn btn-default" value="发表" /></div>
+                    <textarea class="textarea thumbnail" id="textarea"></textarea>
+                    <div class="say-btn">
+                        <input type="button" class="btn btn-default face pull-left" value="表情" />
+                        <input type="submit" class="btn btn-default" value="发表" />
+                    </div>
                </form>
+               <div>
+               &nbsp;&nbsp;&nbsp;&nbsp;<b>房间列表:</b>（当前在&nbsp;房间<?php echo isset($_GET['room_id'])&&intval($_GET['room_id'])>0 ? intval($_GET['room_id']):1; ?>）<br>
+               &nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=1">房间1</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=2">房间2</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=3">房间3</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/?room_id=4">房间4</a>
+               <br><br>
+               </div>
+               <p class="cp">PHP多进程+Websocket(HTML5/Flash)+PHP Socket实时推送技术&nbsp;&nbsp;&nbsp;&nbsp;Powered by <a href="http://www.workerman.net/workerman-chat" target="_blank">workerman-chat</a></p>
 	        </div>
-	        <!--<div class="col-md-3 column">
+	        <div class="col-md-3 column">
 	           <div class="thumbnail">
                    <div class="caption" id="userlist"></div>
                </div>
                <a href="http://workerman.net:8383" target="_blank"><img style="width:252px;margin-left:5px;" src="/img/workerman-todpole.png"></a>
-	        </div>-->
+	        </div>
 	    </div>
     </div>
     <script type="text/javascript">var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F7b1919221e89d2aa5711e4deb935debd' type='text/javascript'%3E%3C/script%3E"));</script>

@@ -10,8 +10,10 @@ body
 
 #dialog
 {
-	height:400px;
+	min-height:600px;
 	background:#EEEEEE;
+	max-height: 80vh;
+	overflow: scroll;
 }
 
 .textarea
@@ -48,8 +50,8 @@ body
 
 .triangle-isosceles {
     position:relative;
-    padding:5px;
-    margin:5px 0 15px;
+    padding:10px;
+    margin:10px 0 15px;
     color:#000;
     background:#D3FF93; /* default background for browsers without gradient support */
     background:-webkit-gradient(linear, 0 0, 0 100%, from(#EFFFD7), to(#D3FF93));
@@ -98,6 +100,13 @@ body
     border-color:#D3FF93 transparent;
 }
 
+.speech_item img{
+    max-height: 300px;
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
 .user_icon
 {
 	float:left;border:1px solid #DDDDDD;padding:2px;margin:0 5px 0 5px;
@@ -113,4 +122,18 @@ body
 .thumbnail
 {
 	border:1px solid #CCCCCC;
+}
+
+#sinaEmotion .item{
+    margin: 2px;
+    height: 25px;
+}
+
+#sinaEmotion .face{
+    padding: 1px 2px;
+    height: 25px;
+}
+
+img.sina-emotion{
+    display: inline;
 }
