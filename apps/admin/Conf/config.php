@@ -186,6 +186,7 @@ $menu = array(
                 '提现申请'         => 'classroom/AdminWithdraw/index',
                 '卡号列表'         => 'classroom/AdminCard/index',
                 '支付记录'     => 'classroom/AdminRecharge/index',
+                '打赏记录'     => 'classroom/AdminRecharge/dashang',
             ),
             '财务明细管理' => array(
                 '余额管理' => 'classroom/AdminLearnc/index',

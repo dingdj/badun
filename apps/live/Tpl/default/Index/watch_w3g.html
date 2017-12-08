@@ -2,6 +2,7 @@
 
 <!--container-->
 <iframe src="{$url}" width="100%"  height="200" frameborder="0" scrolling="yes"></iframe>
+
 <script src="//view.csslcloud.net/js/_fix.js?r=20171110"></script>
 <link href="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/css/bootstrap.min.css" rel="stylesheet">
 <link href="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/css/style.css" rel="stylesheet">
@@ -162,7 +163,8 @@
                     <option value="all">所有人</option>
                 </select>
                 <textarea class="textarea thumbnail" id="textarea" onkeydown="keydown()"></textarea>
-                <div class="say-btn"><input type="submit" class="btn btn-default" value="发表" /></div>
+                <span class="say-btn" id="dashang"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg"></span>&nbsp;
+                <span class="say-btn"><input type="submit" class="btn btn-default" value="发表" /></span>
             </form>
         </div>
         <!--<div class="col-md-3 column">
@@ -171,8 +173,37 @@
            </div>
            <a href="http://workermanforlinux.net:8383" target="_blank"><img style="width:252px;margin-left:5px;" src="/img/workermanforlinux-todpole.png"></a>
         </div>-->
+        <div id="dsdiv" style="margin-top:30px;margin-left:20px;display: none;"><span style="float: left;">打赏：</span><input style="border:solid 1px gray;float: left;" type="text" name="das" id="das" value="" /> &nbsp;&nbsp;<span id="ds" style="border:solid 1px gray;">确定</span></div>
     </div>
 </div>
+<script>
+    $(function(){
+        $('#ds').click(function(){
+            var money = $('#das').val();
+            if(money == ''){
+                alert('请输入金额');
+                return false;
+            }
+            var t_uid = "{$teacher_uid}";
+            if(money !=''){
+                $.post(U("classroom/PayVideo/dashang"),{money:money,t_uid:t_uid},function(res){
+                    res = JSON.parse(res);
+
+                    if(res.status == 1){
+                        alert(res.info);
+                    }else{
+                        alert(res.info);
+                        return false;
+                    }
+                });
+            }
+        }) ;
+
+        $('#dashang').click(function(){
+            $('#dsdiv').toggle();
+        });
+    });
+</script>
 <script type="text/javascript">var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F7b1919221e89d2aa5711e4deb935debd' type='text/javascript'%3E%3C/script%3E"));</script>
 </body>
 <!--footer-->

@@ -6,6 +6,7 @@ body
 {
 	text-align:right;
 	margin-top:12px;
+    float: left;
 }
 
 #dialog

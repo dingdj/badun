@@ -68,4 +68,20 @@ class AdminRechargeAction extends AdministratorAction {
         }
         $this->displayList($data);
     }
+
+    //打赏记录
+    public function dashang(){
+        $this->pageTitle['index'] = '打赏记录';
+        $this->pageKeyList = array('id','t_name','name','money','add_time');//,'realname','idcard','vip_length'
+        $data = D('zy_dashang_log')->findPage();
+        foreach($data['data'] as &$log){
+            $t_name = D('user')->where(array('uid'=>$log['ds_uid']))->getField('uname');
+            $name = D('user')->where(array('uid'=>$log['uid']))->getField('uname');
+            $log['t_name'] = $t_name;
+            $log['name'] = $name;
+            $log['add_time'] = date('Y-m-d H:i:s',$log['add_time']);
+        }
+        //dd($data['data']);
+        $this->displayList($data);
+    }
 }

@@ -276,8 +276,8 @@
 
         $.post(U("classroom/PayVideo/checkPay"),$('#pay_form').serialize(),function(data){
             if(data.status == 1){
-//                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
-                window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
+                    window.location.href = "{:U('classroom/PayVideo/index')}"+"&vst="+vid+"%2C"+vtype+"%2C"+randomString(2);
+               // window.location.href = '/pay/'+vid+"%2C"+vtype+"%2C"+randomString(2)+".html";
             } else if(data.status == 9){
                 alert(data.info);
                 window.location.reload();

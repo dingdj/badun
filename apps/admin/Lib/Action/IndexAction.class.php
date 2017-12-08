@@ -17,7 +17,7 @@ class IndexAction extends AdministratorAction
 
         $channel = C('admin_channel');
         $menu = C('admin_menu');
-
+        //dd($menu);
         // 顶级菜单
         foreach ($channel as $k => $v) {
             if (!CheckPermission('top_' . $k)) {

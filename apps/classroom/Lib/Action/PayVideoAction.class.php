@@ -1922,4 +1922,50 @@ class PayVideoAction extends CommonAction{
             //die("error happend: " . $str);
         }
     }
+
+    //打赏
+    public function dashang(){
+        $t_uid = $_POST['t_uid'];
+        if(empty($t_uid)){
+            $return = ['status'=>0,'info'=>'打赏失败'];
+            echo json_encode($return);exit;
+        }
+        $money = $_POST['money'];
+        if(empty($money)){
+            $return = ['status'=>0,'info'=>'金额不能为空'];
+            echo json_encode($return);exit;
+        }
+        //查验余额
+        $res = D('ZyLearnc')->isSufficient($this->mid, $money);
+        if (!$res) {
+            echo json_encode(['status' => 0, 'info' => "您的余额不够此次支付金额"]);
+            exit;
+        }
+        if (!D('ZyLearnc')->consume($this->mid, $money)) {
+            echo json_encode(['status'=>0,'info'=>"余额扣除失败"]); //余额扣除失败，可能原因是余额不足
+        }else{
+            $data = array(
+                'ds_uid'    =>  $t_uid,
+                'uid'   =>  $this->mid,
+                'money' =>  $money,
+                'add_time'  =>  time()
+            );
+            D('zy_dashang_log')->add($data);
+            $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
+            $balance = D('zy_learncoin')->where(array('uid'=>$this->mid))->getField('balance');
+            $log = array(
+                'uid'   =>  $this->mid,
+                'type'  =>  0,
+                'num' =>  $money,
+                'balance' =>  $balance,
+                'note'  =>  '紫薇在线教育在线教育-打赏',
+                'rel_id'    =>  1111,
+                'rel_type'  =>  'zy_dashang',
+                'ctime' =>  time()
+            );
+            D('zy_learncoin_flow')->add($log);
+            //dd(D('zy_recharge')->getLastSql());
+            echo json_encode(['status'=>1,'info'=>'打赏成功']);
+        }
+    }
 }

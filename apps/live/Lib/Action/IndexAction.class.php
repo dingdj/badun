@@ -1023,7 +1023,11 @@ class IndexAction extends CommonAction {
         }
 
         $info = M('zy_video')->where('id='.$id)->find();
-
+        $teacher_uid = M('zy_teacher')->where(array('id'=>$info['teacher_id']))->getField('uid');
+        if($teacher_uid){
+            $this->assign('teacher_uid',$teacher_uid);
+        }
+        //$this->assign('teacher_uid',$info['teacher_uid']);
         // 是否已购买
         $is_buy = M('ZyOrderLive','classroom')->isBuyLive($this->mid,$id);
 
@@ -1032,7 +1036,6 @@ class IndexAction extends CommonAction {
         $map['startDate']   = array('elt' , time() );
         $map['invalidDate'] = array('egt' , time() );
         $res = model('Live')->liveRoom->where ( $map)->order('startDate ASC')->find();
-
         //获取直播地址
         $zhibo_url = model('Live')->liveRoom->where(array('live_id'=>$id))->getField('zhibo_url');
         //$sql = model('Live')->liveRoom->getLastSql();dd($zhibo_url);
@@ -1046,7 +1049,7 @@ class IndexAction extends CommonAction {
             if($res['startDate'] >= time()){
                 $this->error ( '还未到直播时间' );
             }
-            if($res['invalidDate'] <= time()){
+            if($res['invalidDate'] <= time() && empty($zhibo_url)){
                 $this->error ( '直播已经结束' );
             }
         }
