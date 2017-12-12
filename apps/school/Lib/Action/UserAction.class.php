@@ -2100,7 +2100,7 @@ class UserAction extends CommonAction{
         $end = t($_GET['end']);
         $nums = M('concurrent')->where('id = 1')->getField('Concurrent_nums');
 
-        if (!empty ($start && $end)) {
+        if (!empty ($start) && !empty ($end)) {
             $map ['start'] = array('BETWEEN', array($start, $end));
         }
         $serth = array('start', 'maxmannums');

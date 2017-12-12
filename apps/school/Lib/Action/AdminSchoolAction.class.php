@@ -800,7 +800,7 @@ class AdminSchoolAction extends AdministratorAction
             $this->opt['is_cete_floor'] = array( '0' => '否', '1' => '是');
             //机构等级
             $treeData = M('school_vip')->where('is_del=0')->order('sort desc')->findALL();
-            $school_vip = array_merge(array('0'=>'无'),array_column($treeData,'title','id'));
+            $school_vip = array_merge(array('0'=>'无'),i_array_column($treeData,'title','id'));
             $this->opt['school_vip'] = $school_vip;
 
             ob_start();
