@@ -3,7 +3,7 @@ return array(
 	/**
 	 * 路由的key必须写全称. 比如: 使用'wap/Index/index', 而非'wap'.
 	 */
-	/*'router' => array(
+	'router' => array(
 		//一级导航
 		'classroom/Index/index'		=> 	SITE_URL.'/',//首页
 		'classroom/Album/index'     => SITE_URL.'/album.html',//班级
@@ -181,5 +181,5 @@ return array(
 
 
 
-	)*/
+	)
 );
