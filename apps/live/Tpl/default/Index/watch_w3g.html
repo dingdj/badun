@@ -189,12 +189,12 @@
         $('#ds').click(function(){
             var money = $('#das').val();
             var pay_type = $('#pay_type').val();
+            var t_uid = "{$teacher_uid}";
+            if(money == ''){
+                alert('请输入金额');
+                return false;
+            }
             if(pay_type==''){
-                if(money == ''){
-                    alert('请输入金额');
-                    return false;
-                }
-                var t_uid = "{$teacher_uid}";
                 if(money !=''){
                     $.post(U("classroom/PayVideo/dashang"),{money:money,t_uid:t_uid},function(res){
                         res = JSON.parse(res);
