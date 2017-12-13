@@ -194,7 +194,7 @@
                 alert('请输入金额');
                 return false;
             }
-            if(pay_type==''){
+            if(pay_type=='lcnpay'){
                 if(money !=''){
                     $.post(U("classroom/PayVideo/dashang"),{money:money,t_uid:t_uid},function(res){
                         res = JSON.parse(res);

@@ -1084,7 +1084,9 @@ class IndexAction extends CommonAction {
 
             $url = "{$res['studentJoinUrl']}&autoLogin=true&username={$user_info['uname']}&password={$res['studentClientToken']}";
         }
-
+        if($this->is_wap && strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')){
+            $this->assign('is_wx',true);
+        }
         //分配直播地址
         $url = $zhibo_url ? $zhibo_url : $url;
         $this->assign('url' , $url);
