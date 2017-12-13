@@ -278,7 +278,6 @@ class PayAction extends CommonAction{
     {
         if ($data) {
             $notifyUrl = 'http://'.$_SERVER['HTTP_HOST'].'/wxpay_success.html';
-
             if($this->is_pc){
                 $from = 'pc';
             }else{
@@ -471,5 +470,155 @@ class PayAction extends CommonAction{
             ));
         }
         return $config;
+    }
+
+
+    /**
+     * @name 微信支付
+     * @packages protected
+     */
+    protected function dswxpay($data)
+    {
+        if ($data) {
+            $notifyUrl = 'http://'.$_SERVER['HTTP_HOST'].'/dswxpay_success.html';
+            if($this->is_pc){
+                $from = 'pc';
+            }else{
+                if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+                    $from = 'jsapi';
+                }else{
+                    $from = 'wap';
+                }
+            }
+
+            $attr = urlencode(sunjiami(json_encode(array('money_str'=>$data['money_str'])),"hll"));
+            $attributes = [
+                'body' => isset($data['subject']) ? $data['subject'] : '充值中心',
+                'out_trade_no' => "{$data['out_trade_no']}",
+                'total_fee' => "{$data['total_fee']}",
+                'attach' => $attr,//自定义参数 仅服务端异步可以接收9
+            ];
+
+            $wxPay = model('WxPay')->wxPayArouse($attributes, $from, $notifyUrl);
+
+            if($this->is_pc && $wxPay['code_url']){
+                if($wxPay['code_url']){
+                    return $wxPay['code_url'];
+                }
+            }elseif($this->is_wap){
+                if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+                    return $wxPay;
+                }else{
+                    return $wxPay['mweb_url'];
+                }
+            }
+        }
+    }
+
+    /**
+     * @name 微信回调
+     */
+    public function dswxpay_success()
+    {
+        //获取微信回调到服务器异步的参数
+        $response = model('WxPay')->wxNotify();
+        file_put_contents('logs/wxpayre_success_pay.txt',json_encode($response));
+
+        //商户订单号
+        if($response["return_code"] == "SUCCESS" && $response["result_code"] == "SUCCESS"){
+            //D('ZyRecharge','classroom')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id'],$response['attach']);
+            $order = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->find();
+            if(!$order) return false;
+            $update = array(
+                'state' =>  1
+            );
+            $res = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->save($update);
+            return true;
+        }
+    }
+    /**
+     * @name 查询打赏状态
+     */
+    public function getDsStatus(){
+        $pay_pass_num = $_POST['pay_pass_num'];
+        $status_info = M('zy_dashang_log')->where(['pay_pass_num'=>$pay_pass_num])->field('status,type')->find();
+
+        if($status_info['status'] == 1){
+            echo json_encode(['status'=>1,'info'=>"打赏成功"]);exit;
+        }else{
+            echo json_encode(['status'=>0]);exit;
+        }
+    }
+    /**
+     * 打赏
+     */
+    public function dashang(){
+        ini_set('display_errors', '1');
+        if($_SERVER['REQUEST_METHOD']!='POST') exit;
+
+        //使用后台提示模版
+        $this->assign('isAdmin', 1);
+
+        //必须要先登陆才能进行操作
+        if($this->mid <= 0) $this->error('请先登录在进行充值');
+        $t_uid = $_POST['t_uid'];
+        if($t_uid <= 0) $this->error('打赏失败');
+        $pay_list = array('alipay','unionpay','wxpay','cardpay');
+        if(!in_array($_POST['pay_type'],$pay_list)){
+            $this->error('支付方式错误');
+        }
+
+        $money_str = t($_POST['money']);
+        $money = array_filter(explode('=>',$money_str))[0] ? : 0;
+        if ($money <= 0) {
+            $this->error('请选择或填写充值金额');
+        }
+
+        $re = D('ZyRecharge');
+        $pay_pass_num = date('YmdHis',time()).mt_rand(1000,9999).mt_rand(1000,9999);
+
+        $note = "{$this->site['site_keyword']}-余额充值：{$money_str}元";
+
+        $data = array(
+            'ds_uid'    =>  $t_uid,
+            'uid'   =>  $this->mid,
+            'money' =>  $money,
+            'add_time'  =>  time(),
+            'pay_pass_num'  =>  $pay_pass_num
+        );
+        $id = D('zy_dashang_log')->add($data);
+        if(!$id) $this->error("操作异常");
+
+       if($_POST['pay_type'] == 'wxpay'){
+            $res = $this->dswxpay(array(
+                'out_trade_no'  => $pay_pass_num,
+                'total_fee'     => $money * 100,//单位：分
+                'subject'       => "{$this->site['site_keyword']}-打赏",
+                'money_str'    => $money_str,
+            ));
+            if($res){
+                if($this->is_pc){
+                    $this->assign('url',$res);
+                    $html = $this->fetch('wxpay');
+                    $data = array('status'=>1,'data'=>['html'=>$html,'pay_pass_num'=>$pay_pass_num]);
+                    echo json_encode($data);
+                    exit;
+                }else{
+                    if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+                        $data = array('status'=>1,'data'=>['html'=>$res,'pay_pass_num'=>$pay_pass_num]);
+                        echo json_encode($data);
+                    }else {
+                        $redirect_url = 'http://' . strip_tags($_SERVER['HTTP_HOST']) . "/my/account/" . sunjiami(rand(100, 999), 'wx_pay') . "/{$pay_pass_num}.html";
+                        $data = array('status' => 1, 'data' => ['html' => $res . "&redirect_url={$redirect_url}", 'pay_pass_num' => $pay_pass_num]);
+                        echo json_encode($data);
+                        exit;
+                    }
+                }
+            }else{
+                $data = array('status'=>0,'data'=>"微信支付异常，请稍后再试");
+                echo json_encode($data);
+                exit;
+            }
+        }
     }
 }

@@ -173,28 +173,97 @@
            </div>
            <a href="http://workermanforlinux.net:8383" target="_blank"><img style="width:252px;margin-left:5px;" src="/img/workermanforlinux-todpole.png"></a>
         </div>-->
-        <div id="dsdiv" style="margin-top:30px;margin-left:20px;display: none;"><span style="float: left;">打赏：</span><input style="border:solid 1px gray;float: left;" type="text" name="das" id="das" value="" /> &nbsp;&nbsp;<span id="ds" style="border:solid 1px gray;">确定</span></div>
+        <div id="dsdiv" style="margin-top:30px;margin-left:20px;display: none;">
+            <div>
+                微信支付：
+                <select id="pay_type">
+                    <option value="lcnpay">余额支付</option>
+                    <option value="wxpay">微信支付</option>
+                </select>
+            </div>
+            <span style="float: left;">打赏：</span><input style="border:solid 1px gray;float: left;" type="text" name="das" id="das" value="" /> &nbsp;&nbsp;<span id="ds" style="border:solid 1px gray;">确定</span></div>
     </div>
 </div>
 <script>
     $(function(){
         $('#ds').click(function(){
             var money = $('#das').val();
-            if(money == ''){
-                alert('请输入金额');
-                return false;
-            }
-            var t_uid = "{$teacher_uid}";
-            if(money !=''){
-                $.post(U("classroom/PayVideo/dashang"),{money:money,t_uid:t_uid},function(res){
-                    res = JSON.parse(res);
+            var pay_type = $('#pay_type').val();
+            if(pay_type==''){
+                if(money == ''){
+                    alert('请输入金额');
+                    return false;
+                }
+                var t_uid = "{$teacher_uid}";
+                if(money !=''){
+                    $.post(U("classroom/PayVideo/dashang"),{money:money,t_uid:t_uid},function(res){
+                        res = JSON.parse(res);
 
-                    if(res.status == 1){
-                        alert(res.info);
-                    }else{
-                        alert(res.info);
-                        return false;
+                        if(res.status == 1){
+                            alert(res.info);
+                        }else{
+                            alert(res.info);
+                            return false;
+                        }
+                    });
+                }
+            }
+            if(pay_type == 'wxpay'){
+                $.ajax({
+                    url: "{:U('classroom/Pay/dashang')}",
+                    data:{money:money,pay_type:pay_type,t_uid:t_uid},
+                    async:false,
+                    type:'post',
+                    success: function(data){
+                        if(typeof data != 'object'){
+                            var data = eval('('+data+')');
+                        }
+
+                        if(data.status == 1){
+                            var pay_pass_num = data.data.pay_pass_num;
+                            '<if condition="$is_wx">'
+                            WeixinJSBridge.invoke(
+                                    'getBrandWCPayRequest',JSON.parse(data.data.html),
+                                    function(res){
+                                        if(res.err_msg == "get_brand_wcpay_request:ok" ){
+                                            s = setInterval(function(){
+                                                $.ajax({
+                                                    url: "{:U('classroom/Pay/getDsStatus')}",
+                                                    data:{pay_pass_num:pay_pass_num},
+                                                    type:'post',
+                                                    success: function(res){
+                                                        try{
+                                                            res = JSON.parse(res);
+                                                            if(res.status == 1){
+                                                                clearInterval(s);
+                                                                alert('打赏成功');
+                                                            }
+                                                        }catch(e){
+                                                            return;
+                                                        }
+                                                    }
+                                                });
+                                            },1800);
+                                        }
+                                    }
+                            );
+                            '<else/>'
+                            var a = document.createElement('a');
+                            a.href = data.data.html;
+                            a.click();
+                            return false;
+                            '</if>'
+                        }else{
+                            alert(e.data);
+                            setTimeout(function(){
+                                window.location.href = '{:U("classroom/User/recharge")}';
+                            },2000);
+                        }
+                    },
+                    error: function(){
+                        return false
                     }
+
                 });
             }
         }) ;
