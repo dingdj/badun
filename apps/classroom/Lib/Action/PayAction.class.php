@@ -562,7 +562,6 @@ class PayAction extends CommonAction{
         //必须要先登陆才能进行操作
         if($this->mid <= 0) $this->error('请先登录在进行充值');
         $t_uid = $_POST['t_uid'];
-        dd($_POST);
         if($t_uid <= 0) $this->error('打赏失败');
         $pay_list = array('alipay','unionpay','wxpay','cardpay');
         if(!in_array($_POST['pay_type'],$pay_list)){
