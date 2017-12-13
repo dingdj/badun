@@ -500,7 +500,7 @@ class PayAction extends CommonAction{
             ];
 
             $wxPay = model('WxPay')->wxPayArouse($attributes, $from, $notifyUrl);
-
+            dd($wxPay);
             if($this->is_pc && $wxPay['code_url']){
                 if($wxPay['code_url']){
                     return $wxPay['code_url'];
