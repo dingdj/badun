@@ -43,9 +43,9 @@ class WxPayModel extends Model {
         if($tpay_switch){
             $attributes['total_fee']  = 1;
         }
-
+        dd($_SESSION);
         $order = new Order($attributes);
-        $result = $payment->prepare($order);dd($result);
+        $result = $payment->prepare($order);
 		if($result->return_code != 'SUCCESS'){
 			return false;
 		}
