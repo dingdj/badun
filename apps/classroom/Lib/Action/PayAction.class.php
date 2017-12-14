@@ -498,9 +498,9 @@ class PayAction extends CommonAction{
                 'total_fee' => "{$data['total_fee']}",
                 'attach' => $attr,//自定义参数 仅服务端异步可以接收9
             ];
-
+            dd($attributes,$from,$notifyUrl);
             $wxPay = model('WxPay')->wxPayArouse($attributes, $from, $notifyUrl);
-            dd($wxPay);
+            //dd($wxPay);
             if($this->is_pc && $wxPay['code_url']){
                 if($wxPay['code_url']){
                     return $wxPay['code_url'];
