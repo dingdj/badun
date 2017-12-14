@@ -15,10 +15,11 @@ class WxPayModel extends Model {
      * @param $notifyUrl 异步通知回调地址
      * @return array|\EasyWeChat\Support\Collection
      */
-    public function wxPayArouse($attributes,$from,$notifyUrl){
+        public function wxPayArouse($attributes,$from,$notifyUrl){
         //配置
         $app = new Application($this->getWxpayConfig($from));
         $payment = $app->payment;
+
         //统一下单
         if($from == 'pc'){
             $trade_type = 'NATIVE';
@@ -44,7 +45,7 @@ class WxPayModel extends Model {
         }
 
         $order = new Order($attributes);
-        $result = $payment->prepare($order);
+        $result = $payment->prepare($order);dd($result);
 		if($result->return_code != 'SUCCESS'){
 			return false;
 		}
