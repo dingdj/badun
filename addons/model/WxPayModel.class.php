@@ -43,7 +43,7 @@ class WxPayModel extends Model {
         if($tpay_switch){
             $attributes['total_fee']  = 1;
         }
-        dd($_SESSION);
+        dd($_SESSION,$auth);
         $order = new Order($attributes);
         $result = $payment->prepare($order);
 		if($result->return_code != 'SUCCESS'){
