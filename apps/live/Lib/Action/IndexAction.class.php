@@ -1084,6 +1084,9 @@ class IndexAction extends CommonAction {
 
             $url = "{$res['studentJoinUrl']}&autoLogin=true&username={$user_info['uname']}&password={$res['studentClientToken']}";
         }
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+            model('WxPay')->getWxUserInfo($_GET['code'], SITE_URL . '/live/watch/'.$id.'.html');
+        }
         if($this->is_wap && strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')){
             $this->assign('is_wx',true);
         }
