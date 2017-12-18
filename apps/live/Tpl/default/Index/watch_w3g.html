@@ -132,6 +132,7 @@
         var text = '';
         text+='<div class="dialogue_box"><div class="time">'+time+'</div><div class="main"><div class="left"><div class="user"> <img src="{$user['avatar_small']}" width="48" height="48"> </div>';
         text+='</div>';
+        text+='<div class="right"><div class="name">'+from_client_name;
         text+='</div><div class="bubble">'+content+'</div></div></div></div>';
         $("#dialog").append(text);
         $('#dialog').scrollTop( $('#dialog')[0].scrollHeight );
