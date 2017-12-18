@@ -128,7 +128,12 @@
 
     // 发言
     function say(from_client_id, from_client_name, content, time){
-        $("#dialog").append('<div class="speech_item"><img style="width: 30px;" src="{$user['avatar_small']}" class="user_icon" /> '+from_client_name+' <br> '+time+'<div style="clear:both;"></div><p class="triangle-isosceles top">'+content+'</p> </div>');
+        //$("#dialog").append('<div class="speech_item"><img style="width: 30px;" src="{$user['avatar_small']}" class="user_icon" /> '+from_client_name+' <br> '+time+'<div style="clear:both;"></div><p class="triangle-isosceles top">'+content+'</p> </div>');
+        var text = '';
+        text+='<div class="dialogue_box"><div class="time">'+time+'</div><div class="main"><div class="left"><div class="user"> <img src="{$user['avatar_small']}" width="48" height="48"> </div>';
+        text+='</div>';
+        text+='</div><div class="bubble">'+content+'</div></div></div></div>';
+        $("#dialog").append(text);
         $('#dialog').scrollTop( $('#dialog')[0].scrollHeight );
     }
 
@@ -151,7 +156,7 @@
     });
 </script>
 <body onload="connect();">
-<div class="container">
+<div class="box">
     <div class="row clearfix">
         <div class="col-md-1 column">
         </div>
