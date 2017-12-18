@@ -295,7 +295,7 @@ body {
 }
 .reveal-modal {
 	visibility: hidden;
-	top: 50%;
+	top: 60%;
 	left: 50%;
 	margin-left: -50%;
 	width: 100%;
