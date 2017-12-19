@@ -160,7 +160,6 @@ body {
 	max-width: 768px;
 	z-index: 1;
 	height: 50px;
-	margin-left: 12px;
 }
 .bottom .left {
 	float: left;
@@ -296,7 +295,7 @@ body {
 }
 .reveal-modal {
 	visibility: hidden;
-	top: 65%;
+	top: 50%;
 	left: 50%;
 	margin-left: -50%;
 	width: 100%;
