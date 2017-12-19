@@ -149,6 +149,10 @@
             onSubmit();
         }
     }
+
+    function setmoney(money){
+        $('#das').val(money);
+    }
     $(function(){
         select_client_id = 'all';
         $("#client_list").change(function(){
@@ -178,14 +182,14 @@
                             <p>{$item['teacher_name']}</p>
                         </div>
                         <div class="money">
-                            <!--<ul>
-                                <li><a href=""><em>5</em>元</a></li>
-                                <li><a href=""><em>10</em>元</a></li>
-                                <li><a href=""><em>20</em>元</a></li>
-                                <li><a href=""><em>30</em>元</a></li>
-                                <li><a href=""><em>40</em>元</a></li>
-                                <li><a href=""><em>50</em>元</a></li>
-                            </ul>-->
+                            <ul>
+                                <li><a href="#" onclick="setmoney(5)"><em>5</em>元</a></li>
+                                <li><a href="#" onclick="setmoney(10)"><em>10</em>元</a></li>
+                                <li><a href="#" onclick="setmoney(50)"><em>50</em>元</a></li>
+                                <li><a href="#" onclick="setmoney(100)"><em>100</em>元</a></li>
+                                <li><a href="#" onclick="setmoney(200)"><em>200</em>元</a></li>
+                                <li><a href="#" onclick="setmoney(300)"><em>300</em>元</a></li>
+                            </ul>
                             <div class="other">
 
                                     <div class="other_txt">打赏金额</div>
