@@ -160,6 +160,7 @@ body {
 	max-width: 768px;
 	z-index: 1;
 	height: 50px;
+	margin-left: 12px;
 }
 .bottom .left {
 	float: left;
