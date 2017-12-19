@@ -202,6 +202,7 @@
                         </div>
                     </div>
                     <a href="javascript:;" class="close-reveal-modal">&#215;</a> </div>
+                <div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
                 <div class="bottom">
                     <div id="dashang"  style="float: left;padding-top: 5px;"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg"></div>
                     <div class="left">
@@ -317,6 +318,8 @@
 
         $('#dashang').click(function(){
            // $('#dsdiv').toggle();
+            $('.reveal-modal-bg').css('display','block');
+            $('.reveal-modal-bg').css({'height':$(document).height(),'width':$(document).width()});
             $('#myModal').css('visibility','visible');
         });
         $('.close-reveal-modal').click(function(){
