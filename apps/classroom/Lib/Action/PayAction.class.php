@@ -533,6 +533,9 @@ class PayAction extends CommonAction{
                 'state' =>  1
             );
             $res = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->save($update);
+            $learncoin = D('zy_learncoin')->where(array('uid'=>$order['ds_uid']))->find();
+            $balance = $learncoin['balance'] + $order['money']*0.7;
+            D('zy_learncoin')->where(array('uid'=>$order['ds_uid']))->save(array('balance'=>$balance));
             return true;
         }
     }
