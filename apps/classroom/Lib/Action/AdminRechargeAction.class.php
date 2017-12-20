@@ -72,14 +72,15 @@ class AdminRechargeAction extends AdministratorAction {
     //打赏记录
     public function dashang(){
         $this->pageTitle['index'] = '打赏记录';
-        $this->pageKeyList = array('id','t_name','name','money','add_time');//,'realname','idcard','vip_length'
-        $data = D('zy_dashang_log')->findPage();
+        $this->pageKeyList = array('id','t_name','name','money','add_time','pay_pass_num','state');//,'realname','idcard','vip_length'
+        $data = D('zy_dashang_log')->where(array('state'=>1))->findPage();
         foreach($data['data'] as &$log){
             $t_name = D('user')->where(array('uid'=>$log['ds_uid']))->getField('uname');
             $name = D('user')->where(array('uid'=>$log['uid']))->getField('uname');
             $log['t_name'] = $t_name;
             $log['name'] = $name;
             $log['add_time'] = date('Y-m-d H:i:s',$log['add_time']);
+            $log['state']  = '已支付';
         }
         //dd($data['data']);
         $this->displayList($data);
