@@ -82,7 +82,7 @@ class AdminRechargeAction extends AdministratorAction {
             $log['add_time'] = date('Y-m-d H:i:s',$log['add_time']);
             $log['state']  = '已支付';
         }
-        //dd($data['data']);
+        dd($data);
         $this->displayList($data);
     }
 }
