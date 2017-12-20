@@ -1,7 +1,7 @@
 <include file="__THEME__/public_header_w3g"/>
 
 <!--container-->
-<div id="myModal" class="reveal-modal">
+<div id="myModal" style="z-index: 9999;" class="reveal-modal">
     <div class="ho">
         <div class="ho_top"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/h.png" width="639" height="166"></div>
         <div class="ho_user"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg" style="margin: 0 auto;" width="72" height="72">
@@ -320,15 +320,19 @@
 
         $('#dashang').click(function(){
            // $('#dsdiv').toggle();
-            $('#view').hide();
-           // $('.reveal-modal-bg').css('display','block');
-          //  $('.reveal-modal-bg').css({'height':$(document).height(),'width':$(document).width()});
-           // $('#myModal').css('visibility','visible');
+          //  $('#view').hide();
+            $('#myModal').css('visibility','visible');
+            $('.reveal-modal-bg').css('display','block');
+            $('.reveal-modal-bg').css({'height':$(document).height(),'width':$(document).width()});
         });
         $('.close-reveal-modal').click(function(){
-            $('#view').show();
+         //   $('#view').show();
             $('.reveal-modal-bg').css('display','none');
             $('#myModal').css('visibility','hidden');
+        });
+        $('.reveal-modal-bg').click(function(){
+            $('#myModal').css('visibility','hidden');
+            $('.reveal-modal-bg').hide();
         });
     });
 </script>
