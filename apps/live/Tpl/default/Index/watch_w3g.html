@@ -1,6 +1,34 @@
 <include file="__THEME__/public_header_w3g"/>
 
 <!--container-->
+<div id="myModal" class="reveal-modal">
+    <div class="ho">
+        <div class="ho_top"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/h.png" width="639" height="166"></div>
+        <div class="ho_user"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg" style="margin: 0 auto;" width="72" height="72">
+            <p>{$item['teacher_name']}</p>
+        </div>
+        <div class="money">
+            <ul>
+                <li><a href="#" onclick="setmoney(5)"><em>5</em>元</a></li>
+                <li><a href="#" onclick="setmoney(10)"><em>10</em>元</a></li>
+                <li><a href="#" onclick="setmoney(50)"><em>50</em>元</a></li>
+                <li><a href="#" onclick="setmoney(100)"><em>100</em>元</a></li>
+                <li><a href="#" onclick="setmoney(200)"><em>200</em>元</a></li>
+                <li><a href="#" onclick="setmoney(300)"><em>300</em>元</a></li>
+            </ul>
+            <div class="other">
+
+                <div class="other_txt">打赏金额</div>
+                <div>
+                    <input id="das" type="text" class="other_text" placeholder="请输入金额 可填2-1000">
+                </div>
+
+                <div class="other_btn"><a href="#" id="ds">确定</a></div>
+            </div>
+        </div>
+    </div>
+    <a href="javascript:;" class="close-reveal-modal">&#215;</a> </div>
+<div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
 <iframe src="{$url}" width="100%"  height="200" frameborder="0" scrolling="yes"></iframe>
 
 <script src="//view.csslcloud.net/js/_fix.js?r=20171110"></script>
@@ -175,34 +203,7 @@
                 </select>
 
               <!--  <span class="say-btn" id="dashang"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg"></span>&nbsp;-->
-                <div id="myModal" class="reveal-modal">
-                    <div class="ho">
-                        <div class="ho_top"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/h.png" width="639" height="166"></div>
-                        <div class="ho_user"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg" style="margin: 0 auto;" width="72" height="72">
-                            <p>{$item['teacher_name']}</p>
-                        </div>
-                        <div class="money">
-                            <ul>
-                                <li><a href="#" onclick="setmoney(5)"><em>5</em>元</a></li>
-                                <li><a href="#" onclick="setmoney(10)"><em>10</em>元</a></li>
-                                <li><a href="#" onclick="setmoney(50)"><em>50</em>元</a></li>
-                                <li><a href="#" onclick="setmoney(100)"><em>100</em>元</a></li>
-                                <li><a href="#" onclick="setmoney(200)"><em>200</em>元</a></li>
-                                <li><a href="#" onclick="setmoney(300)"><em>300</em>元</a></li>
-                            </ul>
-                            <div class="other">
 
-                                    <div class="other_txt">打赏金额</div>
-                                    <div>
-                                        <input id="das" type="text" class="other_text" placeholder="请输入金额 可填2-1000">
-                                    </div>
-
-                                <div class="other_btn"><a href="#" id="ds">确定</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="javascript:;" class="close-reveal-modal">&#215;</a> </div>
-                <div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
                 <div class="bottom">
                     <div id="dashang"  style="float: left;padding-top: 5px;"><img src="{$_W['siteroot']}/workerman-chat/Applications/Chat/Web/img/icon_c.svg"></div>
                     <div class="left">
