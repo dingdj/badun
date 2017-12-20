@@ -73,7 +73,7 @@ class AdminRechargeAction extends AdministratorAction {
     public function dashang(){
         $this->pageTitle['index'] = '打赏记录';
         $this->pageKeyList = array('id','t_name','name','money','add_time','pay_pass_num','state');//,'realname','idcard','vip_length'
-        $data = D('zy_dashang_log')->where(array('state'=>1))->findPage();
+        $data = D('zy_dashang_log')->where(array('state'=>0))->findPage();
         foreach($data['data'] as &$log){
             $t_name = D('user')->where(array('uid'=>$log['ds_uid']))->getField('uname');
             $name = D('user')->where(array('uid'=>$log['uid']))->getField('uname');
