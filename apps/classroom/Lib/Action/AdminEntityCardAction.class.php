@@ -823,7 +823,8 @@ class AdminEntityCardAction extends AdministratorAction{
      * @name 导出日志
      */
     public function exportCoupon(){
-        $xlsCell  = [
+        set_time_limit(0);
+	$xlsCell  = [
             ['id','ID'],
             ['code','卡券编码'],
             ['coupon_type','卡券类型'],
@@ -831,7 +832,7 @@ class AdminEntityCardAction extends AdministratorAction{
             ['end_time','终止时间'],
         ];
         $xlsData =  $this->xlsData($_GET['explod']);
-        $xlsCell = array_merge($xlsCell,$xlsData['xlsCell']);
+        $xlsCell = array_merge($xlsCell,$xlsData['xlsCell']);	
         model('Excel')->export($xlsData['explod_title'],$xlsCell,$xlsData['data']);
 
         header('HTTP/1.1 401 Unauthorized');
@@ -878,9 +879,9 @@ class AdminEntityCardAction extends AdministratorAction{
                 break;
             default:
         }
-
-        $listData['data'] = model('Coupon')->where($explod->map)->field($field)->order('ctime DESC,id DESC')->select();
-        //整理数据列表
+	$explod->map = is_array($explod->map) ? $explod->map : (array)$explod->map;
+        $listData['data'] = model('Coupon')->where(array_merge($explod->map,['status'=>['in','1,2']]))->field($field)->order('ctime DESC,id DESC')->select();	 
+	//整理数据列表
         foreach ($listData['data'] as $key => $val) {
             $val['coupon_type'] = $type;
             $val['end_time'] = date("Y-m-d H:i",$val['end_time']);
@@ -905,6 +906,7 @@ class AdminEntityCardAction extends AdministratorAction{
                     default:
                 }
             }
+	    $val['code'] = (string)$val['code'].' ';
             $listData['data'][$key] = $val;
         }
         return $listData;

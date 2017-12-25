@@ -26,23 +26,23 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->pageTab [] = array (
                 'title' => '优惠券',
                 'tabHash' => 'index',
-                'url' => U ( 'school/AdminEntityCard/index' )
+                'url' => U ( 'classroom/AdminEntityCard/index' )
         );
         $this->pageTab [] = array (
             'title' => '打折卡',
             'tabHash' => 'discount',
-            'url' => U ( 'school/AdminEntityCard/discount' )
+            'url' => U ( 'classroom/AdminEntityCard/discount' )
         );
         $this->pageTab [] = array (
             'title' => '课程卡',
             'tabHash' => 'course',
-            'url' => U ( 'school/AdminEntityCard/course' )
+            'url' => U ( 'classroom/AdminEntityCard/course' )
         );
-        /*$this->pageTab [] = array (
-            'title' => '充值卡列表',
+        $this->pageTab [] = array (
+            'title' => '充值卡',
             'tabHash' => 'recharge',
-            'url' => U ( 'school/AdminEntityCard/recharge' )
-        );*/
+            'url' => U ( 'classroom/AdminEntityCard/recharge' )
+        );
     }
     /**
      * 优惠券列表
@@ -52,15 +52,20 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->assign('pageTitle','优惠券');
         //页面配置
         $id     =  intval($_POST['id']);
+        $sid    =  intval($_POST['sid']);
         $code   =  intval($_POST['code']);
-        $this->pageKeyList = array('id','school_title','code','maxprice','price','exp_date','status','count','end_time','ctime','is_del','DOACTION');
-        $this->searchKey = array('id','code');
+        $this->pageKeyList = array('id','school_title','code','maxprice','price','exp_date','status','end_time','ctime','is_del','DOACTION');
+        $this->searchKey = array('id','sid','code');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delCoupon')");
         $this->pageButton[] = array("title"=>"添加","onclick"=>"admin.addCoupon('addCoupon')");
 
-        $map = array('type'=>1,'coupon_type'=>1,'sid'=>$this->school_id);
+        $school = model('School')->getAllSchol('','id,title');
+        $this->opt['video_type'] = array('1'=>'点播','2'=>'直播','3'=>'班级');
+        $this->opt['sid'] = $school;
+        $map = array('type'=>1,'coupon_type'=>1);
         if(!empty($id))$map['id']=$id;
+        if(!empty($sid))$map['sid']=$sid;
         if(!empty($code))$map['code']=$code;
         $explod['map'] = $map;
         $explod['title'] = "优惠券数据列表";
@@ -79,7 +84,11 @@ class AdminEntityCardAction extends AdministratorAction{
 				$coupon->setStatus($val['id'],0);
             }
             $school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
-            $url = getDomain($school['doadmin'],$school['id']);
+            if(!$school['doadmin']){
+                $url = U('school/School/index', array('id' => $val['mhm_id']));
+            }else{
+                $url = getDomain($school['doadmin']);
+            }
             $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
 
             $val['ctime']    = date("Y-m-d H:i:s", $val['ctime']);
@@ -88,9 +97,9 @@ class AdminEntityCardAction extends AdministratorAction{
             if($val['status'] == 3){
                 $val['status'] = "<span style='color: grey;'>已作废</span>";
             }else if($val['status'] == 1){
-                $val['status'] = "<span style='color: green;'>未领取</span>";
+                $val['status'] = "<span style='color: green;'>未使用</span>";
             }else if($val['status'] == 2){
-                $val['status'] = "<span style='color: blue;'>已领取</span>";
+                $val['status'] = "<span style='color: blue;'>已使用</span>";
             }else if($val['status'] == 0){
                 $val['status'] = "<span style='color: red;'>已过期</span>";
             }
@@ -106,7 +115,7 @@ class AdminEntityCardAction extends AdministratorAction{
             }else if($val['is_del'] == 1){
                 $val['is_del'] = "<span style='color: red;'>禁用</span>";
             }
-            $val['DOACTION'].=" | <a href=".U('school/AdminEntityCard/addCoupon',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
+            $val['DOACTION'].=" | <a href=".U('classroom/AdminEntityCard/addCoupon',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
             $listData['data'][$key] = $val;
         }
         $this->displayList($listData);
@@ -121,10 +130,14 @@ class AdminEntityCardAction extends AdministratorAction{
         
         $this->_initTabSpecial();
         $_REQUEST['tabHash'] = 'addCoupon';
-        $this->pageKeyList = array ( 'maxprice','price','exp_date','end_time','counts');
-        $this->notEmpty = array ( 'maxprice','price','exp_date','end_time', 'counts');
+        $this->pageKeyList = array ( 'sid','maxprice','price','exp_date','end_time','counts');
+        $this->notEmpty = array ( 'sid','maxprice','price','exp_date','end_time', 'counts');
+		//$schoolData = model ( 'School' )->findAll();
+		//$this->opt['sid'] = array_column($schoolData,'title','id');
+        $school = model('School')->getAllSchol('','id,title');
+        $this->opt['sid'] = $school;
         if($id){
-            $this->savePostUrl = U ( 'school/AdminEntityCard/doAddCoupon','type=save&id='.$id);
+            $this->savePostUrl = U ( 'classroom/AdminEntityCard/doAddCoupon','type=save&id='.$id);
             $coupon = model('Coupon')->where( 'id=' .$id )->find ();
 			$coupon['end_time'] = date('Y-m-d H:i:s',$coupon['end_time']);
             $this->assign('pageTitle','修改');
@@ -132,7 +145,7 @@ class AdminEntityCardAction extends AdministratorAction{
             $this->displayConfig($coupon); 
         }else{
 			$this->assign('pageTitle','添加');
-            $this->savePostUrl = U ('school/AdminEntityCard/doAddCoupon','type=add');
+            $this->savePostUrl = U ('classroom/AdminEntityCard/doAddCoupon','type=add');
             //说明是添加
             $this->displayConfig();
         }
@@ -151,7 +164,7 @@ class AdminEntityCardAction extends AdministratorAction{
 		
         //要添加的数据
         //数据验证
-        //if(empty($_POST['sid'])){$this->error("请选择机构");}
+        if(empty($_POST['sid'])){$this->error("请选择机构");}
         //if(empty($_POST['maxprice'])){$this->error("优惠条件不能为空");}
         if($_POST['maxprice'] == ''){$this->error("优惠条件不能为空");}
         if(!is_numeric($_POST['price'])){$this->error('优惠条件必须为数字');}
@@ -164,7 +177,7 @@ class AdminEntityCardAction extends AdministratorAction{
         if(!is_numeric($count)) $this->error('生成数量必须为数字');
         $params = array(
 			'type'=> 1,
-			'sid'=>$this -> school_id,
+			'sid'=>intval($_POST['sid']),
 			'maxprice'=>t($_POST['maxprice']),
 			'price'=>t($_POST['price']),
 			'exp_date'=>intval($_POST['exp_date']),
@@ -198,15 +211,19 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->assign('pageTitle','打折卡');
         //页面配置
         $id     =  intval($_POST['id']);
+        $sid    =  intval($_POST['sid']);
         $code   =  intval($_POST['code']);
-        $this->pageKeyList = array('id','school_title','code','discount','exp_date','status','count','end_time','ctime','is_del','DOACTION');
-        $this->searchKey = array('id','code');
+        $this->pageKeyList = array('id','school_title','code','discount','exp_date','status','end_time','ctime','is_del','DOACTION');
+        $this->searchKey = array('id','sid','code');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delcoupon')");
         $this->pageButton[] = array("title"=>"添加","onclick"=>"admin.addCoupon('addDiscount')");
 
-        $map = array('type'=>2,'coupon_type'=>1,'sid'=>$this->school_id);
+        $school = model('School')->getAllSchol('','id,title');
+        $this->opt['sid'] = $school;
+        $map = array('type'=>2,'coupon_type'=>1);
         if(!empty($id))$map['id']=$id;
+        if(!empty($sid))$map['sid']=$sid;
         if(!empty($code))$map['code']=$code;
         $explod['map'] = $map;
         $explod['title'] = "打折卡数据列表";
@@ -225,7 +242,11 @@ class AdminEntityCardAction extends AdministratorAction{
                 $coupon->setStatus($val['id'],0);
             }
             $school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
-            $url = getDomain($school['doadmin'],$school['id']);
+            if(!$school['doadmin']){
+                $url = U('school/School/index', array('id' => $val['mhm_id']));
+            }else{
+                $url = getDomain($school['doadmin']);
+            }
             $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
 
             $val['ctime']    = date("Y-m-d H:i:s", $val['ctime']);
@@ -233,9 +254,9 @@ class AdminEntityCardAction extends AdministratorAction{
             if($val['status'] == 3){
                 $val['status'] = "<span style='color: grey;'>已作废</span>";
             }else if($val['status'] == 1){
-                $val['status'] = "<span style='color: green;'>未领取</span>";
+                $val['status'] = "<span style='color: green;'>未使用</span>";
             }else if($val['status'] == 2){
-                $val['status'] = "<span style='color: blue;'>已领取</span>";
+                $val['status'] = "<span style='color: blue;'>已使用</span>";
             }else if($val['status'] == 0){
                 $val['status'] = "<span style='color: red;'>已过期</span>";
             }
@@ -251,7 +272,7 @@ class AdminEntityCardAction extends AdministratorAction{
             }else if($val['is_del'] == 1){
                 $val['is_del'] = "<span style='color: red;'>禁用</span>";
             }
-            $val['DOACTION'].=" | <a href=".U('school/AdminEntityCard/addDiscount',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";;
+            $val['DOACTION'].=" | <a href=".U('classroom/AdminEntityCard/addDiscount',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";;
             $listData['data'][$key] = $val;
         }
 
@@ -268,15 +289,19 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->_initTabSpecial();
         $this->pageKeyList = array ('sid','discount','exp_date','end_time','counts');
         $this->notEmpty = array ( 'sid','discount','exp_date','end_time','counts');
+        //$schoolData = model ( 'School' )->findAll();
+        //$this->opt['sid'] = array_column($schoolData,'title','id');
+        $school = model('School')->getAllSchol('','id,title');
+        $this->opt['sid'] = $school;
         if($id){
-            $this->savePostUrl = U ( 'school/AdminEntityCard/doAddDiscount','type=save&id='.$id);
+            $this->savePostUrl = U ( 'classroom/AdminEntityCard/doAddDiscount','type=save&id='.$id);
             $discount = model('Coupon')->where( 'id=' .$id )->find ();
             $discount['end_time'] = date('Y-m-d H:i:s',$discount['end_time']);
             $this->assign('pageTitle','修改');
             //说明是编辑
             $this->displayConfig($discount);
         }else{
-            $this->savePostUrl = U ('school/AdminEntityCard/doAddDiscount','type=add');
+            $this->savePostUrl = U ('classroom/AdminEntityCard/doAddDiscount','type=add');
             $this->assign('pageTitle','添加');
             //说明是添加
             $this->displayConfig();
@@ -297,7 +322,7 @@ class AdminEntityCardAction extends AdministratorAction{
         }
         //要添加的数据
         //数据验证
-        //if(empty($_POST['sid'])){$this->error("请选择机构");}
+        if(empty($_POST['sid'])){$this->error("请选择机构");}
         if($_POST['discount'] == ''){$this->error("折扣不能为空");}
         if($_POST['discount'] == 0){$this->error('折扣数不能为0');}
         $reg = '/^(([\d])(\.\d{1,2}|\.{0}))$/';
@@ -308,9 +333,10 @@ class AdminEntityCardAction extends AdministratorAction{
         if(!is_numeric($_POST['exp_date'])){$this->error('有效期必须为数字');}
         if($_POST['end_time'] == ''){$this->error("终止时间不能为空");}
         if(!is_numeric($count)){$this->error('生成数量必须为数字');}
+
         $params = array(
             'type'=> 2,
-            'sid'=>$this->school_id,
+            'sid'=>intval($_POST['sid']),
             'discount'=>number_format($_POST['discount'], 2, '.', ''),
             'exp_date'=>intval($_POST['exp_date']),
             'end_time'=>strtotime($_POST['end_time']),
@@ -343,17 +369,21 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->assign('pageTitle','课程卡');
         //页面配置
         $id     =  intval($_POST['id']);
+        $sid    =  intval($_POST['sid']);
         $code   =  intval($_POST['code']);
         $video_type = intval($_POST['video_type']);
-        $this->pageKeyList = array('id','school_title','code','video_type','video_title','exp_date','status','count','end_time','ctime','is_del','DOACTION');
-        $this->searchKey = array('id','code','video_type');
+        $this->pageKeyList = array('id','school_title','code','video_type','video_title','exp_date','status','end_time','ctime','is_del','DOACTION');
+        $this->searchKey = array('id','sid','code','video_type');
         $this->pageButton[] = array('title'=>'搜索','onclick'=>"admin.fold('search_form')");
         $this->pageButton[] = array('title'=>'禁用','onclick'=>"admin.delCouponAll('delCoupon')");
         $this->pageButton[] = array("title"=>"添加","onclick"=>"admin.addCoupon('addCourse')");
 
+        $school = model('School')->getAllSchol('','id,title');
+        $this->opt['sid'] = $school;
         $this->opt['video_type'] = array('1'=>'点播','2'=>'直播','3'=>'班级');
-        $map = array('type'=>5,'coupon_type'=>1,'sid'=>$this->school_id);
+        $map = array('type'=>5,'coupon_type'=>1);
         if(!empty($id))$map['id']=$id;
+        if(!empty($sid))$map['sid']=$sid;
         if(!empty($code))$map['code']=$code;
         if(!empty($video_type))$map['video_type']=$video_type;
         $explod['map'] = $map;
@@ -373,7 +403,11 @@ class AdminEntityCardAction extends AdministratorAction{
                 $coupon->setStatus($val['id'],0);
             }
             $school = model('School')->where(array('id'=>$val['sid']))->field('id,doadmin,title')->find();
-            $url = getDomain($school['doadmin'],$school['id']);
+            if(!$school['doadmin']){
+                $url = U('school/School/index', array('id' => $val['mhm_id']));
+            }else{
+                $url = getDomain($school['doadmin']);
+            }
             $val['school_title'] = getQuickLink($url,$school['title'],"未知机构");
 
             if($val['video_type'] == 1){
@@ -402,9 +436,9 @@ class AdminEntityCardAction extends AdministratorAction{
             if($val['status'] == 3){
                 $val['status'] = "<span style='color: grey;'>已作废</span>";
             }else if($val['status'] == 1){
-                $val['status'] = "<span style='color: green;'>未领取</span>";
+                $val['status'] = "<span style='color: green;'>未使用</span>";
             }else if($val['status'] == 2){
-                $val['status'] = "<span style='color: blue;'>已领取</span>";
+                $val['status'] = "<span style='color: blue;'>已使用</span>";
             }else if($val['status'] == 0){
                 $val['status'] = "<span style='color: red;'>已过期</span>";
             }
@@ -420,7 +454,7 @@ class AdminEntityCardAction extends AdministratorAction{
             }else if($val['is_del'] == 1){
                 $val['is_del'] = "<span style='color: red;'>禁用</span>";
             }
-            $val['DOACTION'].=" | <a href=".U('school/AdminEntityCard/addCourse',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
+            $val['DOACTION'].=" | <a href=".U('classroom/AdminEntityCard/addCourse',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
             $listData['data'][$key] = $val;
         }
         $this->displayList($listData);
@@ -464,8 +498,7 @@ class AdminEntityCardAction extends AdministratorAction{
      */
     public function getVideoInfoList(){
         $video_type = intval($_POST['video_type']);
-        //$mhm_id = intval($_POST['mhm_id']);
-        $mhm_id = $this->school_id;
+        $mhm_id = intval($_POST['mhm_id']);
 
         if($video_type == 3){
             $where = "status=1 AND is_mount=1 AND mhm_id=$mhm_id";
@@ -503,7 +536,7 @@ class AdminEntityCardAction extends AdministratorAction{
         }
         $params = array(
             'type'=> 5,
-            'sid'=>$this->school_id,
+            'sid'=>intval($_POST['mhm_id']),
             'video_type'=>intval($_POST['video_type']),
             'video_id'=>intval($_POST['video_id']),
             'exp_date'=>intval($_POST['exp_date']),
@@ -583,9 +616,9 @@ class AdminEntityCardAction extends AdministratorAction{
             if($val['status'] == 3){
                 $val['status'] = "<span style='color: grey;'>已作废</span>";
             }else if($val['status'] == 1){
-                $val['status'] = "<span style='color: green;'>未领取</span>";
+                $val['status'] = "<span style='color: green;'>未使用</span>";
             }else if($val['status'] == 2){
-                $val['status'] = "<span style='color: blue;'>已领取</span>";
+                $val['status'] = "<span style='color: blue;'>已使用</span>";
             }else if($val['status'] == 0){
                 $val['status'] = "<span style='color: red;'>已过期</span>";
             }
@@ -602,7 +635,7 @@ class AdminEntityCardAction extends AdministratorAction{
             }else if($val['is_del'] == 1){
                 $val['is_del'] = "<span style='color: red;'>禁用</span>";
             }
-            $val['DOACTION'].=" | <a href=".U('school/AdminEntityCard/addRecharge',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
+            $val['DOACTION'].=" | <a href=".U('classroom/AdminEntityCard/addRecharge',array('id'=>$val['id'],'tabHash'=>'revise')).";>修改</a>";
             $listData['data'][$key] = $val;
         }
 
@@ -620,14 +653,14 @@ class AdminEntityCardAction extends AdministratorAction{
         $this->pageKeyList = array ('recharge_price','exp_date','end_time','counts');
         $this->notEmpty = array ('recharge_price','exp_date','end_time','counts');
         if($id){
-            $this->savePostUrl = U ( 'school/AdminEntityCard/doAddRecharge','type=save&id='.$id);
+            $this->savePostUrl = U ( 'classroom/AdminEntityCard/doAddRecharge','type=save&id='.$id);
             $recharge = model('Coupon')->where( 'id=' .$id )->find ();
             $recharge['end_time'] = date('Y-m-d H:i:s',$recharge['end_time']);
             $this->assign('pageTitle','修改');
             //说明是编辑
             $this->displayConfig($recharge);
         }else{
-            $this->savePostUrl = U ('school/AdminEntityCard/doAddRecharge','type=add');
+            $this->savePostUrl = U ('classroom/AdminEntityCard/doAddRecharge','type=add');
             $this->assign('pageTitle','添加');
             //说明是添加
             $this->displayConfig();
@@ -655,6 +688,7 @@ class AdminEntityCardAction extends AdministratorAction{
         if(!is_numeric($count)){$this->error('生成数量必须为数字');}
 
         $params = array(
+            'sid'=>1,
             'type'=> 4,
             'recharge_price'=>t($_POST['recharge_price']),
             'exp_date'=>intval($_POST['exp_date']),
@@ -789,7 +823,8 @@ class AdminEntityCardAction extends AdministratorAction{
      * @name 导出日志
      */
     public function exportCoupon(){
-        $xlsCell  = [
+        set_time_limit(0);
+	$xlsCell  = [
             ['id','ID'],
             ['code','卡券编码'],
             ['coupon_type','卡券类型'],
@@ -797,7 +832,7 @@ class AdminEntityCardAction extends AdministratorAction{
             ['end_time','终止时间'],
         ];
         $xlsData =  $this->xlsData($_GET['explod']);
-        $xlsCell = array_merge($xlsCell,$xlsData['xlsCell']);
+        $xlsCell = array_merge($xlsCell,$xlsData['xlsCell']);	
         model('Excel')->export($xlsData['explod_title'],$xlsCell,$xlsData['data']);
 
         header('HTTP/1.1 401 Unauthorized');
@@ -844,9 +879,9 @@ class AdminEntityCardAction extends AdministratorAction{
                 break;
             default:
         }
-
-        $listData['data'] = model('Coupon')->where($explod->map)->field($field)->order('ctime DESC,id DESC')->select();
-        //整理数据列表
+	$explod->map = is_array($explod->map) ? $explod->map : (array)$explod->map;
+        $listData['data'] = model('Coupon')->where(array_merge($explod->map,['status'=>['in','1,2']]))->field($field)->order('ctime DESC,id DESC')->select();	 
+	//整理数据列表
         foreach ($listData['data'] as $key => $val) {
             $val['coupon_type'] = $type;
             $val['end_time'] = date("Y-m-d H:i",$val['end_time']);
@@ -871,6 +906,7 @@ class AdminEntityCardAction extends AdministratorAction{
                     default:
                 }
             }
+	    $val['code'] = (string)$val['code'].' ';
             $listData['data'][$key] = $val;
         }
         return $listData;
