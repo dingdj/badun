@@ -48,7 +48,7 @@ class AdminDomaiNameAction extends AdministratorAction
             $school['data'][$key]['logo']  = "<img src=".getCover($val['logo'] , 60 ,60)." width='60px' height='60px'>";
             $school['data'][$key]['uid'] = getUserSpace($val['uid'], null, '_blank');
             if($val['doadmin']){
-                $school['data'][$key]['doadmin'] = $val['doadmin'].'.'.$_SERVER["HTTP_HOST"];
+                $school['data'][$key]['doadmin'] = $val['doadmin'].MAIN_DOMAIN;
                 $url = getDomain($val['doadmin']);
             }else{
                 $url = U('school/School/index', array('id' => $val['id']));
@@ -108,14 +108,14 @@ class AdminDomaiNameAction extends AdministratorAction
         $this->pageKeyList = array( 'id','title','logo','uid','doadmin','ctime','DOACTION');
         $where = array('status'=>0,'type'=>2);
         $listData = M('school_verified')->where($where)->findpage(20);
-        $http_host = $_SERVER['HTTP_HOST'];//stristr($_SERVER['HTTP_HOST'], '.', false);
+        $http_host = MAIN_DOMAIN;//stristr($_SERVER['HTTP_HOST'], '.', false);
         foreach($listData['data'] as $k=>$v){
             $listData['data'][$k]['logo'] = "<img src=".getCover($v['logo'] , 60 ,60)." width='60px' height='60px'>";
             $listData['data'][$k]['uid'] = getUserSpace($v['uid'], null, '_blank');
 			$listData['data'][$k]['title'] = model('School')->where('uid='.$v['uid'])->getField('title');
 			$listData['data'][$k]['ctime'] = date('Y-m-d H:i:s', $v["ctime"]);
             if($v['doadmin']){
-                $listData['data'][$k]['doadmin'] = $v['doadmin'].".".$http_host;
+                $listData['data'][$k]['doadmin'] = $v['doadmin'].MAIN_DOMAIN;
             }
 			$listData['data'][$k]['DOACTION'] = '<a href="javascript:void(0)" onclick="admin.mzVerify('.$v['id'].',1,2)">通过</a> - ';
             $listData['data'][$k]['DOACTION'] .= '<a href="javascript:void(0)" onclick="admin.mzVerify('.$v['id'].',-1,2)">驳回</a>';

@@ -62,7 +62,7 @@ class AdminSchoolAction extends AdministratorAction
 			$this->displayList($list);
 		}else{
 			$data = model('School')->getSchoolInfoById(is_school($this->mid));
-            $data['doadmin'] = $data['doadmin'] ? $data['doadmin'].".".$_SERVER["HTTP_HOST"] : "";
+            $data['doadmin'] = $data['doadmin'] ? $data['doadmin'].MAIN_DOMAIN : "";
 			$this->assign($data);
 			$this->display('school');
 		}
@@ -147,7 +147,7 @@ class AdminSchoolAction extends AdministratorAction
             $school['data'][$key]['cuid'] = getUserSpace($val['cuid'], null, '_blank');
             $school['data'][$key]['school_vip'] = M('school_vip')->where(['id'=>$val['school_vip']])->getField('title') ?: '普通机构';
             if($val['doadmin']){
-                $school['data'][$key]['doadmin'] = $val['doadmin'].'.'.$_SERVER["HTTP_HOST"];
+                $school['data'][$key]['doadmin'] = $val['doadmin'].MAIN_DOMAIN;
             }
             if ($val['status'] == 1) {
                 $school['data'][$key]['status'] = "<p style='color: green;'>已审核</p>";

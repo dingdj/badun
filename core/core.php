@@ -48,7 +48,10 @@ tsdefine('THINK_PATH'	,	CORE_PATH.'/ThinkPHP');
 
 tsdefine('SITE_DOMAIN'	,	strip_tags($_SERVER['HTTP_HOST']));
 tsdefine('SITE_URL'		,	(IS_HTTPS?'https:':'http:').'//'.SITE_DOMAIN.__ROOT__);
-
+$pre = explode('.',SITE_DOMAIN);
+if(count($pre)>2)
+unset($pre[0]);
+tsdefine('MAIN_DOMAIN'	,	'.'.join('.',$pre));
 tsdefine('CONF_PATH'	,	SITE_PATH.'/config');
 
 tsdefine('APPS_PATH'	,	SITE_PATH.'/apps');

@@ -3800,7 +3800,7 @@ function getDomain($domain,$id) {
     $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
             && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
 //    $new_domain = preg_replace('#'.$http_type.'\w+#',$http_type.$domain,$http_type.$_SERVER ['HTTP_HOST']);//一级域名
-    $new_domain = $http_type.$domain.'.'.$_SERVER ['HTTP_HOST'];//二级域名
+    $new_domain = $http_type.$domain.MAIN_DOMAIN;//二级域名
     if(!$domain || $domain == 'www'){
         $new_domain = U('school/School/index',['id'=>$id]);
     }
