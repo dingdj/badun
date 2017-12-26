@@ -22,7 +22,7 @@ class CrowAction extends CommonAction {
         $cid = t($_GET['cid']);
         $sort = t($_GET['sort']);
         $where = '`status` IN (1,2,3,4)'; //众筹成功
-        $where .= ' AND is_del=0 '
+        $where .= ' AND is_del=0 ';
         $cid && $where.= 'AND FIND_IN_SET("'.$cid.'",`category`)';
         //$cid && $map['category'] = array('eq',$cid);
         $order = !empty($sort) ? $sort.' DESC' : '`num` DESC,`collect_count` DESC';
