@@ -961,7 +961,7 @@ class IndexAction extends CommonAction {
         if (strpos( $_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
             //微信分享配置
             tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'core', 'OpenSociax', 'jssdk.php')));
-            $weixin = model('Xdata')->get('admin_Config:weixin');
+            $weixin = model('Xdata')->get('admin_Config:weixin');dd($weixin);
             $jssdk = new JSSDK($weixin['appid'], $weixin['appsecret']);
             $signPackage = $jssdk->GetSignPackage();
 
