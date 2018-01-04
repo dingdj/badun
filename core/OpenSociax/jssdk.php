@@ -95,7 +95,7 @@ class JSSDK {
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
     curl_setopt($curl, CURLOPT_URL, $url);
 
-    $res = curl_exec($curl);dd($res);
+    $res = curl_exec($curl);
     curl_close($curl);
 
     return $res;
