@@ -963,7 +963,7 @@ class IndexAction extends CommonAction {
             tsload(implode(DIRECTORY_SEPARATOR, array(SITE_PATH, 'core', 'OpenSociax', 'jssdk.php')));
             $weixin = model('Xdata')->get('admin_Config:weixin');
             $jssdk = new JSSDK($weixin['appid'], $weixin['appsecret']);
-            $signPackage = $jssdk->GetSignPackage();dd($signPackage);
+            $signPackage = $jssdk->GetSignPackage();
 
             $this->assign('is_wx',true);
             $this->assign('signPackage', $signPackage);
