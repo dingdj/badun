@@ -523,19 +523,29 @@ class PayAction extends CommonAction{
         //获取微信回调到服务器异步的参数
         $response = model('WxPay')->wxNotify();
         file_put_contents('logs/wxpayre_success_pay.txt',json_encode($response));
-
         //商户订单号
         if($response["return_code"] == "SUCCESS" && $response["result_code"] == "SUCCESS"){
             //D('ZyRecharge','classroom')->setNormalPaySuccess($response['out_trade_no'], $response['transaction_id'],$response['attach']);
-            $order = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->find();
+            $order = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no'],'state'=>0))->find();
             if(!$order) return false;
             $update = array(
                 'state' =>  1
             );
             $res = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->save($update);
-            $learncoin = D('zy_learncoin')->where(array('uid'=>$order['ds_uid']))->find();
+            $learncoin = D('zy_split_balance')->where(array('uid'=>$order['ds_uid']))->find();
             $balance = $learncoin['balance'] + $order['money']*0.7;
-            D('zy_learncoin')->where(array('uid'=>$order['ds_uid']))->save(array('balance'=>$balance));
+            D('zy_split_balance')->where(array('uid'=>$order['ds_uid']))->save(array('balance'=>$balance));
+            $log = array(
+                'uid'   =>  $order['ds_uid'],
+                'type'  =>  1,
+                'num' =>  $order['money']*0.7,
+                'balance' =>  $balance,
+                'note'  =>  '紫薇在线教育在线教育-打赏',
+                'rel_id'    =>  '',
+                'rel_type'  =>  'zy_dashang',
+                'ctime' =>  time()
+            );
+            D('zy_split_balance_flow')->add($log);
             return true;
         }
     }
