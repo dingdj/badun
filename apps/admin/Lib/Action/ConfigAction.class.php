@@ -81,7 +81,8 @@ class ConfigAction extends AdministratorAction {
 			'sys_version',
 			'site_online_count',
 			'site_rewrite_on',
-			'site_analytics_code'
+			'site_analytics_code',
+			'split_set'
 		);
 		// 其他额外需要的数据,如checkbox 数组,select选项组的key->value赋值
 		$this->opt ['site_closed'] = $this->opt ['site_online_count'] = $this->opt ['site_rewrite_on'] = array (
@@ -102,7 +103,6 @@ class ConfigAction extends AdministratorAction {
 		}
 
 		$detailData = model ( 'Xdata' )->get ( $this->systemdata_list . ":" . $this->systemdata_key );
-
 		ob_start();
 		echo W('CategoryLevel', array('table' => 'area', 'id' => 'site_default_area','default' => trim($detailData['site_default_areahidden'], ',')));
 		$output = ob_get_contents();

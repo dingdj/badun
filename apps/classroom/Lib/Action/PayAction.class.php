@@ -532,13 +532,16 @@ class PayAction extends CommonAction{
                 'state' =>  1
             );
             $res = D('zy_dashang_log')->where(array('pay_pass_num'=>$response['out_trade_no']))->save($update);
+            //获取打赏分佣比例
+            $detailData = model ( 'Xdata' )->get ('admin_Config:site');
+            $fenyongbili = $detailData['split_set']/100;
             $learncoin = D('zy_split_balance')->where(array('uid'=>$order['ds_uid']))->find();
-            $balance = $learncoin['balance'] + $order['money']*0.7;
+            $balance = $learncoin['balance'] + $order['money']*$fenyongbili;
             D('zy_split_balance')->where(array('uid'=>$order['ds_uid']))->save(array('balance'=>$balance));
             $log = array(
                 'uid'   =>  $order['ds_uid'],
                 'type'  =>  1,
-                'num' =>  $order['money']*0.7,
+                'num' =>  $order['money']*$fenyongbili,
                 'balance' =>  $balance,
                 'note'  =>  '紫薇在线教育在线教育-打赏',
                 'rel_id'    =>  '',
