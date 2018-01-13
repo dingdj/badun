@@ -321,16 +321,19 @@
         $('#dashang').click(function(){
            // $('#dsdiv').toggle();
           //  $('#view').hide();
+            $('#example_video_1').css('opacity',0);
             $('#myModal').css('visibility','visible');
             $('.reveal-modal-bg').css('display','block');
             $('.reveal-modal-bg').css({'height':$(document).height(),'width':$(document).width()});
         });
         $('.close-reveal-modal').click(function(){
          //   $('#view').show();
+            $('#example_video_1').css('opacity',1);
             $('.reveal-modal-bg').css('display','none');
             $('#myModal').css('visibility','hidden');
         });
         $('.reveal-modal-bg').click(function(){
+            $('#example_video_1').css('opacity',1);
             $('#myModal').css('visibility','hidden');
             $('.reveal-modal-bg').hide();
         });
